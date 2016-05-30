@@ -1,6 +1,7 @@
 @import "core/mixins";
 @import "core/colors";
 @import "core/fontAwesome";
+@import "core/style";
 
 .gui {
     width: 100%;
@@ -9,6 +10,18 @@
     top: 0;
     left: 0;
 
+    &.resizing {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        & * {
+            @include transition(height 0s, width 0s !important);
+        }
+    }
 
     & .loader {
         display: block;

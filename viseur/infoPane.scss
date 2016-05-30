@@ -67,11 +67,6 @@
         color: $dark-gray;
     }
 
-    &.resizing {
-        @include transition(none !important);
-    }
-
-
     & .field {
         @include collapsable();
     }

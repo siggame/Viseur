@@ -91,6 +91,7 @@ var InfoPane = Classe(BaseElement, Observable, {
         var self = this;
         $document
             .on("mousemove", function(moveEvent) {
+                self._emit("resize-start");
                 var oldX = x;
                 var oldY = y;
 
@@ -101,7 +102,7 @@ var InfoPane = Classe(BaseElement, Observable, {
                 if(self.orientation === "horizontal") {
                     var dy = oldY - y;
                     if(dy !== 0) {
-                        height += dy
+                        height += dy;
                         self.resize(height);
                     }
                 }
@@ -115,6 +116,7 @@ var InfoPane = Classe(BaseElement, Observable, {
             })
             .on("mouseup", function() {
                 self.$element.removeClass("resizing");
+                self._emit("resize-end");
                 $document.off("mousemove mouseup");
             });
     },

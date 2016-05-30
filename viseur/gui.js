@@ -50,6 +50,14 @@ var GUI = Classe(Observable, BaseElement, {
             self._resizeVisualizer(width, height);
         });
 
+        this.infoPane.on("resize-start", function() {
+            self.$element.addClass("resizing");
+        });
+
+        this.infoPane.on("resize-end", function() {
+            self.$element.removeClass("resizing");
+        });
+
         window.addEventListener("resize", function() {
             self.resize();
         });
