@@ -1,0 +1,38 @@
+@import "../colors";
+
+.modal-wrapper {
+    opacity: 0;
+    position: fixed;
+    z-index: 1; // Sit on top
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; // enable scroll if needed
+    background-color: rgb(0,0,0); // fallback color
+    background-color: rgba(0,0,0,0.4); // Black w/ opacit
+
+    &.show {
+        opacity: 1;
+    }
+
+    &.hidden {
+        display: none;
+    }
+}
+
+.modal-content {
+    background-color: $white;
+    margin: 0 auto;
+    padding: 2.5em;
+    width: 30em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    max-height: 9999em;
+
+    &.removing {
+        opacity: 0;
+    }
+}

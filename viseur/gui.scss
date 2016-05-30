@@ -1,0 +1,35 @@
+@import "core/mixins";
+@import "core/colors";
+@import "core/fontAwesome";
+
+.gui {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+
+    & .loader {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    & .visualizer-pane-wrapper {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+
+    & .playback-pane-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    & .renderer-wrapper {
+        background-color: #000;
+    }
+}

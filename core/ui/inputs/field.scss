@@ -1,0 +1,25 @@
+@import "../../fontAwesome";
+@import "../../colors";
+
+.field > label {
+    width: 8em;
+    display: inline-block;
+    line-height: 1.5em;
+
+    & .hint {
+        &:before {
+            color: $primary-light;
+            margin-left: 0.5em;
+            @include icon("question-circle");
+        }
+
+        &:hover:before {
+            color: $primary-dark;
+            transform: scale(1.5);
+        }
+
+        &[title=""] {
+            display: none;
+        }
+    }
+}

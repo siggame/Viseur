@@ -1,0 +1,25 @@
+@import "core/fonts";
+
+.inspect-tab {
+    & .inspecting {
+        display: none;
+    }
+
+    &.gamelog-loaded {
+        & .gamelog-needed {
+            display: none;
+        }
+
+        & .inspecting {
+            display: block;
+        }
+    }
+
+    .delta-type, .gamelog-date {
+        font-style: italic;
+    }
+
+    .gamelog-random-seed, .gamelog-game-name, .gamelog-game-session {
+        @extend .font-monospace;
+    }
+}

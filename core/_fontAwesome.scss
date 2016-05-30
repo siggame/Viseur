@@ -1,0 +1,31 @@
+$fa-font-path: "~font-awesome/fonts";
+@import "~font-awesome/scss/font-awesome";
+
+@mixin icon($icon, $size:"", $rotation:"") {
+    @include fa-icon;
+    //@extend .fa;
+    @extend .fa-#{$icon}:before;
+
+    @if $size != "" {
+        @extend .fa-#{$size}x;
+    }
+    else {
+        @extend .fa-lg;
+    }
+
+    @if $rotation != "" {
+        @extend .fa-rotate-#{$rotation};
+    }
+}
+
+@mixin icon90($icon) {
+    @include icon($icon);
+    @extend .fa-rotate-90;
+}
+
+@mixin loader() {
+    @extend .fa;
+    @extend .fa-circle-o-notch;
+    @extend .fa-spin;
+    @extend .fa-fw;;
+}

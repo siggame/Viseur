@@ -1,0 +1,9 @@
+[
+    {
+        "id": "filp-board",
+        "text": "Flip Board",
+        "hint": "Flips the board so that Black is on the bottom",
+        "type": "boolean",
+        "input": "CheckBox"
+    }
+]
