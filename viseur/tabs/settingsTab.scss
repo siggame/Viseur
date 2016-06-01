@@ -1,4 +1,12 @@
-#resolution-width-field,
-#resolution-height-field {
-    margin-left: 2em;
+@import "core/colors";
+
+.settings-tab {
+    & #resolution-width-field, & #resolution-height-field {
+        margin-left: 2em;
+    }
+
+    & .no-settings {
+        color: $dark-gray;
+        font-style: italic;
+    }
 }

@@ -3,7 +3,7 @@ require("./style.scss");
 namespace = {
     Game: require("./game"),
     textures: require("./textures/"),
-    settings: require("./settings.json"),
+    settings: require("./settings"),
 };
 
 namespace.Game.prototype.namespace = namespace;

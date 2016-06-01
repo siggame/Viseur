@@ -18,7 +18,7 @@
         -ms-user-select: none;
         user-select: none;
 
-        & * {
+        & *, .resizing {
             @include transition(height 0s, width 0s !important);
         }
     }

@@ -139,3 +139,5 @@ for(var extension in mathExtensions) {
         Math[extension] = mathExtensions[extension];
     }
 }
+
+require("seedrandom");

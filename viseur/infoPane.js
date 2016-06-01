@@ -18,9 +18,8 @@ var InfoPane = Classe(BaseElement, Observable, {
         Observable.init.apply(this);
         BaseElement.init.apply(this, arguments);
 
-        this._length = 400;
-        this.snapTo(SettingsManager.get("info-pane-orientation", "right"));
-        this.resize(SettingsManager.get("info-pane-length", this._length));
+        this.snapTo(SettingsManager.get("viseur", "info-pane-orientation", "right"));
+        this.resize(SettingsManager.get("viseur", "info-pane-length", 400));
 
         var self = this;
         this.$resizer = this.$element.find(".info-pane-resizer").on("mousedown", function(downEvent) {
@@ -47,9 +46,10 @@ var InfoPane = Classe(BaseElement, Observable, {
     _template: require("./infoPane.hbs"),
 
     resize: function(newLength) {
+        this.$element.addClass("resizing");
         if(newLength) {
             this._length = newLength;
-            SettingsManager.set("info-pane-length", newLength);
+            SettingsManager.set("viseur", "info-pane-length", newLength);
         }
 
         if(this.orientation === "horizontal") {
@@ -60,6 +60,7 @@ var InfoPane = Classe(BaseElement, Observable, {
         }
 
         this._emit("resized", this.$element.width(), this.$element.height());
+        this.$element.removeClass("resizing");
     },
 
     _sides: ["top", "left", "bottom", "right"],
@@ -69,7 +70,7 @@ var InfoPane = Classe(BaseElement, Observable, {
             throw new Error("invalid side to snap to: '{}'.".format(side));
         }
 
-        SettingsManager.set("info-pane-side", side);
+        SettingsManager.set("viseur", "info-pane-side", side);
 
         for(var i = 0; i < this._sides.length; i++) {
             var possibleSide = this._sides[i];

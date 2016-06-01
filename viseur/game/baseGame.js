@@ -3,13 +3,14 @@ var PIXI = require("pixi.js");
 var Viseur = null;
 
 var BaseGame = Classe({
-    init: function() {
+    init: function(gamelog) {
         Viseur = require("viseur/"); // require here to avoid cycles
         this.renderer = Viseur.renderer;
         this.gameObjects = {};
+        this.random = new Math.seedrandom(gamelog.randomSeed);
 
         var self = this;
-        Viseur.on("initialized", function() {
+        Viseur.on("ready", function(game, gamelog) {
             self.start();
         });
 

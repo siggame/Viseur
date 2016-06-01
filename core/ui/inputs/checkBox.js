@@ -22,7 +22,11 @@ var CheckBox = Classe(BaseInput, {
 
     _updateElementValue: function() {
         this.$element.prop("checked", this._value);
-    }
+    },
+
+    _getElementValue: function() {
+        return this.$element.prop("checked");
+    },
 });
 
 module.exports = CheckBox;

@@ -1,9 +1,8 @@
-[
+module.exports = [
     {
         "id": "filp-board",
-        "text": "Flip Board",
+        "label": "Flip Board",
         "hint": "Flips the board so that Black is on the bottom",
-        "type": "boolean",
         "input": "CheckBox"
-    }
-]
+    },
+];

@@ -7,10 +7,13 @@ var Game = Classe(BaseGame, {
     init: function() {
         BaseGame.init.apply(this, arguments);
 
-        this._blackColor = Color().rgb(80, 80, 80);
+        this._randomColor = Color().hsl(this.random() * 360, 60, 40).whiten(1.5);
+
+        this._backgroundColor = this._randomColor.clone().darken(0.75);
+        this._whiteColor = this._randomColor;
+        this._whiteTopColor = this._randomColor.clone().lighten(0.15);
+        this._blackColor = this._randomColor.clone().darken(0.5);
         this._blackTopColor = this._blackColor.clone().lighten(0.15);
-        this._whiteColor = Color().rgb(160, 160, 160);
-        this._whiteTopColor = this._whiteColor.clone().lighten(0.15);
     },
 
     _borderLength: 0.5,
@@ -23,7 +26,6 @@ var Game = Classe(BaseGame, {
     },
 
     name: "Chess",
-    _backgroundColor: Color().rgb(52, 52, 52),
     _textColor: Color().rgb(222, 222, 222),
     _tileBorderLength: 0.9,
 
@@ -56,7 +58,7 @@ var Game = Classe(BaseGame, {
                 rankText.anchor.set(0.5);
                 rankText.y = 9 - y;
                 rankText.x = this._borderLength/2;
-                if(i == 1) { // bottom
+                if(i === 1) { // bottom
                     rankText.x += 8 + this._borderLength;
                 }
             }

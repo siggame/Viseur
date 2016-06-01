@@ -161,7 +161,7 @@ var Viseur = Classe(Observable, {
             throw new Error("Cannot load data for game '{}'.".format(gameClass));
         }
 
-        this.game = new gameNamespace.Game();
+        this.game = new gameNamespace.Game(this._rawGamelog);
 
         var textures = {};
 
@@ -172,13 +172,13 @@ var Viseur = Classe(Observable, {
         }
         var self = this;
         this.renderer.loadTextures(textures, function() {
-            self._initialized();
+            self._ready();
         });
     },
 
-    _initialized: function() {
+    _ready: function() {
         this.gui.hideModal();
-        this._emit("initialized");
+        this._emit("ready", this.game, this._rawGamelog);
     },
 });
 
