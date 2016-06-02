@@ -10,6 +10,7 @@ var Modal = require("core/ui/modal");
 var BaseElement = require("core/ui/baseElement");
 var Observable = require("core/observable");
 var Viseur = require("./");
+var KeyObserver = require("./keyObserver");
 
 /**
  * @class GUI - all the GUI (DOM) elements in the Viseur
@@ -22,6 +23,7 @@ var GUI = Classe(Observable, BaseElement, {
 
         this.infoPane = new InfoPane({
             $parent: this.$element,
+            gui: this,
         });
 
         this.$gameplayWrapper = this.$element.find(".gameplay-wrapper");
@@ -29,6 +31,10 @@ var GUI = Classe(Observable, BaseElement, {
         this.$playbackWrapper = this.$element.find(".playback-pane-wrapper");
         this.playbackPane = new PlaybackPane({
             $parent: this.$playbackWrapper,
+        });
+
+        this.playbackPane.on("fullscreen-enabled", function() {
+            self.goFullscreen();
         });
 
         this.$rendererWrapper = this.$element.find(".renderer-wrapper");
@@ -120,6 +126,39 @@ var GUI = Classe(Observable, BaseElement, {
     hideModal: function() {
         this.modal.hide();
     },
+
+    goFullscreen: function() {
+        this.$element
+            .addClass("fullscreen")
+            .goFullscreen();
+
+        this._isFullscreen = true;
+
+        this._resizeVisualizer(0, 0);
+
+        var self = this;
+        KeyObserver.once("escape.up", function() {
+            self.exitFullscreen();
+        });
+    },
+
+    exitFullscreen: function() {
+        this.$element.removeClass("fullscreen");
+
+        $.exitFullscreen();
+
+        var self = this;
+
+        setTimeout(function() { // HACK: width and height will be incorrect after going out of fullscreen, so wait a moment
+            self.resize();
+        }, 0);
+
+        this._isFullscreen = false;
+    },
+
+    isFullscreen: function() {
+        return this._isFullscreen;
+    }
 });
 
 module.exports = GUI;

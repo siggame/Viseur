@@ -1,6 +1,6 @@
 var jQuery = require("jquery");
 
-var transitionEvents = "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend"
+var transitionEvents = "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend";
 
 jQuery.fn.extend({
     onceTransitionEnds: function(callback) {
@@ -14,10 +14,43 @@ jQuery.fn.extend({
     offTransitionsEnd: function(callback) {
         return this.off(transitionEvents, callback);
     },
+
+    goFullscreen: function() {
+        var elem = this[0];
+
+        if(elem.requestFullscreen) {
+            elem.requestFullscreen();
+        }
+        else if(elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        }
+        else if(elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        }
+        else if(elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+        }
+
+        return this;
+    }
 });
 
 jQuery.deepCopy = function(obj) {
     return jQuery.extend(true, {}, obj);
+};
+
+jQuery.exitFullscreen = function() {
+    if(document.exitFullscreen) {
+        document.exitFullscreen();
+    }
+    else if(document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+    else if(document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    }
 };
 
 document.$ = jQuery;

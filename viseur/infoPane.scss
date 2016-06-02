@@ -2,6 +2,10 @@
 @import "core/colors";
 @import "core/mixins";
 
+.fullscreen .info-pane {
+    display: none;
+}
+
 .info-pane {
     position: fixed;
     width: 100%;

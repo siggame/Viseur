@@ -86,6 +86,10 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         this.backButton.on("click", function() {
             self._emit("back");
         });
+
+        this.fullscreenButton.on("click", function() {
+            self._emit("fullscreen-enabled");
+        });
     },
 
     _template: require("./playbackPane.hbs"),

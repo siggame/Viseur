@@ -14,9 +14,11 @@ var $document = $(document);
  * @class InfoPane - The dockable pane that has tabs and info about the Visualizer
  */
 var InfoPane = Classe(BaseElement, Observable, {
-    init: function() {
+    init: function(args) {
         Observable.init.apply(this);
         BaseElement.init.apply(this, arguments);
+
+        this.gui = args.gui;
 
         this.$resizer = this.$element.find(".info-pane-resizer");
         this.$content = this.$element.find(".info-pane-content");
@@ -70,7 +72,15 @@ var InfoPane = Classe(BaseElement, Observable, {
                 .css("height", "");
         }
 
-        this._emit("resized", this.$element.width(), this.$element.height());
+        var width = this.$element.width();
+        var height = this.$element.height();
+
+        if(this.gui.isFullscreen()) {
+            width = 0;
+            height = 0;
+        }
+
+        this._emit("resized", width, height);
         this.$element.removeClass("resizing");
     },
 
