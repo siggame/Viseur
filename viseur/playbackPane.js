@@ -1,5 +1,6 @@
 require("./playbackPane.scss");
 
+var $ = require("jquery");
 var humps = require("humps");
 var Classe = require("classe");
 var Observable = require("core/observable");
@@ -8,13 +9,13 @@ var inputs = require("core/ui/inputs");
 var Visuer = require("./");
 
 var playbackInputs = [
-    { id: "playbackSlider", classe: inputs.Slider, location: "top" },
-    { id: "playPauseButton", classe: inputs.Button, location: "bottomLeft" },
-    { id: "backButton", classe: inputs.Button, location: "bottomLeft" },
-    { id: "stopButton", classe: inputs.Button, location: "bottomLeft" },
-    { id: "nextButton", classe: inputs.Button, location: "bottomLeft" },
-    { id: "speedSlider", classe: inputs.Slider, location: "bottomRight" },
-    { id: "fullscreenButton", classe: inputs.Button, location: "bottomRight" },
+    { name: "playbackSlider", classe: inputs.Slider, location: "top" },
+    { name: "playPauseButton", classe: inputs.Button, location: "bottomLeft" },
+    { name: "backButton", classe: inputs.Button, location: "bottomLeft" },
+    { name: "stopButton", classe: inputs.Button, location: "bottomLeft" },
+    { name: "nextButton", classe: inputs.Button, location: "bottomLeft" },
+    { name: "speedSlider", classe: inputs.Slider, location: "bottomRight", min: 100, max: 10000, step: 1 },
+    { name: "fullscreenButton", classe: inputs.Button, location: "bottomRight" },
 ];
 
 /**
@@ -35,13 +36,13 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         this.inputs = [];
         for(var i = 0; i < playbackInputs.length; i++) {
             var playbackInput = playbackInputs[i];
-            var newInput = new playbackInput.classe({
-                id: humps.decamelize(playbackInput.id, { separator: "-" }),
+            var newInput = new playbackInput.classe($.extend({
+                id: humps.decamelize(playbackInput.name, { separator: "-" }),
                 $parent: this.locations[playbackInput.location],
                 disabled: true,
-            });
+            }, playbackInput));
 
-            this[playbackInput.id] = newInput;
+            this[playbackInput.name] = newInput;
             this.inputs.push(newInput);
         }
 

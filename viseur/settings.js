@@ -14,7 +14,12 @@ module.exports = [
         label: "Docked Side",
         hint: "Which side this info pane will be snapped to",
         input: "DropDown",
-        options: [ "Top", "Left", "Bottom", "Right" ],
+        options: [
+            { text:"\u25B2 Top", value: "top" },
+            { text: "\u25B6 Right", value: "right" },
+            { text: "\u25BC Bottom", value: "bottom" },
+            { text: "\u25C0 Left", value: "left" }
+        ],
     },
     {
         id: "resolution-type",

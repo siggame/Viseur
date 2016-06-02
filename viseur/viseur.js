@@ -41,7 +41,7 @@ var Viseur = Classe(Observable, {
         });
 
         this.gui.on("speed-slide", function(value) {
-            selfs._timer.setSpeed(value);
+            self._timer.setSpeed(value);
         });
 
         this._timer.on("ticked", function(time) {
