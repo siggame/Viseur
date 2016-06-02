@@ -8,12 +8,13 @@ var inputs = require("core/ui/inputs");
 var Visuer = require("./");
 
 var playbackInputs = [
-    { id: "playbackSlider", classe: inputs.Slider },
-    { id: "playPauseButton", classe: inputs.Button },
-    { id: "backButton", classe: inputs.Button },
-    { id: "stopButton", classe: inputs.Button },
-    { id: "nextButton", classe: inputs.Button },
-    { id: "speedSlider", classe: inputs.Slider },
+    { id: "playbackSlider", classe: inputs.Slider, location: "top" },
+    { id: "playPauseButton", classe: inputs.Button, location: "bottomLeft" },
+    { id: "backButton", classe: inputs.Button, location: "bottomLeft" },
+    { id: "stopButton", classe: inputs.Button, location: "bottomLeft" },
+    { id: "nextButton", classe: inputs.Button, location: "bottomLeft" },
+    { id: "speedSlider", classe: inputs.Slider, location: "bottomRight" },
+    { id: "fullscreenButton", classe: inputs.Button, location: "bottomRight" },
 ];
 
 /**
@@ -25,12 +26,18 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         args.id = args.id || "playback-pane";
         BaseElement.init.apply(this, arguments);
 
+        this.locations = {
+            top: this.$element.find(".playback-pane-top"),
+            bottomLeft: this.$element.find(".playback-pane-bottom-left"),
+            bottomRight: this.$element.find(".playback-pane-bottom-right"),
+        };
+
         this.inputs = [];
         for(var i = 0; i < playbackInputs.length; i++) {
             var playbackInput = playbackInputs[i];
             var newInput = new playbackInput.classe({
                 id: humps.decamelize(playbackInput.id, { separator: "-" }),
-                $parent: this.$element,
+                $parent: this.locations[playbackInput.location],
                 disabled: true,
             });
 

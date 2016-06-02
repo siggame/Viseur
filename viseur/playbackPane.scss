@@ -1,5 +1,6 @@
 @import "core/colors";
 @import "core/fontAwesome";
+@import "core/fonts";
 @import "core/mixins";
 
 @include keyframes(pauseToPlay) {
@@ -39,6 +40,33 @@
         height: 2em;
     }
 
+    & .playback-pane-top-most {
+        & .playback-pane-top {
+            margin-left: 5em;
+        }
+
+        & .playback-time {
+            float: left;
+            text-align: left;
+            width: 5em;
+            @extend .font-monospace;
+        }
+    }
+
+    & .playback-pane-bottom {
+        margin-top: 1em;
+
+        & .playback-pane-bottom-left {
+            float: left;
+            display: inline-block;
+        }
+
+        & .playback-pane-bottom-right {
+            float: right;
+            display: inline-block;
+        }
+    }
+
     & #play-pause-button {
         margin-right: 1.5em;
 
@@ -67,15 +95,21 @@
         @include icon(backward);
     }
 
-    & #speed-slider {
-        margin-left: 2.5em;
-    }
 
     & #speed-slider:before {
         @include icon(clock-o);
         font-size: 2em;
         margin-left: -1.125em;
         color: $black;
+    }
+
+    & #fullscreen-button {
+        float: right;
+        margin: 0.125em 0 0 1em;
+
+        &:before {
+            @include icon(arrows-alt);
+        }
     }
 
     & #playback-slider {

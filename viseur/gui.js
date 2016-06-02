@@ -80,14 +80,14 @@ var GUI = Classe(Observable, BaseElement, {
             newHeight -= height;
 
             if(this.infoPane.side === "top") {
-                top = height;
+                newTop = height;
             }
         }
         else {
             newWidth -= width;
 
             if(this.infoPane.side === "left") {
-                left = width;
+                newLeft = width;
             }
         }
 

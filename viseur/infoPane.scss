@@ -8,23 +8,50 @@
     height: 100%;
     @include transition(height 0s, width 0s !important);
 
-    > .info-pane-content {
+
+    & > .info-pane-content, & > .info-pane-resizer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    & > .info-pane-content {
         background-color: $white;
     }
 
     &.snap-top {
         top: 0;
         left: 0;
+
+        & > .info-pane-content {
+            bottom: 0.5em;
+        }
+
+        & > .info-pane-resizer {
+            bottom: 0;
+        }
     }
 
     &.snap-left {
         top: 0;
         left: 0;
+
+        & > .info-pane-content {
+            right: 0.5em;
+        }
+
+        & > .info-pane-resizer {
+            right: 0;
+        }
     }
 
     &.snap-bottom {
         bottom: 0;
         left: 0;
+
+        & > .info-pane-content {
+            top: 0.5em;
+        }
     }
 
     &.snap-right {
@@ -32,18 +59,9 @@
         right: 0;
 
         & > .info-pane-content {
-            left: 0.5em;
+            margin-left: 0.5em;
         }
     }
-
-    & > .info-pane-content, & > .info-pane-resizer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-    }
-
 
     // resizer
 
@@ -52,7 +70,7 @@
         text-align: center;
         width: 100%;
         height: 100%;
-        background: #ddd;
+        background: $dark-gray;
         cursor: e-resize;
     }
 
@@ -60,12 +78,21 @@
         & > .info-pane-resizer {
             width: 0.5em;
         }
+
+        & > .info-pane-content {
+            width: calc(100% - 0.5em);
+        }
     }
 
-    .info-pane-resizer:before {
-        font-size: 0.8em;
-        padding: 2px;
-        color: $dark-gray;
+    &.snap-top, &.snap-bottom {
+        & > .info-pane-resizer {
+            height: 0.5em;
+            cursor: n-resize;
+        }
+
+        & > .info-pane-content {
+            height: calc(100% - 0.5em);
+        }
     }
 
     & .field {

@@ -36,11 +36,13 @@ ul.tabular-tabs > li {
 .tabular-content {
     position: absolute;
     overflow: scroll;
-    width: 100%;
-    height: 100%;
+    top: 2.25em;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
     & .tabular-tab-content {
-        margin: 0.5em;
+        margin: 1em;
         display: block;
         opacity: 0;
         @include transition(opacity 0.1667s ease-in-out);

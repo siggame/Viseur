@@ -10,6 +10,13 @@ var onResolutionChanged = function(input) {
 
 module.exports = [
     {
+        id: "info-pane-side",
+        label: "Docked Side",
+        hint: "Which side this info pane will be snapped to",
+        input: "DropDown",
+        options: [ "Top", "Left", "Bottom", "Right" ],
+    },
+    {
         id: "resolution-type",
         label: "Resolution",
         hint: "'Auto' will resize to the current window's resolution.\n'Manual' can be used to set to a lower resolution for slower computers.",

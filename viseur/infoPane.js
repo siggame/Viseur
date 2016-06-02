@@ -18,12 +18,19 @@ var InfoPane = Classe(BaseElement, Observable, {
         Observable.init.apply(this);
         BaseElement.init.apply(this, arguments);
 
-        this.snapTo(SettingsManager.get("viseur", "info-pane-orientation", "right"));
+        this.$resizer = this.$element.find(".info-pane-resizer");
+        this.$content = this.$element.find(".info-pane-content");
+
+        this.snapTo(SettingsManager.get("viseur", "info-pane-side", "right"));
         this.resize(SettingsManager.get("viseur", "info-pane-length", 400));
 
         var self = this;
-        this.$resizer = this.$element.find(".info-pane-resizer").on("mousedown", function(downEvent) {
+        this.$resizer.on("mousedown", function(downEvent) {
             self._onResize(downEvent);
+        });
+
+        SettingsManager.on("viseur.info-pane-side.changed", function(newValue) {
+            self.snapTo(newValue);
         });
 
         var tabularTabs = [];
@@ -35,7 +42,6 @@ var InfoPane = Classe(BaseElement, Observable, {
             });
         }
 
-        this.$content = this.$element.find(".info-pane-content");
         this.tabular = new Tabular({
             id: "info-pane-tabular",
             $parent: this.$content,
@@ -44,19 +50,24 @@ var InfoPane = Classe(BaseElement, Observable, {
     },
 
     _template: require("./infoPane.hbs"),
+    _minLength: 200,
 
     resize: function(newLength) {
         this.$element.addClass("resizing");
         if(newLength) {
-            this._length = newLength;
-            SettingsManager.set("viseur", "info-pane-length", newLength);
+            this._length = Math.max(newLength, this._minLength);
+            SettingsManager.set("viseur", "info-pane-length", this._length);
         }
 
         if(this.orientation === "horizontal") {
-            this.$element.height(this._length);
+            this.$element
+                .height(this._length)
+                .css("width", "");
         }
         else {
-            this.$element.width(this._length);
+            this.$element
+                .width(this._length)
+                .css("height", "");
         }
 
         this._emit("resized", this.$element.width(), this.$element.height());
@@ -70,11 +81,16 @@ var InfoPane = Classe(BaseElement, Observable, {
             throw new Error("invalid side to snap to: '{}'.".format(side));
         }
 
-        SettingsManager.set("viseur", "info-pane-side", side);
-
         for(var i = 0; i < this._sides.length; i++) {
             var possibleSide = this._sides[i];
             this.$element.toggleClass("snap-" + possibleSide, possibleSide === side);
+        }
+
+        if(side === "top" || side === "left") {
+            this.$content.after(this.$resizer);
+        }
+        else {
+            this.$content.before(this.$resizer);
         }
 
         this.side = side;
@@ -102,6 +118,10 @@ var InfoPane = Classe(BaseElement, Observable, {
                 self.$element.addClass("resizing");
                 if(self.orientation === "horizontal") {
                     var dy = oldY - y;
+                    if(self.side === "top") {
+                        dy = -dy;
+                    }
+
                     if(dy !== 0) {
                         height += dy;
                         self.resize(height);
@@ -109,6 +129,10 @@ var InfoPane = Classe(BaseElement, Observable, {
                 }
                 else {
                     var dx = oldX - x;
+                    if(self.side === "left") {
+                        dx = -dx;
+                    }
+
                     if(dx !== 0) {
                         width += dx;
                         self.resize(width);
