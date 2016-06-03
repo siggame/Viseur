@@ -5,86 +5,65 @@ var Observable = require("core/observable");
  * @class Timer - ticks at a custom rate to a number of steps
  */
 var TimeManager = Classe(Observable, {
-    init: function(speed, maxTime) {
+    init: function(speed) {
         Observable.init.call(this);
 
-        this._currentTime = 0;
+        this._lastProgress = 0;
         this._lastTime = null; // last time played
         this._timeout = null;
 
         this.setSpeed(Number(speed) || 1000);
-        this.setMaxTime(Number(maxTime) || 1);
     },
 
     setSpeed: function(speed) {
-        var wasPlaying = this.isPlaying();
+        var wasTicking = this.isTicking();
 
-        if(wasPlaying) {
+        if(wasTicking) {
             this.pause();
         }
 
         this._speed = Math.max(Number(speed) || 0, 1);
 
-        if(wasPlaying) {
-            this.play();
+        if(wasTicking) {
+            this.tick();
         }
     },
 
-    setTime: function(time) {
-        var wasPlaying = this.isPlaying();
-        if(wasPlaying) {
+    setProgress: function(time) {
+        var wasTicking = this.isTicking();
+        if(wasTicking) {
             this.pause();
         }
 
-        this._currentTime = Math.clamp(time, 0, this._maxTime);
+        this._lastProgress = Math.clamp(time, 0, 1);
 
-        if(wasPlaying) {
-            this.play();
+        if(wasTicking) {
+            this.tick();
         }
     },
 
-    setMaxTime: function(time) {
-        this._maxTime = Math.max(Number(time) || 0, 1);
+    restart: function() {
+        this.setProgress(0);
+        return this.tick();
     },
 
-    play: function() {
-        if(this._timeout) {
-            return false;
-        }
-
-        if(this.currentTime === this._maxTime) {
+    tick: function() {
+        if(this._timeout || this._lastProgress >= 1) {
             return false;
         }
 
         var self = this;
         this._lastTime = new Date().getTime();
         this._timeout = setTimeout(function() {
-            self._ticked();
-        }, (1 - this._getStepPercentDone()) * this._speed);
+            self.pause();
+            self._emit("finished");
+        }, (1 - this.getProgress()) * this._speed);
 
         return true;
     },
 
-    isPlaying: function() {
+    isTicking: function() {
         return this._timeout !== null;
-    },
-
-    _ticked: function() {
-        this._currentTime++;
-        this._timeout = null;
-
-        this._emit("ticked", this._currentTime);
-
-        if(!this.isDone()) {
-            this.play();
-        }
-        else {
-            this._currentTime = this._maxTime - 1/1e10;
-        }
-    },
-
-    _getStepPercentDone: function() {
-        return this._currentTime - Math.floor(this._currentTime);
     },
 
     /**
@@ -93,21 +72,21 @@ var TimeManager = Classe(Observable, {
      * @returns {boolean} true if the timer was paused, false if it was not paused because it was not playing
      */
     pause: function() {
-        if(!this.isPlaying()) {
+        if(!this.isTicking()) {
             return false;
         }
 
         clearTimeout(this._timeout);
 
-        this._currentTime = this.getCurrentTime();
+        this._lastProgress = this.getProgress();
         this._timeout = null;
 
         return true;
     },
 
-    getCurrentTime: function() {
-        if(!this.isPlaying()) {
-            return this._currentTime;
+    getProgress: function() {
+        if(!this.isTicking()) {
+            return this._lastProgress;
         }
 
         // otherwise we need to calculate it
@@ -115,49 +94,27 @@ var TimeManager = Classe(Observable, {
         var timeDiff = nowTime - this._lastTime;
         var percentDone = timeDiff / this._speed;
 
-        return this._currentTime + percentDone;
+        return Math.min(this._lastProgress + percentDone, 1);
     },
 
     /**
-     * Pauses, and advances the index to the next index
-     */
-    next: function() {
-        this.pause();
-
-        var percent = this._getStepPercentDone();
-        this._currentTime += 1 - percent;
-        this._emit("ticked", this._currentTime);
-    },
-
-        /**
-     * Pauses, and moves back the index to the previous one
-     */
-    back: function() {
-        this.pause();
-
-        var percent = this._getStepPercentDone();
-        this._currentTime -= 1 - percent;
-        this._emit("ticked", this.currentTime);
-    },
-
-    /**
-     * Plays if paused, pauses if playing
+     * Starts ticking if paused, pauses if ticking
      *
      * returns {boolean} true if now paused, false otherwise
      */
-    invertPause: function() {
-        if(this.isPlaying()) {
+    invertTicking: function() {
+        if(this.isTicking()) {
             this.pause();
             return true; // as we are no paused
         }
         else {
-            this.play();
+            this.tick();
             return false; // as we are now running
         }
     },
 
     isDone: function() {
-        return this._currentTime >= this._maxTime;
+        return this._lastProgress === 1;
     },
 });
 

@@ -7,6 +7,7 @@ var SettingsManager = Classe(Observable, {
         var id = this._getID(namespace, key);
 
         if(!store.has(id)) {
+            this.set(namespace, key, def);
             return def;
         }
 

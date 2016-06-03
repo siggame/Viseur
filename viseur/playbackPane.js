@@ -9,7 +9,7 @@ var inputs = require("core/ui/inputs");
 var Visuer = require("./");
 
 var playbackInputs = [
-    { name: "playbackSlider", classe: inputs.Slider, location: "top" },
+    { name: "playbackSlider", classe: inputs.Slider, location: "top", min: 0, step: "any" },
     { name: "playPauseButton", classe: inputs.Button, location: "bottomLeft" },
     { name: "backButton", classe: inputs.Button, location: "bottomLeft" },
     { name: "stopButton", classe: inputs.Button, location: "bottomLeft" },
@@ -47,21 +47,27 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         }
 
         var self = this;
+
+        this.$playbackTimeMax = this.$element.find(".playback-time-max");
         Visuer.once("gamelog-loaded", function(gamelog) {
             self.enable();
             self.playbackSlider.setValue(0);
             self.playbackSlider.setMax(gamelog.deltas.length);
+
+            self.$playbackTimeMax.html(gamelog.deltas.length);
         });
 
-        Visuer.on("playing", function() {
+        Visuer.timeManager.on("playing", function() {
             self.$element.addClass("playing");
         });
 
-        Visuer.on("paused", function() {
+        Visuer.timeManager.on("paused", function() {
             self.$element.removeClass("playing");
         });
 
+        this.$playbackTimeCurrent = this.$element.find(".playback-time-current");
         Visuer.on("time-updated", function(index, dt) {
+            self.$playbackTimeCurrent.html(index);
             self.playbackSlider.setValue(index + dt);
         });
 

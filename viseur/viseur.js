@@ -4,7 +4,7 @@ var Classe = require("classe");
 var Observable = require("core/observable");
 var Parser = require("./parser");
 var Renderer = require("./renderer/");
-var Timer = require("core/timer");
+var TimeManager = require("./timeManager");
 var SettingsManager = require("./settingsManager");
 
 var Viseur = Classe(Observable, {
@@ -13,42 +13,17 @@ var Viseur = Classe(Observable, {
      */
     start: function() {
         var GUI = require("./gui");
-        this._timer = new Timer(1000, 1);
+
+        this.timeManager = new TimeManager();
+
         this.gui = new GUI({
             $parent: $("#main"),
         });
 
         var self = this;
-        this.gui.on("play-pause", function() {
-            var paused = self._timer.invertPause();
-            self._emit(paused ? "paused" : "playing");
-        });
 
-        this.gui.on("pause", function() {
-            self._timer.pause();
-        });
-
-        this.gui.on("next", function() {
-            self._timer.next();
-        });
-
-        this.gui.on("back", function() {
-            self._timer.back();
-        });
-
-        this.gui.on("playback-slide", function(value) {
-            self._timer.setTime(value);
-        });
-
-        this.gui.on("speed-slide", function(value) {
-            self._timer.setSpeed(value);
-        });
-
-        this._timer.on("ticked", function(time) {
-            var index = Math.floor(time);
-            var dt = time - index;
-            self._updateCurrentState(index, dt);
-            self._emit("time-updated", index, dt);
+        this.timeManager.on("new-index", function(index) {
+            self._updateCurrentState(index);
         });
 
         this.renderer = new Renderer({
@@ -63,10 +38,9 @@ var Viseur = Classe(Observable, {
 
         this.renderer.on("rendering", function() {
             if(self.game) {
-                var currentTime = self._timer.getCurrentTime();
-                var index = Math.floor(currentTime);
-                var dt = currentTime - index;
-                self.game.render(index, dt);
+                var c = self.timeManager.getCurrentTime();
+                self._emit("time-updated", c.index, c.dt);
+                self.game.render(c.index, c.dt);
             }
         });
 
@@ -99,7 +73,6 @@ var Viseur = Classe(Observable, {
     _gamelogLoaded: function(gamelog, callback) {
         this._rawGamelog = gamelog;
         this._parser = new Parser(gamelog.constants);
-        this._timer.setMaxTime(gamelog.deltas.length);
 
         this._initGame(gamelog.gameName);
 
@@ -111,23 +84,15 @@ var Viseur = Classe(Observable, {
             nextState: this._parser.mergeDelta({}, gamelog.deltas[0].game),
         };
         this._updateCurrentState(0, 0);
-
-        if(callback) {
-            callback();
-        }
     },
 
-    _updateCurrentState: function(index, dt) {
+    _updateCurrentState: function(index) {
         if(index < this._mergedDelta.index) {
             throw new Error("Cannot merge deltas backwards!");
         }
 
         var d = this._mergedDelta;
         var deltas = this._rawGamelog.deltas;
-
-        if(this._timer.isDone()) {
-            return;
-        }
 
         var indexChanged = index !== d.index;
 
