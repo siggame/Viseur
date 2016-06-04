@@ -83,16 +83,11 @@
         @include icon(pause);
     }
 
-    & #stop-button {
-        margin: 0 0.25em;
-
+    & #next-button {
+        margin-left: 0.5em;
         &:before {
-            @include icon(stop);
+            @include icon(forward);
         }
-    }
-
-    & #next-button:before {
-        @include icon(forward);
     }
 
     & #back-button:before {

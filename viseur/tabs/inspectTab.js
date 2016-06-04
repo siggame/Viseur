@@ -2,6 +2,7 @@ require("./inspectTab.scss");
 
 var $ = require("jquery");
 var Classe = require("classe");
+var dateFormat = require('dateformat');
 var BaseElement = require("core/ui/baseElement");
 var InspectTreeView = require("./inspectTreeView");
 var Viseur = require("../viseur");
@@ -20,7 +21,7 @@ var InspectTab = Classe(BaseElement, {
 
         var self = this;
         Viseur.once("gamelog-loaded", function(gamelog) {
-            self.$gamelogDate.html(new Date(gamelog.epoch).toString());
+            self.$gamelogDate.html(dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z"));
             self.$gamelogRandomSeed.html(gamelog.randomSeed);
             self.$gamelogGameName.html(gamelog.gameName);
             self.$gamelogGameSession.html(gamelog.gameSession);

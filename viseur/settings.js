@@ -20,6 +20,16 @@ module.exports = [
             { text: "\u25BC Bottom", value: "bottom" },
             { text: "\u25C0 Left", value: "left" }
         ],
+        default: "right",
+    },
+    {
+        id: "playback-speed",
+        label: "Playback Speed",
+        hint: "The time (in ms)  for each animation to be played. Smaller numbers mean faster playback.",
+        input: "Number",
+        min: 50,
+        max: 999999,
+        default: 1000,
     },
     {
         id: "resolution-type",
@@ -27,13 +37,14 @@ module.exports = [
         hint: "'Auto' will resize to the current window's resolution.\n'Manual' can be used to set to a lower resolution for slower computers.",
         input: "DropDown",
         options: [ "Auto", "Manual" ],
+        default: "Auto",
     },
     {
         id: "resolution-width",
         label: "Width",
         input: "Number",
         min: 300,
-        value: 800,
+        default: 800,
         max: screen.width,
         onInputCreated: onResolutionChanged,
     },
@@ -42,7 +53,7 @@ module.exports = [
         label: "Height",
         input: "Number",
         min: 300,
-        value: 400,
+        default: 400,
         max: screen.height,
         onInputCreated: onResolutionChanged,
     },
@@ -51,5 +62,6 @@ module.exports = [
         label: "Anti-Aliasing",
         hint: "Only works in Google Chrome",
         input: "CheckBox",
+        default: true,
     },
 ];

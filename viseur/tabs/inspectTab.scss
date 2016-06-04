@@ -15,11 +15,19 @@
         }
     }
 
-    .delta-type, .gamelog-date {
+    .delta-type {
+        @extend .font-monospace;
+    }
+
+    .gamelog-date {
         font-style: italic;
     }
 
     .gamelog-random-seed, .gamelog-game-name, .gamelog-game-session {
         @extend .font-monospace;
+    }
+
+    .delta-data > header {
+        margin-top: 0.5em;
     }
 }

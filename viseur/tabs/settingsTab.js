@@ -58,7 +58,7 @@ var SettingsTab = Classe(BaseElement, {
                 setting.onInputCreated(input);
             }
 
-            input.setValue(SettingsManager.get(namespace, setting.id));
+            input.setValue(SettingsManager.get(namespace, setting.id, setting.default));
 
             this._setupInput(input, namespace, setting.id);
         }
@@ -67,6 +67,10 @@ var SettingsTab = Classe(BaseElement, {
     _setupInput: function(input, namespace, id) {
         input.on("changed", function(newValue) {
             SettingsManager.set(namespace, id, newValue);
+        });
+
+        SettingsManager.on("{}.{}.changed".format(namespace, id), function(newValue) {
+            input.setValue(newValue);
         });
     },
 });

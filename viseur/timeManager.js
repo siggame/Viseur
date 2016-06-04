@@ -37,12 +37,7 @@ var TimeManager = Classe(Observable, {
         this._ticked(true);
 
         Viseur.gui.on("play-pause", function() {
-            var paused = self._timer.invertTicking();
-            self._emit(paused ? "paused" : "playing");
-        });
-
-        Viseur.gui.on("pause", function() {
-            self._timer.pause();
+            self._playPause();
         });
 
         Viseur.gui.on("next", function() {
@@ -56,7 +51,7 @@ var TimeManager = Classe(Observable, {
         Viseur.gui.on("playback-slide", function(value) {
             var index = Math.floor(value);
             var dt = value - index;
-            self.setTime(index, dt);
+            self._pause(index, dt);
         });
     },
 
@@ -70,13 +65,25 @@ var TimeManager = Classe(Observable, {
         }
     },
 
+    _playPause: function() {
+        if(!this._timer.isTicking() && this._currentIndex === this._numberOfDeltas - 1 && this._timer.getProgress() > 0.99) { // wrap around
+            this.setTime(0, 0);
+        }
+
+        var paused = this._timer.invertTicking();
+        this._emit(paused ? "paused" : "playing");
+    },
+
     _ticked: function(start) {
         this._currentIndex++;
 
         this._emit("new-index", this._currentIndex);
 
-        if(!start && this._currentIndex < this._numberOfDeltas) {
+        if(!start && this._currentIndex < this._numberOfDeltas - 1) {
             this._timer.restart();
+        }
+        else {
+            this._pause();
         }
     },
 
@@ -85,6 +92,34 @@ var TimeManager = Classe(Observable, {
             index: this._currentIndex,
             dt: this._timer.getProgress(),
         };
+    },
+
+    _back: function() {
+        var index = this._currentIndex;
+        if(this._timer.getProgress() === 0) {
+            index--;
+        }
+
+        this._pause(index, 0);
+    },
+
+    _next: function() {
+        var index = this._currentIndex;
+        if(this._timer.getProgress() === 0) {
+            index++;
+        }
+
+        this._pause(index, 0);
+    },
+
+    _pause: function(index, dt) {
+        this._timer.pause();
+
+        if(index !== undefined) {
+            this.setTime(index, dt);
+        }
+
+        this._emit("paused");
     },
 });
 

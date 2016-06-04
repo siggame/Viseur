@@ -87,22 +87,54 @@ var Viseur = Classe(Observable, {
     },
 
     _updateCurrentState: function(index) {
-        if(index < this._mergedDelta.index) {
-            throw new Error("Cannot merge deltas backwards!");
-        }
-
         var d = this._mergedDelta;
         var deltas = this._rawGamelog.deltas;
-
         var indexChanged = index !== d.index;
 
-        while(index > this._mergedDelta.index) { // merge deltas till we are up to date
+        // if increasing index...
+        while(index > d.index) {
             d.index++;
+
+            if(deltas[d.index] && !deltas[d.index].reversed) {
+                deltas[d.index].reversed = this._parser.createReverseDelta(d.currentState, deltas[d.index].game);
+            }
+
+            if(deltas[d.index] && deltas[d.index + 1] && !deltas[d.index + 1].reversed) {
+                deltas[d.index + 1].reversed = this._parser.createReverseDelta(d.nextState, deltas[d.index + 1].game);
+            }
+
+            //d.index++;
 
             d.currentState = this._parser.mergeDelta(d.currentState, deltas[d.index].game);
             if(deltas[d.index + 1]) { // if there is a next state (not at the end)
                 d.nextState = this._parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
             }
+        }
+
+        // if decreasing index...
+        while(index < d.index) {
+            //d.index--;
+
+            var r = deltas[d.index] && deltas[d.index].reversed;
+            var r2 = deltas[d.index + 1] && deltas[d.index + 1].reversed;
+
+            if(r) {
+                d.currentState = this._parser.mergeDelta(d.currentState, r);
+            }
+            else {
+                console.log("no r for index", index, d.index);
+            }
+
+            if(r2) {
+                if(deltas[d.index + 1]) { // if there is a next state (not at the end)
+                    d.nextState = this._parser.mergeDelta(d.nextState, r2);
+                }
+            }
+            else {
+                console.log("no r2 for index", index, d.index);
+            }
+
+            d.index--;
         }
 
         if(indexChanged) {

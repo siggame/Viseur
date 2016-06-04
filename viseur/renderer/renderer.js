@@ -21,7 +21,7 @@ var Renderer = Classe(Observable, BaseElement, {
         this._pxMaxWidth = 800;
         this._pxMaxHeight = 600;
         this._renderer = new PIXI.autoDetectRenderer(this._pxMaxWidth, this._pxMaxHeight, {
-            antialias: SettingsManager.get("antialias", true),
+            antialias: SettingsManager.get("viseur", "anti-aliasing", true),
         }); // will be resized, just placeholder dimensions
 
         this._bounds = {};

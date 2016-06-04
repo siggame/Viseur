@@ -39,6 +39,44 @@ var Parser = Classe({
 
         return state;
     },
+
+    /**
+     * Creates a "reverse" delta, which is change in state information to get FROM a state to a PREVIOUS state.
+     *
+     * @param {Object} state - a fully merged delta state, WITHOUT the delta merged onto it.
+     * @param {Object} delta - the delta that would be applied to the state to transform it.
+     * @param {Obect} [reverse] - the reverse delta to merge into. Do not directly pass this from first invocation.
+     * @returns {Object} the reverse delta. Apply this to a nextState that has had the delta applies to it to get back to the original state.
+     */
+    createReverseDelta: function(state, delta, reverse) {
+        reverse = reverse || {};
+
+        for(var key in delta) {
+            var deltaValue = delta[key];
+            var stateValue = state[key];
+
+            if(key === this.constants.DELTA_LIST_LENGTH) {
+                reverse[this.constants.DELTA_LIST_LENGTH] = state.length;
+                continue;
+            }
+
+            if(!state.hasOwnProperty(key) || stateValue === undefined) {
+                reverse[key] = this.constants.DELTA_REMOVED;
+                continue;
+            }
+
+            if(utils.isObject(deltaValue)) {
+                reverse[key] = reverse[key] || {};
+
+                this.createReverseDelta(state[key], deltaValue, reverse[key]);
+            }
+            else {
+                reverse[key] = stateValue;
+            }
+        }
+
+        return reverse;
+    },
 });
 
 module.exports = Parser;
