@@ -29,13 +29,13 @@ var Piece = Classe(BaseGameObject, {
         if(currentPosition && nextPosition) { // then we need to ease the movement from current to next
             if(this.current && !this.current.captured && this.next && this.next.captured) { // then we got captured :(
                 renderPosition = currentPosition;
-                this.sprite.alpha = 1 - dt;
+                this.sprite.alpha = ease(1 - dt, "cubicInOut");
             }
             else {
                 this.sprite.alpha = 1;
                 renderPosition = {
-                    x: ease(currentPosition.x, nextPosition.x, dt),
-                    y: ease(currentPosition.y, nextPosition.y, dt),
+                    x: ease(currentPosition.x, nextPosition.x, dt, "cubicInOut"),
+                    y: ease(currentPosition.y, nextPosition.y, dt, "cubicInOut"),
                 };
             }
         }

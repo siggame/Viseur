@@ -8,13 +8,14 @@ var BaseElement = require("core/ui/baseElement");
 var inputs = require("core/ui/inputs");
 var Visuer = require("./viseur");
 var SettingsManager = require("./settingsManager");
+var KeyObserver = require("./keyObserver");
 
 var playbackInputs = [
     { name: "playbackSlider", classe: inputs.Slider, location: "top", min: 0, step: "any" },
     { name: "playPauseButton", classe: inputs.Button, location: "bottomLeft" },
     { name: "backButton", classe: inputs.Button, location: "bottomLeft" },
     { name: "nextButton", classe: inputs.Button, location: "bottomLeft" },
-    { name: "speedSlider", classe: inputs.Slider, location: "bottomRight", min: -1, max: 1, step: "any" },
+    { name: "speedSlider", classe: inputs.Slider, location: "bottomRight", min: -10, max: -0.1, step: "any" },
     { name: "fullscreenButton", classe: inputs.Button, location: "bottomRight" },
 ];
 
@@ -87,12 +88,24 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self._emit("play-pause");
         });
 
+        KeyObserver.on(" .up", function() { // space bar up
+            self.playPauseButton.click();
+        });
+
         this.nextButton.on("click", function() {
             self._emit("next");
         });
 
+        KeyObserver.on("right arrow.up", function() {
+            self.nextButton.click();
+        });
+
         this.backButton.on("click", function() {
             self._emit("back");
+        });
+
+        KeyObserver.on("left arrow.up", function() {
+            self.backButton.click();
         });
 
         this.fullscreenButton.on("click", function() {
@@ -132,36 +145,24 @@ var PlaybackPane = Classe(Observable, BaseElement, {
     },
 
     _speedFromSlider: function(x) {
-        var y = 1000 * Math.pow(1000, Math.log(x + 1));
+        var y = 100 * Math.pow(x, 2);
         return y;
     },
 
     _sliderFromSpeed: function(y) {
-       var x = Math.pow(Math.E, Math.log((y)/1000) / Math.log(1000)) - 1;
+       var x = Math.sqrt(y/100);
        return x;
     },
 
     _changePlaybackSpeed: function(value) {
-        var newSpeed;
-        if(value > 0) { // speed up
-            newSpeed = this._speedFromSlider(value); // exponential increase, otherwise would be from [1000-2000]
-        }
-        else {
-            newSpeed = 1000 * (1 + value);
-        }
+        var newSpeed = this._speedFromSlider(-value);
 
         SettingsManager.set("viseur", "playback-speed", newSpeed);
     },
 
     _updateSpeedSlider: function(value) {
-        value = value || SettingsManager.get("viseur", "playback-speed");
-        if(value > 1000) { // speed up
-            value = this._sliderFromSpeed(value);
-        }
-        else {
-            value = value/1000 - 1;
-        }
-        this.speedSlider.setValue(value);
+        sliderValue = this._sliderFromSpeed(value || SettingsManager.get("viseur", "playback-speed"));
+        this.speedSlider.setValue(-sliderValue);
     },
 
     enable: function() {

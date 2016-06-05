@@ -20,6 +20,13 @@ module.exports = {
      * @returns {number} linearly interpolated between a and b according to scalar t
      */
     ease:function(a, b, t, easing) {
+        if(typeof(b) === "string") {
+            easing = b;
+            t = a;
+            a = 0;
+            b = 1;
+        }
+
         easing = easing || "linear";
 
         if(typeof(easing) === "function") {

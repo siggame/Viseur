@@ -14,7 +14,7 @@ var Button = Classe(BaseInput, {
 
         var self = this;
         this.$element.on("click", function() {
-            self._emit("click");
+            self.click();
         });
     },
 
@@ -22,6 +22,10 @@ var Button = Classe(BaseInput, {
 
     setText: function(str) {
         this.$element.html(str);
+    },
+
+    click: function() {
+        this._emit("click");
     },
 });
 

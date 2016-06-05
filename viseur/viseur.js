@@ -121,17 +121,11 @@ var Viseur = Classe(Observable, {
             if(r) {
                 d.currentState = this._parser.mergeDelta(d.currentState, r);
             }
-            else {
-                console.log("no r for index", index, d.index);
-            }
 
             if(r2) {
                 if(deltas[d.index + 1]) { // if there is a next state (not at the end)
                     d.nextState = this._parser.mergeDelta(d.nextState, r2);
                 }
-            }
-            else {
-                console.log("no r2 for index", index, d.index);
             }
 
             d.index--;
