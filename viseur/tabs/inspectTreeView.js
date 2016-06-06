@@ -4,6 +4,7 @@ var $ = require("jquery");
 var Classe = require("classe");
 var TreeView = require("core/ui/treeView");
 var utils = require("core/utils");
+var Viseur = require("viseur/");
 
 /**
  * @class InspectTreeView - a tree view for the Inspect tab that support game object cycles
@@ -91,10 +92,15 @@ var InspectTreeView = Classe(TreeView, {
     },
 
     _clicked: function($node, value) {
-        if(value.id && !value.gameObjectName) { // it's a game object reference, so scroll to that reference
-            this.highlightGameObject(value.id);
+        if(value.id) { // it's a game object...
+            if(Viseur.game) {
+                Viseur.game.highlight(value.id);
+            }
 
-            return;
+            if(!value.gameObjectName) { // ... reference, so scroll to that reference
+                this.highlightGameObject(value.id);
+                return;
+            }
         }
 
         return TreeView._clicked.apply(this, arguments);
