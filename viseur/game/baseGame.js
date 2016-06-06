@@ -1,9 +1,11 @@
 var Classe = require("classe");
 var PIXI = require("pixi.js");
+var Observable = require("core/observable");
 var Viseur = null;
 
-var BaseGame = Classe({
+var BaseGame = Classe(Observable, {
     init: function(gamelog) {
+        Observable.init.call(this);
         Viseur = require("viseur/"); // require here to avoid cycles
         this.renderer = Viseur.renderer;
         this.gameObjects = {};
@@ -83,12 +85,41 @@ var BaseGame = Classe({
                 }
 
                 if(!this.gameObjects[id]) { // this is the first time we've seen this game object, so create its instance
-                    this.gameObjects[id] = new this._gameObjectClasses[nextGameObject.gameObjectName](nextGameObject, this);
+                    this._initGameObject(id, nextGameObject);
                 }
 
                 this.gameObjects[id].update(currentGameObject, nextGameObject);
             }
         }
+    },
+
+    _initGameObject: function(id, state) {
+        var newGameObject = new this._gameObjectClasses[state.gameObjectName](state, this);
+
+        var self = this;
+        newGameObject.on("clicked", function() {
+            self._emit("clicked", id);
+        });
+
+        this.gameObjects[id] = newGameObject;
+    },
+
+    highlight: function(gameObjectID) {
+        var gameObject = this.gameObjects[gameObjectID];
+
+        for(var id in this.gameObjects) {
+            if(this.gameObjects.hasOwnProperty(id)) {
+                var otherGameObject = this.gameObjects[id];
+
+                if(otherGameObject !== gameObject) {
+                    otherGameObject.unhighlight();
+                }
+            }
+        }
+
+        gameObject.highlight();
+
+        this._emit("highlighted", gameObject.id);
     },
 });
 

@@ -10,18 +10,20 @@ var Piece = Classe(BaseGameObject, {
         var color = initialState.owner.id === "0" ? "white" : "black";
         var type = initialState.type.toLowerCase();
 
-        this.sprite = this.renderer.newSprite(color + "-" + type, this.game.boardContainer);
+        this._initContainer(this.game.boardContainer);
+
+        this._sprite = this.renderer.newSprite(color + "-" + type, this.container);
     },
 
     name: "Piece",
 
     render: function(dt) {
         if((!this.current && !this.next) || (this.current && this.current.captured)) { // then we don't exist to be rendered
-            this.sprite.visible = false;
+            this.container.visible = false;
             return;
         }
 
-        this.sprite.visible = true;
+        this.container.visible = true;
         var currentPosition = this.current && this._transformFileRank(this.current.file, this.current.rank);
         var nextPosition = this.next  && this._transformFileRank(this.next.file, this.next.rank);
         var renderPosition = currentPosition || nextPosition;
@@ -29,10 +31,10 @@ var Piece = Classe(BaseGameObject, {
         if(currentPosition && nextPosition) { // then we need to ease the movement from current to next
             if(this.current && !this.current.captured && this.next && this.next.captured) { // then we got captured :(
                 renderPosition = currentPosition;
-                this.sprite.alpha = ease(1 - dt, "cubicInOut");
+                this.container.alpha = ease(1 - dt, "cubicInOut");
             }
             else {
-                this.sprite.alpha = 1;
+                this.container.alpha = 1;
                 renderPosition = {
                     x: ease(currentPosition.x, nextPosition.x, dt, "cubicInOut"),
                     y: ease(currentPosition.y, nextPosition.y, dt, "cubicInOut"),
@@ -40,8 +42,10 @@ var Piece = Classe(BaseGameObject, {
             }
         }
 
-        this.sprite.x = renderPosition.x;
-        this.sprite.y = renderPosition.y;
+        this.container.x = renderPosition.x;
+        this.container.y = renderPosition.y;
+
+        return BaseGameObject.render.call(this, dt);
     },
 
     /**

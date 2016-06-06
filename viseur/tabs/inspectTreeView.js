@@ -92,13 +92,7 @@ var InspectTreeView = Classe(TreeView, {
 
     _clicked: function($node, value) {
         if(value.id && !value.gameObjectName) { // it's a game object reference, so scroll to that reference
-            TreeView._clicked.call(this, this._get$node(["root", "gameObjects"], true), null, false);
-
-            var $referedNode = this._get$node(["root", "gameObjects", value.id], true);
-
-            TreeView._clicked.call(this, $referedNode, null, false);
-
-            $referedNode[0].scrollIntoView();
+            this.highlightGameObject(value.id);
 
             return;
         }
@@ -115,6 +109,31 @@ var InspectTreeView = Classe(TreeView, {
 
         // search outside
         return this._outsideTreeView._get$node(path);
+    },
+
+    highlightGameObject: function(id) {
+        TreeView._clicked.call(this, this._get$node(["root", "gameObjects"], true), null, false);
+
+        var $referedNode = this._get$node(["root", "gameObjects", id], true);
+
+        TreeView._clicked.call(this, $referedNode, null, false);
+
+        if(this._highlightingNode) {
+            this._highlightingNode.removeClass("highlighted");
+            clearTimeout(this._highlightTimeout);
+        }
+
+        this._highlightingNode = $referedNode
+            .addClass("highlighted");
+
+        var self = this;
+        this._highlightTimeout = setTimeout(function() {
+            self._highlightingNode.removeClass("highlighted");
+            self._highlightingNode = null;
+            self._highlightTimeout = null;
+        }, 2000);
+
+        $referedNode[0].scrollIntoView();
     },
 });
 

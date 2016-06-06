@@ -16,6 +16,7 @@
         &:hover:before {
             color: $primary-dark;
             transform: scale(1.5);
+            cursor: help;
         }
 
         &[title=""] {

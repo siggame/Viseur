@@ -4,14 +4,16 @@ var $ = require("jquery");
 var Classe = require("classe");
 var dateFormat = require('dateformat');
 var BaseElement = require("core/ui/baseElement");
+var Observable = require("core/observable");
 var InspectTreeView = require("./inspectTreeView");
 var Viseur = require("../viseur");
 
 /**
  * @class InspectTab - The "Inspect" tab on the InfoPane, displaying settings (both for the core and by game)
  */
-var InspectTab = Classe(BaseElement, {
+var InspectTab = Classe(Observable, BaseElement, {
     init: function(args) {
+        Observable.init.call(this);
         BaseElement.init.apply(this, arguments);
 
         this.$gamelogDate = $(".gamelog-date", this.$element);
@@ -20,13 +22,20 @@ var InspectTab = Classe(BaseElement, {
         this.$gamelogGameSession = this.$element.find(".gamelog-game-session");
 
         var self = this;
-        Viseur.once("gamelog-loaded", function(gamelog) {
+        Viseur.once("ready", function(game, gamelog) {
             self.$gamelogDate.html(dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z"));
             self.$gamelogRandomSeed.html(gamelog.randomSeed);
             self.$gamelogGameName.html(gamelog.gameName);
             self.$gamelogGameSession.html(gamelog.gameSession);
 
             self.$element.addClass("gamelog-loaded");
+
+            game.on("clicked", function(gameObjectID) {
+                self.gameTreeView.highlightGameObject(gameObjectID);
+                game.highlight(gameObjectID);
+
+                self._emit("highlighted", gameObjectID);
+            });
         });
 
 

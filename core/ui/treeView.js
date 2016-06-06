@@ -26,7 +26,8 @@ var TreeView = Classe(BaseElement, {
     _nodePartial: partial(require("./treeViewNode.hbs")),
 
     display: function(tree) {
-        for(var id in this._$nodes) {
+        var id;
+        for(id in this._$nodes) {
             if(this._$nodes.hasOwnProperty(id) && id !== "tree-view-node-root") {
                 this._$nodes[id].used = false;
             }
@@ -35,7 +36,7 @@ var TreeView = Classe(BaseElement, {
         this._displayNode(this.$element, tree, "root", []);
 
         var uncache = [];
-        for(var id in this._$nodes) {
+        for(id in this._$nodes) {
             if(this._$nodes.hasOwnProperty(id) && id !== "tree-view-node-root") {
                 var $node = this._$nodes[id];
                 if(!$node.used) {
@@ -46,7 +47,7 @@ var TreeView = Classe(BaseElement, {
         }
 
         for(var i = 0; i < uncache.length; i++) {
-            var id = uncache[i];
+            id = uncache[i];
             delete this._$nodes[id];
         }
     },

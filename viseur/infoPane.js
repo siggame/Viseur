@@ -36,11 +36,12 @@ var InfoPane = Classe(BaseElement, Observable, {
         });
 
         var tabularTabs = [];
-        for(var i = 0; i < tabs.length; i++) {
+        var i;
+        for(i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             tabularTabs.push({
                 title: tab.title,
-                content: new tab.classe({id: tab.title + "-tab"}),
+                content: this._initTab(tab),
             });
         }
 
@@ -53,6 +54,19 @@ var InfoPane = Classe(BaseElement, Observable, {
 
     _template: require("./infoPane.hbs"),
     _minLength: 200,
+
+    _initTab: function(tabData) {
+        var newTab = new tabData.classe({id: tabData.title + "-tab"});
+
+        if(tabData.title === "Inspect") {
+            var self = this;
+            newTab.on("highlighted", function() {
+                self.tabular.setTab(tabData.title);
+            });
+        }
+
+        return newTab;
+    },
 
     resize: function(newLength) {
         this.$element.addClass("resizing");

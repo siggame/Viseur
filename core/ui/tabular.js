@@ -8,7 +8,7 @@ var BaseElement = require("./baseElement");
 /**
  * @class Tabular - a block of content accessed via Tabs
  */
-var Tabular = new Classe(BaseElement, {
+var Tabular = Classe(BaseElement, {
     init: function(args) {
         BaseElement.init.apply(this, arguments);
 
@@ -51,11 +51,15 @@ var Tabular = new Classe(BaseElement, {
         }
 
         if(typeof(activeTab) === "string") {
-            activeTab = this._findTab(title);
+            activeTab = this._findTab(activeTab);
         }
 
         if(!this.activeTab) {
             activeTab.$content.addClass("active");
+        }
+
+        if(activeTab === this.activeTab) {
+            return; // as it's already the active tab
         }
 
         this.activeTab = activeTab;
@@ -72,22 +76,7 @@ var Tabular = new Classe(BaseElement, {
 
             if(tab !== activeTab) {
                 if(wasActive) { // fade it out, then fade in the active tab
-                    self._fading = true;
-                    (function($content, self) {
-                        $content
-                            .removeClass("active")
-                            .one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function() { // once the transition ends
-                                $content.addClass("hidden");
-
-                                self.activeTab.$content
-                                    .removeClass("hidden");
-                                    setTimeout(function() {
-                                        self.activeTab.$content.addClass("active");
-                                        self._fading = false;
-                                    }, 1);
-                                    //.addClass("active");
-                            });
-                    }(tab.$content, this));
+                    this._fadeTab(tab);
                 }
                 else {
                     tab.$content
@@ -96,6 +85,22 @@ var Tabular = new Classe(BaseElement, {
                 }
             }
         }
+    },
+
+    _fadeTab: function(tab) {
+        this._fading = true;
+        var self = this;
+        tab.$content.removeClass("active").onceTransitionEnds(function() {
+            tab.$content.addClass("hidden");
+
+            self.activeTab.$content
+                .removeClass("hidden");
+                setTimeout(function() {
+                    self.activeTab.$content.addClass("active");
+                    self._fading = false;
+                }, 1);
+                //.addClass("active");
+        });
     },
 
     /**
