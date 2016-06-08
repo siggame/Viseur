@@ -74,8 +74,6 @@ var Viseur = Classe(Observable, {
         this._rawGamelog = gamelog;
         this._parser = new Parser(gamelog.constants);
 
-        this._initGame(gamelog.gameName);
-
         this._emit("gamelog-loaded", gamelog);
 
         this._mergedDelta = {
@@ -84,6 +82,8 @@ var Viseur = Classe(Observable, {
             nextState: this._parser.mergeDelta({}, gamelog.deltas[0].game),
         };
         this._updateCurrentState(0, 0);
+
+        this._initGame(gamelog.gameName);
     },
 
     _updateCurrentState: function(index) {
@@ -152,7 +152,7 @@ var Viseur = Classe(Observable, {
             throw new Error("Cannot load data for game '{}'.".format(gameClass));
         }
 
-        this.game = new gameNamespace.Game(this._rawGamelog);
+        this.game = new gameNamespace.Game(this._currentState.game, this._rawGamelog);
 
         var textures = {};
 

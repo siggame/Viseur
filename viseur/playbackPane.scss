@@ -35,6 +35,7 @@
     height: 4em;
     padding: 1em;
     background: $white;
+    @include collapsable;
 
     & button {
         border: none;

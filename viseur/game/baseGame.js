@@ -4,16 +4,18 @@ var Observable = require("core/observable");
 var Viseur = null;
 
 var BaseGame = Classe(Observable, {
-    init: function(gamelog) {
+    init: function(initialState, gamelog) {
         Observable.init.call(this);
         Viseur = require("viseur/"); // require here to avoid cycles
+
+        this.pane = new this.namespace.Pane(this, initialState);
         this.renderer = Viseur.renderer;
         this.gameObjects = {};
         this.random = new Math.seedrandom(gamelog.randomSeed);
 
         var self = this;
         Viseur.on("ready", function(game, gamelog) {
-            self.start();
+            self.start(initialState);
         });
 
         Viseur.on("state-changed", function(state) {
@@ -24,12 +26,6 @@ var BaseGame = Classe(Observable, {
     },
 
     _gamelogLoaded: function() {},
-
-    _checkToStart: function() {
-        if(this._isGamelogLoaded && this._areTexturesLoaded) {
-            this.start();
-        }
-    },
 
     start: function() {
         this._started = true;
@@ -59,7 +55,7 @@ var BaseGame = Classe(Observable, {
         for(var id in this.gameObjects) {
             if(this.gameObjects.hasOwnProperty(id)) {
                 var gameObject = this.gameObjects[id];
-                if(gameObject.render) {
+                if(gameObject.render) { // game objects can set their render function to 'false' if it should not be rendered
                     gameObject.render(dt);
                 }
             }
@@ -70,6 +66,9 @@ var BaseGame = Classe(Observable, {
         if(!this._started) {
             return;
         }
+
+        this.current = state.game;
+        this.next = state.nextGame;
 
         var stateGameObjects = state.game.gameObjects;
         if(state.nextGame) {
@@ -91,6 +90,8 @@ var BaseGame = Classe(Observable, {
                 this.gameObjects[id].update(currentGameObject, nextGameObject);
             }
         }
+
+        this.pane.update(state);
     },
 
     _initGameObject: function(id, state) {

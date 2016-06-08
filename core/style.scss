@@ -1,5 +1,6 @@
 @import "./mixins";
 @import "./fonts";
+@import "./colors";
 
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
 @import url(http://fonts.googleapis.com/css?family=Inconsolata:400,700);
@@ -17,6 +18,16 @@ html, body {
 
 code, pre {
     @extend .font-monospace;
+}
+
+a, .link {
+    color: $primary-dark;
+    text-decoration: underline;
+}
+
+a:hover, a:focus, .link:hover, .link:focus {
+    color: $secondary-dark;
+    cursor: pointer;
 }
 
 @import "./range";

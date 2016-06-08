@@ -28,6 +28,8 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         args.id = args.id || "playback-pane";
         BaseElement.init.apply(this, arguments);
 
+        this.$element.addClass("collapsed");
+
         this.$playbackTimeCurrent = this.$element.find(".playback-time-current");
         this.$playbackTimeMax = this.$element.find(".playback-time-max");
 
@@ -123,6 +125,8 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         this.playbackSlider.setMax(gamelog.deltas.length - 1/1e10);
 
         this.$playbackTimeMax.html(gamelog.deltas.length - 1);
+
+        this.$element.removeClass("collapsed");
     },
 
     _timeUpdated: function(index, dt) {

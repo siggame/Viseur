@@ -16,6 +16,9 @@ var Game = Classe(BaseGame, {
         this._blackTopColor = this._blackColor.clone().lighten(0.15);
     },
 
+    name: "Chess",
+    _textColor: Color().rgb(222, 222, 222),
+    _tileBorderLength: 0.9,
     _borderLength: 0.5,
 
     start: function() {
@@ -24,10 +27,6 @@ var Game = Classe(BaseGame, {
         var length = 8 + this._borderLength*2;
         this.renderer.setSize(length, length);
     },
-
-    name: "Chess",
-    _textColor: Color().rgb(222, 222, 222),
-    _tileBorderLength: 0.9,
 
     renderBackground: function() {
         var layer = this.layers.background;

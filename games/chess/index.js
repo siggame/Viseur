@@ -2,6 +2,7 @@ require("./style.scss");
 
 namespace = {
     Game: require("./game"),
+    Pane: require("./pane"),
     textures: require("./textures/"),
     settings: require("./settings"),
 };

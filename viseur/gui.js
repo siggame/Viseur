@@ -26,7 +26,7 @@ var GUI = Classe(Observable, BaseElement, {
             gui: this,
         });
 
-        this.$gameplayWrapper = this.$element.find(".gameplay-wrapper");
+        this.$gamePaneWrapper = this.$element.find(".game-pane-wrapper");
 
         this.$playbackWrapper = this.$element.find(".playback-pane-wrapper");
         this.playbackPane = new PlaybackPane({
@@ -38,7 +38,8 @@ var GUI = Classe(Observable, BaseElement, {
         });
 
         this.$rendererWrapper = this.$element.find(".renderer-wrapper");
-        this.$visualizerWrapper = this.$element.find(".visualizer-pane-wrapper");
+        this.$visualizerWrapper = this.$element.find(".visualizer-wrapper");
+        this.$visualizerPaneWrapper = this.$element.find(".visualizer-pane-wrapper");
 
         this.proxy(this.playbackPane);
 
@@ -50,6 +51,9 @@ var GUI = Classe(Observable, BaseElement, {
         var self = this;
         Viseur.on("gamelog-loaded", function(gamelog) {
             self.$element.addClass("gamelog-loaded");
+            setTimeout(function() { // HACK: resize after all transitions finish, because we can't know for sure when the browser will finish css transitions in what order
+                self.resize();
+            }, 350); // after all transitions end
         });
 
         this.infoPane.on("resized", function(width, height) {
@@ -97,15 +101,30 @@ var GUI = Classe(Observable, BaseElement, {
             }
         }
 
-        this.$visualizerWrapper
+        this.$visualizerPaneWrapper
             .css("width", newWidth)
             .css("height", newHeight)
             .css("top", newTop)
             .css("left", newLeft);
 
-        var remainingHeight = newHeight - this.$gameplayWrapper.height() - this.$playbackWrapper.height();
+        var playbackHeight = (parseInt(this.$playbackWrapper.css("height")) || 0);
+        var remainingHeight = newHeight - playbackHeight;
+        var remainingWidth = newWidth;
+
+        this.$visualizerWrapper
+            .width(remainingWidth)
+            .height(remainingHeight);
+
+        var gamePaneHeight = 0;
+
+        if(Viseur.game) {
+            gamePaneHeight = Viseur.game.pane.$element.outerHeight();//(parseInt(this.$gamePaneWrapper.css("height")) || 0);
+        }
+
+        remainingHeight -= gamePaneHeight;
+
         this.$rendererWrapper
-            .width(newWidth)
+            .width(remainingWidth)
             .height(remainingHeight);
 
         this._emit("resized", newWidth, newHeight, remainingHeight);

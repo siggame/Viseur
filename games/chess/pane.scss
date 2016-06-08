@@ -1,0 +1,16 @@
+@import "core/colors";
+
+.game-pane {
+    & .player-wrapper:nth-child(1) .player {
+        background: #FFF !important;
+    }
+
+    & .player-wrapper:nth-child(2) .player {
+        background: #000 !important;
+        color: #FFF !important;
+
+        & .player-time {
+            color: $light-gray !important;
+        }
+    }
+}

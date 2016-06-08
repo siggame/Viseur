@@ -36,14 +36,19 @@
         height: 100%;
     }
 
-    & .playback-pane-wrapper {
+    & .visualizer-wrapper {
         position: absolute;
-        bottom: 0;
+    }
+
+    & .playback-pane-wrapper, & .game-pane-wrapper {
+        position: absolute;
         left: 0;
+        bottom: 0;
         width: 100%;
     }
 
     & .renderer-wrapper {
         background-color: #000;
+        position: absolute;
     }
 }

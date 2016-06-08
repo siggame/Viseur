@@ -1,7 +1,10 @@
-var $ = require("jquery");
+require("./fileTab.scss");
+
+var filesaverjs = require("filesaverjs");
 var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
 var inputs = require("core/ui/inputs/");
+var Viseur = require("viseur/");
 
 /**
  * @class FileTab - The "File" tab on the InfoPane
@@ -10,7 +13,7 @@ var FileTab = Classe(BaseElement, {
     init: function(args) {
         BaseElement.init.apply(this, arguments);
 
-        this.$localGamelogWrapper = $(".local-gamelog", this.$element);
+        this.$localGamelogWrapper = this.$element.find(".local-gamelog");
 
         this.gamelogInput = new inputs.File({
             id: "local-gamelog-input",
@@ -18,7 +21,7 @@ var FileTab = Classe(BaseElement, {
         });
 
 
-        this.$remoteGamelogWrapper = $(".remote-gamelog", this.$element);
+        this.$remoteGamelogWrapper = this.$element.find(".remote-gamelog");
 
         this.remoteGamelogTypeInput = new inputs.DropDown({
             id: "remote-gamelog-type",
@@ -65,6 +68,18 @@ var FileTab = Classe(BaseElement, {
 
         this.remoteGamelogTypeInput.setValue("Spectate");
         this._onRemoteGamelogTypeChange("Spectate");
+
+        this.$gamelogDownloadSection = this.$element.find(".download-gamelog")
+            .addClass("collapsed");
+        this.$gamelogDownloadLink = this.$element.find(".download-gamelog-link");
+
+        Viseur.on("gamelog-loaded", function(gamelog, remote) {
+            self.$gamelogDownloadLink.on("click", function() {
+                var blob = new Blob([JSON.stringify(gamelog)], {type: "application/json;charset=utf-8"});
+                filesaverjs.saveAs(blob, "gamelog.json");
+            });
+            self.$gamelogDownloadSection.removeClass("collapsed");
+        });
     },
 
     _template: require("./fileTab.hbs"),

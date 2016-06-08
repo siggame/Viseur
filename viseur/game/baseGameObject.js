@@ -7,6 +7,8 @@ var BaseGameObject = Classe(Observable, {
     init: function(initialState, game) {
         Observable.init.call(this);
         this.id = initialState.id;
+        this.gameObjectName = initialState.gameObjectName;
+
         this.game = game;
         this.renderer = game.renderer;
     },
