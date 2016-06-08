@@ -2,10 +2,6 @@
 @import "core/style";
 
 .file-tab {
-    & > section {
-        @include collapsable;
-    }
-
     & .download-gamelog-link {
         @extend .link;
     }

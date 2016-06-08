@@ -78,6 +78,8 @@ var FileTab = Classe(BaseElement, {
                 var blob = new Blob([JSON.stringify(gamelog)], {type: "application/json;charset=utf-8"});
                 filesaverjs.saveAs(blob, "gamelog.json");
             });
+            self.$localGamelogWrapper.addClass("collapsed");
+            self.$remoteGamelogWrapper.addClass("collapsed");
             self.$gamelogDownloadSection.removeClass("collapsed");
         });
     },
