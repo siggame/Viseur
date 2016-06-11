@@ -12,14 +12,8 @@ var BasePane = Classe(BaseElement, {
 
         var playerIDs = [];
 
-        for(var id in initialState.gameObjects) {
-            if(initialState.gameObjects.hasOwnProperty(id)) {
-                var gameObject = initialState.gameObjects[id];
-
-                if(gameObject.gameObjectName === "Player") {
-                    playerIDs.push(gameObject.id);
-                }
-            }
+        for(var i = 0; i < initialState.players.length; i++) {
+            playerIDs.push(initialState.players[i].id);
         }
 
         this.game = game;
@@ -31,7 +25,7 @@ var BasePane = Classe(BaseElement, {
 
         var $players = this.$element.find(".player");
         this._$players = {};
-        for(var i = 0; i < $players.length; i++) {
+        for(i = 0; i < $players.length; i++) {
             var $player = $($players[i]);
 
             this._$players[playerIDs[i]] = {

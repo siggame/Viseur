@@ -39,9 +39,9 @@ var Renderer = Classe(Observable, BaseElement, {
                 self._onParentResized(self.$element.width(), self.$element.height());
             });
 
-        PIXI.requestAnimationFrame(animate);
+        window.requestAnimationFrame(animate);
         function animate() {
-            PIXI.requestAnimationFrame( animate );
+            window.requestAnimationFrame(animate);
 
             self._emit("rendering");
 

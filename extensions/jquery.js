@@ -53,4 +53,4 @@ jQuery.exitFullscreen = function() {
     }
 };
 
-document.$ = jQuery;
+window.$ = jQuery;
