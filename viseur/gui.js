@@ -76,10 +76,20 @@ var GUI = Classe(Observable, BaseElement, {
     _template: require("./gui.hbs"),
     _loadingPartial: partial(require("./loadingMessage.hbs")),
 
+    /**
+     * Resizes the GUI, invoked when the window is resized
+     */
     resize: function() {
         this.infoPane.resize();
     },
 
+    /**
+     * Resizes the visualization's wrapper
+     *
+     * @private
+     * @param {number} width - width taken away from the info pane
+     * @param {number} height - height taken away from the info pane
+     */
     _resizeVisualizer: function(width, height) {
         var newWidth = this.$element.width();
         var newHeight = this.$element.height();
@@ -130,22 +140,45 @@ var GUI = Classe(Observable, BaseElement, {
         this._emit("resized", newWidth, newHeight, remainingHeight);
     },
 
+
+
+    // Modal stuff
+
+    /**
+     * Displays a message in the modal
+     *
+     * @param {string} message to display
+     */
     modalMessage: function(message) {
         this.modal.show(this._loadingPartial({
             message: message
         }));
     },
 
+    /**
+     * Displays a message to the user, but as an error
+     *
+     * @param {string} message to display
+     */
     modalError: function(message) {
         this.modal.show(this._loadingPartial({
             message: message,
         }).addClass("error"));
     },
 
+    /**
+     * Hides the modal
+     */
     hideModal: function() {
         this.modal.hide();
     },
 
+
+    // Fullscreen
+
+    /**
+     * Makes the GUI, which is all the DOM stuff for the Viseur, go fulscreen
+     */
     goFullscreen: function() {
         this.$element
             .addClass("fullscreen")
@@ -161,6 +194,9 @@ var GUI = Classe(Observable, BaseElement, {
         });
     },
 
+    /**
+     * Makes the GUI exit fullscreen
+     */
     exitFullscreen: function() {
         this.$element.removeClass("fullscreen");
 
@@ -175,9 +211,14 @@ var GUI = Classe(Observable, BaseElement, {
         this._isFullscreen = false;
     },
 
+    /**
+     * Checks if the GUI is fullscreened
+     *
+     * @returns {boolean} true if fullscreened, false otherwise
+     */
     isFullscreen: function() {
-        return this._isFullscreen;
-    }
+        return Boolean(this._isFullscreen);
+    },
 });
 
 module.exports = GUI;

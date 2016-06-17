@@ -21,14 +21,14 @@ var Game = Classe(BaseGame, {
     _tileBorderLength: 0.9,
     _borderLength: 0.5,
 
-    start: function() {
-        BaseGame.start.call(this);
+    _start: function() {
+        BaseGame._start.call(this);
 
         var length = 8 + this._borderLength*2;
         this.renderer.setSize(length, length);
     },
 
-    renderBackground: function() {
+    _renderBackground: function() {
         var layer = this.layers.background;
         // render the background, which displays the file/rank
         var length = 8 + this._borderLength*2;

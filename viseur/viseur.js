@@ -49,6 +49,11 @@ var Viseur = Classe(Observable, {
 
     _games: require("games/"),
 
+    /**
+     * parses URL parameters and does whatever they do, ingores unknown url parms.
+     *
+     * @private
+     */
     _parseURL: function() {
         this.urlParms = queryString.parse(location.search);
 
@@ -70,7 +75,13 @@ var Viseur = Classe(Observable, {
         }
     },
 
-    _gamelogLoaded: function(gamelog, callback) {
+    /**
+     * Called once a gamelog is loaded
+     *
+     * @private
+     * @param {Object} the deserialized JSON object that is the FULL gamelog
+     */
+    _gamelogLoaded: function(gamelog) {
         this._rawGamelog = gamelog;
         this._parser = new Parser(gamelog.constants);
 
@@ -86,6 +97,11 @@ var Viseur = Classe(Observable, {
         this._initGame(gamelog.gameName);
     },
 
+    /**
+     * Brings the current state & next state to the one at the specificed index. If the current and passed in indexes are far apart this operation can take a decent chunk of time...
+     *
+     * @param {number} index - the new states index, must be between [0, deltas.length]
+     */
     _updateCurrentState: function(index) {
         var d = this._mergedDelta;
         var deltas = this._rawGamelog.deltas;
@@ -141,10 +157,20 @@ var Viseur = Classe(Observable, {
         }
     },
 
+    /**
+     * Returns the current state of the game
+     *
+     * @returns {Object} the current state, which is a custom object containing the current `game` state and the `nextGame` state.
+     */
     getCurrentState: function() {
         return this._currentState;
     },
 
+    /**
+     * Initializes the Game object for the specified gameName. The class created will be the one in /games/{gameName}/game.js
+     *
+     * @param {string} gameName - name of the game to initialize. Must be a valid game name, or throwns an error
+     */
     _initGame: function(gameName) {
         var gameNamespace = this._games[gameName];
 
@@ -167,6 +193,11 @@ var Viseur = Classe(Observable, {
         });
     },
 
+    /**
+     * Called when Viseur thinks it is ready, meaning the renderer has downloaded all assets, the gamelog is loaded, and the game class as been initalized.
+     *
+     * @private
+     */
     _ready: function() {
         this.gui.hideModal();
         this._emit("ready", this.game, this._rawGamelog);

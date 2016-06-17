@@ -1,3 +1,5 @@
+// these are keycodes, that code for keyCodes to human readable strings
+
 module.exports = {
     "8": "backspace",
     "9": "tab",

@@ -3,6 +3,9 @@ var PIXI = require("pixi.js");
 var Observable = require("core/observable");
 var Viseur = null;
 
+/**
+ * @class BaseGame - the base class all games in the games/ folder inherit from
+ */
 var BaseGame = Classe(Observable, {
     init: function(initialState, gamelog) {
         Observable.init.call(this);
@@ -15,7 +18,7 @@ var BaseGame = Classe(Observable, {
 
         var self = this;
         Viseur.on("ready", function(game, gamelog) {
-            self.start(initialState);
+            self._start(initialState);
         });
 
         Viseur.on("state-changed", function(state) {
@@ -25,16 +28,24 @@ var BaseGame = Classe(Observable, {
         this._initLayers();
     },
 
-    _gamelogLoaded: function() {},
-
-    start: function() {
+    /**
+     * starts the game, basically like init, but after other stuff is ready (like loading textures).
+     *
+     * @private
+     */
+    _start: function() {
         this._started = true;
-        this.renderBackground();
+        this._renderBackground();
 
         this._updateState(Viseur.getCurrentState());
     },
 
-    renderBackground: function() {},
+    /**
+     * renders the static background
+     *
+     * @private
+     */
+    _renderBackground: function() {},
 
     _layerNames: [
         "background",
@@ -42,6 +53,11 @@ var BaseGame = Classe(Observable, {
         "ui"
     ],
 
+    /**
+     * Initializes layers based on _layerNames
+     *
+     * @private
+     */
     _initLayers: function() {
         this.layers = {};
         for(var i = 0; i < this._layerNames.length; i++) {
@@ -51,6 +67,9 @@ var BaseGame = Classe(Observable, {
         }
     },
 
+    /**
+     * Called at approx 60/sec to render the game, and all the game objects within it
+     */
     render: function(index, dt) {
         for(var id in this.gameObjects) {
             if(this.gameObjects.hasOwnProperty(id)) {
@@ -62,6 +81,12 @@ var BaseGame = Classe(Observable, {
         }
     },
 
+    /**
+     * Invoked when the game state updates, checking if game objects should be created that we have no seen before
+     *
+     * @private
+     * @param {Object} state - the current state
+     */
     _updateState: function(state) {
         if(!this._started) {
             return;
@@ -94,6 +119,11 @@ var BaseGame = Classe(Observable, {
         this.pane.update(state);
     },
 
+    /**
+     * initializes a new game object with the given id
+     * @param   {string} id    the id of the game object to initialize
+     * @param   {Object} state the initial state of the new game object
+     */
     _initGameObject: function(id, state) {
         var newGameObject = new this._gameObjectClasses[state.gameObjectName](state, this);
 
@@ -105,6 +135,10 @@ var BaseGame = Classe(Observable, {
         this.gameObjects[id] = newGameObject;
     },
 
+    /**
+     * highlights some game object given the id
+     * @param   {string} gameObjectID the id of the game object to highlight
+     */
     highlight: function(gameObjectID) {
         var gameObject = this.gameObjects[gameObjectID];
 

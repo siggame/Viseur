@@ -8,7 +8,7 @@ var SettingsManager = require("./settingsManager");
 var inputs = require("core/ui/inputs");
 var Tabular = require("core/ui/tabular");
 var tabs = require("./tabs/");
-var $document = $(document);
+var $document = $(document); // cache it
 
 /**
  * @class InfoPane - The dockable pane that has tabs and info about the Visualizer
@@ -53,8 +53,14 @@ var InfoPane = Classe(BaseElement, Observable, {
     },
 
     _template: require("./infoPane.hbs"),
-    _minLength: 200,
+    _minLength: 200, // in pixels
 
+    /**
+     * Initializes a tab, from some tab data in ./tabs/
+     *
+     * @param {Object} tabData - data on what the tab is, see examples in ./tabs/
+     * @returns {*} the constructed tab classe as per defined in `tabData`
+     */
     _initTab: function(tabData) {
         var newTab = new tabData.classe({id: tabData.title + "-tab"});
 
@@ -68,6 +74,11 @@ var InfoPane = Classe(BaseElement, Observable, {
         return newTab;
     },
 
+    /**
+     * Resizes the info pane based on position and length
+     *
+     * @param {number} [newLength] - the new length (in pixels) of this info pane. If omitted the old length is used. cannot be less than _minLength
+     */
     resize: function(newLength) {
         this.$element.addClass("resizing");
         if(newLength) {
@@ -98,7 +109,13 @@ var InfoPane = Classe(BaseElement, Observable, {
         this.$element.removeClass("resizing");
     },
 
-    _sides: ["top", "left", "bottom", "right"],
+    _sides: ["top", "left", "bottom", "right"], // all possible sides
+
+    /**
+     * Snaps to a new side of the screen
+     *
+     * @param {string} side - the side to snap to, must be 'top', 'left', 'bottom', or 'right'
+     */
     snapTo: function(side) {
         side = side.toLowerCase();
         if(!this._sides.contains(side)) {
@@ -123,6 +140,11 @@ var InfoPane = Classe(BaseElement, Observable, {
         this.resize();
     },
 
+    /**
+     * Invoked when the user is dragging to resize this
+     *
+     * @private
+     */
     _onResize: function(downEvent) {
         var x = downEvent.pageX;
         var y = downEvent.pageY;
@@ -130,7 +152,7 @@ var InfoPane = Classe(BaseElement, Observable, {
         var height = this.$element.height();
 
         var self = this;
-        $document
+        $document // cached at the top of this file
             .on("mousemove", function(moveEvent) {
                 self._emit("resize-start");
                 var oldX = x;

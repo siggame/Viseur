@@ -20,10 +20,18 @@ var Button = Classe(BaseInput, {
 
     _template: require("./button.hbs"),
 
+    /**
+     * Sets the text on this button
+     *
+     * @param {string} str - the text to display on the button
+     */
     setText: function(str) {
         this.$element.html(str);
     },
 
+    /**
+     * Emit a click
+     */
     click: function() {
         this._emit("click");
     },

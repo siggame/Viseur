@@ -1,11 +1,21 @@
 var Classe = require("classe");
 var utils = require("core/utils");
 
+/**
+ * @class Parser - parses delta updates, and creates reverse deltas for gamelogs/cadre communications
+ */
 var Parser = Classe({
     init: function(constants) {
         this.constants = constants;
     },
 
+    /**
+     * merges delta information from a `delta` onto a `state`
+     *
+     * @param {Object} state - the state to merge `delta` onto
+     * @param {Object} delta - the delta formatted information of how to update `state`
+     * @returns {Object} state, now delta merged
+     */
     mergeDelta: function(state, delta) {
         var deltaLength = delta[this.constants.DELTA_LIST_LENGTH];
 

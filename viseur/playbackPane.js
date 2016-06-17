@@ -117,6 +117,11 @@ var PlaybackPane = Classe(Observable, BaseElement, {
 
     _template: require("./playbackPane.hbs"),
 
+    /**
+     * Invoked when Viseur's gamelog is loaded
+     *
+     * @private
+     */
     _gamelogLoaded: function(gamelog) {
         this._numberOfDeltas = gamelog.deltas.length;
 
@@ -129,6 +134,11 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         this.$element.removeClass("collapsed");
     },
 
+    /**
+     * Invoked when the TimeManager's time changes, so we can update the slider and buttons
+     *
+     * @private
+     */
     _timeUpdated: function(index, dt) {
         this.$playbackTimeCurrent.html(index);
         this.playbackSlider.setValue(index + dt);
@@ -148,33 +158,67 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         }
     },
 
+    // NOTE: the speed slider does not slide linearly. Instead we follow y = 100x^2, with x being the slider's value, and y being the actual speed
+
+    /**
+     * Converts from the speed slider's value to the actual speed for the TimeManager
+     *
+     * @private
+     * @param {number} x - the sliders current value
+     * @returns {number} y - the TimeMangers speed based on the slider value x
+     */
     _speedFromSlider: function(x) {
         var y = 100 * Math.pow(x, 2);
         return y;
     },
 
+    /**
+     * Converts from the speed of the TimeManager to the slider's value (reverse of y)
+     *
+     * @private
+     * @param {number} y - the speed of the TimeManager
+     * @returns {number} x - the speedSlider's value to represent y
+     */
     _sliderFromSpeed: function(y) {
        var x = Math.sqrt(y/100);
        return x;
     },
 
+    /**
+     * Invoked when the speedSlider is dragged/changed.
+     *
+     * @private
+     * @param {number} value - the new value of the playback slider, so we can set the speed based on that
+     */
     _changePlaybackSpeed: function(value) {
         var newSpeed = this._speedFromSlider(-value);
 
         SettingsManager.set("viseur", "playback-speed", newSpeed);
     },
 
+    /**
+     * Invoked when the playback-speed setting is changed, so we can update the slider
+     *
+     * @private
+     * @param {number} value - the new speed value set to the SettingManager, we will update the speedSLider according to it
+     */
     _updateSpeedSlider: function(value) {
         sliderValue = this._sliderFromSpeed(value || SettingsManager.get("viseur", "playback-speed"));
         this.speedSlider.setValue(-sliderValue);
     },
 
+    /**
+     * Enables all the inputs
+     */
     enable: function() {
         for(var i = 0 ; i < this.inputs.length; i++) {
             this.inputs[i].enable();
         }
     },
 
+    /**
+     * Disables all the inputs
+     */
     disable: function() {
         for(var i = 0 ; i < this.inputs.length; i++) {
             this.inputs[i].disable();

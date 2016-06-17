@@ -8,6 +8,9 @@ var BaseElement = require("core/ui/baseElement");
 var Observable = require("core/observable");
 var SettingsManager = require("viseur/settingsManager");
 
+/**
+ * @class Renderer - Singleton that hanles rendering (visualizing) the game
+ */
 var Renderer = Classe(Observable, BaseElement, {
     init: function(args) {
         args = $.extend({
@@ -51,6 +54,12 @@ var Renderer = Classe(Observable, BaseElement, {
 
     _template: require("./renderer.hbs"),
 
+    /**
+     * loads textures into PIXI
+     *
+     * @param {Object} key object pairs with the key being the id of the texture and the value being the texture's path
+     * @param {function} callback - callback function to invoke once all functions are loaded
+     */
     loadTextures: function(textures, callback) {
         var loader = PIXI.loader;
 
@@ -69,6 +78,12 @@ var Renderer = Classe(Observable, BaseElement, {
         });
     },
 
+    /**
+     * Sets the size of the Renderer, not in pixels but some abstract size. Basically the size of the map. So for example in chess it would be 8x8, and the actual size in pixels will be calculated by the Renderer, regardless of screen size
+     *
+     * @param {number} width - width of the renderer
+     * @param {number} height - height of the renderer
+     */
     setSize: function(width, height) {
         this._width = Math.abs(width || 1);
         this._height = Math.abs(height || 1);
@@ -78,6 +93,12 @@ var Renderer = Classe(Observable, BaseElement, {
         //https://www.snip2code.com/Snippet/83438/A-base-implementation-of-properly-handli
     },
 
+    /**
+     * Resizes the render to fit its container, or resize to fit a new size
+     *
+     * @param {number} [mxMaxWidth] - the max width in px the renderer can fill, defaults to the last stored mxMaxWidth
+     * @param {number} [mxMaxHeight] - the max height in px the renderer can fill, defaults to the last stored mxMaxHeight
+     */
     resize: function(pxMaxWidth, pxMaxHeight) {
         if(arguments.length === 0) {
             pxMaxWidth = this._pxMaxWidth;
@@ -121,6 +142,15 @@ var Renderer = Classe(Observable, BaseElement, {
         this.rootContainer.scale.set(this._scaledX, this._scaledY);
     },
 
+    /**
+     * Creates and initializes a sprite for a texture with given options
+     *
+     * @param {string} textureKey - the key for the texture to load on this sprite
+     * @param {PIXI.Container} parentContainer - the parent container for the sprite
+     * @param {number} [width=1] - the width of the sprite
+     * @param {number} [height=1] - the height of the sprite
+     * @returns {PIXI.Sprite} a sprite with the given texture key, added to the parentContainer
+     */
     newSprite: function(textureKey, parentContainer, width, height) {
         width = Math.abs(Number(width) || 1);
         height = Math.abs(Number(height) || 1);
@@ -142,7 +172,16 @@ var Renderer = Classe(Observable, BaseElement, {
         return sprite;
     },
 
-    _defaultFontFamily: $("body").css("font-family").split(",")[0] || "Arial",
+    _defaultFontFamily: $("body").css("font-family").split(",")[0] || "Arial", // default font family, in css format. This gets the font family from the document
+
+    /**
+     * Creates a new Pixi.Text object in the Renderer. This will use DPI scaling based on screen resolution for crisp text
+     *
+     * @param {string} text - the text
+     * @param {PIXI.Container} parent - the parent container for the new text
+     * @param {Object} [options] - options to send to the PIXI.Text initialization
+     * @returns {PIXI.Text} the newly created text
+     */
     newPixiText: function(text, parent, options) {
         options = $.extend({
             fontFamily: this._defaultFontFamily,

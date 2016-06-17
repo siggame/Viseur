@@ -35,6 +35,11 @@ var SettingsTab = Classe(BaseElement, {
 
     _template: require("./settingsTab.hbs"),
 
+    /**
+     * Initalizes the settings for a game, invoked when Viseur is ready so it has a game created to load settings from
+     *
+     * @private
+     */
     _initSettings: function(namespace, settings, $parent) {
         if(settings.length === 0) {
             $parent.append($("<span>")
@@ -64,6 +69,14 @@ var SettingsTab = Classe(BaseElement, {
         }
     },
 
+    /**
+     * sets up a new input for a corresponding setting at namespace.id to observer for changes between to two
+     *
+     * @private
+     * @param {BaseInput} input - the input that respendts this setting
+     * @param {string} namespace - the first part of the setting's id
+     * @param {string} id - the key for the setting
+     */
     _setupInput: function(input, namespace, id) {
         input.on("changed", function(newValue) {
             SettingsManager.set(namespace, id, newValue);

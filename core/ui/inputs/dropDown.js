@@ -28,6 +28,9 @@ var DropDown = Classe(BaseInput, {
     _template: require("./dropDown.hbs"),
     _optionPartial: partial(require("./dropDownOption.hbs")),
 
+    /**
+     * @override
+     */
     setValue: function(newValue) {
         for(var i = 0; i < this._options.length; i++) {
             if(this._options[i].value === newValue) {

@@ -1,3 +1,5 @@
+// if the require() this directory, give them all the inputs!
+
 module.exports = {
     CheckBox: require("./checkBox"),
     Field: require("./field"),

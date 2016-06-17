@@ -1,3 +1,4 @@
+// these are all the tabs for the InfoPane, in order
 module.exports = [
     {
         title: "File",

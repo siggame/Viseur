@@ -1,5 +1,8 @@
+// Settings for Viseur
+
 var SettingsManager = require("./settingsManager");
 
+// hackish, but no idea where-else to put this
 var onResolutionChanged = function(input) {
     SettingsManager.on("viseur.resolution-type.changed", function(newValue) {
         input.field.$element.toggleClass("collapsed", newValue !== "Manual");

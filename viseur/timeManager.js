@@ -29,6 +29,11 @@ var TimeManager = Classe(Observable, {
         });
     },
 
+    /**
+     * Invoked when Viseur is ready
+     *
+     * @private
+     */
     _ready: function(game, gamelog) {
         var self = this;
         this.game = game;
@@ -55,6 +60,12 @@ var TimeManager = Classe(Observable, {
         });
     },
 
+    /**
+     * Sets the current time to some index and dt
+     *
+     * @param {number} index - the current index, must be between [0, deltas.length]
+     * @param {number} dt - the "tweening" between index and index + 1, must be between [0, 1)
+     */
     setTime: function(index, dt) {
         var oldIndex = this._currentIndex;
         this._currentIndex = index;
@@ -65,6 +76,11 @@ var TimeManager = Classe(Observable, {
         }
     },
 
+    /**
+     * if playing pause, if paused start playing
+     *
+     * @private
+     */
     _playPause: function() {
         if(!this._timer.isTicking() && this._currentIndex === this._numberOfDeltas - 1 && this._timer.getProgress() > 0.99) { // wrap around
             this.setTime(0, 0);
@@ -74,6 +90,11 @@ var TimeManager = Classe(Observable, {
         this._emit(paused ? "paused" : "playing");
     },
 
+    /**
+     * Invoked when the timer ticks, advacing the index by 1, and resetting dt to 0
+     *
+     * @private
+     */
     _ticked: function(start) {
         this._currentIndex++;
 
@@ -87,6 +108,11 @@ var TimeManager = Classe(Observable, {
         }
     },
 
+    /**
+     * Returns the current time. Calling this does not effect the timer.
+     *
+     * @returns {Object} contains the current `index` and `dt`.
+     */
     getCurrentTime: function() {
         return {
             index: this._currentIndex,
@@ -94,6 +120,11 @@ var TimeManager = Classe(Observable, {
         };
     },
 
+    /**
+     * Sets the timer back. If playing pauses and reduces dt to 0, otherwise advances 1 index.
+     *
+     * @private
+     */
     _back: function() {
         var index = this._currentIndex;
         if(this._timer.getProgress() === 0) {
@@ -103,6 +134,11 @@ var TimeManager = Classe(Observable, {
         this._pause(index, 0);
     },
 
+    /**
+     * Advances to the next index, and pauses the timer.
+     *
+     * @private
+     */
     _next: function() {
         var index = this._currentIndex;
         if(this._timer.getProgress() === 0) {
@@ -112,6 +148,11 @@ var TimeManager = Classe(Observable, {
         this._pause(index, 0);
     },
 
+    /**
+     * Pauses the timer.
+     *
+     * @private
+     */
     _pause: function(index, dt) {
         this._timer.pause();
 

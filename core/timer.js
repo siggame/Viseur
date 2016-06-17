@@ -15,6 +15,11 @@ var TimeManager = Classe(Observable, {
         this.setSpeed(Number(speed) || 1000);
     },
 
+    /**
+     * Sets the ticking speed of the timer, in ms
+     *
+     * @param {number} speed - the speed to tick at, in ms. Current speed will be recalculated
+     */
     setSpeed: function(speed) {
         var wasTicking = this.isTicking();
 
@@ -29,6 +34,11 @@ var TimeManager = Classe(Observable, {
         }
     },
 
+    /**
+     * sets the progress (how far it is to finishing)
+     *
+     * @param {number} time - must be between [0, 1], with 0 being no progress at all, 0.5 being half, etc.
+     */
     setProgress: function(time) {
         var wasTicking = this.isTicking();
         if(wasTicking) {
@@ -42,11 +52,19 @@ var TimeManager = Classe(Observable, {
         }
     },
 
+    /**
+     * restarts the timer, restting progress to 0 then starting it back up
+     */
     restart: function() {
         this.setProgress(0);
         return this.tick();
     },
 
+    /**
+     * Starts ticking, taking saved progress into account
+     *
+     * @returns {boolean} - true if started ticking, false if already ticking so this did nothing
+     */
     tick: function() {
         if(this._timeout || this._lastProgress >= 1) {
             return false;
@@ -62,6 +80,11 @@ var TimeManager = Classe(Observable, {
         return true;
     },
 
+    /**
+     * Checks if this timer is already ticking
+     *
+     * @returns {boolean} - true if ticking, false otherwise
+     */
     isTicking: function() {
         return this._timeout !== null;
     },
@@ -84,6 +107,11 @@ var TimeManager = Classe(Observable, {
         return true;
     },
 
+    /**
+     * Gets how far this is into it's time, will be between [0, 1]
+     *
+     * @returns {number} - the current progress, a number between [0, 1]
+     */
     getProgress: function() {
         if(!this.isTicking()) {
             return this._lastProgress;
@@ -100,7 +128,7 @@ var TimeManager = Classe(Observable, {
     /**
      * Starts ticking if paused, pauses if ticking
      *
-     * returns {boolean} true if now paused, false otherwise
+     * returns {boolean} - true if now paused, false otherwise
      */
     invertTicking: function() {
         if(this.isTicking()) {
@@ -113,6 +141,11 @@ var TimeManager = Classe(Observable, {
         }
     },
 
+    /**
+     * checks if the timer is done (progress is 1)
+     *
+     * @returns {boolean} - true if done progressing, false otherwise
+     */
     isDone: function() {
         return this._lastProgress === 1;
     },

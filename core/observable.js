@@ -1,5 +1,8 @@
 var Classe = require("classe");
 
+/**
+ * @class Observable - the basic implimentation of a publication/subscription system, similar to JavaScript's EventListener paradigm
+ */
 var Observable = Classe({
     init: function() {
         this._observableEvents = {};
@@ -14,8 +17,8 @@ var Observable = Classe({
         var eventNames = Array.isArray(event) ? event : [ event ];
         var events = eventNames.concat("*"); // always emit to the wildcard (all) event
 
-        for(var i = 0; i < events.length; i++) {
-            var eventName = events[i];
+        for(var e = 0; e < events.length; e++) {
+            var eventName = events[e];
 
             var callbacks = this._observableEvents[eventName];
             if(callbacks) {
@@ -29,7 +32,7 @@ var Observable = Classe({
                 }
 
                 callbacks = callbacks.clone(); // so that the array does not resize during loop
-                for(var i = 0; i < callbacks.length; i++) {
+                for(i = 0; i < callbacks.length; i++) {
                     var callback = callbacks[i];
                     callback.apply(callback, args);
                 }
@@ -76,7 +79,7 @@ var Observable = Classe({
     /**
      * A simple hanlder for on to happen once, then calls off
      *
-     * @ see Observable.on
+     * @see Observable.on
      */
     once: function(eventName, callback) {
         var self = this;

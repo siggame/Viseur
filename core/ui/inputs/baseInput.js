@@ -55,18 +55,36 @@ var BaseInput = Classe(BaseElement, Observable, {
         this._updateElementValue();
     },
 
+
+    /**
+     * Disables this input
+     */
     disable: function() {
         this.$element.prop("disabled", true);
     },
 
+    /**
+     * Enables this input
+     */
     enable: function() {
         this.$element.prop("disabled", false);
     },
 
+    /**
+     * Gets the value of the DOM element
+     *
+     * @protected
+     * @returns {*} - the DOM element's current value
+     */
     _getElementValue: function() {
         return this.$element.val();
     },
 
+    /**
+     * updates the value of the DOM element
+     *
+     * @protected
+     */
     _updateElementValue: function() {
         this.$element.val(this._value);
     },

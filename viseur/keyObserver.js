@@ -2,6 +2,9 @@ var Classe = require("classe");
 var Observable = require("core/observable");
 var keycodes = require("core/keycodes");
 
+/**
+ * @class KeyObserver - An Observer that listens for keyboard presses
+ */
 var KeyObserver = Classe(Observable, {
     init: function() {
         Observable.init.call(this);
@@ -16,6 +19,11 @@ var KeyObserver = Classe(Observable, {
         });
     },
 
+    /**
+     * Invoked when a key event happens, can be 'up' or 'down'
+     *
+     * @private
+     */
     _emitKey: function(e, press) {
         this._emit("{}.{}".format(keycodes[e.keyCode] || String.fromCharCode(e.keyCode), press));
     },

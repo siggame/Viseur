@@ -20,10 +20,16 @@ var CheckBox = Classe(BaseInput, {
         BaseInput.setValue.call(this, Boolean(newValue));
     },
 
+    /**
+     * @override
+     */
     _updateElementValue: function() {
         this.$element.prop("checked", this._value);
     },
 
+    /**
+     * @override
+     */
     _getElementValue: function() {
         return this.$element.prop("checked");
     },

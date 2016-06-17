@@ -6,6 +6,9 @@ var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
 var Viseur = null;
 
+/**
+ * @class BasePane - the base class for all game panes, which are the HTML part of the game normally used to show player stats
+ */
 var BasePane = Classe(BaseElement, {
     init: function(game, initialState) {
         Viseur = require("viseur");
@@ -40,6 +43,9 @@ var BasePane = Classe(BaseElement, {
 
     _template: require("./basePane.hbs"),
 
+    /**
+     * updates the base pane upon a new state
+     */
     update: function() {
         var players = this.game.current.players;
         for(var i = 0; i < players.length; i++) {

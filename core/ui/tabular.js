@@ -43,7 +43,7 @@ var Tabular = Classe(BaseElement, {
     /**
      * Selects a tab as the active tab, based on title
      *
-     * @param {Object|string} the tab, or the the title of the tab to select
+     * @param {Object|string} activeTab - the tab, or the the title of the tab to select
      */
     setTab: function(activeTab) {
         if(this._fading) {
@@ -87,6 +87,11 @@ var Tabular = Classe(BaseElement, {
         }
     },
 
+    /**
+     * Fades a tab out, invoked when switching tabs
+     *
+     * @param {BaseTab} tab - the tab to fade out
+     */
     _fadeTab: function(tab) {
         this._fading = true;
         var self = this;
@@ -106,7 +111,7 @@ var Tabular = Classe(BaseElement, {
     /**
      * Finds a tab based on title
      *
-     * @param {string} the title of the tab to find
+     * @param {string} title - the title of the tab to find
      * @returns {Object} the tab with title, undefined if not found
      */
     _findTab: function(title) {

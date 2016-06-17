@@ -33,6 +33,11 @@ var NumberInput = Classe(BaseInput, {
         this.$element.val(this._value);
     },
 
+    /**
+     * Sets the min attribute of this input
+     *
+     * @param {number} min - the minimum value this number input can be
+     */
     setMin: function(min) {
         this.min = min;
         this.$element.attr("min", min);
@@ -42,6 +47,11 @@ var NumberInput = Classe(BaseInput, {
         }
     },
 
+    /**
+     * Sets the mmax attribute of this input
+     *
+     * @param {number} max - the maximum value this number input can be
+     */
     setMax: function(max) {
         this.max = max;
         this.$element.attr("max", max);
@@ -51,6 +61,11 @@ var NumberInput = Classe(BaseInput, {
         }
     },
 
+    /**
+     * Sets the step attribute of this input
+     *
+     * @param {number=} step - how much this number input increases/decreases by for each incremiment.
+     */
     setStep: function(step) {
         this.step = step;
         this.$element.attr("step", step);

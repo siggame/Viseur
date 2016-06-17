@@ -3,6 +3,9 @@ var PIXI = require("pixi.js");
 var Color = require("color");
 var Observable = require("core/observable");
 
+/**
+ * @class BaseGameObject - the base class all GameObjects inherit from
+ */
 var BaseGameObject = Classe(Observable, {
     init: function(initialState, game) {
         Observable.init.call(this);
@@ -13,11 +16,20 @@ var BaseGameObject = Classe(Observable, {
         this.renderer = game.renderer;
     },
 
+    /**
+     * updates the game object's current and next state, prior to rendering
+     * @param   {Object}   current - the current state
+     * @param   {Object}   next    - the next state
+     */
     update: function(current, next) {
         this.current = current;
         this.next = next;
     },
 
+    /**
+     * Initializes the PIXI.Container that this GameObject's sprites can go in
+     * @param   {PIXI.Container} parent - the parent container
+     */
     _initContainer: function(parent) {
         var self = this;
         var onClick = function() {
@@ -40,19 +52,31 @@ var BaseGameObject = Classe(Observable, {
         return this.container;
     },
 
+    /**
+     * Invoked when this game object's container is clicked
+     */
     _clicked: function() {
         this._emit("clicked");
     },
 
+    /**
+     * Highlights this GameObject
+     */
     highlight: function() {
         this._highlighting = true;
         this._highlightAlpha = this._highlightAlpha || 0;
     },
 
+    /**
+     * Unhighlights this GameObject
+     */
     unhighlight: function() {
         this._highlighting = false;
     },
 
+    /**
+     * Renders the GameObject, this is the main method that developers will override in the inheriting class to render them via game logic
+     */
     render: function() {
         if(this._highlightAlpha !== undefined) {
             if(!this._uxGraphics) {
@@ -79,8 +103,12 @@ var BaseGameObject = Classe(Observable, {
         }
     },
 
-    _uxHighlightColor: Color().rgb(255, 251, 204),
+    _uxHighlightColor: Color().rgb(255, 251, 204), // color to highlight with
 
+    /**
+     * Initializes the PIXI objects for drawing a rounded rectable around the GameObject for highlights
+     * @returns {[type]} [description]
+     */
     _initGraphicsForUX: function() {
         this._uxGraphics = new PIXI.Graphics();
         this._uxGraphics.setParent(this.container);
