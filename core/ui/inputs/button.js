@@ -30,10 +30,10 @@ var Button = Classe(BaseInput, {
     },
 
     /**
-     * Emit a click
+     * Emit a 'clicked' event
      */
     click: function() {
-        this._emit("click");
+        this._emit("clicked");
     },
 });
 

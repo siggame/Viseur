@@ -58,21 +58,38 @@ var TimeManager = Classe(Observable, {
             var dt = value - index;
             self._pause(index, dt);
         });
+
+        Viseur.on("gamelog-updated", function() {
+            self._play();
+        });
     },
 
     /**
      * Sets the current time to some index and dt
      *
      * @param {number} index - the current index, must be between [0, deltas.length]
-     * @param {number} dt - the "tweening" between index and index + 1, must be between [0, 1)
+     * @param {number} [dt=0] - the "tweening" between index and index + 1, must be between [0, 1)
      */
     setTime: function(index, dt) {
         var oldIndex = this._currentIndex;
         this._currentIndex = index;
-        this._timer.setProgress(dt);
+        this._timer.setProgress(dt || 0);
 
         if(oldIndex !== index) {
             this._emit("new-index", index);
+        }
+    },
+
+    /**
+     * force plays the next animation
+     */
+    _play: function(index, dt) {
+        if(arguments.length > 0) {
+            this.setTime(index, dt);
+        }
+
+        if(!this._timer.isTicking()) {
+            this._playPause();
         }
     },
 
@@ -149,7 +166,7 @@ var TimeManager = Classe(Observable, {
     },
 
     /**
-     * Pauses the timer.
+     * Pauses the timer. Doe not call to pause as in a play/pause
      *
      * @private
      */

@@ -86,7 +86,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self._changePlaybackSpeed(value);
         });
 
-        this.playPauseButton.on("click", function() {
+        this.playPauseButton.on("clicked", function() {
             self._emit("play-pause");
         });
 
@@ -94,7 +94,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self.playPauseButton.click();
         });
 
-        this.nextButton.on("click", function() {
+        this.nextButton.on("clicked", function() {
             self._emit("next");
         });
 
@@ -102,7 +102,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self.nextButton.click();
         });
 
-        this.backButton.on("click", function() {
+        this.backButton.on("clicked", function() {
             self._emit("back");
         });
 
@@ -110,7 +110,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self.backButton.click();
         });
 
-        this.fullscreenButton.on("click", function() {
+        this.fullscreenButton.on("clicked", function() {
             self._emit("fullscreen-enabled");
         });
     },

@@ -5,4 +5,17 @@
     & .download-gamelog-link {
         @extend .link;
     }
+
+    & ul.connection-log {
+        list-style-type: square;
+
+        & > li {
+            margin-left: 1.5em;
+            margin-bottom: 0.5em;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
 }

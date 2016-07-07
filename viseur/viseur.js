@@ -6,6 +6,7 @@ var Parser = require("./parser");
 var Renderer = require("./renderer/");
 var TimeManager = require("./timeManager");
 var SettingsManager = require("./settingsManager");
+var Joueur = require("./joueur");
 
 var Viseur = Classe(Observable, {
     /**
@@ -55,12 +56,14 @@ var Viseur = Classe(Observable, {
      * @private
      */
     _parseURL: function() {
+        var self = this;
         this.urlParms = queryString.parse(location.search);
 
         var logUrl = this.urlParms.log || this.urlParms.logUrl || this.urlParms.logURL;
         if(logUrl) {
             this.gui.modalMessage("Loading remote gamelog");
-            var self = this;
+            this._emit("gamelog-is-remote", logUrl);
+
             $.ajax({
                 dataType: "json",
                 url: logUrl,
@@ -201,6 +204,63 @@ var Viseur = Classe(Observable, {
     _ready: function() {
         this.gui.hideModal();
         this._emit("ready", this.game, this._rawGamelog);
+    },
+
+    /**
+     * Call when you want to connect to a remote gamelog source, e.g. spectator mode, arena mode, etc
+     *
+     * @param {Object} data - connection data, must include 'type', 'server', and 'port'.
+     */
+    connect: function(data) {
+        var callback;
+
+        switch(data.type.toLowerCase()) {
+            case "arena":
+                callback = this._connectToArena; // TODO: Do
+                break;
+            case "spectate":
+                callback = this._spectate;
+                break;
+            case "human":
+                callback = this._playAsHumanOn; // TODO: Do
+                break;
+            case "tournament":
+                callback = this._connectToTournament; // TODO: Do
+                break;
+        }
+
+        if(callback) {
+            callback.call(this, data.server, data.port, data.gameName, data);
+            return;
+        }
+
+        throw new Error("No type of connection '{}.".format(data.type));
+    },
+
+    /**
+     * Connects to a Cerveau game server to spectate some game
+     * @param {string} server - the server Cerveau is running on (without port)
+     * @param {number} port - the port the server is running on
+     * @param {string} gameName - name of the game to spectate
+     */
+    _spectate: function(server, port, gameName) {
+        this._initJoueur(server, port, gameName, {
+            spectate: true,
+        });
+    },
+
+    _initJoueur: function(server, port, gameName, optionalArgs) {
+        var self = this;
+
+        this._joueur = new Joueur(server, port, gameName, optionalArgs);
+
+        this._gamelogLoaded(self._joueur.getGamelog());
+
+        this._joueur.on("event-delta", function() {
+            self.timeManager.play(self._mergedDelta.index);
+
+            self.emit("gamelog-updated", self._rawGamelog);
+        });
     },
 });
 
