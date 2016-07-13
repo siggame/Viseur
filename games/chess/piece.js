@@ -16,11 +16,12 @@ var Piece = Classe(BaseGameObject, {
     },
 
     name: "Piece",
+    _bottomOffset: 0.125,
 
     render: function(dt) {
         if((!this.current && !this.next) || (this.current && this.current.captured)) { // then we don't exist to be rendered
             this.container.visible = false;
-            return;
+            return; // no need to figure out where to render, as it's now invisible
         }
 
         this.container.visible = true;
@@ -44,6 +45,12 @@ var Piece = Classe(BaseGameObject, {
 
         this.container.x = renderPosition.x;
         this.container.y = renderPosition.y;
+
+        if(this.game.getSetting("flip-board")) {
+            this.container.y = 7 - this.container.y; // flip it so the y is inverted (board height is 8, so 7 because we index at 0)
+        }
+
+        this.container.y -= this._bottomOffset; // push it up a bit to look better
 
         return BaseGameObject.render.call(this, dt);
     },

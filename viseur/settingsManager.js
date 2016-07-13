@@ -11,10 +11,14 @@ var SettingsManager = Classe(Observable, {
      *
      * @param {string} namespace - the namespace of the key
      * @param {string} key - the key in the namespace
-     * @param {*} [def] - the default value, if there is not setting for namespace.key then it is set to def, and returned
+     * @param {*} [def=null] - the default value, if there is not setting for namespace.key then it is set to def, and returned
      * @returns {*} whatever was stored at namespace.key
      */
     get: function(namespace, key, def) {
+        if(arguments.length === 2) {
+            def = null;
+        }
+
         var id = this._getID(namespace, key);
 
         if(!store.has(id)) {
@@ -37,7 +41,20 @@ var SettingsManager = Classe(Observable, {
 
         store.set(id, value);
 
-        this._emit(id + ".changed".format(namespace, key), value);
+        this._emit(id + ".changed", value);
+    },
+
+    /**
+     * Attaches a callback when a setting namepsace + key change value
+     *
+     * @param {string} namespace - the namespace of the key
+     * @param {string} key - the key in the namespace
+     * @param {Function} callback - the callback function
+     */
+    onChanged: function(namespace, key, callback) {
+        var id = this._getID(namespace, key);
+
+        this.on(id + ".changed", callback);
     },
 
     /**

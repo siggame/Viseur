@@ -12,4 +12,7 @@ module.exports = {
     "white-knight": "white-knight.png",
     "white-queen": "white-queen.png",
     "white-king": "white-king.png",
+
+    "black-tile": "black-tile.png",
+    "white-tile": "white-tile.png",
 };

@@ -1,6 +1,7 @@
 var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Observable = require("core/observable");
+var SettingsManager = require("viseur/settingsManager");
 var Viseur = null;
 
 /**
@@ -35,10 +36,18 @@ var BaseGame = Classe(Observable, {
      */
     _start: function() {
         this._started = true;
-        this._renderBackground();
+
+        this._initBackground();
 
         this._updateState(Viseur.getCurrentState());
     },
+
+    /**
+     * Called once to initalize any PIXI objects needed to render the background
+     *
+     * @private
+     */
+    _initBackground: function() {},
 
     /**
      * renders the static background
@@ -71,6 +80,12 @@ var BaseGame = Classe(Observable, {
      * Called at approx 60/sec to render the game, and all the game objects within it
      */
     render: function(index, dt) {
+        if(!this._started) {
+            return;
+        }
+
+        this._renderBackground(index, dt);
+
         for(var id in this.gameObjects) {
             if(this.gameObjects.hasOwnProperty(id)) {
                 var gameObject = this.gameObjects[id];
@@ -155,6 +170,26 @@ var BaseGame = Classe(Observable, {
         gameObject.highlight();
 
         this._emit("highlighted", gameObject.id);
+    },
+
+    /**
+     * Gets the current value of a setting for this game
+     *
+     * @param {string} key - the key of the setting to get
+     * @returns {*} the current value of the setting
+     */
+    getSetting: function(key) {
+        return SettingsManager.get(this.name, key);
+    },
+
+    /**
+     * attaches a callback to a setting for this game
+     *
+     * @param {string} key - the key to attach callback to
+     * @param {Function} callback - the callback function
+     */
+    onSettingChanged: function(key, callback) {
+        SettingsManager.onChanged(this.name, key, callback);
     },
 });
 

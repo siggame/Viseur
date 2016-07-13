@@ -21,6 +21,7 @@ var Renderer = Classe(Observable, BaseElement, {
 
         this.rootContainer = new PIXI.Container();
 
+        this._defaultFontFamily = args.defaultFont || $("body").css("font-family").split(",")[0] || "Arial";
         this._pxMaxWidth = 800;
         this._pxMaxHeight = 600;
         this._renderer = new PIXI.autoDetectRenderer(this._pxMaxWidth, this._pxMaxHeight, {
@@ -171,8 +172,6 @@ var Renderer = Classe(Observable, BaseElement, {
 
         return sprite;
     },
-
-    _defaultFontFamily: $("body").css("font-family").split(",")[0] || "Arial", // default font family, in css format. This gets the font family from the document
 
     /**
      * Creates a new Pixi.Text object in the Renderer. This will use DPI scaling based on screen resolution for crisp text
