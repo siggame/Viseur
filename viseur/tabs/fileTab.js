@@ -91,7 +91,7 @@ var FileTab = Classe(BaseElement, {
             self._log("Downloading remote gamelog at " + url);
         });
 
-        Viseur.on("gamelog-loaded", function(gamelog) {
+        Viseur.on("ready", function(gameName, gamelog) {
             if(!gamelog.streaming) { // then let them download the gamelog from memory, otherwise it is being streamed so the gamelog in memory is incomplete
                 self.$gamelogDownloadLink.on("click", function() {
                     var blob = new Blob([JSON.stringify(gamelog)], {type: "application/json;charset=utf-8"});
@@ -149,9 +149,10 @@ var FileTab = Classe(BaseElement, {
         this.$connectionWrapper.removeClass("collapsed");
 
         var args = {
+            gameName: this.gameInput.getValue(),
             type: self.remoteGamelogTypeInput.getValue(),
             server: self.serverInput.getValue(),
-            port: self.serverInput.getValue(),
+            port: self.portInput.getValue(),
             playerName: self.nameInput.getValue(),
         };
 
@@ -161,11 +162,11 @@ var FileTab = Classe(BaseElement, {
             self._log("Successfully connected to {server}:{port}.".format(args));
         });
 
-        Viseur.on("connection-error", function() {
+        Viseur.on("connection-errored", function() {
             self._log("Unexpected error occured in connection.");
         });
 
-        Viseur.on("connection-error", function() {
+        Viseur.on("connection-closed", function() {
             self._log("Connection closed.");
         });
 

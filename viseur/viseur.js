@@ -24,6 +24,7 @@ var Viseur = Classe(Observable, {
         var self = this;
 
         this.timeManager.on("new-index", function(index) {
+            console.log("new index", index)
             self._updateCurrentState(index);
         });
 
@@ -34,7 +35,6 @@ var Viseur = Classe(Observable, {
         this.gui.on("resized", function(width, height, rendererHeight) {
             self.renderer.resize(width, rendererHeight);
         });
-
         this.gui.resize();
 
         this.renderer.on("rendering", function() {
@@ -88,16 +88,20 @@ var Viseur = Classe(Observable, {
         this._rawGamelog = gamelog;
         this._parser = new Parser(gamelog.constants);
 
-        this._emit("gamelog-loaded", gamelog);
+        if(!gamelog.streaming) {
+            this._emit("gamelog-loaded", gamelog);
+        }
+        // else we didn't "load" the gamelog, it's streaming to us
 
         this._mergedDelta = {
             index: -1,
             currentState: {},
-            nextState: this._parser.mergeDelta({}, gamelog.deltas[0].game),
+            nextState: gamelog.deltas.length > 0 ? this._parser.mergeDelta({}, gamelog.deltas[0].game) : undefined,
         };
-        this._updateCurrentState(0, 0);
 
-        this._initGame(gamelog.gameName);
+        if(gamelog.deltas.length > 0) {
+            this._initGame(gamelog.gameName);
+        }
     },
 
     /**
@@ -109,6 +113,11 @@ var Viseur = Classe(Observable, {
         var d = this._mergedDelta;
         var deltas = this._rawGamelog.deltas;
         var indexChanged = index !== d.index;
+        var long = Math.abs(index - d.index) > 25;
+
+        if(long) {
+            this.gui.modalMessage("Loading...");
+        }
 
         // if increasing index...
         while(index > d.index) {
@@ -118,24 +127,23 @@ var Viseur = Classe(Observable, {
                 deltas[d.index].reversed = this._parser.createReverseDelta(d.currentState, deltas[d.index].game);
             }
 
-            if(deltas[d.index] && deltas[d.index + 1] && !deltas[d.index + 1].reversed) {
+            if(d.nextState && deltas[d.index] && deltas[d.index + 1] && !deltas[d.index + 1].reversed) {
                 deltas[d.index + 1].reversed = this._parser.createReverseDelta(d.nextState, deltas[d.index + 1].game);
             }
 
-            //d.index++;
+            if(deltas[d.index]) {
+                d.currentState = this._parser.mergeDelta(d.currentState, deltas[d.index].game);
+            }
 
-            d.currentState = this._parser.mergeDelta(d.currentState, deltas[d.index].game);
-            if(deltas[d.index + 1]) { // if there is a next state (not at the end)
+            if(d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
                 d.nextState = this._parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
             }
         }
 
         // if decreasing index...
         while(index < d.index) {
-            //d.index--;
-
             var r = deltas[d.index] && deltas[d.index].reversed;
-            var r2 = deltas[d.index + 1] && deltas[d.index + 1].reversed;
+            var r2 = d.nextState && deltas[d.index + 1] && deltas[d.index + 1].reversed;
 
             if(r) {
                 d.currentState = this._parser.mergeDelta(d.currentState, r);
@@ -148,6 +156,10 @@ var Viseur = Classe(Observable, {
             }
 
             d.index--;
+        }
+
+        if(long) {
+            this.gui.hideModal();
         }
 
         if(indexChanged) {
@@ -178,10 +190,16 @@ var Viseur = Classe(Observable, {
         var gameNamespace = this._games[gameName];
 
         if(!gameNamespace) {
-            throw new Error("Cannot load data for game '{}'.".format(gameClass));
+            throw new Error("Cannot load data for game '{}'.".format(gameName));
         }
 
-        this.game = new gameNamespace.Game(this._currentState.game, this._rawGamelog);
+        if(this.game) {
+            throw new Error("Viseur game already initialized");
+        }
+
+        this._updateCurrentState(0, 0); // create the initial state
+
+        this.game = new gameNamespace.Game(this._rawGamelog);
 
         var textures = {};
 
@@ -192,7 +210,8 @@ var Viseur = Classe(Observable, {
         }
         var self = this;
         this.renderer.loadTextures(textures, function() {
-            self._ready();
+            self._loadedTextures = true;
+            self._checkIfReady();
         });
     },
 
@@ -201,15 +220,18 @@ var Viseur = Classe(Observable, {
      *
      * @private
      */
-    _ready: function() {
-        this.gui.hideModal();
-        this._emit("ready", this.game, this._rawGamelog);
+    _checkIfReady: function() {
+        if(this._loadedTextures && (!this._joueur || this._joueur.hasStarted())) { // then we are ready to start
+            this.gui.hideModal();
+            this._emit("ready", this.game, this._rawGamelog);
+        }
     },
 
     /**
      * Call when you want to connect to a remote gamelog source, e.g. spectator mode, arena mode, etc
      *
      * @param {Object} data - connection data, must include 'type', 'server', and 'port'.
+     * @throws {Error} If data.type is not a valid connection type
      */
     connect: function(data) {
         var callback;
@@ -244,22 +266,51 @@ var Viseur = Classe(Observable, {
      * @param {string} gameName - name of the game to spectate
      */
     _spectate: function(server, port, gameName) {
+        this.gui.modalMessage("Spectating game...");
+
         this._initJoueur(server, port, gameName, {
-            spectate: true,
+            spectating: true,
         });
     },
 
     _initJoueur: function(server, port, gameName, optionalArgs) {
         var self = this;
-
         this._joueur = new Joueur(server, port, gameName, optionalArgs);
 
-        this._gamelogLoaded(self._joueur.getGamelog());
+
+        this._joueur.on("connected", function() {
+            self.gui.modalMessage("Awaiting game...");
+
+            self._emit("connection-connected");
+        });
+
+        this._joueur.on("event-lobbied", function(data) {
+            self._gamelogLoaded(self._joueur.getGamelog());
+
+            gameName = data.gameName;
+
+            self.gui.modalMessage("In lobby '{gameSession}' for '{gameName}'. Waiting for game to start.".format(data));
+        });
+
+        this._joueur.on("event-start", function() {
+            self._initGame(gameName);
+            self._checkIfReady();
+        });
+
+        this._joueur.on("errored", function() {
+            self._emit("connection-errored");
+        });
+
+        this._joueur.on("closed", function() {
+            self._emit("connection-closed");
+        });
 
         this._joueur.on("event-delta", function() {
-            self.timeManager.play(self._mergedDelta.index);
+            if(self._rawGamelog.deltas.length === 0) {
+                self._updateCurrentState(0);
+            }
 
-            self.emit("gamelog-updated", self._rawGamelog);
+            self._emit("gamelog-updated", self._rawGamelog);
         });
     },
 });

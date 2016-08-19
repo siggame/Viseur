@@ -45,16 +45,21 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             var newInput = new playbackInput.classe($.extend({
                 id: humps.decamelize(playbackInput.name, { separator: "-" }),
                 $parent: this.locations[playbackInput.location],
-                disabled: true,
             }, playbackInput));
 
             this[playbackInput.name] = newInput;
             this.inputs.push(newInput);
         }
 
+        this.disable();
+
         var self = this;
-        Visuer.once("gamelog-loaded", function(gamelog) {
-            self._gamelogLoaded(gamelog);
+        Visuer.once("ready", function(game, gamelog) {
+            self._viseurReady(gamelog);
+        });
+
+        Visuer.on("gamelog-updated", function(gamelog) {
+            self._updatePlaybackSlider(gamelog);
         });
 
         Visuer.timeManager.on("playing", function() {
@@ -90,7 +95,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self._emit("play-pause");
         });
 
-        KeyObserver.on(" .up", function() { // space bar up
+        KeyObserver.on(" .up", function() { // space bar up, hence the ' '
             self.playPauseButton.click();
         });
 
@@ -121,17 +126,34 @@ var PlaybackPane = Classe(Observable, BaseElement, {
      * Invoked when Viseur's gamelog is loaded
      *
      * @private
+     * @param {Object} gamelog - the gamelog that was loaded
      */
-    _gamelogLoaded: function(gamelog) {
+    _viseurReady: function(gamelog) {
         this._numberOfDeltas = gamelog.deltas.length;
 
-        this.enable();
+        if(!gamelog.streaming) {
+            this.enable();
+        }
+        else {
+            this.speedSlider.enable(); // while streaming the gamelog only enable the speed slider
+        }
+
         this.playbackSlider.setValue(0);
+        this._updatePlaybackSlider(gamelog);
+
+        this.$element.removeClass("collapsed");
+    },
+
+    /**
+     * Invoked when the gamelog's number of deltas is known or changes
+     *
+     * @private
+     * @param {Object} gamelog - the gamelog to get info from
+     */
+    _updatePlaybackSlider: function(gamelog) {
         this.playbackSlider.setMax(gamelog.deltas.length - 1/1e10);
 
         this.$playbackTimeMax.html(gamelog.deltas.length - 1);
-
-        this.$element.removeClass("collapsed");
     },
 
     /**
@@ -143,18 +165,20 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         this.$playbackTimeCurrent.html(index);
         this.playbackSlider.setValue(index + dt);
 
-        if(index === 0 && dt === 0) {
-            this.backButton.disable();
-        }
-        else {
-            this.backButton.enable();
-        }
+        if(this.isEnabled()) {
+            if(index === 0 && dt === 0) {
+                this.backButton.disable();
+            }
+            else {
+                this.backButton.enable();
+            }
 
-        if(index >= this._numberOfDeltas - 1) {
-            this.nextButton.disable();
-        }
-        else {
-            this.nextButton.enable();
+            if(index >= this._numberOfDeltas - 1) {
+                this.nextButton.disable();
+            }
+            else {
+                this.nextButton.enable();
+            }
         }
     },
 
@@ -211,6 +235,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
      * Enables all the inputs
      */
     enable: function() {
+        this._disabled = false;
         for(var i = 0 ; i < this.inputs.length; i++) {
             this.inputs[i].enable();
         }
@@ -220,9 +245,19 @@ var PlaybackPane = Classe(Observable, BaseElement, {
      * Disables all the inputs
      */
     disable: function() {
+        this._disabled = true;
         for(var i = 0 ; i < this.inputs.length; i++) {
             this.inputs[i].disable();
         }
+    },
+
+    /**
+     * Checks if the playback pane is enabled (playback can be manipulated). SHould be disabled during streaming gamelogs
+     *
+     * @returns {Boolean} true if enabled, false otherwise
+     */
+    isEnabled: function() {
+        return !this._disabled;
     },
 });
 

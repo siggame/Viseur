@@ -8,18 +8,17 @@ var Viseur = null;
  * @class BaseGame - the base class all games in the games/ folder inherit from
  */
 var BaseGame = Classe(Observable, {
-    init: function(initialState, gamelog) {
+    init: function(gamelog) {
         Observable.init.call(this);
         Viseur = require("viseur/"); // require here to avoid cycles
 
-        this.pane = new this.namespace.Pane(this, initialState);
         this.renderer = Viseur.renderer;
         this.gameObjects = {};
-        this.random = new Math.seedrandom(gamelog.randomSeed);
+        this.random = new Math.seedrandom(gamelog ? gamelog.randomSeed : undefined);
 
         var self = this;
-        Viseur.on("ready", function(game, gamelog) {
-            self._start(initialState);
+        Viseur.on("ready", function() {
+            self._start();
         });
 
         Viseur.on("state-changed", function(state) {
@@ -40,6 +39,8 @@ var BaseGame = Classe(Observable, {
         this._initBackground();
 
         this._updateState(Viseur.getCurrentState());
+
+        this.pane = new this.namespace.Pane(this, this.current);
     },
 
     /**
@@ -124,14 +125,16 @@ var BaseGame = Classe(Observable, {
                 }
 
                 if(!this.gameObjects[id]) { // this is the first time we've seen this game object, so create its instance
-                    this._initGameObject(id, nextGameObject);
+                    this._initGameObject(id, nextGameObject || currentGameObject);
                 }
 
                 this.gameObjects[id].update(currentGameObject, nextGameObject);
             }
         }
 
-        this.pane.update(state);
+        if(this.pane) {
+            this.pane.update(state);
+        }
     },
 
     /**

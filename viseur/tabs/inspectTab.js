@@ -23,19 +23,7 @@ var InspectTab = Classe(Observable, BaseElement, {
 
         var self = this;
         Viseur.once("ready", function(game, gamelog) {
-            self.$gamelogDate.html(dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z"));
-            self.$gamelogRandomSeed.html(gamelog.randomSeed);
-            self.$gamelogGameName.html(gamelog.gameName);
-            self.$gamelogGameSession.html(gamelog.gameSession);
-
-            self.$element.addClass("gamelog-loaded");
-
-            game.on("clicked", function(gameObjectID) {
-                self.gameTreeView.highlightGameObject(gameObjectID);
-                game.highlight(gameObjectID);
-
-                self._emit("highlighted", gameObjectID);
-            });
+            self._viseurReady(game, gamelog);
         });
 
 
@@ -60,6 +48,33 @@ var InspectTab = Classe(Observable, BaseElement, {
     },
 
     _template: require("./inspectTab.hbs"),
+
+    /**
+     * Invoked once Viseur is ready
+     *
+     * @private
+     * @param {BaseGame} game - the game that is ready
+     * @param {Object} gamelog - the gamelog that we will be inspecting
+     */
+    _viseurReady: function(game, gamelog) {
+        if(gamelog.epoch) {
+            this.$gamelogDate.html(dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z"));
+        }
+
+        this.$gamelogRandomSeed.html(gamelog.randomSeed);
+        this.$gamelogGameName.html(gamelog.gameName);
+        this.$gamelogGameSession.html(gamelog.gameSession);
+
+        this.$element.addClass("gamelog-loaded");
+
+        var self = this;
+        game.on("clicked", function(gameObjectID) {
+            self.gameTreeView.highlightGameObject(gameObjectID);
+            game.highlight(gameObjectID);
+
+            self._emit("highlighted", gameObjectID);
+        });
+    }
 });
 
 module.exports = InspectTab;

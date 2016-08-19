@@ -33,7 +33,9 @@ var Button = Classe(BaseInput, {
      * Emit a 'clicked' event
      */
     click: function() {
-        this._emit("clicked");
+        if(!this.$element.prop("disabled")) {
+            this._emit("clicked");
+        }
     },
 });
 

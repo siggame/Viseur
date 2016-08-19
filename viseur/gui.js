@@ -49,7 +49,7 @@ var GUI = Classe(Observable, BaseElement, {
         });
 
         var self = this;
-        Viseur.on("gamelog-loaded", function(gamelog) {
+        Viseur.on("ready", function(gamelog) {
             self.$element.addClass("gamelog-loaded");
             setTimeout(function() { // HACK: resize after all transitions finish, because we can't know for sure when the browser will finish css transitions in what order
                 self.resize();
@@ -127,7 +127,7 @@ var GUI = Classe(Observable, BaseElement, {
 
         var gamePaneHeight = 0;
 
-        if(Viseur.game) {
+        if(Viseur.game && Viseur.game.pane) {
             gamePaneHeight = Viseur.game.pane.$element.outerHeight();//(parseInt(this.$gamePaneWrapper.css("height")) || 0);
         }
 

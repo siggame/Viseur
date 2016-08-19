@@ -37,7 +37,9 @@ var TimeManager = Classe(Observable, {
     _ready: function(game, gamelog) {
         var self = this;
         this.game = game;
-        this._numberOfDeltas = gamelog.deltas.length;
+        if(!gamelog.streaming) {
+            this._numberOfDeltas = gamelog.deltas.length;
+        }
 
         this._ticked(true);
 
@@ -71,6 +73,7 @@ var TimeManager = Classe(Observable, {
      * @param {number} [dt=0] - the "tweening" between index and index + 1, must be between [0, 1)
      */
     setTime: function(index, dt) {
+        console.log("setting time to", index, dt);
         var oldIndex = this._currentIndex;
         this._currentIndex = index;
         this._timer.setProgress(dt || 0);
@@ -99,12 +102,13 @@ var TimeManager = Classe(Observable, {
      * @private
      */
     _playPause: function() {
-        if(!this._timer.isTicking() && this._currentIndex === this._numberOfDeltas - 1 && this._timer.getProgress() > 0.99) { // wrap around
+        if(!this._timer.isTicking() && this._numberOfDeltas !== undefined  && this._currentIndex === this._numberOfDeltas - 1 && this._timer.getProgress() > 0.99) { // wrap around
             this.setTime(0, 0);
         }
 
-        var paused = this._timer.invertTicking();
-        this._emit(paused ? "paused" : "playing");
+        var paused = this._timer.invertTicking() ? "paused" : "playing";
+        console.log("play pause:", paused);
+        this._emit(paused);
     },
 
     /**
@@ -117,7 +121,7 @@ var TimeManager = Classe(Observable, {
 
         this._emit("new-index", this._currentIndex);
 
-        if(!start && this._currentIndex < this._numberOfDeltas - 1) {
+        if(!start && (this._numberOfDeltas === undefined || this._currentIndex < this._numberOfDeltas - 1)) {
             this._timer.restart();
         }
         else {

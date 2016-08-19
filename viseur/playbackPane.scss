@@ -39,10 +39,14 @@
 
     & button {
         border: none;
-        background: $primary-lightest;
+        background: $primary-light;
         display: inline-block;
         width: 2em;
         height: 2em;
+
+        &:disabled {
+            background: $primary-lightest;
+        }
     }
 
     & .playback-pane-top-most {
