@@ -6,6 +6,10 @@
     "type": "git",
     "url": "git://github.com/siggame/Viseur"
   },
+  "scripts": {
+    "visualizer": "./node_modules/.bin/webpack-dev-server --progress --colors --host 0.0.0.0",
+    "bundle": "./node_modules/.bin/webpack main.js bundle.js"
+  },
   "private": true,
   "dependencies": {
     "cadre-js-extensions": "siggame/Cadre-js-extensions",
@@ -32,7 +36,8 @@
     "style-loader": "^0.13.1",
     "transform-loader": "^0.2.3",
     "url-loader": "^0.5.7",
-    "webpack": "^1.12.9"
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.15.1"
   },
   "license": "MIT"
 }

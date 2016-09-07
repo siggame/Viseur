@@ -29,9 +29,17 @@ Node.js and NPM are required to bundle up the files to be served to the browser.
 ### Installation
 
 1. Install Node.js: download and install [Node.js](https://nodejs.org/en/). Node comes with NPM (Node Package Manager) so that covers all the software you need to install normally, everything else from this point on is done via Node stuff.
-2. Install [Webpack](https://www.npmjs.com/package/webpack): It is reccomended to install globally using: `npm install webpack -g`
-3. Clone this repo using git: In whatever directoy you want to work out of do `git clone https://github.com/siggame/Viseur.git`
-4. Install Viseur dependencies: navigate to the `Viseur` directoy you just cloned and then run `npm install`. This reads the package.json file and downloads all the modules it requires. If that file is ever changed, just re-run `npm install`.
-5. Install the [Webpack Development Server]: `npm install webpack-dev-server -g` This is used to ease development. Instead of "compiling" you files on change, this server waits for a change and does that automatically for you.
-6. Statup the Webpack dev server: `webpack-dev-server --progress --colors` This makes it look nicer.
-7. In browser, go to `http://localhost:8080`. If you are getting problems resolving localhost add the `--host 0.0.0.0` argument to the above step.
+2. Clone this repo using git: In whatever directoy you want to work out of do `git clone https://github.com/siggame/Viseur.git`
+3. Install Viseur dependencies: navigate to the `Viseur` directoy you just cloned and then run `npm install`. This reads the package.json file and downloads all the modules it requires. If that file is ever changed, just re-run `npm install`.
+4. Statup the development server using `npm run visualizer`
+5. In browser, go to `http://localhost:8080`.
+
+### Deploying
+
+Never deploy Viseur using `npm run visualizer`, as that starts up a webpack-dev-server, which listens for file changes and rebuilds webpack.
+
+Instead, the whole point of webpack is to build all our sources into a few files so browsers do not need to make >100 HTTP Requests for all our files.
+
+Run `npm run bundle`.
+
+Grab all the files in the index of Viseur, and serve them via some simple HTTP file server. [http-server](https://www.npmjs.com/package/http-server) works well for this.

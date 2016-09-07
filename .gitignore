@@ -34,3 +34,13 @@ node_modules
 
 # webpack bundle
 bundle.js
+
+# web fonts used during build
+*.eot
+*.woff
+*.woff2
+*.svg
+*.ttf
+
+# other
+*.ai
