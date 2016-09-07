@@ -38,9 +38,10 @@ var BaseGame = Classe(Observable, {
 
         this._initBackground();
 
-        this._updateState(Viseur.getCurrentState());
+        var state = this._updateState(Viseur.getCurrentState());
 
         this.pane = new this.namespace.Pane(this, this.current);
+        this.pane.update(state);
     },
 
     /**
@@ -102,6 +103,7 @@ var BaseGame = Classe(Observable, {
      *
      * @private
      * @param {Object} state - the current state
+     * @returns {Object} the current(most) state
      */
     _updateState: function(state) {
         if(!this._started) {
@@ -135,12 +137,14 @@ var BaseGame = Classe(Observable, {
         if(this.pane) {
             this.pane.update(state);
         }
+
+        return state;
     },
 
     /**
      * initializes a new game object with the given id
-     * @param   {string} id    the id of the game object to initialize
-     * @param   {Object} state the initial state of the new game object
+     * @param {string} id - the id of the game object to initialize
+     * @param {Object} state - the initial state of the new game object
      */
     _initGameObject: function(id, state) {
         var newGameObject = new this._gameObjectClasses[state.gameObjectName](state, this);
@@ -155,7 +159,7 @@ var BaseGame = Classe(Observable, {
 
     /**
      * highlights some game object given the id
-     * @param   {string} gameObjectID the id of the game object to highlight
+     * @param {string} gameObjectID the id of the game object to highlight
      */
     highlight: function(gameObjectID) {
         var gameObject = this.gameObjects[gameObjectID];
