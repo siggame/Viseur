@@ -1,4 +1,6 @@
 module.exports = {
+    //<<-- Creer-Merge: settings -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
     "black-pawn": "black-pawn.png",
     "black-rook": "black-rook.png",
     "black-bishop": "black-bishop.png",
@@ -15,4 +17,6 @@ module.exports = {
 
     "black-tile": "black-tile.png",
     "white-tile": "white-tile.png",
+
+    //<<-- /Creer-Merge: settings -->>
 };

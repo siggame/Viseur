@@ -62,6 +62,7 @@ var Parser = Classe({
      * @returns {Object} the reverse delta. Apply this to a nextState that has had the delta applies to it to get back to the original state.
      */
     createReverseDelta: function(state, delta, reverse) {
+        state = state || {};
         reverse = reverse || {};
 
         for(var key in delta) {

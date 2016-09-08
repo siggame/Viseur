@@ -1,0 +1,14 @@
+@import "core/colors";
+
+${merge("//", "scss", """
+.game-pane.game-""" + game_name + """ {
+    & .player-wrapper:nth-child(1) .player {
+        background: #C33 !important;
+    }
+
+    & .player-wrapper:nth-child(2) .player {
+        background: #33C !important;
+    }
+}
+
+""")}

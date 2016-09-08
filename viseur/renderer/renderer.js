@@ -64,10 +64,16 @@ var Renderer = Classe(Observable, BaseElement, {
     loadTextures: function(textures, callback) {
         var loader = PIXI.loader;
 
+        var hasTextures = false;
         for(var key in textures) {
+            hasTextures = true;
             if(textures.hasOwnProperty(key)) {
                 loader.add(key, textures[key]);
             }
+        }
+
+        if(!hasTextures) {
+            return callback(false);
         }
 
         var self = this;

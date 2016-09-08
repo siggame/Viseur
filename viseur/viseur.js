@@ -24,7 +24,6 @@ var Viseur = Classe(Observable, {
         var self = this;
 
         this.timeManager.on("new-index", function(index) {
-            console.log("new index", index)
             self._updateCurrentState(index);
         });
 
@@ -113,7 +112,7 @@ var Viseur = Classe(Observable, {
         var d = this._mergedDelta;
         var deltas = this._rawGamelog.deltas;
         var indexChanged = index !== d.index;
-        var long = Math.abs(index - d.index) > 25;
+        var long = Math.abs(index - d.index) > 25; // the loading time may be long
 
         if(long) {
             this.gui.modalMessage("Loading...");

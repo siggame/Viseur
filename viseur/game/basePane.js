@@ -26,6 +26,8 @@ var BasePane = Classe(BaseElement, {
             $parent: Viseur.gui.$gamePaneWrapper,
         });
 
+        this.$element.addClass("game-" + this.game.name);
+
         var $players = this.$element.find(".player");
         this._$players = {};
         for(i = 0; i < $players.length; i++) {

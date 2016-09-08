@@ -73,7 +73,6 @@ var TimeManager = Classe(Observable, {
      * @param {number} [dt=0] - the "tweening" between index and index + 1, must be between [0, 1)
      */
     setTime: function(index, dt) {
-        console.log("setting time to", index, dt);
         var oldIndex = this._currentIndex;
         this._currentIndex = index;
         this._timer.setProgress(dt || 0);
@@ -107,7 +106,6 @@ var TimeManager = Classe(Observable, {
         }
 
         var paused = this._timer.invertTicking() ? "paused" : "playing";
-        console.log("play pause:", paused);
         this._emit(paused);
     },
 

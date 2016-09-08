@@ -1,16 +1,20 @@
 @import "core/colors";
 
-.game-pane {
+//<<-- Creer-Merge: scss -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+.game-pane.game-Chess {
     & .player-wrapper:nth-child(1) .player {
         background: #FFF !important;
+        color: $black !important;
+
+        & .player-time {
+            color: $light-black !important;
+        }
     }
 
     & .player-wrapper:nth-child(2) .player {
         background: #000 !important;
-        color: #FFF !important;
-
-        & .player-time {
-            color: $light-gray !important;
-        }
     }
 }
+
+//<<-- /Creer-Merge: scss -->>

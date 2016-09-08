@@ -1,20 +1,38 @@
+// This is a "class" to represent the Game object in the game. If you want to render it in the game do so here.
 var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
+var ease = require("core/utils").ease;
+
 var BaseGame = require("viseur/game/baseGame");
 
+//<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+// any additional requires you want can be required here safely between Creer runs
+//<<-- /Creer-Merge: requires -->>
+
+/**
+ * @class
+ * @classdesc The traditional 8x8 chess board with pieces.
+ * @extends BaseGame
+ */
 var Game = Classe(BaseGame, {
-    init: function() {
-        BaseGame.init.apply(this, arguments);
-    },
-
+    /**
+     * Static name of the classe.
+     *
+     * @static
+     */
     name: "Chess",
-    _textColor: Color().rgb(222, 222, 222),
-    _tileBorderLength: 0.9,
-    _borderLength: 0.5,
 
+    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
+    /**
+     * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
+     *
+     * @private
+     */
     _start: function() {
         BaseGame._start.call(this);
+
+        //<<-- Creer-Merge: _start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         var length = 8 + this._borderLength*2;
         this.renderer.setSize(length, length);
@@ -23,9 +41,20 @@ var Game = Classe(BaseGame, {
         this.onSettingChanged("flip-board", function(flipBoard) {
             self._flipBackground(flipBoard);
         });
+
+        //<<-- /Creer-Merge: _start -->>
     },
 
+    /**
+     * initializes the background. It is drawn once automatically after this step.
+     *
+     * @private
+     */
     _initBackground: function() {
+        BaseGame._initBackground.call(this);
+
+        //<<-- Creer-Merge: _initBackground -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
         this._randomColor = Color().hsl(this.random() * 360, 60, 40).whiten(1.5);
 
         this._backgroundColor = this._randomColor.clone().darken(0.75);
@@ -98,10 +127,36 @@ var Game = Classe(BaseGame, {
         this._tileContainer.filters = [ filter ];
 
         this._flipBackground(this.getSetting("flip-board"));
+
+        //<<-- /Creer-Merge: _initBackground -->>
     },
 
-    _renderBackground: function(index, dt) {},
+    /**
+     * Called approx 60 times a second to update and render the background. Leave empty if the background is static
+     *
+     * @private
+     * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     */
+    _renderBackground: function(dt) {
+        BaseGame._renderBackground.call(this);
 
+        //<<-- Creer-Merge: _renderBackground -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // update and re-render whatever you initialize in _initBackground
+        //<<-- /Creer-Merge: _renderBackground -->>
+    },
+
+
+    //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+    _textColor: Color().rgb(222, 222, 222),
+    _tileBorderLength: 0.9,
+    _borderLength: 0.5,
+
+    /**
+     * This is setup above to be called when the `flip-board` setting is changed
+     *
+     * @param {Boolean} flipBoard - if it is flipped
+     */
     _flipBackground: function(flipBoard) {
         var x = 0;
         var y = 0;
@@ -148,6 +203,9 @@ var Game = Classe(BaseGame, {
             }
         }
     },
+
+    //<<-- /Creer-Merge: functions -->>
+
 });
 
 module.exports = Game;

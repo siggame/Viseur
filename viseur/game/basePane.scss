@@ -27,6 +27,7 @@
                     padding: 1em;
                     background: $white;
                     border: 0.5em $light-gray solid;
+                    color: $white;
 
                     & .player-name {
                         font-weight: bold;
@@ -34,7 +35,7 @@
                     }
 
                     & .player-time {
-                        color: $light-black;
+                        color: $light-gray;
                     }
 
                     & .player-reason-won,

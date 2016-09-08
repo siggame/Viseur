@@ -1,11 +1,31 @@
-var PIXI = require("pixi.js");
+// This is a "class" to represent the Piece object in the game. If you want to render it in the game do so here.
 var Classe = require("classe");
-var BaseGameObject = require("viseur/game/baseGameObject");
+var PIXI = require("pixi.js");
+var Color = require("color");
 var ease = require("core/utils").ease;
 
-var Piece = Classe(BaseGameObject, {
+var GameObject = require("./gameObject");
+
+//<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+// any additional requires you want can be required here safely between Creer runs
+//<<-- /Creer-Merge: requires -->>
+
+/**
+ * @class
+ * @classdesc A chess piece.
+ * @extends GameObject
+ */
+var Piece = Classe(GameObject, {
+    /**
+     * Initializes a Piece with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
+     *
+     * @memberof Piece
+     * @private
+     */
     init: function(initialState, game) {
-        BaseGameObject.init.apply(this, arguments);
+        GameObject.init.apply(this, arguments);
+
+        //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         var color = initialState.owner.id === "0" ? "white" : "black";
         var type = initialState.type.toLowerCase();
@@ -13,12 +33,39 @@ var Piece = Classe(BaseGameObject, {
         this._initContainer(this.game.boardContainer);
 
         this._sprite = this.renderer.newSprite(color + "-" + type, this.container);
+
+        //<<-- /Creer-Merge: init -->>
     },
 
+    /**
+     * Static name of the classe.
+     *
+     * @static
+     */
     name: "Piece",
-    _bottomOffset: 0.125,
 
+    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
+
+    /**
+     * Set this to `true` if this GameObject should be rendered.
+     *
+     * @static
+     */
+    //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+    shouldRender: true,
+    //<<-- /Creer-Merge: shouldRender -->>
+
+    /**
+     * Called approx 60 times a second to update and render the Piece. Leave empty if it should not be rendered
+     *
+     * @private
+     * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     */
     render: function(dt) {
+        GameObject.render.apply(this, arguments);
+
+        //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
         if((!this.current && !this.next) || (this.current && this.current.captured)) { // then we don't exist to be rendered
             this.container.visible = false;
             return; // no need to figure out where to render, as it's now invisible
@@ -52,12 +99,27 @@ var Piece = Classe(BaseGameObject, {
 
         this.container.y -= this._bottomOffset; // push it up a bit to look better
 
-        return BaseGameObject.render.call(this, dt);
+        //<<-- /Creer-Merge: render -->>
     },
 
+
+
+    //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
     /**
-     * Transforms a (file, rank) coordinate to (x, y), e.g.: 'a1' -> (0, 7).
+     * An offset from the bottom of it's tile to look better
+     *
+     * @type {number}
+     */
+    _bottomOffset: 0.125,
+
+    /**
+     * Transforms a (file, rank) coordinate to (x, y), e.g.: ('a', 1) -> (0, 7).
      *   This assumes that the origin for a chess board is the bottom left at a1, and rendering is done at 0,0 being in the top left.
+     *
+     * @param {string} file - the file position
+     * @param {number} rank - the rank position
+     * @returns {Object} and object with an x, y coordinate between [0, 7] for both
      */
     _transformFileRank: function(file, rank) {
         return {
@@ -65,6 +127,9 @@ var Piece = Classe(BaseGameObject, {
             y: 8 - rank,
         };
     },
+
+    //<<-- /Creer-Merge: functions -->>
+
 });
 
 module.exports = Piece;

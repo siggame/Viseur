@@ -91,7 +91,7 @@ var BaseGame = Classe(Observable, {
         for(var id in this.gameObjects) {
             if(this.gameObjects.hasOwnProperty(id)) {
                 var gameObject = this.gameObjects[id];
-                if(gameObject.render) { // game objects can set their render function to 'false' if it should not be rendered
+                if(gameObject.shouldRender) { // game objects by default do not render, as many are invisible
                     gameObject.render(dt);
                 }
             }
