@@ -107,7 +107,7 @@ var Viseur = Classe(Observable, {
             url: url,
             success: function(data) {
                 self.gui.modalMessage("Initializing Visualizer.");
-                self._gamelogLoaded(data);
+                self.gamelogLoaded(data);
                 self.gui.goFullscreen();
             },
             error: function() {
@@ -119,10 +119,9 @@ var Viseur = Classe(Observable, {
     /**
      * Called once a gamelog is loaded
      *
-     * @private
      * @param {Object} the deserialized JSON object that is the FULL gamelog
      */
-    _gamelogLoaded: function(gamelog) {
+    gamelogLoaded: function(gamelog) {
         this._rawGamelog = gamelog;
         this._parser = new Parser(gamelog.constants);
 
@@ -326,6 +325,14 @@ var Viseur = Classe(Observable, {
         }
     },
 
+    /**
+     * Initializes the Joueur (game client)
+     *
+     * @param {String} server - game server address
+     * @param {Number} port - port for server
+     * @param {String} gameName - name of the game to connect to (id)
+     * @param {Object} optionalArgs - any optional args for the game session
+     */
     _initJoueur: function(server, port, gameName, optionalArgs) {
         var self = this;
         this._joueur = new Joueur(server, port, gameName, optionalArgs);
@@ -338,7 +345,7 @@ var Viseur = Classe(Observable, {
         });
 
         this._joueur.on("event-lobbied", function(data) {
-            self._gamelogLoaded(self._joueur.getGamelog());
+            self.gamelogLoaded(self._joueur.getGamelog());
 
             gameName = data.gameName;
 

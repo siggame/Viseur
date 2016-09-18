@@ -13,12 +13,17 @@ var Viseur = require("viseur/");
 var FileTab = Classe(BaseElement, {
     init: function(args) {
         BaseElement.init.apply(this, arguments);
+        var self = this;
 
         this.$localGamelogWrapper = this.$element.find(".local-gamelog");
 
         this.gamelogInput = new inputs.File({
             id: "local-gamelog-input",
             $parent: this.$localGamelogWrapper,
+        });
+
+        this.gamelogInput.on("loading", function() {
+            self._localGamelogLoading();
         });
 
         this.$connectionWrapper = this.$element.find(".connection-info").addClass("collapsed");
@@ -34,7 +39,6 @@ var FileTab = Classe(BaseElement, {
         });
 
 
-        var self = this;
         this.remoteGamelogTypeInput.on("changed", function(newVal) {
             self._onRemoteGamelogTypeChange(newVal);
         });
@@ -193,6 +197,27 @@ var FileTab = Classe(BaseElement, {
         this.$connectionLog.append($("<li>")
             .html(str)
         );
+    },
+
+    /**
+     * Invoked when the local gamelog input starts loading a file
+     */
+    _localGamelogLoading: function() {
+        Viseur.gui.modalMessage("Loading local gamelog.");
+
+        this.gamelogInput.on("loaded", function(str) {
+            Viseur.gui.modalMessage("Local gamelog loaded");
+
+            var gamelog;
+            try {
+                gamelog = JSON.parse(str);
+            }
+            catch(err) {
+                return Viseur.gui.modalError("Error parsing local gamelog");
+            }
+
+            Viseur.gamelogLoaded(gamelog);
+        });
     },
 });
 

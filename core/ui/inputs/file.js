@@ -10,6 +10,28 @@ var File = Classe(BaseInput, {
         BaseInput.init.call(this, $.extend({
             type: "file",
         }, args));
+
+        var self = this;
+        this.$element.on("change", function() {
+            self._load();
+        });
+    },
+
+    /**
+     * loads the contents of the chosen file
+     */
+    _load: function() {
+        this._emit("loading");
+
+        var reader = new FileReader();
+
+        var self = this;
+        reader.onload = function() {
+            self._emit("loaded", reader.result);
+        };
+
+        var file = this.$element[0].files[0];
+        reader.readAsText(file);
     },
 
     /**
