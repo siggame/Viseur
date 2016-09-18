@@ -124,6 +124,7 @@ var TimeManager = Classe(Observable, {
         }
         else {
             this._pause();
+            this._emit("ended");
         }
     },
 

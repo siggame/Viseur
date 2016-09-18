@@ -37,7 +37,10 @@ var SettingsManager = Classe(Observable, {
      * @param {*} value - the new value to store for namespace.key
      */
     set: function(namespace, key, value) {
-        var id = this._getID(namespace, key);
+        var id = namespace;
+        if(key) { // then they did not pre-generate the id, so generate it
+            id = this._getID(namespace, key);
+        }
 
         store.set(id, value);
 
@@ -65,7 +68,23 @@ var SettingsManager = Classe(Observable, {
      */
     _getID: function(/* ... */) {
         return Array.prototype.join.call(arguments, ".");
-    }
+    },
+
+    /**
+     * Check if this SettingsManager has some setting saved (checks for existance)
+     *
+     * @param {string} namespace - the namespace of the key, or the id (namespace.key)
+     * @param {string} [key] - the key in the namespace
+     * @returns {Boolean} true if the SettingManager has a value saved for the namespace.key, false otherwise
+     */
+    has: function(namespace, key) {
+        var id = namespace;
+        if(key) { // then they did not pre-generate the id, so generate it
+            id = this._getID(namespace, key);
+        }
+
+        return store.has(id);
+    },
 });
 
 module.exports = new SettingsManager(); // singleton

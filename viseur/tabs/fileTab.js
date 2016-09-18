@@ -117,9 +117,13 @@ var FileTab = Classe(BaseElement, {
     _onRemoteGamelogTypeChange: function(newType) {
         var port = parseInt(window.location.port);
         var showName = false;
+        var showPort = true;
+        var showGame = true;
+
         switch(newType) {
             case "Arena":
-                port = 7777;// TODO: find arena port
+                showPort = false;
+                showGame = false;
                 break;
             case "Human":
                 port = 3088;
@@ -135,7 +139,11 @@ var FileTab = Classe(BaseElement, {
         }
 
         this.portInput.setValue(port);
+        this.portInput.field.$element.toggleClass("collapsed", !showPort);
+
         this.nameInput.field.$element.toggleClass("collapsed", !showName);
+
+        this.gameInput.field.$element.toggleClass("collapsed", !showGame);
     },
 
     /**

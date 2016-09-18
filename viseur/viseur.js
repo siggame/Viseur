@@ -1,5 +1,6 @@
 var $ = require("jquery");
 var queryString = require("query-string");
+var utils = require("core/utils");
 var Classe = require("classe");
 var Observable = require("core/observable");
 var Parser = require("./parser");
@@ -58,23 +59,61 @@ var Viseur = Classe(Observable, {
         var self = this;
         this.urlParms = queryString.parse(location.search);
 
+        // set Settings via url parms if they are valid
+        for(var key in this.urlParms) {
+            if(SettingsManager.has(key)) {
+                SettingsManager.set(key, null, utils.unstringify(this.urlParms[key]));
+            }
+        }
+
+        // check if the gamelog url is remote
         var logUrl = this.urlParms.log || this.urlParms.logUrl || this.urlParms.logURL;
         if(logUrl) {
-            this.gui.modalMessage("Loading remote gamelog");
-            this._emit("gamelog-is-remote", logUrl);
-
+            this._loadRemoteGamelog(logUrl);
+        }
+        else if(this.urlParms.arena) { // then we are in arena mode
             $.ajax({
-                dataType: "json",
-                url: logUrl,
-                success: function(data) {
-                    self.gui.modalMessage("Initializing Visualizer.");
-                    self._gamelogLoaded(data);
+                dataType: "text",
+                url: this.urlParms.arena,
+                crossDomain: true,
+                success: function(gamelogURL) {
+                    self._loadRemoteGamelog(gamelogURL);
                 },
                 error: function() {
-                    self.gui.modalError("Error loading remote gamelog.");
+                    self.gui.modalError("Error loading gamelog url from arena.");
                 },
             });
+
+            // when we finish playback (the timer reaches its end), wait 3 seconds, then reload the window (which will grab a new gamelog and do all this again)
+            this.timeManager.on("ended", function() {
+                setTimeout(function() {
+                    location.reload();
+                }, 3000);
+            });
         }
+    },
+
+    /**
+     * Does an ajax call to load a remote gamelog at some url
+     *
+     * @param {string} url - a url that will respond with the gamelog to load
+     */
+    _loadRemoteGamelog: function(url) {
+        this.gui.modalMessage("Loading remote gamelog");
+        this._emit("gamelog-is-remote", url);
+
+        $.ajax({
+            dataType: "json",
+            url: url,
+            success: function(data) {
+                self.gui.modalMessage("Initializing Visualizer.");
+                self._gamelogLoaded(data);
+                self.gui.goFullscreen();
+            },
+            error: function() {
+                self.gui.modalError("Error loading remote gamelog.");
+            },
+        });
     },
 
     /**
@@ -237,7 +276,7 @@ var Viseur = Classe(Observable, {
 
         switch(data.type.toLowerCase()) {
             case "arena":
-                callback = this._connectToArena; // TODO: Do
+                callback = this._startArena; // TODO: Do
                 break;
             case "spectate":
                 callback = this._spectate;
@@ -270,6 +309,21 @@ var Viseur = Classe(Observable, {
         this._initJoueur(server, port, gameName, {
             spectating: true,
         });
+    },
+
+    /**
+     * Starts up "arena" mode, which grabs gamelogs from a url, then plays, it, then repeats
+     *
+     * @param {String} url - url to start grabbing arena gamelog urls from
+     */
+    _startArena: function(url) {
+        if(utils.validateURL(url)) {
+            this.urlParms.arena = url;
+            location.search = queryString.stringify(this.urlParms);
+        }
+        else {
+            this.gui.modalError("Invalid url for arena mode");
+        }
     },
 
     _initJoueur: function(server, port, gameName, optionalArgs) {

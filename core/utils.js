@@ -38,4 +38,41 @@ module.exports = {
 
        return a * (1 - t) + b * t;
     },
+
+    /**
+     * Takes a string and tries to convert it to the primitive it looks like
+     *
+     * @param {string} str - string to try to convert
+     * @returns {[type]} [description]
+     */
+    unstringify: function(str) {
+        switch(str.toUpperCase()) { // check for bools
+            case "TRUE":
+                return true;
+            case "FALSE":
+                return false;
+            case "NULL":
+                return null;
+        }
+
+        // check if number
+        var num = parseFloat(str);
+        if(!isNaN(num)) {
+            return num;
+        }
+
+        return str; // looks like a string after all
+    },
+
+    /**
+     * Validates that a string is a valid url
+     *
+     * @param {String} str - string to try to validate
+     * @returns {Boolean} true if looks like a valid url, false otherwise
+     */
+    validateURL: function(str) {
+        var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+
+        return regexp.test(str);
+    },
 };
