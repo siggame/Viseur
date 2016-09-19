@@ -99,6 +99,7 @@ var Viseur = Classe(Observable, {
      * @param {string} url - a url that will respond with the gamelog to load
      */
     _loadRemoteGamelog: function(url) {
+        var self = this;
         this.gui.modalMessage("Loading remote gamelog");
         this._emit("gamelog-is-remote", url);
 
