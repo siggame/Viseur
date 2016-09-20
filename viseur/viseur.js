@@ -105,16 +105,36 @@ var Viseur = Classe(Observable, {
         this._emit("gamelog-is-remote", url);
 
         $.ajax({
-            dataType: "json",
+            dataType: "text",
             url: url,
             success: function(data) {
                 self.gui.modalMessage("Initializing Visualizer.");
-                self.gamelogLoaded(data);
+                self.parseGamelog(data);
             },
             error: function() {
                 self.gui.modalError("Error loading remote gamelog.");
             },
         });
+    },
+
+    /**
+     * Parses a json string to a gamelog
+     *
+     * @param {string} str - json formatted string
+     * @returns {[type]} [description]
+     */
+    parseGamelog: function(str) {
+        this._unparsedGamelog = str;
+        var parsed;
+
+        try {
+            parsed = JSON.parse(str);
+        }
+        catch(err) {
+            return self.gui.modalError("Error parsing gamelog");
+        }
+
+        this.gamelogLoaded(parsed);
     },
 
     /**
@@ -264,7 +284,7 @@ var Viseur = Classe(Observable, {
     _checkIfReady: function() {
         if(this._loadedTextures && (!this._joueur || this._joueur.hasStarted())) { // then we are ready to start
             this.gui.hideModal();
-            this._emit("ready", this.game, this._rawGamelog);
+            this._emit("ready", this.game, this._rawGamelog, this._unparsedGamelog);
         }
     },
 
@@ -375,8 +395,8 @@ var Viseur = Classe(Observable, {
             self._emit("gamelog-updated", self._rawGamelog);
         });
 
-        this._joueur.on("event-over", function() {
-            self._emit("gamelog-finalized", self._rawGamelog);
+        this._joueur.on("event-over", function(data) {
+            self._emit("gamelog-finalized", self._rawGamelog, data.gamelogURL);
         });
     },
 });

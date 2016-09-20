@@ -21,10 +21,23 @@ var Joueur = Classe(Observable, {
         }
     },
 
+    /**
+     * Gets the gamelog this client is streaming
+     *
+     * @returns {Object} the current gamelog, but it will probably be incomplete
+     */
     getGamelog: function() {
         return this._gamelog;
     },
 
+    /**
+     * Connect to some Cerveau game server
+     *
+     * @param {string} [server=localhost] - the location of the server
+     * @param {number} [port=3088] - the port at which the server is listening for websocket clients
+     * @param {string} gameName - the game to connect to and play
+     * @param {Object} [optionalArgs] - optional arguments to send to the game server
+     */
     connect: function(server, port, gameName, optionalArgs) {
         var self = this;
         server = server || "localhost";
@@ -61,7 +74,7 @@ var Joueur = Classe(Observable, {
                 console.log("FROM SERVER <-- ", message.data);
             }
 
-            self.received(JSON.parse(message.data));
+            self._received(JSON.parse(message.data));
         };
 
         this._ws.onclose = function() {
@@ -69,7 +82,12 @@ var Joueur = Classe(Observable, {
         };
     },
 
-    received: function(data) {
+    /**
+     * Invoked when we recieve some data from the websocket
+     *
+     * @param {Object} data - Cerveau interchange formatted data
+     */
+    _received: function(data) {
         var eventName = data.event.upcaseFirst();
 
         var funct = this["_autoHandle" + eventName];
@@ -80,30 +98,61 @@ var Joueur = Classe(Observable, {
         this._emit("event-" + eventName.toLowerCase(), data.data);
     },
 
+    /**
+     * Invoked automatically to handle the 'over' events
+     *
+     * @param {Object} data - game over data
+     */
     _autoHandleOver: function(data) {
         this._ws.close();
     },
 
+    /**
+     * Invoked automatically to handle the 'over' events
+     *
+     * @param {Object} data - start data, such as playerID, gameName
+     */
     _autoHandleStart: function(data) {
         this._started = true;
     },
 
+    /**
+     * Checks if the Joueur has recorded that the game has started
+     *
+     * @returns {boolean} true if started, false otherwise
+     */
     hasStarted: function() {
         return Boolean(this._started);
     },
 
+    /**
+     * Invoked automatically to handle the 'lobbied' events
+     *
+     * @param {Object} data - data about what game session this client is lobbied in, such as 'session' and 'gameName'
+     */
     _autoHandleLobbied: function(data) {
         this._gamelog.gameName = data.gameName;
         this._gamelog.gameSession = data.gameSession;
         this._gamelog.constants = data.constants;
     },
 
+    /**
+     * Invoked automatically to handle the 'delta' events
+     *
+     * @param {Object} data - a delta about what changed in the game
+     */
     _autoHandleDelta: function(data) {
         this._gamelog.deltas.push({
             game: data,
         });
     },
 
+    /**
+     * Sends some event to the Cerveau game server connected to
+     *
+     * @param {string} eventName - name of the event, should be something Cerveau expects
+     * @param {*} [data] - additional data about the event
+     */
     send: function(eventName, data) {
         // NOTE: this does not serialize game objects, so don't be sending cycles like other joueurs
         var str = JSON.stringify({

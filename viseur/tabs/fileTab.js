@@ -95,23 +95,22 @@ var FileTab = Classe(BaseElement, {
             self._log("Downloading remote gamelog at " + url);
         });
 
-        Viseur.on("ready", function(gameName, gamelog) {
+        Viseur.on("ready", function(gameName, gamelog, unparsedGamelog) {
+            self.$localGamelogWrapper.addClass("collapsed");
+            self.$remoteGamelogWrapper.addClass("collapsed");
+
             if(!gamelog.streaming) { // then let them download the gamelog from memory, otherwise it is being streamed so the gamelog in memory is incomplete
                 self.$gamelogDownloadLink.on("click", function() {
-                    var blob = new Blob([JSON.stringify(gamelog)], {type: "application/json;charset=utf-8"});
-                    filesaverjs.saveAs(blob, "gamelog.json");
+                    var blob = new Blob([unparsedGamelog], {type: "application/json;charset=utf-8"});
+                    filesaverjs.saveAs(blob, "{}-{}.json".format(gamelog.gameName, gamelog.gameSession));
                 });
 
                 self._log("Gamelog successfuly loaded.");
-            }
-
-            self.$localGamelogWrapper.addClass("collapsed");
-            self.$remoteGamelogWrapper.addClass("collapsed");
-            if(!gamelog.streaming) {
                 self.$gamelogDownloadSection.removeClass("collapsed");
             }
-            else { // don't show them the downlaod section untill the gamelog is finished streaming in
-                Viseur.on("gamelog-finalized", function() {
+            else { // don't show them the downlaod section until the gamelog is finished streaming in
+                Viseur.on("gamelog-finalized", function(finalGamelog, gamelogURL) {
+                    self.$gamelogDownloadLink.attr("href", gamelogURL);
                     self.$gamelogDownloadSection.removeClass("collapsed");
                 });
             }
@@ -215,15 +214,7 @@ var FileTab = Classe(BaseElement, {
         this.gamelogInput.on("loaded", function(str) {
             Viseur.gui.modalMessage("Local gamelog loaded");
 
-            var gamelog;
-            try {
-                gamelog = JSON.parse(str);
-            }
-            catch(err) {
-                return Viseur.gui.modalError("Error parsing local gamelog");
-            }
-
-            Viseur.gamelogLoaded(gamelog);
+            Viseur.parseGamelog(str);
         });
     },
 });
