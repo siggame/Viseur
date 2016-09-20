@@ -42,8 +42,9 @@ $contrast: 10%;
     transition: all .2s ease;
 
     &:disabled {
-        cursor: normal;
+        cursor: default;
         background: $disabled-track-color;
+        opacity: 0.5;
     }
 }
 
@@ -57,12 +58,13 @@ $contrast: 10%;
     cursor: pointer;
 
     &:disabled {
-        cursor: normal;
+        cursor: default;
         background: $disabled-thumb-color;
+        opacity: 0.5;
     }
 }
 
-[type=range] {
+input[type=range] {
     -webkit-appearance: none;
     //margin: $thumb-height / 2 0;
 
@@ -82,6 +84,11 @@ $contrast: 10%;
         @include thumb();
         -webkit-appearance: none;
         margin-top: ((-$track-border-width * 2 + $track-height) / 2) - ($thumb-height / 2);
+        &:disabled {
+            cursor: default;
+            background: $disabled-thumb-color;
+            opacity: 0.5;
+        }
     }
 
     &:focus::-webkit-slider-runnable-track {
@@ -98,6 +105,11 @@ $contrast: 10%;
 
     &::-moz-range-thumb {
         @include thumb();
+        &:disabled {
+            cursor: default;
+            background: $disabled-thumb-color;
+            opacity: 0.5;
+        }
     }
 
     &::-ms-track {
@@ -128,6 +140,11 @@ $contrast: 10%;
 
     &::-ms-thumb {
         @include thumb();
+        &:disabled {
+            cursor: default;
+            background: $disabled-thumb-color;
+            opacity: 0.5;
+        }
     }
 
     &:focus::-ms-fill-lower {
@@ -140,5 +157,11 @@ $contrast: 10%;
 
     &:focus::-ms-fill-upper {
         background: darken($track-color, $contrast);
+    }
+
+    &:disabled {
+        cursor: default;
+        background: $disabled-track-color;
+        opacity: 0.5;
     }
 }

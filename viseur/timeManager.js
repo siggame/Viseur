@@ -61,8 +61,14 @@ var TimeManager = Classe(Observable, {
             self._pause(index, dt);
         });
 
-        Viseur.on("gamelog-updated", function() {
-            self._play();
+        Viseur.on("gamelog-updated", function(gamelog) {
+            if(self._currentIndex < gamelog.deltas.length) {
+                self._play();
+            }
+        });
+
+        Viseur.on("gamelog-finalized", function(gamelog) {
+            self._numberOfDeltas = gamelog.deltas.length;
         });
     },
 

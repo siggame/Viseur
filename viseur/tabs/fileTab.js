@@ -107,7 +107,14 @@ var FileTab = Classe(BaseElement, {
 
             self.$localGamelogWrapper.addClass("collapsed");
             self.$remoteGamelogWrapper.addClass("collapsed");
-            self.$gamelogDownloadSection.removeClass("collapsed");
+            if(!gamelog.streaming) {
+                self.$gamelogDownloadSection.removeClass("collapsed");
+            }
+            else { // don't show them the downlaod section untill the gamelog is finished streaming in
+                Viseur.on("gamelog-finalized", function() {
+                    self.$gamelogDownloadSection.removeClass("collapsed");
+                });
+            }
         });
     },
 

@@ -77,6 +77,7 @@ var Viseur = Classe(Observable, {
                 url: this.urlParms.arena,
                 crossDomain: true,
                 success: function(gamelogURL) {
+                    self.gui.goFullscreen();
                     self._loadRemoteGamelog(gamelogURL);
                 },
                 error: function() {
@@ -109,7 +110,6 @@ var Viseur = Classe(Observable, {
             success: function(data) {
                 self.gui.modalMessage("Initializing Visualizer.");
                 self.gamelogLoaded(data);
-                self.gui.goFullscreen();
             },
             error: function() {
                 self.gui.modalError("Error loading remote gamelog.");
@@ -131,15 +131,52 @@ var Viseur = Classe(Observable, {
         }
         // else we didn't "load" the gamelog, it's streaming to us
 
+        // we keep the current and next state here, fully merged with all game information.
         this._mergedDelta = {
             index: -1,
             currentState: {},
-            nextState: gamelog.deltas.length > 0 ? this._parser.mergeDelta({}, gamelog.deltas[0].game) : undefined,
+            nextState: this._parser.mergeDelta({}, gamelog.deltas[0].game),
         };
 
-        if(gamelog.deltas.length > 0) {
+        if(!this._joueur && gamelog.deltas.length > 0) {
             this._initGame(gamelog.gameName);
         }
+    },
+
+    /**
+     * Initializes the Game object for the specified gameName. The class created will be the one in /games/{gameName}/game.js
+     *
+     * @param {string} gameName - name of the game to initialize. Must be a valid game name, or throwns an error
+     */
+    _initGame: function(gameName) {
+        var gameNamespace = this._games[gameName];
+
+        if(!gameNamespace) {
+            throw new Error("Cannot load data for game '{}'.".format(gameName));
+        }
+
+        if(this.game) {
+            throw new Error("Viseur game already initialized");
+        }
+
+        if(!this._joueur) {
+            this._updateCurrentState(0); // create the initial states
+        }
+
+        this.game = new gameNamespace.Game(this._rawGamelog);
+
+        var textures = {};
+
+        for(var key in this.game.namespace.textures) {
+            if(this.game.namespace.textures.hasOwnProperty(key)) {
+                textures[key] = "games/" + this.game.namespace.dir + "/textures/" + this.game.namespace.textures[key];
+            }
+        }
+        var self = this;
+        this.renderer.loadTextures(textures, function() {
+            self._loadedTextures = true;
+            self._checkIfReady();
+        });
     },
 
     /**
@@ -154,7 +191,7 @@ var Viseur = Classe(Observable, {
         var long = Math.abs(index - d.index) > 25; // the loading time may be long
 
         if(long) {
-            this.gui.modalMessage("Loading...");
+            this.gui.modalMessage("Loading game state...");
         }
 
         // if increasing index...
@@ -217,40 +254,6 @@ var Viseur = Classe(Observable, {
      */
     getCurrentState: function() {
         return this._currentState;
-    },
-
-    /**
-     * Initializes the Game object for the specified gameName. The class created will be the one in /games/{gameName}/game.js
-     *
-     * @param {string} gameName - name of the game to initialize. Must be a valid game name, or throwns an error
-     */
-    _initGame: function(gameName) {
-        var gameNamespace = this._games[gameName];
-
-        if(!gameNamespace) {
-            throw new Error("Cannot load data for game '{}'.".format(gameName));
-        }
-
-        if(this.game) {
-            throw new Error("Viseur game already initialized");
-        }
-
-        this._updateCurrentState(0, 0); // create the initial state
-
-        this.game = new gameNamespace.Game(this._rawGamelog);
-
-        var textures = {};
-
-        for(var key in this.game.namespace.textures) {
-            if(this.game.namespace.textures.hasOwnProperty(key)) {
-                textures[key] = "games/" + this.game.namespace.dir + "/textures/" + this.game.namespace.textures[key];
-            }
-        }
-        var self = this;
-        this.renderer.loadTextures(textures, function() {
-            self._loadedTextures = true;
-            self._checkIfReady();
-        });
     },
 
     /**
@@ -337,7 +340,7 @@ var Viseur = Classe(Observable, {
     _initJoueur: function(server, port, gameName, optionalArgs) {
         var self = this;
         this._joueur = new Joueur(server, port, gameName, optionalArgs);
-
+        this._rawGamelog = self._joueur.getGamelog();
 
         this._joueur.on("connected", function() {
             self.gui.modalMessage("Awaiting game...");
@@ -346,8 +349,6 @@ var Viseur = Classe(Observable, {
         });
 
         this._joueur.on("event-lobbied", function(data) {
-            self.gamelogLoaded(self._joueur.getGamelog());
-
             gameName = data.gameName;
 
             self.gui.modalMessage("In lobby '{gameSession}' for '{gameName}'. Waiting for game to start.".format(data));
@@ -367,11 +368,15 @@ var Viseur = Classe(Observable, {
         });
 
         this._joueur.on("event-delta", function() {
-            if(self._rawGamelog.deltas.length === 0) {
-                self._updateCurrentState(0);
+            if(self._rawGamelog.deltas.length === 1) {
+                self.gamelogLoaded(self._rawGamelog);
             }
 
             self._emit("gamelog-updated", self._rawGamelog);
+        });
+
+        this._joueur.on("event-over", function() {
+            self._emit("gamelog-finalized", self._rawGamelog);
         });
     },
 });

@@ -15,7 +15,7 @@ var playbackInputs = [
     { name: "playPauseButton", classe: inputs.Button, location: "bottomLeft" },
     { name: "backButton", classe: inputs.Button, location: "bottomLeft" },
     { name: "nextButton", classe: inputs.Button, location: "bottomLeft" },
-    { name: "speedSlider", classe: inputs.Slider, location: "bottomRight", min: -10, max: -0.1, step: "any" },
+    { name: "speedSlider", classe: inputs.Slider, location: "bottomRight", min: -10, max: -0.7, step: "any" },
     { name: "fullscreenButton", classe: inputs.Button, location: "bottomRight" },
 ];
 
@@ -60,6 +60,10 @@ var PlaybackPane = Classe(Observable, BaseElement, {
 
         Visuer.on("gamelog-updated", function(gamelog) {
             self._updatePlaybackSlider(gamelog);
+        });
+
+        Visuer.on("gamelog-finalized", function() {
+            self.enable();
         });
 
         Visuer.timeManager.on("playing", function() {
@@ -129,6 +133,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
      * @param {Object} gamelog - the gamelog that was loaded
      */
     _viseurReady: function(gamelog) {
+        var self = this;
         this._numberOfDeltas = gamelog.deltas.length;
 
         if(!gamelog.streaming) {
@@ -136,6 +141,9 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         }
         else {
             this.speedSlider.enable(); // while streaming the gamelog only enable the speed slider
+            Visuer.on("gamelog-finalized", function(finalGamelog) {
+                self._numberOfDeltas = finalGamelog.deltas.length;
+            });
         }
 
         this.playbackSlider.setValue(0);
