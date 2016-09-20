@@ -27,12 +27,12 @@ var Piece = Classe(GameObject, {
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        var color = initialState.owner.id === "0" ? "white" : "black";
-        var type = initialState.type.toLowerCase();
+        this._initialSpriteKey = this._generateSpriteKey(initialState);
 
         this._initContainer(this.game.boardContainer);
 
-        this._sprite = this.renderer.newSprite(color + "-" + type, this.container);
+        this._spriteInitial = this.renderer.newSprite(this._initialSpriteKey, this.container);
+        this._spritePromoted = null; // used if the pawn is promoted
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -102,6 +102,31 @@ var Piece = Classe(GameObject, {
         //<<-- /Creer-Merge: render -->>
     },
 
+    /**
+     * Invoked when the state updates.
+     *
+     * @private
+     */
+    _stateUpdated: function() {
+        GameObject._stateUpdated.apply(this, arguments);
+
+        //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        if(!this._spritePromoted) { // check to see if we need to find the promoted sprite
+            var spriteKey = this._generateSpriteKey();
+            if(this._initialSpriteKey !== spriteKey) { // then we need to make that sprite
+                this._spritePromoted = this.renderer.newSprite(spriteKey, this.container);
+            }
+        }
+        else { // need to display the correct sprite if at this state is has or has not been promoted
+            var isPawn = (this.current.type.toLowerCase() === "pawn");
+
+            this._spriteInitial.visible = isPawn;
+            this._spritePromoted.visible = !isPawn;
+        }
+
+        //<<-- /Creer-Merge: _stateUpdated -->>
+    },
 
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -112,6 +137,20 @@ var Piece = Classe(GameObject, {
      * @type {number}
      */
     _bottomOffset: 0.125,
+
+    /**
+     * Generates the sprite key for the chess piece
+     *
+     * @param {string} [state] - state override, otherwise will use the current or next state
+     * @returns {string} key for a sprite that represents this chess piece
+     */
+    _generateSpriteKey: function(state) {
+        state = state || this.current || this.next;
+        var color = state.owner.id === "0" ? "white" : "black";
+        var type = state.type.toLowerCase();
+
+        return (color + "-" + type);
+    },
 
     /**
      * Transforms a (file, rank) coordinate to (x, y), e.g.: ('a', 1) -> (0, 7).

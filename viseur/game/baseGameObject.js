@@ -7,6 +7,12 @@ var Observable = require("core/observable");
  * @class BaseGameObject - the base class all GameObjects inherit from
  */
 var BaseGameObject = Classe(Observable, {
+    /**
+     * Initializes a BaseGameObject, should be invoked by subclass
+     *
+     * @param {Object} initialState - fully merged delta state for this object's first existance
+     * @param {BaseGa,e} game - The game this game object is being rendered in
+     */
     init: function(initialState, game) {
         Observable.init.call(this);
         this.id = initialState.id;
@@ -18,17 +24,28 @@ var BaseGameObject = Classe(Observable, {
 
     /**
      * updates the game object's current and next state, prior to rendering
-     * @param   {Object}   current - the current state
-     * @param   {Object}   next    - the next state
+     *
+     * @param {Object} current - the current state
+     * @param {Object} next - the next state
      */
     update: function(current, next) {
         this.current = current;
         this.next = next;
+
+        this._stateUpdated();
     },
 
     /**
+     * Inoked when the state updates. Intended to be overriden by subclass(es)
+     *
+     * @private
+     */
+    _stateUpdated: function() {},
+
+    /**
      * Initializes the PIXI.Container that this GameObject's sprites can go in
-     * @param   {PIXI.Container} parent - the parent container
+     *
+     * @param {PIXI.Container} parent - the parent container
      */
     _initContainer: function(parent) {
         var self = this;
@@ -45,7 +62,11 @@ var BaseGameObject = Classe(Observable, {
         this.container.interactive = true;
 
         this.container.on("mouseupoutside", onClick);
-        this.container.on("mousedown", onClick);
+        this.container.on("mouseup", onClick);
+
+        this.container.on("rightup", onClick);
+        this.container.on("rightupoutside", onClick);
+
         this.container.on("touchend", onClick);
         this.container.on("touchendoutside", onClick);
 
@@ -107,7 +128,6 @@ var BaseGameObject = Classe(Observable, {
 
     /**
      * Initializes the PIXI objects for drawing a rounded rectable around the GameObject for highlights
-     * @returns {[type]} [description]
      */
     _initGraphicsForUX: function() {
         this._uxGraphics = new PIXI.Graphics();

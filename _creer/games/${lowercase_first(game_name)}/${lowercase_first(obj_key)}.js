@@ -105,10 +105,22 @@ ${merge("    //", "shouldRender", "    shouldRender: false,")}
         ${parent_class}.render.apply(this, arguments);
 % endfor
 
-${merge("        //", "render", "        // update and render where the " + obj_key + " is")}
+${merge("        //", "render", "        // render where the " + obj_key + " is")}
     },
-
 % endif
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @private
+     */
+    _stateUpdated: function() {
+% for parent_class in reversed(parent_classes):
+        ${parent_class}._stateUpdated.apply(this, arguments);
+% endfor
+
+${merge("        //", "_stateUpdated", "        // update the " + obj_key + " based on its current and next states")}
+    },
 
 
 ${merge("    //", "functions", "    // any additional functions you want to add to this class can be perserved here")}

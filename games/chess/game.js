@@ -7,7 +7,9 @@ var ease = require("core/utils").ease;
 var BaseGame = require("viseur/game/baseGame");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-// any additional requires you want can be required here safely between Creer runs
+
+var Chess = require("chess.js");
+
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -33,6 +35,9 @@ var Game = Classe(BaseGame, {
         BaseGame._start.call(this);
 
         //<<-- Creer-Merge: _start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        this._chess = new Chess();
+        this._updateChess();
 
         var length = 8 + this._borderLength*2;
         this.renderer.setSize(length, length);
@@ -145,6 +150,21 @@ var Game = Classe(BaseGame, {
         //<<-- /Creer-Merge: _renderBackground -->>
     },
 
+    /**
+     * Invoked when the state updates.
+     *
+     * @private
+     */
+    _stateUpdated: function() {
+        BaseGame._stateUpdated.apply(this, arguments);
+
+        //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        this._updateChess();
+
+        //<<-- /Creer-Merge: _stateUpdated -->>
+    },
+
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
@@ -201,6 +221,12 @@ var Game = Classe(BaseGame, {
                 sprite.x = x;
                 sprite.y = flipBoard ? 7 - y : y;
             }
+        }
+    },
+
+    _updateChess: function() {
+        if(this._chess) {
+            this._chess.load(this.current.fen);
         }
     },
 

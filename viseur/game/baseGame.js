@@ -138,8 +138,17 @@ var BaseGame = Classe(Observable, {
             this.pane.update(state);
         }
 
+        this._stateUpdated();
+
         return state;
     },
+
+    /**
+     * Invoked when the state updates. Intended to be overriden by subclass(es)
+     *
+     * @private
+     */
+    _stateUpdated: function() {},
 
     /**
      * initializes a new game object with the given id

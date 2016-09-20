@@ -24,9 +24,10 @@ var Renderer = Classe(Observable, BaseElement, {
         this._defaultFontFamily = args.defaultFont || $("body").css("font-family").split(",")[0] || "Arial";
         this._pxMaxWidth = 800;
         this._pxMaxHeight = 600;
+        // will be resized, just placeholder dimensions
         this._renderer = new PIXI.autoDetectRenderer(this._pxMaxWidth, this._pxMaxHeight, {
             antialias: SettingsManager.get("viseur", "anti-aliasing", true),
-        }); // will be resized, just placeholder dimensions
+        });
 
         this._bounds = {};
         this.setSize(1, 1);
@@ -41,6 +42,9 @@ var Renderer = Classe(Observable, BaseElement, {
             .append(this._renderer.view)
             .on("resize", function() {
                 self._onParentResized(self.$element.width(), self.$element.height());
+            })
+            .on("contextmenu", function() {
+                return false;
             });
 
         window.requestAnimationFrame(animate);

@@ -62,6 +62,18 @@ var Player = Classe(GameObject, {
         //<<-- /Creer-Merge: render -->>
     },
 
+    /**
+     * Invoked when the state updates.
+     *
+     * @private
+     */
+    _stateUpdated: function() {
+        GameObject._stateUpdated.apply(this, arguments);
+
+        //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // update the Player is based on its current and next states
+        //<<-- /Creer-Merge: _stateUpdated -->>
+    },
 
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
