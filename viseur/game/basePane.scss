@@ -1,13 +1,21 @@
 @import "core/colors";
 
 .game-pane {
-    background: $light-gray;
+    background-color: $light-gray;
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 6em;
-    padding: 1em 0;
+    height: 8.5em;
+    padding: 0 0 1em 0;
     width: 100%;
+
+    & .top-game-info {
+        width: 100%;
+        background-color: $light-black;
+        color: $white;
+        text-align: center;
+        padding: 0.25em 0;
+    }
 
     & .players-wrapper {
         display: table;
@@ -25,9 +33,14 @@
 
                 & .player {
                     padding: 1em;
-                    background: $white;
+                    background-color: $white;
                     border: 0.5em $light-gray solid;
                     color: $white;
+
+                    // programming language background
+                    background-repeat: no-repeat;
+                    background-position: center right 16px;
+                    background-size: 48px 48px;
 
                     & .player-name {
                         font-weight: bold;
@@ -61,5 +74,9 @@
                 }
             }
         }
+    }
+
+    & .player-wrapper:nth-child(2) .player {
+        background-position: center left 16px;
     }
 }

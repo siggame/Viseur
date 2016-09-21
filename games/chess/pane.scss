@@ -4,7 +4,7 @@
 
 .game-pane.game-Chess {
     & .player-wrapper:nth-child(1) .player {
-        background: #FFF !important;
+        background-color: #FFF !important;
         color: $black !important;
 
         & .player-time {
@@ -13,7 +13,7 @@
     }
 
     & .player-wrapper:nth-child(2) .player {
-        background: #000 !important;
+        background-color: #000 !important;
     }
 }
 

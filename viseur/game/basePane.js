@@ -28,6 +28,9 @@ var BasePane = Classe(BaseElement, {
 
         this.$element.addClass("game-" + this.game.name);
 
+        this._$top = this.$element.find(".top-game-info");
+        this._$currentTurn = this.$element.find(".current-turn");
+
         var $players = this.$element.find(".player");
         this._$players = {};
         for(i = 0; i < $players.length; i++) {
@@ -49,6 +52,13 @@ var BasePane = Classe(BaseElement, {
      * updates the base pane upon a new state
      */
     update: function() {
+        // update top
+        var turn = this.game.current.currentTurn;
+        if(turn !== undefined) {
+            this._$currentTurn.html(turn);
+        }
+
+        // update players
         var players = this.game.current.players;
         for(var i = 0; i < players.length; i++) {
             var playerID = players[i].id;
@@ -62,7 +72,9 @@ var BasePane = Classe(BaseElement, {
             var nsAsDate = new Date(Math.round(player.timeRemaining / 1000000)); // convert ns to ms, which is what Date() expects
             $player.$time.html(dateFormat(nsAsDate, "MM:ss:l"));
 
-            $player.$element.toggleClass("current-player", this.game.current.currentPlayer.id === playerID);
+            $player.$element
+                .toggleClass("current-player", this.game.current.currentPlayer.id === playerID)
+                .css("background-image", 'url("viseur/programming-languages/{}.png")'.format(player.clientType.toLowerCase()));
         }
     },
 });
