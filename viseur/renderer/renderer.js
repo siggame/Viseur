@@ -7,6 +7,7 @@ var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
 var Observable = require("core/observable");
 var SettingsManager = require("viseur/settingsManager");
+var ContextMenu = require("core/ui/contextMenu");
 
 /**
  * @class Renderer - Singleton that hanles rendering (visualizing) the game
@@ -47,6 +48,28 @@ var Renderer = Classe(Observable, BaseElement, {
                 return false;
             });
 
+        this.contextMenu = new ContextMenu({
+            $parent: this.$element,
+        });
+
+        this.contextMenu.setStructure([
+            {
+                icon: "eye",
+                text: "Show more...",
+                callback: function() {
+                    console.log("show somethign...");
+                },
+            },
+            "---",
+            {
+                icon: "camera",
+                text: "Take pic",
+                callback: function() {
+                    console.log("Click, you're on candid camera!");
+                },
+            }
+        ]);
+
         window.requestAnimationFrame(animate);
         function animate() {
             window.requestAnimationFrame(animate);
@@ -68,7 +91,8 @@ var Renderer = Classe(Observable, BaseElement, {
     loadTextures: function(textures, callback) {
         var loader = PIXI.loader;
 
-        var hasTextures = false;
+        textures[""] = "viseur/game/blank.png"; // all games have access to the blank (white) square
+
         for(var key in textures) {
             hasTextures = true;
             if(textures.hasOwnProperty(key)) {
@@ -218,6 +242,12 @@ var Renderer = Classe(Observable, BaseElement, {
         pixiText.scale.y = options.height / options.pxSize;
 
         return pixiText;
+    },
+
+    showContextMenu: function(menus, x, y) {
+        this.contextMenu.setStructure(menus);
+
+        this.contextMenu.show(x, y);
     },
 });
 

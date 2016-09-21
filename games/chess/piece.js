@@ -58,7 +58,6 @@ var Piece = Classe(GameObject, {
     /**
      * Called approx 60 times a second to update and render the Piece. Leave empty if it should not be rendered
      *
-     * @private
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      */
     render: function(dt) {
@@ -100,6 +99,28 @@ var Piece = Classe(GameObject, {
         this.container.y -= this._bottomOffset; // push it up a bit to look better
 
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked when the right click menu needs to be shown.
+     *
+     * @private
+     * @returns {Array} array of context menu items, which can be {text, icon, callback} for items, or "---" for a seperator
+     */
+    _getContextMenu: function() {
+        var self = this;
+
+        return [
+            //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+            {
+                text: "Show valid moves",
+                icon: "eye",
+                callback: function() {
+                    self.game.showValidMovesFor(self.id);
+                },
+            }
+            //<<-- /Creer-Merge: _getContextMenu -->>
+        ];
     },
 
     /**
@@ -165,6 +186,13 @@ var Piece = Classe(GameObject, {
             x: file.toLowerCase().charCodeAt(0) - "a".charCodeAt(0),
             y: 8 - rank,
         };
+    },
+
+    /**
+     * Shows all the valid move positions on the board for this Piece
+     */
+    _showValidMoves: function() {
+        this.game.showValidMoves();
     },
 
     //<<-- /Creer-Merge: functions -->>

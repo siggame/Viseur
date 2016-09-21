@@ -51,7 +51,6 @@ var Player = Classe(GameObject, {
     /**
      * Called approx 60 times a second to update and render the Player. Leave empty if it should not be rendered
      *
-     * @private
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      */
     render: function(dt) {
@@ -60,6 +59,22 @@ var Player = Classe(GameObject, {
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // update and render where the Player is
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked when the right click menu needs to be shown.
+     *
+     * @private
+     * @returns {Array} array of context menu items, which can be {text, icon, callback} for items, or "---" for a seperator
+     */
+    _getContextMenu: function() {
+        var self = this;
+
+        return [
+            //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+            // add context menu items here
+            //<<-- /Creer-Merge: _getContextMenu -->>
+        ];
     },
 
     /**

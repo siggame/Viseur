@@ -49,10 +49,6 @@ var BaseGameObject = Classe(Observable, {
      */
     _initContainer: function(parent) {
         var self = this;
-        var onClick = function() {
-            self._clicked();
-        };
-
         this.container = new PIXI.Container();
 
         if(parent) {
@@ -61,14 +57,21 @@ var BaseGameObject = Classe(Observable, {
 
         this.container.interactive = true;
 
+        var onClick = function(e) {
+            self._clicked(e);
+        };
+
         this.container.on("mouseupoutside", onClick);
         this.container.on("mouseup", onClick);
-
-        this.container.on("rightup", onClick);
-        this.container.on("rightupoutside", onClick);
-
         this.container.on("touchend", onClick);
         this.container.on("touchendoutside", onClick);
+
+        var onRightClick = function(e) {
+            self._rightClicked(e);
+        };
+
+        this.container.on("rightup", onRightClick);
+        this.container.on("rightupoutside", onRightClick);
 
         return this.container;
     },
@@ -77,8 +80,82 @@ var BaseGameObject = Classe(Observable, {
      * Invoked when this game object's container is clicked
      */
     _clicked: function() {
-        this._emit("clicked");
+        var menu = this._getContextMenu();
+        if(typeof(menu[0]) === "object") {
+            menu[0].callback();
+        }
     },
+
+    /**
+     * Invoked when this game object's container is right clicked, to pull up its context menu
+     */
+    _rightClicked: function(event) {
+        this._showContextMenu(event.data.global.x, event.data.global.y);
+    },
+
+
+    // Context Menus \\
+
+    /**
+     * Displays a context menu (right click menu) over this game object
+     */
+    _showContextMenu: function(x, y) {
+        this.renderer.showContextMenu(this._getFullContextMenu(), x, y);
+    },
+
+    /**
+     * Gets the full context menu (_getContextMenu + _getBottomContextMenu) and removes unneeded seperators
+     *
+     * @returns {Array} - Any array of items valid for a ContextMenu
+     */
+    _getFullContextMenu: function() {
+        var menu = this._getContextMenu().concat(this._getBottomContextMenu());
+
+        // pop items off the front that are just seperators
+        while(menu[0] === "---") {
+            menu.shift();
+        }
+
+        // pop items off the back that are just seperators
+        while(menu.last() === "---") {
+            menu.pop();
+        }
+
+        return menu;
+    },
+
+    /**
+     * gets the unique context menu items, intended to be overridden by sub classes
+     *
+     * @returns {Array} - Any array of items valid for a ContextMenu
+     */
+    _getContextMenu: function() {
+        return [];
+    },
+
+    /**
+     * Gets the bottom part of the context menu to be automatically appended to the regular _getContextMenu part, should be a seperator + Inspect
+     *
+     * @returns {Array} - Any array of items valid for a ContextMenu
+     */
+    _getBottomContextMenu: function() {
+        var self = this;
+        this._bottomContextMenu = this._bottomContextMenu || [
+            "---",
+            {
+                icon: "code",
+                text: "Inspect",
+                description: "Reveals this GameObject in the Inspector so you can examine variable values.",
+                callback: function() {
+                    self._emit("inspect", self.id);
+                },
+            }
+        ];
+
+        return this._bottomContextMenu;
+    },
+
+
 
     /**
      * Highlights this GameObject

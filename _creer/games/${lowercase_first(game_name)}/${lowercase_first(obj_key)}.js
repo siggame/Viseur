@@ -52,6 +52,15 @@ ${merge("        //", "init", "        // initialization logic goes here")}
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 % if obj_key == "Game":
+
+    /**
+     * If this game supports human playable clients
+     *
+     * @static
+     * @type {boolean}
+     */
+${merge("    //", "humanPlayable", "    humanPlayable: false,")}
+
     /**
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
      *
@@ -97,7 +106,6 @@ ${merge("    //", "shouldRender", "    shouldRender: false,")}
     /**
      * Called approx 60 times a second to update and render the ${obj_key}. Leave empty if it should not be rendered
      *
-     * @private
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      */
     render: function(dt) {
@@ -106,6 +114,20 @@ ${merge("    //", "shouldRender", "    shouldRender: false,")}
 % endfor
 
 ${merge("        //", "render", "        // render where the " + obj_key + " is")}
+    },
+
+    /**
+     * Invoked when the right click menu needs to be shown.
+     *
+     * @private
+     * @returns {Array} array of context menu items, which can be {text, icon, callback} for items, or "---" for a seperator
+     */
+    _getContextMenu: function() {
+        var self = this;
+
+        return [
+${merge("            //", "_getContextMenu", "            // add context menu items here")}
+        ];
     },
 % endif
 
