@@ -56,9 +56,8 @@ module.exports = {
         }
 
         // check if number
-        var num = parseFloat(str);
-        if(!isNaN(num)) {
-            return num;
+        if(!isNaN(str)) {
+            return parseFloat(num);
         }
 
         return str; // looks like a string after all
