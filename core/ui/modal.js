@@ -1,6 +1,5 @@
 require("./modal.scss");
 
-var $ = require("jquery");
 var Classe = require("classe");
 var BaseElement = require("./baseElement");
 
@@ -11,8 +10,7 @@ var Modal = Classe(BaseElement, {
     init: function(args) {
         BaseElement.init.apply(this, arguments);
 
-        this.$content = $(".modal-content", this.$element);
-
+        this.$content = this.$element.find(".modal-content");
         this.$element.addClass("hidden");
     },
 
@@ -21,13 +19,18 @@ var Modal = Classe(BaseElement, {
     /**
      * Shows the modal with some element inside it
      *
-     * @param   {$|string} $element - a jquery element, or a raw string to put inside this modal
+     * @param {$|string} $element - a jquery element, or a raw string to put inside this modal
+     * @param {function} [callback] - callback to execute after showing (not after animation, but after show is invoked async)
      */
-    show: function($element) {
+    show: function($element, callback) {
         var self = this;
         this.$element.removeClass("hidden");
         setTimeout(function() {
             self.$element.addClass("show");
+
+            if(callback) {
+                self.$element.onceTransitionEnds(callback);
+            }
         }, 0);
 
         this.$content

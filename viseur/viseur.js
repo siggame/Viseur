@@ -25,7 +25,7 @@ var Viseur = Classe(Observable, {
         var self = this;
 
         this.timeManager.on("new-index", function(index) {
-            self._updateCurrentState(index);
+            self._updateCurrentStateAsync(index);
         });
 
         this.renderer = new Renderer({
@@ -200,6 +200,26 @@ var Viseur = Classe(Observable, {
     },
 
     /**
+     * Invokes _updateCurrentState asyncronously if it may take a long time, so the gui can update
+     *
+     * @param {number} index - the new states index, must be between [0, deltas.length]
+     */
+    _updateCurrentStateAsync: function(index) {
+        var long = Math.abs(index - this._mergedDelta.index) > 25; // the loading time may be long
+
+        var self = this;
+        if(long) {
+            this.gui.modalMessage("Loading game state...", function() {
+                self._updateCurrentState(index);
+                self.gui.hideModal();
+            });
+        }
+        else { // just do it syncronously
+            this._updateCurrentState(index);
+        }
+    },
+
+    /**
      * Brings the current state & next state to the one at the specificed index. If the current and passed in indexes are far apart this operation can take a decent chunk of time...
      *
      * @param {number} index - the new states index, must be between [0, deltas.length]
@@ -208,11 +228,6 @@ var Viseur = Classe(Observable, {
         var d = this._mergedDelta;
         var deltas = this._rawGamelog.deltas;
         var indexChanged = index !== d.index;
-        var long = Math.abs(index - d.index) > 25; // the loading time may be long
-
-        if(long) {
-            this.gui.modalMessage("Loading game state...");
-        }
 
         // if increasing index...
         while(index > d.index) {
@@ -251,10 +266,6 @@ var Viseur = Classe(Observable, {
             }
 
             d.index--;
-        }
-
-        if(long) {
-            this.gui.hideModal();
         }
 
         if(indexChanged) {

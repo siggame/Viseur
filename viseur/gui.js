@@ -148,22 +148,24 @@ var GUI = Classe(Observable, BaseElement, {
      * Displays a message in the modal
      *
      * @param {string} message to display
+     * @param {function} [callback] - callback to invoke upon showing async
      */
-    modalMessage: function(message) {
+    modalMessage: function(message, callback) {
         this.modal.show(this._loadingPartial({
             message: message
-        }));
+        }), callback);
     },
 
     /**
      * Displays a message to the user, but as an error
      *
      * @param {string} message to display
+     * @param {function} [callback] - callback to invoke upon showing async
      */
     modalError: function(message) {
         this.modal.show(this._loadingPartial({
             message: message,
-        }).addClass("error"));
+        }, callback).addClass("error"));
     },
 
     /**
