@@ -159,8 +159,8 @@ var BaseGame = Classe(Observable, {
         var newGameObject = new this._gameObjectClasses[state.gameObjectName](state, this);
 
         var self = this;
-        newGameObject.on("clicked", function() {
-            self._emit("clicked", id);
+        newGameObject.on("inspect", function() {
+            self._emit("inspect", id);
         });
 
         this.gameObjects[id] = newGameObject;

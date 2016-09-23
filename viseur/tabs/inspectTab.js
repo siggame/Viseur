@@ -68,7 +68,7 @@ var InspectTab = Classe(Observable, BaseElement, {
         this.$element.addClass("gamelog-loaded");
 
         var self = this;
-        game.on("clicked", function(gameObjectID) {
+        game.on("inspect", function(gameObjectID) {
             self.gameTreeView.highlightGameObject(gameObjectID);
             game.highlight(gameObjectID);
 
