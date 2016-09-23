@@ -10,6 +10,17 @@ var TextBox = Classe(BaseInput, {
         BaseInput.init.call(this, $.extend({
             type: "text",
         }, args));
+
+        var self = this;
+        this.$element.on("keypress", function(e) {
+            if(e.which === 13) { // enter key
+                self._emit("submitted", self.getValue());
+            }
+        });
+
+        if(args.placeholder) {
+            this.$element.attr("placeholder", args.placeholder);
+        }
     },
 });
 

@@ -69,7 +69,7 @@ var Viseur = Classe(Observable, {
         // check if the gamelog url is remote
         var logUrl = this.urlParms.log || this.urlParms.logUrl || this.urlParms.logURL;
         if(logUrl) {
-            this._loadRemoteGamelog(logUrl);
+            this.loadRemoteGamelog(logUrl);
         }
         else if(this.urlParms.arena) { // then we are in arena mode
             $.ajax({
@@ -78,7 +78,7 @@ var Viseur = Classe(Observable, {
                 crossDomain: true,
                 success: function(gamelogURL) {
                     self.gui.goFullscreen();
-                    self._loadRemoteGamelog(gamelogURL);
+                    self.loadRemoteGamelog(gamelogURL);
                 },
                 error: function() {
                     self.gui.modalError("Error loading gamelog url from arena.");
@@ -99,7 +99,7 @@ var Viseur = Classe(Observable, {
      *
      * @param {string} url - a url that will respond with the gamelog to load
      */
-    _loadRemoteGamelog: function(url) {
+    loadRemoteGamelog: function(url) {
         var self = this;
         this.gui.modalMessage("Loading remote gamelog");
         this._emit("gamelog-is-remote", url);

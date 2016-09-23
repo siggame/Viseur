@@ -12,17 +12,9 @@ var DropDown = Classe(BaseInput, {
 
         BaseInput.init.apply(this, arguments);
 
-        for(var i = 0; i < args.options.length; i++) {
-            var opt = args.options[i];
-            if(typeof(opt) === "string") {
-                opt = { text: opt, value: opt };
-            }
-
-            this._options.push(opt);
-            this._optionPartial(opt, this.$element);
+        if(args.options) {
+            this.setOptions(args.options);
         }
-
-        this.setValue(this._options[0].value);
     },
 
     _template: require("./dropDown.hbs"),
@@ -41,6 +33,32 @@ var DropDown = Classe(BaseInput, {
 
         return false;
     },
+
+    /**
+     * Set the options for this Drop Down. Previous options are deleted.
+     *
+     * @param {Array.<String>} options [description]
+     */
+    setOptions: function(options) {
+        if(options === this._options) {
+            return;
+        }
+
+        this._options.length = 0;
+        this.$element.html("");
+
+        for(var i = 0; i < options.length; i++) {
+            var opt = options[i];
+            if(typeof(opt) === "string") {
+                opt = { text: opt, value: opt };
+            }
+
+            this._options.push(opt);
+            this._optionPartial(opt, this.$element);
+        }
+
+        this.setValue(this._options[0].value);
+    }
 });
 
 module.exports = DropDown;

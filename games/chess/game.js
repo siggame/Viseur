@@ -34,7 +34,7 @@ var Game = Classe(BaseGame, {
      * @type {boolean}
      */
     //<<-- Creer-Merge: humanPlayable -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    humanPlayable: false,
+    humanPlayable: true,
     //<<-- /Creer-Merge: humanPlayable -->>
 
     /**
