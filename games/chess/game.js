@@ -225,6 +225,8 @@ var Game = Classe(BaseGame, {
      * @param {Boolean} flipBoard - if it is flipped
      */
     _flipBackground: function(flipBoard) {
+        this._unhighlightLocations();
+
         var x = 0;
         var y = 0;
 
@@ -303,7 +305,7 @@ var Game = Classe(BaseGame, {
         var fromPos = this._getXY(from);
 
         this._fromSprite.x = fromPos.x;
-        this._fromSprite.y = fromPos.y;
+        this._fromSprite.y = this._flipY(fromPos.y);
         this._fromSprite.visible = true;
 
         if(this.next) {
@@ -311,7 +313,7 @@ var Game = Classe(BaseGame, {
             var toPos = this._getXY(nextPiece.file + nextPiece.rank);
 
             this._toSprite.x = toPos.x;
-            this._toSprite.y = toPos.y;
+            this._toSprite.y = this._flipY(toPos.y);
             this._toSprite.visible = true;
         }
 
@@ -321,10 +323,21 @@ var Game = Classe(BaseGame, {
             if(move.from === from) {
                 var pos = this._getXY(move.to);
 
+                // the _tileSprites y position does not need to be changed for flip-board
                 this._tileSprites[pos.x][pos.y].filters = [ this._randomColorComplimentFilter ];
                 this._highlighedLocations.push(pos);
             }
         }
+    },
+
+    /**
+     * flips a y coordinate based on the flip board setting
+     *
+     * @param {number} y - y coordinate to flip
+     * @returns {number} y coordinate flipped if needed
+     */
+    _flipY: function(y) {
+        return (this.getSetting("flip-board") ? 7 - y : y);
     },
 
     /**
