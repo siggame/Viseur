@@ -1,3 +1,4 @@
+
 var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
@@ -11,7 +12,7 @@ var BaseGameObject = Classe(Observable, {
      * Initializes a BaseGameObject, should be invoked by subclass
      *
      * @param {Object} initialState - fully merged delta state for this object's first existance
-     * @param {BaseGa,e} game - The game this game object is being rendered in
+     * @param {BaseGame} game - The game this game object is being rendered in
      */
     init: function(initialState, game) {
         Observable.init.call(this);
