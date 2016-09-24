@@ -44,3 +44,6 @@ bundle.js
 
 # other
 *.ai
+
+# JetBrains IDEs
+.idea/
