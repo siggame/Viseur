@@ -4,11 +4,11 @@
 
 .game-pane.game-Saloon {
     & .player-wrapper:nth-child(1) .player {
-        background: #C33 !important;
+        background-color: #C33 !important;
     }
 
     & .player-wrapper:nth-child(2) .player {
-        background: #33C !important;
+        background-color: #33C !important;
     }
 }
 
