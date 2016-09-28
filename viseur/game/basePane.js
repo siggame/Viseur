@@ -74,7 +74,7 @@ var BasePane = Classe(BaseElement, {
 
             $player.$element
                 .toggleClass("current-player", this.game.current.currentPlayer.id === playerID)
-                .css("background-image", 'url("viseur/programming-languages/{}.png")'.format(player.clientType.toLowerCase()));
+                .css("background-image", 'url("viseur/programming-languages/{}.png")'.format(player.clientType.replace("#", "s").toLowerCase()));
         }
     },
 });
