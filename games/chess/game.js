@@ -12,6 +12,21 @@ var Chess = require("chess.js");
 
 //<<-- /Creer-Merge: requires -->>
 
+
+/**
+ * @typedef {Object} GameState - A state representing a Game
+ * @property {PlayerID} currentPlayer - The player whose turn it is currently. That player can send commands. Other players cannot.
+ * @property {number} currentTurn - The current turn number, starting at 0 for the first player's turn.
+ * @property {string} fen - Forsyth–Edwards Notation, a notation that describes the game board.
+ * @property {Object.<string, GameObjectID>} gameObjects - A mapping of every game object's ID to the actual game object. Primarily used by the server and client to easily refer to the game objects via ID.
+ * @property {number} maxTurns - The maximum number of turns before the game will automatically end.
+ * @property {Array.<MoveID>} moves -  The list of Moves that have occured, in order.
+ * @property {Array.<PieceID>} pieces - All the uncaptured Pieces in the game.
+ * @property {Array.<PlayerID>} players - List of all the players in the game.
+ * @property {string} session - A unique identifier for the game instance that is being played.
+ * @property {number} turnsToDraw - How many turns until the game ends because no pawn has moved and no Piece has been taken.
+ */
+
 /**
  * @class
  * @classdesc The traditional 8x8 chess board with pieces.
@@ -25,17 +40,21 @@ var Game = Classe(BaseGame, {
      */
     name: "Chess",
 
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
+    /**
+     * The current state of this Game. Undefined when there is no current state.
+     *
+     * @type {GameState | undefined})}
+     */
+    current: {},
 
     /**
-     * If this game supports human playable clients
+     * The next state of this Game. Undefined when there is no next state.
      *
-     * @static
-     * @type {boolean}
+     * @type {GameState | undefined})}
      */
-    //<<-- Creer-Merge: humanPlayable -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    humanPlayable: true,
-    //<<-- /Creer-Merge: humanPlayable -->>
+    next: {},
+
+    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
     /**
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
@@ -207,11 +226,10 @@ var Game = Classe(BaseGame, {
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._chessUpdated = false;
-        this._unhighlightLocations();
+        this._unselect();
 
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
-
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
@@ -225,7 +243,7 @@ var Game = Classe(BaseGame, {
      * @param {Boolean} flipBoard - if it is flipped
      */
     _flipBackground: function(flipBoard) {
-        this._unhighlightLocations();
+        this._unselect();
 
         var x = 0;
         var y = 0;
@@ -283,9 +301,9 @@ var Game = Classe(BaseGame, {
             this._chessUpdated = true;
 
             this._chess = this._chess || new Chess();
-            this._chess.load(this.current.fen);
+            this._chess.load((this.current || this.next).fen);
 
-            this._validMoves = this._chess.moves({ verbose: true });
+            this.validMoves = this._chess.moves({ verbose: true });
         }
     },
 
@@ -297,11 +315,13 @@ var Game = Classe(BaseGame, {
     showValidMovesFor: function(pieceID) {
         this._updateChess();
 
-        this._unhighlightLocations();
+        this._unselect();
+        this.selectedPiece = this.gameObjects[pieceID];
 
-        var moves = this._validMoves;
-        var piece = this.current.gameObjects[pieceID];
-        var from = piece.file + piece.rank;
+        var moves = this.validMoves;
+        var piece = this.selectedPiece;
+        var pieceState = (piece.current || piece.next);
+        var from = pieceState.file + pieceState.rank;
         var fromPos = this._getXY(from);
 
         this._fromSprite.x = fromPos.x;
@@ -355,6 +375,16 @@ var Game = Classe(BaseGame, {
     },
 
     /**
+     * Transforms an (x, y) coordinate to a chess coordinate   E.g. 0,0 -> "a1"
+     * @param {number} x - x coordinate, ranged [0, 7]
+     * @param {number} y - y coordinate, ranged [0, 7]
+     * @returns {string} a chess coordinate e.g. "a1"
+     */
+    _getFileRank: function(x, y) {
+        return String.fromCharCode("a".charCodeAt(0) + x) + (7 - y + 1);
+    },
+
+    /**
      * Invoked when a tile is clicked
      *
      * @private
@@ -362,7 +392,12 @@ var Game = Classe(BaseGame, {
      * @param {number} y - y coordinate
      */
     _tileClicked: function(x, y) {
-        this._unhighlightLocations();
+        var pos = this._getFileRank(x, y);
+        if(this.humanPlayer) {
+            this.humanPlayer.handleTileClicked(pos);
+        }
+
+        this._unselect();
     },
 
     /**
@@ -370,7 +405,7 @@ var Game = Classe(BaseGame, {
      *
      * @private
      */
-    _unhighlightLocations: function() {
+    _unselect: function() {
         if(!this._highlighedLocations) {
             return; // as we have not started yet
         }
@@ -385,6 +420,8 @@ var Game = Classe(BaseGame, {
 
         this._toSprite.visible = false;
         this._fromSprite.visible = false;
+
+        this.selectedPiece = null;
     },
 
     //<<-- /Creer-Merge: functions -->>

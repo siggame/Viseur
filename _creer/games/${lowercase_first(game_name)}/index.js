@@ -5,6 +5,7 @@ require("./style.scss");
 namespace = {
     Game: require("./game"),
     Pane: require("./pane"),
+    HumanPlayer: require("./humanPlayer"),
     textures: require("./textures/"),
     settings: require("./settings"),
 };

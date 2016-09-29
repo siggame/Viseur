@@ -8,7 +8,7 @@ var Viseur = null;
  * @class BaseGame - the base class all games in the games/ folder inherit from
  */
 var BaseGame = Classe(Observable, {
-    init: function(gamelog) {
+    init: function(gamelog, playerID) {
         Observable.init.call(this);
         Viseur = require("viseur/"); // require here to avoid cycles
 
@@ -26,6 +26,9 @@ var BaseGame = Classe(Observable, {
         });
 
         this._initLayers();
+
+        this._playerID = playerID;
+        this.humanPlayer = new this.namespace.HumanPlayer(this);
     },
 
     /**
@@ -40,8 +43,12 @@ var BaseGame = Classe(Observable, {
 
         var state = this._updateState(Viseur.getCurrentState());
 
-        this.pane = new this.namespace.Pane(this, this.current);
+        this.pane = new this.namespace.Pane(this, this.next);
         this.pane.update(state);
+
+        if(this.humanPlayer) {
+            this.humanPlayer.setPlayer(this.gameObjects[this._playerID]);
+        }
     },
 
     /**
@@ -113,21 +120,22 @@ var BaseGame = Classe(Observable, {
         this.current = state.game;
         this.next = state.nextGame;
 
-        var stateGameObjects = state.game.gameObjects;
-        if(state.nextGame) {
+        var stateGameObjects;
+        if(state.game) {
             stateGameObjects = state.game.gameObjects;
+        }
+
+        if(state.nextGame) {
+            stateGameObjects = state.nextGame.gameObjects;
         }
 
         for(var id in stateGameObjects) {
             if(stateGameObjects.hasOwnProperty(id)) {
-                var currentGameObject = state.game.gameObjects[id];
-                var nextGameObject = undefined;
-                if(state.nextGame) {
-                    nextGameObject = state.nextGame.gameObjects[id];
-                }
+                var currentGameObject = state.game ? state.game.gameObjects[id] : null;
+                var nextGameObject = state.nextGame ? state.nextGame.gameObjects[id] : null;
 
                 if(!this.gameObjects[id]) { // this is the first time we've seen this game object, so create its instance
-                    this._initGameObject(id, nextGameObject || currentGameObject);
+                    this._initGameObject(id, nextGameObject);
                 }
 
                 this.gameObjects[id].update(currentGameObject, nextGameObject);
@@ -206,6 +214,28 @@ var BaseGame = Classe(Observable, {
      */
     onSettingChanged: function(key, callback) {
         SettingsManager.onChanged(this.name, key, callback);
+    },
+
+    /**
+     * Runs some command on the server, on behalf of this a game object
+     *
+     * @param {BaseGameObject} baseGameObject - the game object running this
+     * @param {string} run - the function to run
+     * @param {Object} args - key value pairs for the function to run
+     * @param {Function} callback - callback to invoke once run, is passed the return value
+     */
+    runOnServer: function(baseGameObject, run, args, callback) {
+        Viseur.runOnServer(baseGameObject.id, run, args, callback);
+    },
+
+    /**
+     * Order the human playing to do some
+     * @param {string} orderName - the order (functionName) to execute
+     * @param {Array} args - arguments to apply to the order function
+     * @param {Function} callback - the function the humanPlayer should callback once done with the order
+     */
+    orderHuman: function(orderName, args, callback) {
+        this.humanPlayer.order(orderName, args, callback);
     },
 });
 

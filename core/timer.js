@@ -4,7 +4,7 @@ var Observable = require("core/observable");
 /**
  * @class Timer - ticks at a custom rate to a number of steps
  */
-var TimeManager = Classe(Observable, {
+var Timer = Classe(Observable, {
     init: function(speed) {
         Observable.init.call(this);
 
@@ -133,7 +133,7 @@ var TimeManager = Classe(Observable, {
     invertTicking: function() {
         if(this.isTicking()) {
             this.pause();
-            return true; // as we are no paused
+            return true; // as we are not paused
         }
         else {
             this.tick();
@@ -151,4 +151,4 @@ var TimeManager = Classe(Observable, {
     },
 });
 
-module.exports = TimeManager;
+module.exports = Timer;
