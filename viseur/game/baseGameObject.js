@@ -1,3 +1,4 @@
+
 var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
