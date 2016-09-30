@@ -10,6 +10,26 @@ var BaseGame = require("viseur/game/baseGame");
 // any additional requires you want can be required here safely between Creer runs
 //<<-- /Creer-Merge: requires -->>
 
+
+/**
+ * @typedef {Object} GameState - A state representing a Game
+ * @property {Array.<BottleID>} bottles - All the beer Bottles currently flying across the saloon in the game.
+ * @property {Array.<CowboyID>} cowboys - Every Cowboy in the game.
+ * @property {PlayerID} currentPlayer - The player whose turn it is currently. That player can send commands. Other players cannot.
+ * @property {number} currentTurn - The current turn number, starting at 0 for the first player's turn.
+ * @property {Array.<FurnishingID>} furnishings - Every furnishing in the game.
+ * @property {Object.<string, GameObjectID>} gameObjects - A mapping of every game object's ID to the actual game object. Primarily used by the server and client to easily refer to the game objects via ID.
+ * @property {Array.<string>} jobs - All the jobs that Cowboys can be assigned within the saloon.
+ * @property {number} mapHeight - The number of Tiles in the map along the y (vertical) axis.
+ * @property {number} mapWidth - The number of Tiles in the map along the x (horizontal) axis.
+ * @property {number} maxCowboys - The maximum number of Cowboys a Player can bring into the saloon.
+ * @property {number} maxTurns - The maximum number of turns before the game will automatically end.
+ * @property {Array.<PlayerID>} players - List of all the players in the game.
+ * @property {number} rowdynessToSiesta - When a player's rowdyness reaches or exceeds this number their Cowboys take a collective siesta.
+ * @property {string} session - A unique identifier for the game instance that is being played.
+ * @property {Array.<TileID>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
+ */
+
 /**
  * @class
  * @classdesc Use cowboys to have a good time and play some music on a Piano, while brawling with enemy Coyboys.
@@ -23,17 +43,21 @@ var Game = Classe(BaseGame, {
      */
     name: "Saloon",
 
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
+    /**
+     * The current state of this Game. Undefined when there is no current state.
+     *
+     * @type {GameState | undefined})}
+     */
+    current: {},
 
     /**
-     * If this game supports human playable clients
+     * The next state of this Game. Undefined when there is no next state.
      *
-     * @static
-     * @type {boolean}
+     * @type {GameState | undefined})}
      */
-    //<<-- Creer-Merge: humanPlayable -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    humanPlayable: false,
-    //<<-- /Creer-Merge: humanPlayable -->>
+    next: {},
+
+    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
     /**
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
@@ -87,7 +111,6 @@ var Game = Classe(BaseGame, {
         // update the Game based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
-
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // any additional functions you want to add to this class can be perserved here
