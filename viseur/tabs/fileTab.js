@@ -111,7 +111,7 @@ var FileTab = Classe(BaseElement, {
         this._humanPlayableGames = [];
         for(var gameName in games) {
             if(games.hasOwnProperty(gameName)) {
-                if(games[gameName].Game.humanPlayable) {
+                if(games[gameName].HumanPlayer.implimented) {
                     this._humanPlayableGames.push(gameName);
                 }
             }
@@ -123,6 +123,13 @@ var FileTab = Classe(BaseElement, {
             label: "Game",
             $parent: this.$connectWrapper,
             options: this._allGames,
+        });
+
+        this.sessionInput = new inputs.TextBox({
+            id: "connect-session",
+            label: "Session",
+            $parent: this.$connectWrapper,
+            placeholder: "new",
         });
 
         this.serverInput = new inputs.TextBox({
@@ -144,7 +151,7 @@ var FileTab = Classe(BaseElement, {
             id: "connect-name",
             label: "Player Name",
             $parent: this.$connectWrapper,
-            value: "Human",
+            placeholder: "Human",
         });
 
         this.connectButton = new inputs.Button({
@@ -183,6 +190,7 @@ var FileTab = Classe(BaseElement, {
         var showName = false;
         var showPort = true;
         var showGame = true;
+        var showSession = false;
         var humanPlayable = false;
 
         switch(newType) {
@@ -194,9 +202,11 @@ var FileTab = Classe(BaseElement, {
                 port = 3088;
                 showName = true;
                 humanPlayable = true;
+                showSession = true;
                 break;
             case "Spectate":
                 port = 3088;
+                showSession = true;
                 break;
             case "Tournament":
                 port = 5454;
@@ -211,6 +221,7 @@ var FileTab = Classe(BaseElement, {
         this.portInput.field.$element.toggleClass("collapsed", !showPort);
 
         this.nameInput.field.$element.toggleClass("collapsed", !showName);
+        this.sessionInput.field.$element.toggleClass("collapsed", !showSession);
 
         this.gameInput.field.$element.toggleClass("collapsed", !showGame);
     },
@@ -230,7 +241,8 @@ var FileTab = Classe(BaseElement, {
             type: self.connectTypeInput.getValue(),
             server: self.serverInput.getValue(),
             port: self.portInput.getValue(),
-            playerName: self.nameInput.getValue(),
+            session: self.sessionInput.getValue() || "new",
+            playerName: self.nameInput.getValue() || "Human",
         };
 
         this._log("Connecting to {server}:{port}.".format(args));

@@ -1,5 +1,7 @@
 // This is a "class" to represent the ${obj_key} object in the game. If you want to render it in the game do so here.
-<% parent_classes = obj['parentClasses']
+<%include file="functions.noCreer" /><%
+parent_classes = obj['parentClasses']
+properties = shared['vis']['properties'](obj)
 %>var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
@@ -18,6 +20,20 @@ else:
 % endif
 
 ${merge("//", "requires", "// any additional requires you want can be required here safely between Creer runs")}
+
+% if obj_key != "Game":
+/**
+ * @typedef {Object} ${obj_key}ID - a "shallow" state of a ${obj_key}, which is just an object with an `id`.
+ * @property {string} id - the if of the ${obj_key}State it represents in game.gameObjects
+ */
+% endif
+
+/**
+ * @typedef {Object} ${obj_key}State - A state representing a ${obj_key}
+% for property in properties:
+ * @property {${property['type']}} ${property['name']} - ${property['description']}
+% endfor
+ */
 
 /**
  * @class
@@ -50,16 +66,22 @@ ${merge("        //", "init", "        // initialization logic goes here")}
      */
     name: "${game_name if obj_key == 'Game' else obj_key}",
 
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
-% if obj_key == "Game":
+    /**
+     * The current state of this ${obj_key}. Undefined when there is no current state.
+     *
+     * @type {${obj_key}State | undefined})}
+     */
+    current: {},
 
     /**
-     * If this game supports human playable clients
+     * The next state of this ${obj_key}. Undefined when there is no next state.
      *
-     * @static
-     * @type {boolean}
+     * @type {${obj_key}State | undefined})}
      */
-${merge("    //", "humanPlayable", "    humanPlayable: false,")}
+    next: {},
+
+    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
+% if obj_key == "Game":
 
     /**
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
@@ -124,11 +146,57 @@ ${merge("        //", "render", "        // render where the " + obj_key + " is"
      */
     _getContextMenu: function() {
         var self = this;
+        var menu = [];
 
-        return [
-${merge("            //", "_getContextMenu", "            // add context menu items here")}
-        ];
+${merge("        //", "_getContextMenu", "        // add context items to the menu here")}
+
+        return menu;
     },
+
+
+    // Joueur functions - functions invoked for human playable client
+% for function_name in obj['function_names']:
+<%
+    function_parms = obj['functions'][function_name]
+    argument_string = ""
+    argument_names = []
+    if 'arguments' in function_parms:
+        for arg_parms in function_parms['arguments']:
+            argument_names.append(arg_parms['name'])
+        argument_string = ", ".join(argument_names)
+%>
+    /**
+     * ${function_parms['description']}
+     *
+% if 'arguments' in function_parms:
+% for arg_parms in function_parms['arguments']:
+     * @param {${shared['vis']['type'](arg_parms['type'])}} ${("[" + arg_parms['name'] + "]") if arg_parms['optional'] else arg_parms['name']} - ${arg_parms['description']}
+% endfor
+% endif
+% if function_parms['returns']:
+     * @param {Function} [callback] - callback that is passed back the return value of ${shared['vis']['type'](function_parms['returns']['type'])} once ran on the server
+% endif
+     */
+    ${function_name}: function(${", ".join(function_parms['argument_names'])}, callback) {
+% if 'arguments' in function_parms:
+% for i, arg_parms in enumerate(function_parms['arguments']):
+% if arg_parms['optional']:
+        if(arguments.length <= ${i}) {
+            ${arg_parms['name']} = ${shared['vis']['value'](arg_parms['type'], arg_parms['default'])};
+        }
+
+% endif
+% endfor
+% endif
+        this._runOnServer("${function_name}", {
+% for argument_name in argument_names:
+            ${argument_name}: ${argument_name},
+% endfor
+        }, callback);
+    },
+% endfor
+
+    // /Joueur functions
 % endif
 
     /**
@@ -143,7 +211,6 @@ ${merge("            //", "_getContextMenu", "            // add context menu it
 
 ${merge("        //", "_stateUpdated", "        // update the " + obj_key + " based on its current and next states")}
     },
-
 
 ${merge("    //", "functions", "    // any additional functions you want to add to this class can be perserved here")}
 

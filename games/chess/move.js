@@ -11,6 +11,26 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
+ * @typedef {Object} MoveID - a "shallow" state of a Move, which is just an object with an `id`.
+ * @property {string} id - the if of the MoveState it represents in game.gameObjects
+ */
+
+/**
+ * @typedef {Object} MoveState - A state representing a Move
+ * @property {PieceID} captured - The Piece captured by this Move, null if no capture.
+ * @property {string} fromFile - The file the Piece moved from.
+ * @property {number} fromRank - The rank the Piece moved from.
+ * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
+ * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
+ * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
+ * @property {PieceID} piece - The Piece that was moved.
+ * @property {string} promotion - The Piece type this Move's Piece was promoted to from a Pawn, empty string if no promotion occured.
+ * @property {string} san - The standard algebraic notation (SAN) representation of the move.
+ * @property {string} toFile - The file the Piece moved to.
+ * @property {number} toRank - The rank the Piece moved to.
+ */
+
+/**
  * @class
  * @classdesc Contains all details about a Piece's move in the game.
  * @extends GameObject
@@ -36,6 +56,20 @@ var Move = Classe(GameObject, {
      * @static
      */
     name: "Move",
+
+    /**
+     * The current state of this Move. Undefined when there is no current state.
+     *
+     * @type {MoveState | undefined})}
+     */
+    current: {},
+
+    /**
+     * The next state of this Move. Undefined when there is no next state.
+     *
+     * @type {MoveState | undefined})}
+     */
+    next: {},
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -69,13 +103,19 @@ var Move = Classe(GameObject, {
      */
     _getContextMenu: function() {
         var self = this;
+        var menu = [];
 
-        return [
-            //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
             // add context menu items here
-            //<<-- /Creer-Merge: _getContextMenu -->>
-        ];
+        //<<-- /Creer-Merge: _getContextMenu -->>
+
+        return menu;
     },
+
+
+    // Joueur functions - functions invoked for human playable client
+
+    // /Joueur functions
 
     /**
      * Invoked when the state updates.
@@ -89,7 +129,6 @@ var Move = Classe(GameObject, {
         // update the Move is based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
-
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // any additional functions you want to add to this class can be perserved here

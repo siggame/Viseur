@@ -30,8 +30,8 @@ var BaseGameObject = Classe(Observable, {
      * @param {Object} next - the next state
      */
     update: function(current, next) {
-        this.current = current;
-        this.next = next;
+        this.current = current || null;
+        this.next = next || null;
 
         this._stateUpdated();
     },
@@ -210,6 +210,17 @@ var BaseGameObject = Classe(Observable, {
     _initGraphicsForUX: function() {
         this._uxGraphics = new PIXI.Graphics();
         this._uxGraphics.setParent(this.container);
+    },
+
+    /**
+     * Runs some command on the server, on behalf of this object
+     *
+     * @param {string} run - the function to run
+     * @param {Object} args - key value pairs for the function to run
+     * @param {Function} callback - callback to invoke once run, is passed the return value
+     */
+    _runOnServer: function(run, args, callback) {
+        this.game.runOnServer(this, run, args, callback);
     },
 });
 

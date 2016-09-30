@@ -154,7 +154,7 @@ var Viseur = Classe(Observable, {
         // we keep the current and next state here, fully merged with all game information.
         this._mergedDelta = {
             index: -1,
-            currentState: {},
+            currentState: null,
             nextState: this._parser.mergeDelta({}, gamelog.deltas[0].game),
         };
 
@@ -167,8 +167,9 @@ var Viseur = Classe(Observable, {
      * Initializes the Game object for the specified gameName. The class created will be the one in /games/{gameName}/game.js
      *
      * @param {string} gameName - name of the game to initialize. Must be a valid game name, or throwns an error
+     * @param {string} [playerID] - id of the player if this game has a human player
      */
-    _initGame: function(gameName) {
+    _initGame: function(gameName, playerID) {
         var gameNamespace = this._games[gameName];
 
         if(!gameNamespace) {
@@ -181,9 +182,10 @@ var Viseur = Classe(Observable, {
 
         if(!this._joueur) {
             this._updateCurrentState(0); // create the initial states
+            this.timeManager.setTime(0, 0);
         }
 
-        this.game = new gameNamespace.Game(this._rawGamelog);
+        this.game = new gameNamespace.Game(this._rawGamelog, playerID);
 
         var textures = {};
 
@@ -225,9 +227,20 @@ var Viseur = Classe(Observable, {
      * @param {number} index - the new states index, must be between [0, deltas.length]
      */
     _updateCurrentState: function(index) {
+        if(index < 0) {
+            this._currentState = {
+                game: this._mergedDelta.currentState,
+                nextGame: this._mergedDelta.nextState,
+            };
+
+            return;
+        }
+
         var d = this._mergedDelta;
         var deltas = this._rawGamelog.deltas;
-        var indexChanged = index !== d.index;
+        var indexChanged = (index !== d.index);
+
+        d.currentState = d.currentState || {};
 
         // if increasing index...
         while(index > d.index) {
@@ -246,6 +259,7 @@ var Viseur = Classe(Observable, {
             }
 
             if(d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
+                // wouldn't this skip two states? shouldnt it be null at the end?
                 d.nextState = this._parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
             }
         }
@@ -310,13 +324,13 @@ var Viseur = Classe(Observable, {
 
         switch(data.type.toLowerCase()) {
             case "arena":
-                callback = this._startArena; // TODO: Do
+                callback = this._startArena;
                 break;
             case "spectate":
                 callback = this._spectate;
                 break;
             case "human":
-                callback = this._playAsHumanOn; // TODO: Do
+                callback = this._playAsHuman;
                 break;
             case "tournament":
                 callback = this._connectToTournament; // TODO: Do
@@ -328,11 +342,12 @@ var Viseur = Classe(Observable, {
             return;
         }
 
-        throw new Error("No type of connection '{}.".format(data.type));
+        throw new Error("No type of connection '{}'.".format(data.type));
     },
 
     /**
      * Connects to a Cerveau game server to spectate some game
+     *
      * @param {string} server - the server Cerveau is running on (without port)
      * @param {number} port - the port the server is running on
      * @param {string} gameName - name of the game to spectate
@@ -361,6 +376,29 @@ var Viseur = Classe(Observable, {
     },
 
     /**
+     * Connects to a game server to play a game for the human controlling this Viseur
+     *
+     * @param {string} server - the server Cerveau is running on (without port)
+     * @param {number} port - the port the server is running on
+     * @param {string} gameName - name of the game to spectate
+     * @param {Object} data - additional data to send to the game server, such as playerName
+     */
+    _playAsHuman: function(server, port, gameName, data) {
+        this.gui.modalMessage("Connecting to game server...");
+
+        this._initJoueur(server, port, gameName, data);
+    },
+
+    /**
+     * Checks if there is currenly a human playing
+     *
+     * @returns {Boolean} true if there is a human player, false otherwise (including spectator mode)
+     */
+    hasHumanPlaying: function() {
+        return (this._joueur.getPlayerID() !== undefined);
+    },
+
+    /**
      * Initializes the Joueur (game client)
      *
      * @param {String} server - game server address
@@ -374,7 +412,7 @@ var Viseur = Classe(Observable, {
         this._rawGamelog = self._joueur.getGamelog();
 
         this._joueur.on("connected", function() {
-            self.gui.modalMessage("Awaiting game...");
+            self.gui.modalMessage("Awaiting game to start...");
 
             self._emit("connection-connected");
         });
@@ -386,11 +424,12 @@ var Viseur = Classe(Observable, {
         });
 
         this._joueur.on("event-start", function() {
-            self._initGame(gameName);
+            self._initGame(gameName, self._joueur.getPlayerID());
             self._checkIfReady();
         });
 
         this._joueur.on("errored", function() {
+            self.gui.modalError("Connection errored");
             self._emit("connection-errored");
         });
 
@@ -409,6 +448,30 @@ var Viseur = Classe(Observable, {
         this._joueur.on("event-over", function(data) {
             self._emit("gamelog-finalized", self._rawGamelog, data.gamelogURL);
         });
+
+        this._joueur.on("fatal", function(data) {
+            self.gui.modalError("Fatal game server event: " + data.message);
+        });
+    },
+
+    /**
+     * Runs some function the server for a game object
+     *
+     * @param {string} callerID - the id of the caller
+     * @param {string} run - the function to run
+     * @param {Object} args - key value pairs for the function to run
+     * @param {Function} callback - callback to invoke once run, is passed the return value
+     */
+    runOnServer: function(callerID, functionName, args, callback) {
+        if(!this._joueur) {
+            throw new Error("No game client to run game logic for.");
+        }
+
+        this._joueur.run(callerID, functionName, args);
+
+        if(callback) {
+            this._joueur.once("event-ran", callback);
+        }
     },
 });
 

@@ -37,9 +37,7 @@ var TimeManager = Classe(Observable, {
     _ready: function(game, gamelog) {
         var self = this;
         this.game = game;
-        if(!gamelog.streaming) {
-            this._numberOfDeltas = gamelog.deltas.length;
-        }
+        this._gamelog = gamelog;
 
         this._ticked(true);
 
@@ -62,13 +60,9 @@ var TimeManager = Classe(Observable, {
         });
 
         Viseur.on("gamelog-updated", function(gamelog) {
-            if(self._currentIndex < gamelog.deltas.length) {
+            if(self._currentIndex < self._gamelog.deltas.length) {
                 self._play();
             }
-        });
-
-        Viseur.on("gamelog-finalized", function(gamelog) {
-            self._numberOfDeltas = gamelog.deltas.length;
         });
     },
 
@@ -107,7 +101,7 @@ var TimeManager = Classe(Observable, {
      * @private
      */
     _playPause: function() {
-        if(!this._timer.isTicking() && this._numberOfDeltas !== undefined  && this._currentIndex === this._numberOfDeltas - 1 && this._timer.getProgress() > 0.99) { // wrap around
+        if(!this._timer.isTicking() && this._currentIndex === this._gamelog.deltas.length - 1 && this._timer.getProgress() > 0.99) { // wrap around
             this.setTime(0, 0);
         }
 
@@ -121,15 +115,23 @@ var TimeManager = Classe(Observable, {
      * @private
      */
     _ticked: function(start) {
-        this._currentIndex++;
+        this._currentIndex += (start ? 0 : 1);
 
-        this._emit("new-index", this._currentIndex);
+        var backPause = (this._gamelog.streaming && this._currentIndex === this._gamelog.deltas.length - 1); // pause and go back a very small amount
 
-        if(!start && (this._numberOfDeltas === undefined || this._currentIndex < this._numberOfDeltas - 1)) {
+        if(!backPause) {
+            this._emit("new-index", this._currentIndex);
+        }
+        else {
+            this._pause(this._currentIndex - 1, 0.9999);
+            return;
+        }
+
+        if(!start && this._currentIndex < this._gamelog.deltas.length - 1) {
             this._timer.restart();
         }
         else {
-            this._pause();
+            this._pause(this._currentIndex, 0);
             this._emit("ended");
         }
     },

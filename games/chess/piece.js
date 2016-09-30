@@ -11,6 +11,24 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
+ * @typedef {Object} PieceID - a "shallow" state of a Piece, which is just an object with an `id`.
+ * @property {string} id - the if of the PieceState it represents in game.gameObjects
+ */
+
+/**
+ * @typedef {Object} PieceState - A state representing a Piece
+ * @property {boolean} captured - When the Piece has been captured (removed from the board) this is true. Otherwise false.
+ * @property {string} file - The file (column) coordinate of the Piece represented as a letter [a-h], with 'a' starting at the left of the board.
+ * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
+ * @property {boolean} hasMoved - If the Piece has moved from its starting position.
+ * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
+ * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
+ * @property {PlayerID} owner - The player that controls this chess Piece.
+ * @property {number} rank - The rank (row) coordinate of the Piece represented as a number [1-8], with 1 starting at the bottom of the board.
+ * @property {string} type - The type of chess Piece this is, either: 'King', 'Queen', 'Knight', 'Rook', 'Bishop', or 'Pawn'.
+ */
+
+/**
  * @class
  * @classdesc A chess piece.
  * @extends GameObject
@@ -43,6 +61,20 @@ var Piece = Classe(GameObject, {
      * @static
      */
     name: "Piece",
+
+    /**
+     * The current state of this Piece. Undefined when there is no current state.
+     *
+     * @type {PieceState | undefined})}
+     */
+    current: {},
+
+    /**
+     * The next state of this Piece. Undefined when there is no next state.
+     *
+     * @type {PieceState | undefined})}
+     */
+    next: {},
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -109,19 +141,58 @@ var Piece = Classe(GameObject, {
      */
     _getContextMenu: function() {
         var self = this;
+        var menu = [];
 
-        return [
-            //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-            {
-                text: "Show valid moves",
-                icon: "eye",
+        //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        if(this.game.humanPlayer && this.game.selectedPiece) {
+            var pos = this.current.file + this.current.rank;
+            menu.push({
+                text: "Move here (pos)".format(pos),
+                icon: "map-marker",
                 callback: function() {
-                    self.game.showValidMovesFor(self.id);
-                },
-            }
-            //<<-- /Creer-Merge: _getContextMenu -->>
-        ];
+                    self.game.humanPlayer.handleTileClicked(pos);
+                }
+            });
+        }
+
+        menu.push({
+            text: "Show valid moves",
+            icon: "eye",
+            callback: function() {
+                self.game.showValidMovesFor(self.id);
+            },
+        });
+
+        //<<-- /Creer-Merge: _getContextMenu -->>
+
+        return menu;
     },
+
+
+    // Joueur functions - functions invoked for human playable client
+
+    /**
+     * Moves the Piece from its current location to the given rank and file.
+     *
+     * @param {string} file - The file coordinate to move to. Must be [a-h].
+     * @param {number} rank - The rank coordinate to move to. Must be [1-8].
+     * @param {string} [promotionType] - If this is a Pawn moving to the end of the board then this parameter is what to promote it to. When used must be 'Queen', 'Knight', 'Rook', or 'Bishop'.
+     * @param {Function} [callback] - callback that is passed back the return value of MoveID once ran on the server
+     */
+    move: function(file, rank, promotionType, callback) {
+        if(arguments.length <= 2) {
+            promotionType = "";
+        }
+
+        this._runOnServer("move", {
+            file: file,
+            rank: rank,
+            promotionType: promotionType,
+        }, callback);
+    },
+
+    // /Joueur functions
 
     /**
      * Invoked when the state updates.
@@ -148,7 +219,6 @@ var Piece = Classe(GameObject, {
 
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
-
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 

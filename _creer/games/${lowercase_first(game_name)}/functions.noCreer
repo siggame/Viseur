@@ -1,0 +1,45 @@
+<%
+if not 'vis' in shared:
+    shared['vis'] = {}
+
+    def vis_type(type_obj):
+        base_type = type_obj['name']
+
+        if base_type == "dictionary":
+            return "Object.<" + vis_type(type_obj['keyType']) + ", " + vis_type(type_obj['valueType']) + ">"
+        elif base_type == "list":
+            return "Array.<" + vis_type(type_obj['valueType']) + ">"
+        elif base_type == "int" or base_type == "float":
+            return "number"
+        elif type_obj['is_game_object']:
+            return base_type + "ID"
+        else:
+            return base_type
+    shared['vis']['type'] = vis_type
+
+    def js_value(type_obj, default):
+        base_type = type_obj['name']
+        if base_type == "string":
+            return '"' + default + '"'
+        elif base_type == "boolean":
+            return str(default).lower()
+        elif base_type == "int" or base_type == "float":
+            return str(default)
+        else:
+            return "null"
+    shared['vis']['value'] = js_value
+
+    def vis_properties(obj):
+        attrs = dict(obj['attributes'], **obj['inheritedAttributes']) # merge the two attributes
+
+        properties = []
+        for attr_name in sort_dict_keys(attrs):
+            attr = attrs[attr_name]
+            properties.append({
+                'name': attr_name,
+                'type': vis_type(attr['type']),
+                'description': attr["description"]
+            })
+        return properties
+    shared['vis']['properties'] = vis_properties
+%>

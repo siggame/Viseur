@@ -11,6 +11,18 @@ var BaseGameObject = require("viseur/game/baseGameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
+ * @typedef {Object} GameObjectID - a "shallow" state of a GameObject, which is just an object with an `id`.
+ * @property {string} id - the if of the GameObjectState it represents in game.gameObjects
+ */
+
+/**
+ * @typedef {Object} GameObjectState - A state representing a GameObject
+ * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
+ * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
+ * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
+ */
+
+/**
  * @class
  * @classdesc An object in the game. The most basic class that all game classes should inherit from automatically.
  * @extends BaseGameObject
@@ -36,6 +48,20 @@ var GameObject = Classe(BaseGameObject, {
      * @static
      */
     name: "GameObject",
+
+    /**
+     * The current state of this GameObject. Undefined when there is no current state.
+     *
+     * @type {GameObjectState | undefined})}
+     */
+    current: {},
+
+    /**
+     * The next state of this GameObject. Undefined when there is no next state.
+     *
+     * @type {GameObjectState | undefined})}
+     */
+    next: {},
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -69,13 +95,30 @@ var GameObject = Classe(BaseGameObject, {
      */
     _getContextMenu: function() {
         var self = this;
+        var menu = [];
 
-        return [
-            //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
             // add context menu items here
-            //<<-- /Creer-Merge: _getContextMenu -->>
-        ];
+        //<<-- /Creer-Merge: _getContextMenu -->>
+
+        return menu;
     },
+
+
+    // Joueur functions - functions invoked for human playable client
+
+    /**
+     * Adds a message to this GameObject's logs. Intended for your own debugging purposes, as strings stored here are saved in the gamelog.
+     *
+     * @param {string} message - A string to add to this GameObject's log. Intended for debugging.
+     */
+    log: function(message, callback) {
+        this._runOnServer("log", {
+            message: message,
+        }, callback);
+    },
+
+    // /Joueur functions
 
     /**
      * Invoked when the state updates.
@@ -89,7 +132,6 @@ var GameObject = Classe(BaseGameObject, {
         // update the GameObject is based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
-
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // any additional functions you want to add to this class can be perserved here
