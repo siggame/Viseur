@@ -182,6 +182,7 @@ var Viseur = Classe(Observable, {
 
         if(!this._joueur) {
             this._updateCurrentState(0); // create the initial states
+            this.timeManager.setTime(0, 0);
         }
 
         this.game = new gameNamespace.Game(this._rawGamelog, playerID);
@@ -243,7 +244,6 @@ var Viseur = Classe(Observable, {
 
         // if increasing index...
         while(index > d.index) {
-            console.log("d.index", d.index);
             d.index++;
 
             if(deltas[d.index] && !deltas[d.index].reversed) {
@@ -266,7 +266,6 @@ var Viseur = Classe(Observable, {
 
         // if decreasing index...
         while(index < d.index) {
-            console.log("d.index", d.index);
             var r = deltas[d.index] && deltas[d.index].reversed;
             var r2 = d.nextState && deltas[d.index + 1] && deltas[d.index + 1].reversed;
 
@@ -343,7 +342,7 @@ var Viseur = Classe(Observable, {
             return;
         }
 
-        throw new Error("No type of connection '{}.".format(data.type));
+        throw new Error("No type of connection '{}'.".format(data.type));
     },
 
     /**
