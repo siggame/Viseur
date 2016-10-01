@@ -28,9 +28,9 @@ var GameObject = require("./gameObject");
  * @property {string} job - The job that this Cowboy does, and dictates how they fight and interact within the Saloon.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {PlayerID} owner - The Player that owns and can control this Cowboy.
- * @property {number} siesta - How many turns this unit has remaining for their siesta. 0 means they are awake, and can act.
  * @property {TileID} tile - The Tile that this Cowboy is located on.
  * @property {number} tolerance - How many times this unit has been drunk before taking their siesta and reseting this to 0.
+ * @property {number} turnsBusy - How many turns this unit has remaining before it is no longer busy and can `act()` or `play()` again.
  */
 
 /**

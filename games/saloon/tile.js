@@ -17,7 +17,7 @@ var GameObject = require("./gameObject");
 
 /**
  * @typedef {Object} TileState - A state representing a Tile
- * @property {Array.<BottleID>} bottles - All the beer Bottles currently flying over this Tile.
+ * @property {BottleID} bottle - The beer Bottle currently flying over this Tile.
  * @property {CowboyID} cowboy - The Cowboy that is on this Tile, or null if empty.
  * @property {FurnishingID} furnishing - The furnishing that is on this Tile, or null if empty.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
@@ -25,10 +25,10 @@ var GameObject = require("./gameObject");
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {boolean} isWall - If this Tile is a wall of the Saloon, and can never be pathed through.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {TileID} tileAbove - The Tile above this one (x, y-1). Null if out of bounds of the map.
- * @property {TileID} tileBelow - The Tile below this one (x, y+1). Null if out of bounds of the map.
- * @property {TileID} tileLeft - The Tile to the left of this one (x-1, y). Null if out of bounds of the map.
- * @property {TileID} tileRight - The Tile to the right of this one (x+1, y). Null if out of bounds of the map.
+ * @property {TileID} tileEast - The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the map.
+ * @property {TileID} tileNorth - The Tile to the 'North' of this one (x, y-1). Null if out of bounds of the map.
+ * @property {TileID} tileSouth - The Tile to the 'South' of this one (x, y+1). Null if out of bounds of the map.
+ * @property {TileID} tileWest - The Tile to the 'West' of this one (x-1, y). Null if out of bounds of the map.
  * @property {number} x - The x (horizontal) position of this Tile.
  * @property {number} y - The y (vertical) position of this Tile.
  */

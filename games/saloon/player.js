@@ -30,8 +30,10 @@ var GameObject = require("./gameObject");
  * @property {string} reasonWon - The reason why the player won the game.
  * @property {number} rowdyness - How rowdy their team is. When it gets too high their team takes a collective siesta.
  * @property {number} score - How many times their team has played a piano.
+ * @property {number} siesta - 0 when not having a team siesta. When greater than 0 represents how many turns left for the team siesta to complete.
  * @property {number} timeRemaining - The amount of time (in ns) remaining for this AI to send commands.
  * @property {boolean} won - If the player won the game or not.
+ * @property {CowboyID} youngGun - The only 'Yong Gun' Cowboy this player owns, or null if they called in their young gun during their turn.
  */
 
 /**

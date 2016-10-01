@@ -27,6 +27,7 @@ var BaseGame = require("viseur/game/baseGame");
  * @property {Array.<PlayerID>} players - List of all the players in the game.
  * @property {number} rowdynessToSiesta - When a player's rowdyness reaches or exceeds this number their Cowboys take a collective siesta.
  * @property {string} session - A unique identifier for the game instance that is being played.
+ * @property {number} siestaLength - How long siestas are for a player's team.
  * @property {Array.<TileID>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
  */
 

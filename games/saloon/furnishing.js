@@ -20,6 +20,7 @@ var GameObject = require("./gameObject");
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {number} health - How much health this Furnishing currently has.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
+ * @property {boolean} isDestroyed - If this Furnishing has been destroyed, and has been removed from the game.
  * @property {boolean} isPiano - True if this Furnishing is a piano and can be played, False otherwise.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {TileID} tile - The Tile that this Furnishing is located on.

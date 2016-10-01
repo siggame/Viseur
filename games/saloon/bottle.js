@@ -17,13 +17,13 @@ var GameObject = require("./gameObject");
 
 /**
  * @typedef {Object} BottleState - A state representing a Bottle
+ * @property {TileID} direction - The Direction this Bottle is flying and will move to between turns, can be 'North', 'East', 'South', or 'West'.
  * @property {string} drunkDirection - The direction any Cowboys hit by this will move, can be 'North', 'East', 'South', or 'West'.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {boolean} isDestroyed - True if this Bottle has impacted and has been destroyed (removed from the Game). False if still in the game flying through the saloon.
- * @property {TileID} location - The Tile this bottle is currently flying over.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {TileID} nextLocation - The Tile this Bottle will fly to next turn, if it does not impact anything on its path between the two.
+ * @property {TileID} tile - The Tile this bottle is currently flying over.
  */
 
 /**
