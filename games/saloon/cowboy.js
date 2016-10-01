@@ -49,7 +49,10 @@ var Cowboy = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        this._initContainer(this.game.layers.game);
+        this.sprite = this.renderer.newSprite("cowboy", this.container);
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -94,7 +97,18 @@ var Cowboy = Classe(GameObject, {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // render where the Cowboy is
+
+        var first = this.current || this.next;
+        var tile = this.game.gameObjects[first.tile.id];
+        var firstTile = tile.current || tile.next;
+
+        var next = this.next || this.current;
+        tile = this.game.gameObjects[next.tile.id];
+        var nextTile = tile.current || tile.next; // TODO: cleanup so cycles in gamelogs are preserved
+
+        this.container.x = ease(firstTile.x, lastTile.y, "cubicInOut");
+        this.container.y = ease(firstTile.y, lastTile.y, "cubicInOut");
+
         //<<-- /Creer-Merge: render -->>
     },
 

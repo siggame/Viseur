@@ -42,7 +42,15 @@ var Furnishing = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        this._initContainer(this.game.layers.game);
+        this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": "furnishing", this.container);
+
+        var tile = this.game.gameObjects[initialState.tile.id];
+        var tileState = (tile.current || tile.next);
+        this.container.x = tileState.x;
+        this.container.y = tileState.y;
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -75,7 +83,7 @@ var Furnishing = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
