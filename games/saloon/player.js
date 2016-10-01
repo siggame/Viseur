@@ -120,18 +120,10 @@ var Player = Classe(GameObject, {
     // Joueur functions - functions invoked for human playable client
 
     /**
-     * The Cowboy that was previously a 'Young Gun', and has now been promoted to a different job if successful, null otherwise.
-     *
-     */
-    returns: function(, callback) {
-        this._runOnServer("returns", {
-        }, callback);
-    },
-
-    /**
      * Sends in the Young Gun to the nearest Tile into the Saloon, and promotes them to a new job.
      *
      * @param {string} job - The job you want the Young Gun being brought in to be called in to do, changing their job to it.
+     * @param {Function} [callback] - callback that is passed back the return value of CowboyID once ran on the server
      */
     sendIn: function(job, callback) {
         this._runOnServer("sendIn", {
