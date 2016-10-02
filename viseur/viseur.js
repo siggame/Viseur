@@ -473,6 +473,17 @@ var Viseur = Classe(Observable, {
             this._joueur.once("event-ran", callback);
         }
     },
+
+    /**
+     * Handle an uncaught error, if this gets hit something BAD happened
+     *
+     * @param {Error} error - the uncaught error
+     */
+    handleError: function(error) {
+        if(this.gui) {
+            this.gui.modalError("Uncaught Error: {} - {}".format(error));
+        }
+    }
 });
 
 module.exports = new Viseur(); // singleton
