@@ -76,7 +76,6 @@ var InspectTreeView = Classe(TreeView, {
         }
 
         if(subtree.id) { // figure out if it is the real path to the game object, or just a reference to it
-            console.log("path to", subtree.id, path);
             if(path.length === 3 && path[0] === "root" && path[1] === "gameObjects") { // then the path is somethling like "root" -> "gameObjects" -> "0", which is the actual game object
                 // it's good, use the return at the bottom (Code reads better this way IMO)
             }

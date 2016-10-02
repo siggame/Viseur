@@ -54,7 +54,6 @@ var Parser = Classe({
                     delete state[key];
                 }
                 else if(gameObjects && dIsObject && d.hasOwnProperty("id") && state !== gameObjects) { // then it is a game object reference, so connect it
-                    console.log("referencing game object");
                     state[key] = gameObjects[d.id];
                 }
                 else if(dIsObject && utils.isObject(state[key])) {
