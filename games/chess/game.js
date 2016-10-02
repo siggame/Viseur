@@ -43,16 +43,16 @@ var Game = Classe(BaseGame, {
     /**
      * The current state of this Game. Undefined when there is no current state.
      *
-     * @type {GameState | undefined})}
+     * @type {GameState|null})}
      */
-    current: {},
+    current: null,
 
     /**
      * The next state of this Game. Undefined when there is no next state.
      *
-     * @type {GameState | undefined})}
+     * @type {GameState|null})}
      */
-    next: {},
+    next: null,
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -61,7 +61,7 @@ var Game = Classe(BaseGame, {
      *
      * @private
      */
-    _start: function() {
+    _start: function(state) {
         BaseGame._start.call(this);
 
         //<<-- Creer-Merge: _start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -84,7 +84,7 @@ var Game = Classe(BaseGame, {
      *
      * @private
      */
-    _initBackground: function() {
+    _initBackground: function(state) {
         BaseGame._initBackground.call(this);
 
         //<<-- Creer-Merge: _initBackground -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -206,8 +206,10 @@ var Game = Classe(BaseGame, {
      *
      * @private
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _renderBackground: function(dt) {
+    _renderBackground: function(dt, current, next) {
         BaseGame._renderBackground.call(this);
 
         //<<-- Creer-Merge: _renderBackground -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -219,8 +221,10 @@ var Game = Classe(BaseGame, {
      * Invoked when the state updates.
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {
+    _stateUpdated: function(current, next) {
         BaseGame._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.

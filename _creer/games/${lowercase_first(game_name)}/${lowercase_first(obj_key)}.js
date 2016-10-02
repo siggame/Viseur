@@ -69,16 +69,16 @@ ${merge("        //", "init", "        // initialization logic goes here")}
     /**
      * The current state of this ${obj_key}. Undefined when there is no current state.
      *
-     * @type {${obj_key}State | undefined})}
+     * @type {${obj_key}State|null})}
      */
-    current: {},
+    current: null,
 
     /**
      * The next state of this ${obj_key}. Undefined when there is no next state.
      *
-     * @type {${obj_key}State | undefined})}
+     * @type {${obj_key}State|null})}
      */
-    next: {},
+    next: null,
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 % if obj_key == "Game":
@@ -88,7 +88,7 @@ ${merge("        //", "init", "        // initialization logic goes here")}
      *
      * @private
      */
-    _start: function() {
+    _start: function(state) {
         BaseGame._start.call(this);
 
 ${merge("        //", "_start", "        // create some sprites")}
@@ -99,7 +99,7 @@ ${merge("        //", "_start", "        // create some sprites")}
      *
      * @private
      */
-    _initBackground: function() {
+    _initBackground: function(state) {
         BaseGame._initBackground.call(this);
 
 ${merge("        //", "_initBackground", "        // initialize a background bro")}
@@ -110,8 +110,10 @@ ${merge("        //", "_initBackground", "        // initialize a background bro
      *
      * @private
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _renderBackground: function(dt) {
+    _renderBackground: function(dt, current, next) {
         BaseGame._renderBackground.call(this);
 
 ${merge("        //", "_renderBackground", "        // update and re-render whatever you initialize in _initBackground")}
@@ -129,8 +131,10 @@ ${merge("    //", "shouldRender", "    shouldRender: false,")}
      * Called approx 60 times a second to update and render the ${obj_key}. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    render: function(dt) {
+    render: function(dt, current, next) {
 % for parent_class in reversed(parent_classes):
         ${parent_class}.render.apply(this, arguments);
 % endfor
@@ -160,6 +164,7 @@ ${merge("        //", "_getContextMenu", "        // add context items to the me
     function_parms = obj['functions'][function_name]
     argument_string = ""
     argument_names = []
+    arg_names = function_parms['argument_names'] + ["callback"]
     if 'arguments' in function_parms:
         for arg_parms in function_parms['arguments']:
             argument_names.append(arg_parms['name'])
@@ -177,7 +182,7 @@ ${merge("        //", "_getContextMenu", "        // add context items to the me
      * @param {Function} [callback] - callback that is passed back the return value of ${shared['vis']['type'](function_parms['returns']['type'])} once ran on the server
 % endif
      */
-    ${function_name}: function(${", ".join(function_parms['argument_names'])}, callback) {
+    ${function_name}: function(${", ".join(arg_names)}) {
 % if 'arguments' in function_parms:
 % for i, arg_parms in enumerate(function_parms['arguments']):
 % if arg_parms['optional']:
@@ -203,8 +208,10 @@ ${merge("        //", "_getContextMenu", "        // add context items to the me
      * Invoked when the state updates.
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {
+    _stateUpdated: function(current, next) {
 % for parent_class in reversed(parent_classes):
         ${parent_class}._stateUpdated.apply(this, arguments);
 % endfor

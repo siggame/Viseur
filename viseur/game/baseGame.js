@@ -62,8 +62,11 @@ var BaseGame = Classe(Observable, {
      * renders the static background
      *
      * @private
+     * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _renderBackground: function() {},
+    _renderBackground: function(dt, current, next) {},
 
     _layerNames: [
         "background",
@@ -99,7 +102,7 @@ var BaseGame = Classe(Observable, {
             if(this.gameObjects.hasOwnProperty(id)) {
                 var gameObject = this.gameObjects[id];
                 if(gameObject.shouldRender) { // game objects by default do not render, as many are invisible
-                    gameObject.render(dt);
+                    gameObject.render(dt, gameObject.current || gameObject.next, gameObject.next || gameObject.current);
                 }
             }
         }
@@ -146,7 +149,7 @@ var BaseGame = Classe(Observable, {
             this.pane.update(state);
         }
 
-        this._stateUpdated();
+        this._stateUpdated(this.current || this.next, this.next || this.current);
 
         return state;
     },
@@ -155,8 +158,10 @@ var BaseGame = Classe(Observable, {
      * Invoked when the state updates. Intended to be overriden by subclass(es)
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {},
+    _stateUpdated: function(current, next) {},
 
     /**
      * initializes a new game object with the given id
