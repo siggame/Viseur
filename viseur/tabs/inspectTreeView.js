@@ -70,9 +70,18 @@ var InspectTreeView = Classe(TreeView, {
         return typeof(subtree);
     },
 
-    _getKeys: function(subtree) {
+    _getKeys: function(subtree, path) {
         if(subtree === this._gameObjects) {
             return Math.range(Math.max.apply(Math, Object.keys(subtree)));
+        }
+
+        if(subtree.id) { // figure out if it is the real path to the game object, or just a reference to it
+            if(path.length === 3 && path[0] === "root" && path[1] === "gameObjects") { // then the path is somethling like "root" -> "gameObjects" -> "0", which is the actual game object
+                // it's good, use the return at the bottom (Code reads better this way IMO)
+            }
+            else { // it's just a reference
+                return [ "id" ];
+            }
         }
 
         return TreeView._getKeys.apply(this, arguments);

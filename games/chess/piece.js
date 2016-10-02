@@ -65,16 +65,16 @@ var Piece = Classe(GameObject, {
     /**
      * The current state of this Piece. Undefined when there is no current state.
      *
-     * @type {PieceState | undefined})}
+     * @type {PieceState|null})}
      */
-    current: {},
+    current: null,
 
     /**
      * The next state of this Piece. Undefined when there is no next state.
      *
-     * @type {PieceState | undefined})}
+     * @type {PieceState|null})}
      */
-    next: {},
+    next: null,
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -91,40 +91,37 @@ var Piece = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Piece. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    render: function(dt) {
+    render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        if((!this.current && !this.next) || (this.current && this.current.captured)) { // then we don't exist to be rendered
+        if(current.captured) { // then we don't exist to be rendered
             this.container.visible = false;
             return; // no need to figure out where to render, as it's now invisible
         }
-
+        // else, we are visible and need to be rendered on the screen somewhere
         this.container.visible = true;
-        var currentPosition = this.current && this._transformFileRank(this.current.file, this.current.rank);
-        var nextPosition = this.next  && this._transformFileRank(this.next.file, this.next.rank);
-        var renderPosition = currentPosition || nextPosition;
 
-        if(currentPosition && nextPosition) { // then we need to ease the movement from current to next
-            if(this.current && !this.current.captured && this.next && this.next.captured) { // then we got captured :(
-                renderPosition = currentPosition;
-                this.container.alpha = ease(1 - dt, "cubicInOut");
-            }
-            else {
-                this.container.alpha = 1;
-                renderPosition = {
-                    x: ease(currentPosition.x, nextPosition.x, dt, "cubicInOut"),
-                    y: ease(currentPosition.y, nextPosition.y, dt, "cubicInOut"),
-                };
-            }
+        var currentPosition = this._transformFileRank(current.file, current.rank);
+        var nextPosition = this._transformFileRank(next.file, next.rank);
+
+        if(!current.captured && next.captured) { // then we got captured :(
+            nextPosition = currentPosition; // as next nextPosition would be off map
+            this.container.alpha = ease(1 - dt, "cubicInOut"); // fade it out
+        }
+        else {
+            this.container.alpha = 1; // fulls visible, as they are not captured
         }
 
-        this.container.x = renderPosition.x;
-        this.container.y = renderPosition.y;
+        // now actually move us on screen
+        this.container.x = ease(currentPosition.x, nextPosition.x, dt, "cubicInOut");
+        this.container.y = ease(currentPosition.y, nextPosition.y, dt, "cubicInOut");
 
-        if(this.game.getSetting("flip-board")) {
+        if(this.game.getSetting("flip-board")) { // then we need to flip our vertical position
             this.container.y = 7 - this.container.y; // flip it so the y is inverted (board height is 8, so 7 because we index at 0)
         }
 
@@ -198,8 +195,10 @@ var Piece = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {
+    _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -211,7 +210,7 @@ var Piece = Classe(GameObject, {
             }
         }
         else { // need to display the correct sprite if at this state is has or has not been promoted
-            var isPawn = (this.current.type.toLowerCase() === "pawn");
+            var isPawn = (current.type.toLowerCase() === "pawn");
 
             this._spriteInitial.visible = isPawn;
             this._spritePromoted.visible = !isPawn;
@@ -225,6 +224,7 @@ var Piece = Classe(GameObject, {
     /**
      * An offset from the bottom of it's tile to look better
      *
+     * @static
      * @type {number}
      */
     _bottomOffset: 0.125,

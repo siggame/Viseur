@@ -33,15 +33,17 @@ var BaseGameObject = Classe(Observable, {
         this.current = current || null;
         this.next = next || null;
 
-        this._stateUpdated();
+        this._stateUpdated(current || next, next || current);
     },
 
     /**
      * Inoked when the state updates. Intended to be overriden by subclass(es)
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {},
+    _stateUpdated: function(current, next) {},
 
     /**
      * Initializes the PIXI.Container that this GameObject's sprites can go in

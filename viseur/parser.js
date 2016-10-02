@@ -17,6 +17,22 @@ var Parser = Classe({
      * @returns {Object} state, now delta merged
      */
     mergeDelta: function(state, delta) {
+        if(!state.gameObjects) { // merge the initial state, then it we can hook up game object references after
+            this._mergeDelta(state, delta);
+        }
+
+        return this._mergeDelta(state, delta, state.gameObjects);
+    },
+
+    /**
+     * merges delta information from a `delta` onto a `state`, while connecting game object references
+     *
+     * @param {Object} state - the state to merge `delta` onto
+     * @param {Object} delta - the delta formatted information of how to update `state`
+     * @param {Object} [gameObjects] - the game objects within `state`, for forming cycles
+     * @returns {Object} state, now delta merged
+     */
+    _mergeDelta: function(state, delta, gameObjects) {
         var deltaLength = delta[this.constants.DELTA_LIST_LENGTH];
 
         if(deltaLength !== undefined) { // then this part in the state is an array
@@ -29,19 +45,24 @@ var Parser = Classe({
         for(var key in delta) {
             if(delta.hasOwnProperty(key)) {
                 var d = delta[key];
+                var dIsObject = utils.isObject(d);
+
                 if(key === this.constants.DELTA_LIST_LENGTH) {
                     continue;
                 }
                 else if(d === this.constants.DELTA_REMOVED) {
                     delete state[key];
                 }
-                else if(utils.isObject(d) && utils.isObject(state[key])) {
-                    this.mergeDelta(state[key], d); // static use in case this function is called statically
+                else if(gameObjects && dIsObject && d.hasOwnProperty("id") && state !== gameObjects) { // then it is a game object reference, so connect it
+                    state[key] = gameObjects[d.id];
+                }
+                else if(dIsObject && utils.isObject(state[key])) {
+                    this._mergeDelta(state[key], d, gameObjects); // static use in case this function is called statically
                 }
                 else {
-                    if(utils.isObject(d)) {
+                    if(dIsObject) {
                         var newState = (d[this.constants.DELTA_LIST_LENGTH] === undefined ? {} : []);
-                        state[key] = this.mergeDelta(newState, d);
+                        state[key] = this._mergeDelta(newState, d, gameObjects);
                     }
                     else {
                         state[key] = d;

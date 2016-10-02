@@ -84,7 +84,7 @@ var TreeView = Classe(BaseElement, {
         $node.used = true;
 
         if(utils.isObject(subtree)) { // nested list
-            var keys = this._getKeys(subtree);
+            var keys = this._getKeys(subtree, path);
             for(var i = 0; i < keys.length; i++) {
                 var subkey = keys[i];
                 this._displayNode($node.$children, subtree[subkey], subkey, path);
@@ -178,10 +178,11 @@ var TreeView = Classe(BaseElement, {
     /**
      * Gets, and sorts, the keys for some subtree, ensuring they are always displayed in the same order
      *
-     * @param   {Object} subtree - the subtree to get keys from
+     * @param {Object} subtree - the subtree to get keys from
+     * @param {Array.<string>} path - path in tree to subtree
      * @returns {Array.<string>} - the keys of the subtree, sorted
      */
-    _getKeys: function(subtree) {
+    _getKeys: function(subtree, keys) {
         if(Array.isArray(subtree)) {
             return Math.range(subtree.length);
         }
