@@ -42,7 +42,10 @@ var Bottle = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        this._initContainer(this.game.layers.game);
+        this.sprite = this.renderer.newSprite("bottle", this.container);
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -56,16 +59,16 @@ var Bottle = Classe(GameObject, {
     /**
      * The current state of this Bottle. Undefined when there is no current state.
      *
-     * @type {BottleState | undefined})}
+     * @type {BottleState|null})}
      */
-    current: {},
+    current: null,
 
     /**
      * The next state of this Bottle. Undefined when there is no next state.
      *
-     * @type {BottleState | undefined})}
+     * @type {BottleState|null})}
      */
-    next: {},
+    next: null,
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -75,19 +78,25 @@ var Bottle = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
      * Called approx 60 times a second to update and render the Bottle. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    render: function(dt) {
+    render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // render where the Bottle is
+
+        this.container.visible = !current.isDestroyed;
+        this.container.x = ease(current.tile.x, next.tile.y, "cubicInOut");
+        this.container.y = ease(current.tile.y, next.tile.y, "cubicInOut");
+
         //<<-- /Creer-Merge: render -->>
     },
 
@@ -117,8 +126,10 @@ var Bottle = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {
+    _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.

@@ -66,16 +66,16 @@ var Cowboy = Classe(GameObject, {
     /**
      * The current state of this Cowboy. Undefined when there is no current state.
      *
-     * @type {CowboyState | undefined})}
+     * @type {CowboyState|null})}
      */
-    current: {},
+    current: null,
 
     /**
      * The next state of this Cowboy. Undefined when there is no next state.
      *
-     * @type {CowboyState | undefined})}
+     * @type {CowboyState|null})}
      */
-    next: {},
+    next: null,
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -85,29 +85,24 @@ var Cowboy = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
      * Called approx 60 times a second to update and render the Cowboy. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    render: function(dt) {
+    render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        var first = this.current || this.next;
-        var tile = this.game.gameObjects[first.tile.id];
-        var firstTile = tile.current || tile.next;
-
-        var next = this.next || this.current;
-        tile = this.game.gameObjects[next.tile.id];
-        var nextTile = tile.current || tile.next; // TODO: cleanup so cycles in gamelogs are preserved
-
-        this.container.x = ease(firstTile.x, lastTile.y, "cubicInOut");
-        this.container.y = ease(firstTile.y, lastTile.y, "cubicInOut");
+        this.container.visible = !current.isDead;
+        this.container.x = ease(current.tile.x, next.tile.y, "cubicInOut");
+        this.container.y = ease(current.tile.y, next.tile.y, "cubicInOut");
 
         //<<-- /Creer-Merge: render -->>
     },
@@ -180,8 +175,10 @@ var Cowboy = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {
+    _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.

@@ -69,16 +69,16 @@ var Tile = Classe(GameObject, {
     /**
      * The current state of this Tile. Undefined when there is no current state.
      *
-     * @type {TileState | undefined})}
+     * @type {TileState|null})}
      */
-    current: {},
+    current: null,
 
     /**
      * The next state of this Tile. Undefined when there is no next state.
      *
-     * @type {TileState | undefined})}
+     * @type {TileState|null})}
      */
-    next: {},
+    next: null,
 
     // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
@@ -95,8 +95,10 @@ var Tile = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Tile. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    render: function(dt) {
+    render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -130,8 +132,10 @@ var Tile = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
+     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
+     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
      */
-    _stateUpdated: function() {
+    _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
