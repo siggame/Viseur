@@ -51,7 +51,12 @@ var Tile = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
-        this.sprite = this.renderer.newSprite(initialState.isWall ? "wall": "tile", this.container);
+
+        var stateString = "tile";
+        if(initialState.isWall) stateString = "wall";
+        else if(initialState.hasHazard) stateString = "tile_hazard";
+
+        this.sprite = this.renderer.newSprite(stateString, this.container);
 
         this.container.x = initialState.x;
         this.container.y = initialState.y;
@@ -139,6 +144,9 @@ var Tile = Classe(GameObject, {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        //TODO: check if a hazard has been added or removed
+
         // update the Tile based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
     },

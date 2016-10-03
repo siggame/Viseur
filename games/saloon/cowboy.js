@@ -51,6 +51,8 @@ var Cowboy = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
+        //TODO: add different sprites for different cowboy jobs
+        //TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
         this.sprite = this.renderer.newSprite("cowboy", this.container);
 
         //<<-- /Creer-Merge: init -->>
@@ -101,8 +103,8 @@ var Cowboy = Classe(GameObject, {
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this.container.visible = !current.isDead;
-        this.container.x = ease(current.tile.x, next.tile.y, "cubicInOut");
-        this.container.y = ease(current.tile.y, next.tile.y, "cubicInOut");
+        this.container.x = ease(current.tile.x, next.tile.y, dt, "cubicInOut");
+        this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
 
         //<<-- /Creer-Merge: render -->>
     },

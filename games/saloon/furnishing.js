@@ -44,6 +44,8 @@ var Furnishing = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
+
+        //TODO: Add a cornucopia of different furnishings
         this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": "furnishing", this.container);
 
         this.container.x = initialState.tile.x;
@@ -96,6 +98,7 @@ var Furnishing = Classe(GameObject, {
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
+        //TODO: render differnt levels of "destroyed"
         this.container.visible = !current.isDestroyed;
 
         //<<-- /Creer-Merge: render -->>
