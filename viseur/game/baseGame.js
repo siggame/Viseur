@@ -18,7 +18,7 @@ var BaseGame = Classe(Observable, {
 
         var self = this;
         Viseur.on("ready", function() {
-            self._start();
+            self._start(gamelog.deltas[0].game);
         });
 
         Viseur.on("state-changed", function(state) {
