@@ -52,11 +52,11 @@ var Tile = Classe(GameObject, {
 
         this._initContainer(this.game.layers.game);
 
-        var stateString = "tile";
-        if(initialState.isWall) stateString = "wall";
-        else if(initialState.hasHazard) stateString = "tile_hazard";
+        this.sprite = this.renderer.newSprite(initialState.isWall ? "wall" : "tile", this.container);
 
-        this.sprite = this.renderer.newSprite(stateString, this.container);
+        if(initialState.hasHazard) {
+            this.hazardSprite = this.renderer.newSprite("hazard_broken_glass", this.container);
+        }
 
         this.container.x = initialState.x;
         this.container.y = initialState.y;
@@ -145,7 +145,20 @@ var Tile = Classe(GameObject, {
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        //TODO: check if a hazard has been added or removed
+        if(this.current && this.next) {
+            //If hazard removed
+            if (this.current.hasHazard && !this.next.hasHazard) {
+                this.hazardSprite.opacity = 0;
+            }
+            //If added and sprite already exists
+            else if (this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
+                this.hazardSprite.opacity = 1;
+            }
+            //If added and sprite doesn't exist
+            else if (!this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
+                this.hazardSprite = this.renderer.newSprite("hazard_broken_glass", this.container);
+            }
+        }
 
         // update the Tile based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
