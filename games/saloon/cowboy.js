@@ -119,7 +119,7 @@ var Cowboy = Classe(GameObject, {
         this.container.filters = [this._colorFilter];
         // if the next frame has drunk
         if(next.isDrunk){
-            // we'll want to create a transition to green. 
+            // we'll want to create a transition to green.
             this._colorFilter.hue(dt * green_hue, false);
         }
         // if current is drunk
