@@ -94,8 +94,20 @@ var Bottle = Classe(GameObject, {
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this.container.visible = !current.isDestroyed;
-        this.container.x = ease(current.tile.x, next.tile.y, "cubicInOut");
-        this.container.y = ease(current.tile.y, next.tile.y, "cubicInOut");
+        if(current.isDestroyed) {
+            return; // no need to render further
+        }
+
+        this.container.alpha = 1;
+
+        var nextTile = next.tile;
+        if(next.isDestroyed) {
+            nextTile = current.tile; // it would normally be null, this way we can render it on it's tile of death
+            this.container.alpha = dt; // fade it out
+        }
+
+        this.container.x = ease(current.tile.x, nextTile.x, dt, "cubicInOut");
+        this.container.y = ease(current.tile.y, nextTile.y, dt, "cubicInOut");
 
         //<<-- /Creer-Merge: render -->>
     },
