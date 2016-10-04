@@ -11,7 +11,7 @@ var GameObject = require("./gameObject");
 
 // contains the array of textures for furnishings, excluding piano, that can possibly be randomly selected for. 
 // if you add a new furnishing add the name of it here. 
-var furnishing_textures = ["furnishing chair", "furnishing lamp", "furnishing sofa", "furnishing table"]; 
+var furnishing_textures = ["furnishing", "furnishing chair", "furnishing lamp", "furnishing sofa", "furnishing table"]; 
 
 //<<-- /Creer-Merge: requires -->>
 
@@ -49,12 +49,12 @@ var Furnishing = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
-		// getting deterministic PRN between 0 -> 3, since random is 0->1 exclusive on 1, 
-		// truncating will give us integers only
-		var selection = Math.trunc(this.game.random() * 4); 
-		// despite the fact that this can be inlined inside of sprite assignment, its 
-		// more readable as a seperate variable, and can be added as a member later if need be. 
-		var selected_texture = furnishing_textures[selection];
+        // getting deterministic PRN between 0 -> furnishing_textures.length() - 1, since random is 0->1 exclusive on 1, 
+        // truncating will give us integers only in the desired range
+        var selection = Math.floor(this.game.random() * furnishing_textures.length); 
+        // despite the fact that this can be inlined inside of sprite assignment, it's more readable as a seperate variable,
+        // and can be added as a member later if need be.  Gets the string for the selected non piano texture
+        var selected_texture = furnishing_textures[selection];
         this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": selected_texture, this.container);
 
         this.container.x = initialState.tile.x;
