@@ -8,6 +8,9 @@ var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
+
+var green_hue = 120; // hue for green in degrees
+var default_hue = 0; // default hue in degrees, 0 means no extra hue applied
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -52,7 +55,16 @@ var Cowboy = Classe(GameObject, {
 
         this._initContainer(this.game.layers.game);
         this.sprite = this.renderer.newSprite("cowboy", this.container);
-
+        //creating filter for use in changin color of cowboy
+        this._colorFilter = new PIXI.filters.ColorMatrixFilter();
+        // default matrix used, multiplies 1 by all RGBA values
+        this._colorFilter.matrix = [1, 0, 0, 0, 0, 
+                                    0, 1, 0, 0, 0, 
+                                    0, 0, 1, 0, 0, 
+                                    0, 0, 0, 1, 0]; 
+        
+        // setting default hue for the colorfilter 
+        this._colorFilter.hue(default_hue, false);
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -103,7 +115,30 @@ var Cowboy = Classe(GameObject, {
         this.container.visible = !current.isDead;
         this.container.x = ease(current.tile.x, next.tile.x, dt, "cubicInOut");
         this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
-
+        // setting the current colorfilter for the given render container
+        this.container.filters = [this._colorFilter];
+        // if the next frame has drunk
+        if(next.isDrunk){
+            // we'll want to create a transition to green. 
+            this._colorFilter.hue(dt * green_hue, false);
+        }
+        // if current is drunk
+        else if(current.isDrunk){
+            // make sure that we transition out of green if the next frame isn't drunk
+            if(!next.isDrunk){
+                this._colorFilter.hue(green_hue - (dt * green_hue), false);
+            }
+            //otherwise stay green
+            this._colorFilter.hue(green_hue, false);
+        }
+        //otherwise keep no hue
+        else{
+            this._colorFilter.hue(default_hue, false);
+        }
+        //console.log(this.container.filters);
+      
+        //this._colorFilter.matrix = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]; 
+        
         //<<-- /Creer-Merge: render -->>
     },
 
