@@ -8,6 +8,10 @@ var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
+
+var green_hue = 120; // hue for green in degrees
+var greenish_hue = green_hue/2; // mid tone green for transitioning between greens in drunk phase
+var default_hue = 0; // default hue in degrees, 0 means no extra hue applied
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -54,7 +58,16 @@ var Cowboy = Classe(GameObject, {
         //TODO: add different sprites for different cowboy jobs
         //TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
         this.sprite = this.renderer.newSprite("cowboy", this.container);
+        //creating filter for use in changin color of cowboy
+        this._colorFilter = new PIXI.filters.ColorMatrixFilter();
+        // default matrix used, multiplies 1 by all RGBA values
+        this._colorFilter.matrix = [1, 0, 0, 0, 0, 
+                                    0, 1, 0, 0, 0, 
+                                    0, 0, 1, 0, 0, 
+                                    0, 0, 0, 1, 0]; 
 
+        // setting default hue for the colorfilter 
+        this._colorFilter.hue(default_hue, false);
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -103,8 +116,57 @@ var Cowboy = Classe(GameObject, {
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this.container.visible = !current.isDead;
-        this.container.x = ease(current.tile.x, next.tile.x, dt, "cubicInOut");
-        this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
+
+        if(current.isDead) {
+            return; // no need to render further
+        }
+
+        this.container.alpha = 1;
+
+        var nextTile = next.tile;
+        if(next.isDead) {
+            nextTile = current.tile; // it would normally be null, this way we can render it on it's tile of death
+            this.container.alpha = dt; // fade it out
+        }
+
+        this.container.x = ease(current.tile.x, nextTile.x, dt, "cubicInOut");
+        this.container.y = ease(current.tile.y, nextTile.y, dt, "cubicInOut");
+
+        // setting the current colorfilter for the given render container
+        this.container.filters = [this._colorFilter];
+        var ease_hue;
+        // if the next frame has drunk
+        if(next.isDrunk) {
+            // we'll want to create a transition to green.
+            ease_hue = ease(default_hue, green_hue, dt, "cubicInOut");
+            this._colorFilter.hue(ease_hue, false);
+        }
+        // if current is drunk
+        else if(current.isDrunk) {
+            // make sure that we transition out of green if the next frame isn't drunk
+            if(!next.isDrunk) {
+                ease_hue = ease(green_hue, default_hue, dt, "cubicInOut");
+                this._colorFilter.hue(ease_hue, false);
+            }
+            //otherwise stay green and fluxuate the color hue
+
+            // easing to less green for fluxuation
+            if (dt <= 0.5) {
+                ease_hue = ease(green_hue, greenish_hue, dt, "sineInOut");
+            }
+            // easing to more green for fluxuation
+            else{
+                ease_hue = ease(greenish_hue, green_hue, dt, "sineInOut");
+            }
+            this._colorFilter.hue(ease_hue, false);
+        }
+        //otherwise keep no hue
+        else {
+            this._colorFilter.hue(default_hue, false);
+        }
+        //console.log(this.container.filters);
+
+        //this._colorFilter.matrix = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
 
         //<<-- /Creer-Merge: render -->>
     },

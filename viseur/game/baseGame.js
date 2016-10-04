@@ -138,7 +138,7 @@ var BaseGame = Classe(Observable, {
                 var nextGameObject = state.nextGame ? state.nextGame.gameObjects[id] : null;
 
                 if(!this.gameObjects[id]) { // this is the first time we've seen this game object, so create its instance
-                    this._initGameObject(id, nextGameObject);
+                    this._initGameObject(id, currentGameObject || nextGameObject);
                 }
 
                 this.gameObjects[id].update(currentGameObject, nextGameObject);
