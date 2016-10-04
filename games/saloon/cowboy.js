@@ -17,7 +17,7 @@ var GameObject = require("./gameObject");
 
 /**
  * @typedef {Object} CowboyState - A state representing a Cowboy
- * @property {number} canMove - If the Cowboy can be moved this turn via its owner.
+ * @property {boolean} canMove - If the Cowboy can be moved this turn via its owner.
  * @property {string} drunkDirection - The direction this Cowboy is moving while drunk. Will be 'North', 'East', 'South', or 'West' when drunk; or '' (empty string) when not drunk.
  * @property {number} focus - How much focus this Cowboy has. Different Jobs do different things with their Cowboy's focus.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
