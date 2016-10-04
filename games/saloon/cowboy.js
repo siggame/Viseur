@@ -10,6 +10,7 @@ var GameObject = require("./gameObject");
 // any additional requires you want can be required here safely between Creer runs
 
 var green_hue = 120; // hue for green in degrees
+var greenish_hue = green_hue/2; // mid tone green for transitioning between greens in drunk phase
 var default_hue = 0; // default hue in degrees, 0 means no extra hue applied
 //<<-- /Creer-Merge: requires -->>
 
@@ -117,19 +118,31 @@ var Cowboy = Classe(GameObject, {
         this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
         // setting the current colorfilter for the given render container
         this.container.filters = [this._colorFilter];
+        var ease_hue;
         // if the next frame has drunk
         if(next.isDrunk){
             // we'll want to create a transition to green.
-            this._colorFilter.hue(dt * green_hue, false);
+            ease_hue = ease(default_hue, green_hue, dt, "cubicInOut");
+            this._colorFilter.hue(ease_hue, false);
         }
         // if current is drunk
         else if(current.isDrunk){
             // make sure that we transition out of green if the next frame isn't drunk
             if(!next.isDrunk){
-                this._colorFilter.hue(green_hue - (dt * green_hue), false);
+                ease_hue = ease(green_hue, default_hue, dt, "cubicInOut");
+                this._colorFilter.hue(ease_hue, false);
             }
-            //otherwise stay green
-            this._colorFilter.hue(green_hue, false);
+            //otherwise stay green and fluxuate the color hue
+            
+            // easing to less green for fluxuation 
+            if (dt <= .5){
+                ease_hue = ease(green_hue, greenish_hue, dt, "sineInOut");
+            }
+            // easing to more green for fluxuation
+            else{
+                ease_hue = ease(greenish_hue, green_hue, dt, "sineInOut");
+            }
+            this._colorFilter.hue(ease_hue, false);
         }
         //otherwise keep no hue
         else{
