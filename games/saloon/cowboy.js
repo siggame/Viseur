@@ -101,6 +101,14 @@ var Cowboy = Classe(GameObject, {
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this.container.visible = !current.isDead;
+        this.container.alpha = 1;
+
+        var nextTile = nextTile;
+        if(next.isDead) {
+            nextTile = current.tile; // it would normally be null, this way we can render it on it's tile of death
+            this.container.alpha = dt; // fade it out
+        }
+
         this.container.x = ease(current.tile.x, next.tile.x, dt, "cubicInOut");
         this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
 
