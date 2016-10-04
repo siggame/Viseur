@@ -5,6 +5,10 @@ module.exports = {
     "cowboy": "cowboy.png",
     "piano": "piano.png",
     "furnishing": "furnishing.png",
+	"furnishing chair": "furnishing_chair.png",
+	"furnishing lamp": "furnishing_lamp.png",
+	"furnishing sofa": "furnishing_sofa.png",
+	"furnishing table": "furnishing_table.png",
     "bottle": "bottle.png",
     //<<-- /Creer-Merge: settings -->>
 };
