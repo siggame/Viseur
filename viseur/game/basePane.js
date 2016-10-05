@@ -83,7 +83,7 @@ var BasePane = Classe(BaseElement, {
 
             $player.$element
                 .toggleClass("current-player", state.currentPlayer.id === playerID)
-                .css("background-image", 'url("viseur/programming-languages/{}.png")'.format(player.clientType.replace("#", "s").toLowerCase()));
+                .css("background-image", 'url("viseur/images/{}.png")'.format(player.clientType.replace("#", "s").toLowerCase()));
         }
     },
 
