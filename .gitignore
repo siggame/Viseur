@@ -33,7 +33,7 @@ node_modules
 .node_repl_history
 
 # webpack bundle
-bundle.js
+bundle/
 
 # web fonts used during build
 *.eot
