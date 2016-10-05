@@ -55,6 +55,8 @@ var Cowboy = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
+        //TODO: add different sprites for different cowboy jobs
+        //TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
         this.sprite = this.renderer.newSprite("cowboy", this.container);
         //creating filter for use in changin color of cowboy
         this._colorFilter = new PIXI.filters.ColorMatrixFilter();

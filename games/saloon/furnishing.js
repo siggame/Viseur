@@ -107,6 +107,7 @@ var Furnishing = Classe(GameObject, {
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
+        //TODO: render differnt levels of "destroyed"
         this.container.visible = !current.isDestroyed;
 
         //<<-- /Creer-Merge: render -->>
