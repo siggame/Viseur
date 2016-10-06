@@ -47,3 +47,6 @@ bundle/
 
 # JetBrains IDEs
 .idea/
+
+# eslinter cache
+.eslintcache
