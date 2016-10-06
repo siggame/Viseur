@@ -11,21 +11,16 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} PlayerID - a "shallow" state of a Player, which is just an object with an `id`.
- * @property {string} id - the if of the PlayerState it represents in game.gameObjects
- */
-
-/**
  * @typedef {Object} PlayerState - A state representing a Player
  * @property {string} clientType - What type of client this is, e.g. 'Python', 'JavaScript', or some other language. For potential data mining purposes.
- * @property {Array.<CowboyID>} cowboys - Every Cowboy owned by this Player.
+ * @property {Array.<CowboyState>} cowboys - Every Cowboy owned by this Player.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {number} kills - How many enemy Cowboys this player's team has killed.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {boolean} lost - If the player lost the game or not.
  * @property {string} name - The name of the player.
- * @property {PlayerID} opponent - This player's opponent in the game.
+ * @property {PlayerState} opponent - This player's opponent in the game.
  * @property {string} reasonLost - The reason why the player lost the game.
  * @property {string} reasonWon - The reason why the player won the game.
  * @property {number} rowdyness - How rowdy their team is. When it gets too high their team takes a collective siesta.
@@ -33,7 +28,7 @@ var GameObject = require("./gameObject");
  * @property {number} siesta - 0 when not having a team siesta. When greater than 0 represents how many turns left for the team siesta to complete.
  * @property {number} timeRemaining - The amount of time (in ns) remaining for this AI to send commands.
  * @property {boolean} won - If the player won the game or not.
- * @property {CowboyID} youngGun - The only 'Yong Gun' Cowboy this player owns, or null if they called in their young gun during their turn.
+ * @property {CowboyState} youngGun - The only 'Yong Gun' Cowboy this player owns, or null if they called in their young gun during their turn.
  */
 
 /**
@@ -46,7 +41,8 @@ var Player = Classe(GameObject, {
      * Initializes a Player with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Player
-     * @private
+     * @param {PlayerState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Player is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -92,8 +88,8 @@ var Player = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Player. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
@@ -127,7 +123,7 @@ var Player = Classe(GameObject, {
      * Sends in the Young Gun to the nearest Tile into the Saloon, and promotes them to a new job.
      *
      * @param {string} job - The job you want the Young Gun being brought in to be called in to do, changing their job to it.
-     * @param {Function} [callback] - callback that is passed back the return value of CowboyID once ran on the server
+     * @param {Function} [callback] - callback that is passed back the return value of CowboyState once ran on the server
      */
     sendIn: function(job, callback) {
         this._runOnServer("sendIn", {
@@ -141,8 +137,8 @@ var Player = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

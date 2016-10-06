@@ -11,24 +11,19 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} TileID - a "shallow" state of a Tile, which is just an object with an `id`.
- * @property {string} id - the if of the TileState it represents in game.gameObjects
- */
-
-/**
  * @typedef {Object} TileState - A state representing a Tile
- * @property {BottleID} bottle - The beer Bottle currently flying over this Tile.
- * @property {CowboyID} cowboy - The Cowboy that is on this Tile, or null if empty.
- * @property {FurnishingID} furnishing - The furnishing that is on this Tile, or null if empty.
+ * @property {BottleState} bottle - The beer Bottle currently flying over this Tile.
+ * @property {CowboyState} cowboy - The Cowboy that is on this Tile, or null if empty.
+ * @property {FurnishingState} furnishing - The furnishing that is on this Tile, or null if empty.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {boolean} hasHazard - If this Tile is pathable, but has a hazard that damages Cowboys that path through it.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {boolean} isWall - If this Tile is a wall of the Saloon, and can never be pathed through.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {TileID} tileEast - The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the map.
- * @property {TileID} tileNorth - The Tile to the 'North' of this one (x, y-1). Null if out of bounds of the map.
- * @property {TileID} tileSouth - The Tile to the 'South' of this one (x, y+1). Null if out of bounds of the map.
- * @property {TileID} tileWest - The Tile to the 'West' of this one (x-1, y). Null if out of bounds of the map.
+ * @property {TileState} tileEast - The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the map.
+ * @property {TileState} tileNorth - The Tile to the 'North' of this one (x, y-1). Null if out of bounds of the map.
+ * @property {TileState} tileSouth - The Tile to the 'South' of this one (x, y+1). Null if out of bounds of the map.
+ * @property {TileState} tileWest - The Tile to the 'West' of this one (x-1, y). Null if out of bounds of the map.
  * @property {number} x - The x (horizontal) position of this Tile.
  * @property {number} y - The y (vertical) position of this Tile.
  */
@@ -43,7 +38,8 @@ var Tile = Classe(GameObject, {
      * Initializes a Tile with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Tile
-     * @private
+     * @param {TileState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Tile is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -100,8 +96,8 @@ var Tile = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Tile. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {TileState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {TileState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
@@ -137,8 +133,8 @@ var Tile = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {TileState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {TileState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
@@ -146,16 +142,16 @@ var Tile = Classe(GameObject, {
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         if(this.current && this.next) {
-            //If hazard removed
-            if (this.current.hasHazard && !this.next.hasHazard) {
+            // If hazard removed
+            if(this.current.hasHazard && !this.next.hasHazard) {
                 this.hazardSprite.opacity = 0;
             }
-            //If added and sprite already exists
-            else if (this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
+            // If added and sprite already exists
+            else if(this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
                 this.hazardSprite.opacity = 1;
             }
-            //If added and sprite doesn't exist
-            else if (!this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
+            // If added and sprite doesn't exist
+            else if(!this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
                 this.hazardSprite = this.renderer.newSprite("hazard_broken_glass", this.container);
             }
         }

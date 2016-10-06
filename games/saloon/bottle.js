@@ -11,19 +11,14 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} BottleID - a "shallow" state of a Bottle, which is just an object with an `id`.
- * @property {string} id - the if of the BottleState it represents in game.gameObjects
- */
-
-/**
  * @typedef {Object} BottleState - A state representing a Bottle
- * @property {TileID} direction - The Direction this Bottle is flying and will move to between turns, can be 'North', 'East', 'South', or 'West'.
+ * @property {TileState} direction - The Direction this Bottle is flying and will move to between turns, can be 'North', 'East', 'South', or 'West'.
  * @property {string} drunkDirection - The direction any Cowboys hit by this will move, can be 'North', 'East', 'South', or 'West'.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {boolean} isDestroyed - True if this Bottle has impacted and has been destroyed (removed from the Game). False if still in the game flying through the saloon.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {TileID} tile - The Tile this bottle is currently flying over.
+ * @property {TileState} tile - The Tile this bottle is currently flying over.
  */
 
 /**
@@ -36,7 +31,8 @@ var Bottle = Classe(GameObject, {
      * Initializes a Bottle with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Bottle
-     * @private
+     * @param {BottleState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Bottle is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -85,8 +81,8 @@ var Bottle = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Bottle. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {BottleState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {BottleState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
@@ -138,8 +134,8 @@ var Bottle = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {BottleState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {BottleState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

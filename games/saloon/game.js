@@ -10,25 +10,24 @@ var BaseGame = require("viseur/game/baseGame");
 // any additional requires you want can be required here safely between Creer runs
 //<<-- /Creer-Merge: requires -->>
 
-
 /**
  * @typedef {Object} GameState - A state representing a Game
- * @property {Array.<BottleID>} bottles - All the beer Bottles currently flying across the saloon in the game.
- * @property {Array.<CowboyID>} cowboys - Every Cowboy in the game.
- * @property {PlayerID} currentPlayer - The player whose turn it is currently. That player can send commands. Other players cannot.
+ * @property {Array.<BottleState>} bottles - All the beer Bottles currently flying across the saloon in the game.
+ * @property {Array.<CowboyState>} cowboys - Every Cowboy in the game.
+ * @property {PlayerState} currentPlayer - The player whose turn it is currently. That player can send commands. Other players cannot.
  * @property {number} currentTurn - The current turn number, starting at 0 for the first player's turn.
- * @property {Array.<FurnishingID>} furnishings - Every furnishing in the game.
- * @property {Object.<string, GameObjectID>} gameObjects - A mapping of every game object's ID to the actual game object. Primarily used by the server and client to easily refer to the game objects via ID.
+ * @property {Array.<FurnishingState>} furnishings - Every furnishing in the game.
+ * @property {Object.<string, GameObjectState>} gameObjects - A mapping of every game object's ID to the actual game object. Primarily used by the server and client to easily refer to the game objects via ID.
  * @property {Array.<string>} jobs - All the jobs that Cowboys can be assigned within the saloon.
  * @property {number} mapHeight - The number of Tiles in the map along the y (vertical) axis.
  * @property {number} mapWidth - The number of Tiles in the map along the x (horizontal) axis.
  * @property {number} maxCowboys - The maximum number of Cowboys a Player can bring into the saloon.
  * @property {number} maxTurns - The maximum number of turns before the game will automatically end.
- * @property {Array.<PlayerID>} players - List of all the players in the game.
+ * @property {Array.<PlayerState>} players - List of all the players in the game.
  * @property {number} rowdynessToSiesta - When a player's rowdyness reaches or exceeds this number their Cowboys take a collective siesta.
  * @property {string} session - A unique identifier for the game instance that is being played.
  * @property {number} siestaLength - How long siestas are for a player's team.
- * @property {Array.<TileID>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
+ * @property {Array.<TileState>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
  */
 
 /**
@@ -64,6 +63,7 @@ var Game = Classe(BaseGame, {
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
      *
      * @private
+     * @param {GameState} state - the starting state of this game
      */
     _start: function(state) {
         BaseGame._start.call(this);
@@ -79,6 +79,7 @@ var Game = Classe(BaseGame, {
      * initializes the background. It is drawn once automatically after this step.
      *
      * @private
+     * @param {GameState} state - initial state to use the render the background
      */
     _initBackground: function(state) {
         BaseGame._initBackground.call(this);
@@ -93,8 +94,8 @@ var Game = Classe(BaseGame, {
      *
      * @private
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {GameState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {GameState} next - the next (most) game state, will be this.current if this.next is null
      */
     _renderBackground: function(dt, current, next) {
         BaseGame._renderBackground.call(this);
@@ -108,8 +109,8 @@ var Game = Classe(BaseGame, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {GameState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {GameState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         BaseGame._stateUpdated.apply(this, arguments);

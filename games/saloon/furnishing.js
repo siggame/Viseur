@@ -11,14 +11,9 @@ var GameObject = require("./gameObject");
 
 // contains the array of textures for furnishings, excluding piano, that can possibly be randomly selected for.
 // if you add a new furnishing add the name of it here.
-var furnishingTextures = ["furnishing", "furnishing chair", "furnishing lamp", "furnishing sofa", "furnishing table"]; 
+var furnishingTextures = ["furnishing", "furnishing chair", "furnishing lamp", "furnishing sofa", "furnishing table"];
 
 //<<-- /Creer-Merge: requires -->>
-
-/**
- * @typedef {Object} FurnishingID - a "shallow" state of a Furnishing, which is just an object with an `id`.
- * @property {string} id - the if of the FurnishingState it represents in game.gameObjects
- */
 
 /**
  * @typedef {Object} FurnishingState - A state representing a Furnishing
@@ -28,7 +23,7 @@ var furnishingTextures = ["furnishing", "furnishing chair", "furnishing lamp", "
  * @property {boolean} isDestroyed - If this Furnishing has been destroyed, and has been removed from the game.
  * @property {boolean} isPiano - True if this Furnishing is a piano and can be played, False otherwise.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {TileID} tile - The Tile that this Furnishing is located on.
+ * @property {TileState} tile - The Tile that this Furnishing is located on.
  */
 
 /**
@@ -41,7 +36,8 @@ var Furnishing = Classe(GameObject, {
      * Initializes a Furnishing with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Furnishing
-     * @private
+     * @param {FurnishingState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Furnishing is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -54,8 +50,8 @@ var Furnishing = Classe(GameObject, {
         var selection = Math.floor(this.game.random() * furnishingTextures.length);
         // despite the fact that this can be inlined inside of sprite assignment, it's more readable as a seperate variable,
         // and can be added as a member later if need be.  Gets the string for the selected non piano texture
-        var selected_texture = furnishingTextures[selection];
-        this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": selected_texture, this.container);
+        var selectedTexture = furnishingTextures[selection];
+        this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": selectedTexture, this.container);
 
         this.container.x = initialState.tile.x;
         this.container.y = initialState.tile.y;
@@ -99,15 +95,15 @@ var Furnishing = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Furnishing. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {FurnishingState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {FurnishingState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        //TODO: render differnt levels of "destroyed"
+        // TODO: render differnt levels of "destroyed"
         this.container.visible = !current.isDestroyed;
 
         //<<-- /Creer-Merge: render -->>
@@ -139,8 +135,8 @@ var Furnishing = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {FurnishingState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {FurnishingState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

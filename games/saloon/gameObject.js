@@ -11,11 +11,6 @@ var BaseGameObject = require("viseur/game/baseGameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} GameObjectID - a "shallow" state of a GameObject, which is just an object with an `id`.
- * @property {string} id - the if of the GameObjectState it represents in game.gameObjects
- */
-
-/**
  * @typedef {Object} GameObjectState - A state representing a GameObject
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
@@ -32,7 +27,8 @@ var GameObject = Classe(BaseGameObject, {
      * Initializes a GameObject with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof GameObject
-     * @private
+     * @param {GameObjectState} initialState - the intial state of this game object
+     * @param {Game} game - the game this GameObject is in
      */
     init: function(initialState, game) {
         BaseGameObject.init.apply(this, arguments);
@@ -78,8 +74,8 @@ var GameObject = Classe(BaseGameObject, {
      * Called approx 60 times a second to update and render the GameObject. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {GameObjectState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {GameObjectState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         BaseGameObject.render.apply(this, arguments);
@@ -113,6 +109,7 @@ var GameObject = Classe(BaseGameObject, {
      * Adds a message to this GameObject's logs. Intended for your own debugging purposes, as strings stored here are saved in the gamelog.
      *
      * @param {string} message - A string to add to this GameObject's log. Intended for debugging.
+     * @param {Function} [callback] - callback that is passed back the return value of null once ran on the server
      */
     log: function(message, callback) {
         this._runOnServer("log", {
@@ -126,8 +123,8 @@ var GameObject = Classe(BaseGameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {GameObjectState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {GameObjectState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         BaseGameObject._stateUpdated.apply(this, arguments);

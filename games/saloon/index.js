@@ -2,7 +2,7 @@
 
 require("./style.scss");
 
-namespace = {
+var namespace = {
     Game: require("./game"),
     Pane: require("./pane"),
     HumanPlayer: require("./humanPlayer"),

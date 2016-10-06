@@ -9,15 +9,10 @@ var GameObject = require("./gameObject");
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
 
-var green_hue = 120; // hue for green in degrees
-var greenish_hue = green_hue/2; // mid tone green for transitioning between greens in drunk phase
-var default_hue = 0; // default hue in degrees, 0 means no extra hue applied
+var GREEN_HUE = 120; // hue for green in degrees
+var GREENISH_HUE = GREEN_HUE/2; // mid tone green for transitioning between greens in drunk phase
+var DEFAULT_HUDE = 0; // default hue in degrees, 0 means no extra hue applied
 //<<-- /Creer-Merge: requires -->>
-
-/**
- * @typedef {Object} CowboyID - a "shallow" state of a Cowboy, which is just an object with an `id`.
- * @property {string} id - the if of the CowboyState it represents in game.gameObjects
- */
 
 /**
  * @typedef {Object} CowboyState - A state representing a Cowboy
@@ -31,8 +26,8 @@ var default_hue = 0; // default hue in degrees, 0 means no extra hue applied
  * @property {boolean} isDrunk - If this Cowboy is drunk, and will automatically walk.
  * @property {string} job - The job that this Cowboy does, and dictates how they fight and interact within the Saloon.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {PlayerID} owner - The Player that owns and can control this Cowboy.
- * @property {TileID} tile - The Tile that this Cowboy is located on.
+ * @property {PlayerState} owner - The Player that owns and can control this Cowboy.
+ * @property {TileState} tile - The Tile that this Cowboy is located on.
  * @property {number} tolerance - How many times this unit has been drunk before taking their siesta and reseting this to 0.
  * @property {number} turnsBusy - How many turns this unit has remaining before it is no longer busy and can `act()` or `play()` again.
  */
@@ -47,7 +42,8 @@ var Cowboy = Classe(GameObject, {
      * Initializes a Cowboy with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Cowboy
-     * @private
+     * @param {CowboyState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Cowboy is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -55,19 +51,19 @@ var Cowboy = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
-        //TODO: add different sprites for different cowboy jobs
-        //TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
+        // TODO: add different sprites for different cowboy jobs
+        // TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
         this.sprite = this.renderer.newSprite("cowboy", this.container);
-        //creating filter for use in changin color of cowboy
+        // creating filter for use in changin color of cowboy
         this._colorFilter = new PIXI.filters.ColorMatrixFilter();
         // default matrix used, multiplies 1 by all RGBA values
-        this._colorFilter.matrix = [1, 0, 0, 0, 0, 
-                                    0, 1, 0, 0, 0, 
-                                    0, 0, 1, 0, 0, 
-                                    0, 0, 0, 1, 0]; 
+        this._colorFilter.matrix = [1, 0, 0, 0, 0,
+                                    0, 1, 0, 0, 0,
+                                    0, 0, 1, 0, 0,
+                                    0, 0, 0, 1, 0];
 
-        // setting default hue for the colorfilter 
-        this._colorFilter.hue(default_hue, false);
+        // setting default hue for the colorfilter
+        this._colorFilter.hue(DEFAULT_HUDE, false);
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -107,8 +103,8 @@ var Cowboy = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Cowboy. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {CowboyState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {CowboyState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
@@ -134,39 +130,39 @@ var Cowboy = Classe(GameObject, {
 
         // setting the current colorfilter for the given render container
         this.container.filters = [this._colorFilter];
-        var ease_hue;
+        var easeHue;
         // if the next frame has drunk
         if(next.isDrunk) {
             // we'll want to create a transition to green.
-            ease_hue = ease(default_hue, green_hue, dt, "cubicInOut");
-            this._colorFilter.hue(ease_hue, false);
+            easeHue = ease(DEFAULT_HUDE, GREEN_HUE, dt, "cubicInOut");
+            this._colorFilter.hue(easeHue, false);
         }
         // if current is drunk
         else if(current.isDrunk) {
             // make sure that we transition out of green if the next frame isn't drunk
             if(!next.isDrunk) {
-                ease_hue = ease(green_hue, default_hue, dt, "cubicInOut");
-                this._colorFilter.hue(ease_hue, false);
+                easeHue = ease(GREEN_HUE, DEFAULT_HUDE, dt, "cubicInOut");
+                this._colorFilter.hue(easeHue, false);
             }
-            //otherwise stay green and fluxuate the color hue
+            // otherwise stay green and fluxuate the color hue
 
             // easing to less green for fluxuation
-            if (dt <= 0.5) {
-                ease_hue = ease(green_hue, greenish_hue, dt, "sineInOut");
+            if(dt <= 0.5) {
+                easeHue = ease(GREEN_HUE, GREENISH_HUE, dt, "sineInOut");
             }
             // easing to more green for fluxuation
-            else{
-                ease_hue = ease(greenish_hue, green_hue, dt, "sineInOut");
+            else {
+                easeHue = ease(GREENISH_HUE, GREEN_HUE, dt, "sineInOut");
             }
-            this._colorFilter.hue(ease_hue, false);
+            this._colorFilter.hue(easeHue, false);
         }
-        //otherwise keep no hue
+        // otherwise keep no hue
         else {
-            this._colorFilter.hue(default_hue, false);
+            this._colorFilter.hue(DEFAULT_HUDE, false);
         }
-        //console.log(this.container.filters);
+        // console.log(this.container.filters);
 
-        //this._colorFilter.matrix = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+        // this._colorFilter.matrix = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
 
         //<<-- /Creer-Merge: render -->>
     },
@@ -194,7 +190,7 @@ var Cowboy = Classe(GameObject, {
     /**
      * Does their job's action on a Tile.
      *
-     * @param {TileID} tile - The Tile you want this Cowboy to act on.
+     * @param {TileState} tile - The Tile you want this Cowboy to act on.
      * @param {string} [drunkDirection] - The direction the bottle will cause drunk cowboys to be in, can be 'North', 'East', 'South', or 'West'.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
@@ -212,7 +208,7 @@ var Cowboy = Classe(GameObject, {
     /**
      * Moves this Cowboy from its current Tile to an adjacent Tile.
      *
-     * @param {TileID} tile - The Tile you want to move this Cowboy to.
+     * @param {TileState} tile - The Tile you want to move this Cowboy to.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
     move: function(tile, callback) {
@@ -224,7 +220,7 @@ var Cowboy = Classe(GameObject, {
     /**
      * Sits down and plays a piano.
      *
-     * @param {FurnishingID} piano - The Furnishing that is a piano you want to play.
+     * @param {FurnishingState} piano - The Furnishing that is a piano you want to play.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
     play: function(piano, callback) {
@@ -239,8 +235,8 @@ var Cowboy = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {CowboyState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {CowboyState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
