@@ -20,12 +20,13 @@ ${merge("        // ", "init", "        // initialize variables here")}
      * Set this to true if you have coded the logic to make this human playable. otherwise leave it as false if you don't plan to fill this out.
      *
      * @static
+     * @type {boolean}
      */
 ${merge("    // ", "implimented", "    implimented: false,")}
 
 
 
-     //--- Orders: things the game server tells this player to do --- \\
+    // Orders: things the game server tells this player to do \\
 % for function_name in ai['function_names']:
 <%
     function_parms = ai['functions'][function_name]

@@ -36,7 +36,7 @@ module.exports = {
             t = eases[easing].call(eases, t);
         }
 
-       return a * (1 - t) + b * t;
+        return a * (1 - t) + b * t;
     },
 
     /**
@@ -57,7 +57,7 @@ module.exports = {
 
         // check if number
         if(!isNaN(str)) {
-            return parseFloat(num);
+            return parseFloat(str);
         }
 
         return str; // looks like a string after all

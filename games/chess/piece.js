@@ -11,11 +11,6 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} PieceID - a "shallow" state of a Piece, which is just an object with an `id`.
- * @property {string} id - the if of the PieceState it represents in game.gameObjects
- */
-
-/**
  * @typedef {Object} PieceState - A state representing a Piece
  * @property {boolean} captured - When the Piece has been captured (removed from the board) this is true. Otherwise false.
  * @property {string} file - The file (column) coordinate of the Piece represented as a letter [a-h], with 'a' starting at the left of the board.
@@ -23,7 +18,7 @@ var GameObject = require("./gameObject");
  * @property {boolean} hasMoved - If the Piece has moved from its starting position.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {PlayerID} owner - The player that controls this chess Piece.
+ * @property {PlayerState} owner - The player that controls this chess Piece.
  * @property {number} rank - The rank (row) coordinate of the Piece represented as a number [1-8], with 1 starting at the bottom of the board.
  * @property {string} type - The type of chess Piece this is, either: 'King', 'Queen', 'Knight', 'Rook', 'Bishop', or 'Pawn'.
  */
@@ -38,7 +33,8 @@ var Piece = Classe(GameObject, {
      * Initializes a Piece with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Piece
-     * @private
+     * @param {PieceState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Piece is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -91,8 +87,8 @@ var Piece = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Piece. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {PieceState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {PieceState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
@@ -149,7 +145,7 @@ var Piece = Classe(GameObject, {
                 icon: "map-marker",
                 callback: function() {
                     self.game.humanPlayer.handleTileClicked(pos);
-                }
+                },
             });
         }
 
@@ -175,7 +171,7 @@ var Piece = Classe(GameObject, {
      * @param {string} file - The file coordinate to move to. Must be [a-h].
      * @param {number} rank - The rank coordinate to move to. Must be [1-8].
      * @param {string} [promotionType] - If this is a Pawn moving to the end of the board then this parameter is what to promote it to. When used must be 'Queen', 'Knight', 'Rook', or 'Bishop'.
-     * @param {Function} [callback] - callback that is passed back the return value of MoveID once ran on the server
+     * @param {Function} [callback] - callback that is passed back the return value of MoveState once ran on the server
      */
     move: function(file, rank, promotionType, callback) {
         if(arguments.length <= 2) {
@@ -195,8 +191,8 @@ var Piece = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {PieceState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {PieceState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

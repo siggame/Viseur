@@ -2,8 +2,8 @@
 
 var Class = require("classe");
 
-Serializer = {
-    isEmpty: function(obj){
+var Serializer = {
+    isEmpty: function(obj) {
         return (Object.getOwnPropertyNames(obj).length === 0);
     },
 
@@ -12,11 +12,11 @@ Serializer = {
     },
 
     isGameObjectReference: function(obj) {
-        return Serializer.isEmptyExceptFor(obj, 'id');
+        return Serializer.isEmptyExceptFor(obj, "id");
     },
 
     isObject: function(obj) {
-        return (typeof(obj) === 'object' && obj !== null);
+        return (typeof(obj) === "object" && obj !== null);
     },
 
     isSerializable: function(obj, key) {
@@ -46,12 +46,14 @@ Serializer = {
             var result = data.isArray ? [] : {};
 
             for(var key in data) {
-                var value = data[key];
-                if(typeof(value) == "object") { // we don't care to deserialize shallow game object references, if we did we'd check so here
-                    result[key] = Serializer.deserialize(value);
-                }
-                else {
-                    result[key] = value;
+                if(data.hasOwnProperty) {
+                    var value = data[key];
+                    if(typeof(value) === "object") { // we don't care to deserialize shallow game object references, if we did we'd check so here
+                        result[key] = Serializer.deserialize(value);
+                    }
+                    else {
+                        result[key] = value;
+                    }
                 }
             }
 

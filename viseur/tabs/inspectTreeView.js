@@ -92,8 +92,8 @@ var InspectTreeView = Classe(TreeView, {
 
         var typeClass = "type-" + this._getTypeFor(subtree);
         if(!$value.hasClass(typeClass)) {
-            $value.removeClass(function (index, css) {
-                return (css.match(/(^|\s)type-\S+/g) || []).join(' ');
+            $value.removeClass(function(index, css) {
+                return (css.match(/(^|\s)type-\S+/g) || []).join(" ");
             }).addClass(typeClass);
         }
 

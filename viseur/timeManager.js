@@ -33,6 +33,8 @@ var TimeManager = Classe(Observable, {
      * Invoked when Viseur is ready
      *
      * @private
+     * @param {BaseGame} game - the game we are playing back
+     * @param {Object} gamelog - the gamelog, may be streaming
      */
     _ready: function(game, gamelog) {
         var self = this;
@@ -84,6 +86,9 @@ var TimeManager = Classe(Observable, {
 
     /**
      * force plays the next animation
+     *
+     * @param {number} [index] - the index to play at
+     * @param {number} [dt] - the dt to play at
      */
     _play: function(index, dt) {
         if(arguments.length > 0) {
@@ -113,6 +118,7 @@ var TimeManager = Classe(Observable, {
      * Invoked when the timer ticks, advacing the index by 1, and resetting dt to 0
      *
      * @private
+     * @param {boolean} [start] - true if the tick is from the start of rendering, e.g. Viseur is ready, false otherwise
      */
     _ticked: function(start) {
         this._currentIndex += (start ? 0 : 1);
@@ -180,6 +186,8 @@ var TimeManager = Classe(Observable, {
      * Pauses the timer. Doe not call to pause as in a play/pause
      *
      * @private
+     * @param {number} [index] - the index to pause the time to
+     * @param {number} [dt] - the dt to pause the time to
      */
     _pause: function(index, dt) {
         this._timer.pause();

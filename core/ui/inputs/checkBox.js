@@ -6,14 +6,22 @@ var BaseInput = require("./baseInput");
  * @class CheckBox - a checkbox for booleans
  */
 var CheckBox = Classe(BaseInput, {
+    /**
+     * Intialized the checkbox to true or false
+     *
+     * @constructor
+     * @param {Object} args - initialization args, value should be true or false for checked
+     */
     init: function(args) {
         BaseInput.init.call(this, $.extend({
             value: false,
-            type: "checkbox"
+            type: "checkbox",
         }, args));
     },
 
     /**
+     * Sets if this has been pressed (true) or not (false)
+     *
      * @override
      */
     setValue: function(newValue) {
@@ -21,6 +29,8 @@ var CheckBox = Classe(BaseInput, {
     },
 
     /**
+     * Enforced that when clicked is a boolean
+     *
      * @override
      */
     _updateElementValue: function() {
@@ -28,6 +38,8 @@ var CheckBox = Classe(BaseInput, {
     },
 
     /**
+     * Gets if it is checked or not
+     *
      * @override
      */
     _getElementValue: function() {

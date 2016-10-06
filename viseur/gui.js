@@ -17,6 +17,7 @@ var KeyObserver = require("./keyObserver");
  */
 var GUI = Classe(Observable, BaseElement, {
     init: function(args) {
+        var self = this;
         args.id = "GUI";
         Observable.init.apply(this);
         BaseElement.init.apply(this, arguments);
@@ -48,7 +49,6 @@ var GUI = Classe(Observable, BaseElement, {
             $parent: this.$element.parent(),
         });
 
-        var self = this;
         Viseur.on("ready", function(gamelog) {
             self.$element.addClass("gamelog-loaded");
             setTimeout(function() { // HACK: resize after all transitions finish, because we can't know for sure when the browser will finish css transitions in what order
@@ -128,7 +128,7 @@ var GUI = Classe(Observable, BaseElement, {
         var gamePaneHeight = 0;
 
         if(Viseur.game && Viseur.game.pane) {
-            gamePaneHeight = Viseur.game.pane.$element.outerHeight();//(parseInt(this.$gamePaneWrapper.css("height")) || 0);
+            gamePaneHeight = Viseur.game.pane.$element.outerHeight();
         }
 
         remainingHeight -= gamePaneHeight;
@@ -152,7 +152,7 @@ var GUI = Classe(Observable, BaseElement, {
      */
     modalMessage: function(message, callback) {
         this.modal.show(this._loadingPartial({
-            message: message
+            message: message,
         }), callback);
     },
 

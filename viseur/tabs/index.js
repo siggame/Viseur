@@ -15,5 +15,5 @@ module.exports = [
     {
         title: "Help",
         classe: require("./helpTab"),
-    }
+    },
 ];

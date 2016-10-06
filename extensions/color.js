@@ -6,7 +6,7 @@ var Color = require("color");
  * @returns {number} the color as a hex number
  */
 Color.prototype.hexNumber = function() {
-    return parseInt(this.hexString().replace(/^#/, ''), 16); // remove "#", then convert from string to int base 16
+    return parseInt(this.hexString().replace(/^#/, ""), 16); // remove "#", then convert from string to int base 16
 };
 
 
@@ -25,6 +25,6 @@ Color.prototype.colorMatrix = function() {
         r, 0, 0, 0,
         0, g, 0, 0,
         0, 0, b, 0,
-        0, 0, 0, a
+        0, 0, 0, a,
     ];
 };

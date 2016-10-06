@@ -135,7 +135,7 @@ var InfoPane = Classe(BaseElement, Observable, {
         }
 
         this.side = side;
-        this.orientation = side === "left" || side === "right" ? "vertical" : "horizontal";
+        this.orientation = (side === "left" || side === "right") ? "vertical" : "horizontal";
 
         this.resize();
     },
@@ -144,6 +144,7 @@ var InfoPane = Classe(BaseElement, Observable, {
      * Invoked when the user is dragging to resize this
      *
      * @private
+     * @param {PIXI.Event} downEvent - the event geenated from dragging the info pane
      */
     _onResize: function(downEvent) {
         var x = downEvent.pageX;

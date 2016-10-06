@@ -54,6 +54,7 @@ var Timer = Classe(Observable, {
 
     /**
      * restarts the timer, restting progress to 0 then starting it back up
+     * @returns {boolean} - true if started ticking, false if already ticking so this did nothing
      */
     restart: function() {
         this.setProgress(0);
@@ -128,7 +129,7 @@ var Timer = Classe(Observable, {
     /**
      * Starts ticking if paused, pauses if ticking
      *
-     * returns {boolean} - true if now paused, false otherwise
+     * @returns {boolean} - true if now paused, false otherwise
      */
     invertTicking: function() {
         if(this.isTicking()) {

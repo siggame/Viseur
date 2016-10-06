@@ -35,10 +35,17 @@ var BaseInput = Classe(BaseElement, Observable, {
         this.setValue(args.value);
     },
 
+    /**
+     * Handlebars template that builds the element
+     * @private
+     * @type {function}
+     */
     _template: require("./baseInput.hbs"),
 
     /**
      * Gets the value of this BaseInput
+     *
+     * @returns {*} The value of the input, depends on subclass
      */
     getValue: function() {
         return this._value;

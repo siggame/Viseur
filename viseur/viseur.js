@@ -140,7 +140,7 @@ var Viseur = Classe(Observable, {
     /**
      * Called once a gamelog is loaded
      *
-     * @param {Object} the deserialized JSON object that is the FULL gamelog
+     * @param {Object} gamelog - the deserialized JSON object that is the FULL gamelog
      */
     gamelogLoaded: function(gamelog) {
         this._rawGamelog = gamelog;
@@ -458,7 +458,7 @@ var Viseur = Classe(Observable, {
      * Runs some function the server for a game object
      *
      * @param {string} callerID - the id of the caller
-     * @param {string} run - the function to run
+     * @param {string} functionName - the function to run
      * @param {Object} args - key value pairs for the function to run
      * @param {Function} callback - callback to invoke once run, is passed the return value
      */
@@ -483,7 +483,7 @@ var Viseur = Classe(Observable, {
         if(this.gui) {
             this.gui.modalError("Uncaught Error: {} - {}".format(error));
         }
-    }
+    },
 });
 
 module.exports = new Viseur(); // singleton

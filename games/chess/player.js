@@ -11,11 +11,6 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} PlayerID - a "shallow" state of a Player, which is just an object with an `id`.
- * @property {string} id - the if of the PlayerState it represents in game.gameObjects
- */
-
-/**
  * @typedef {Object} PlayerState - A state representing a Player
  * @property {string} clientType - What type of client this is, e.g. 'Python', 'JavaScript', or some other language. For potential data mining purposes.
  * @property {string} color - The color (side) of this player. Either 'White' or 'Black', with the 'White' player having the first move.
@@ -26,8 +21,8 @@ var GameObject = require("./gameObject");
  * @property {boolean} lost - If the player lost the game or not.
  * @property {boolean} madeMove - If the Player has made their move for the turn. true means they can no longer move a Piece this turn.
  * @property {string} name - The name of the player.
- * @property {PlayerID} opponent - This player's opponent in the game.
- * @property {Array.<PieceID>} pieces - All the unpcaptured chess Pieces owned by this player.
+ * @property {PlayerState} opponent - This player's opponent in the game.
+ * @property {Array.<PieceState>} pieces - All the unpcaptured chess Pieces owned by this player.
  * @property {number} rankDirection - The direction your Pieces must go along the rank axis until they reach the other side.
  * @property {string} reasonLost - The reason why the player lost the game.
  * @property {string} reasonWon - The reason why the player won the game.
@@ -45,7 +40,8 @@ var Player = Classe(GameObject, {
      * Initializes a Player with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Player
-     * @private
+     * @param {PlayerState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Player is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -91,8 +87,8 @@ var Player = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Player. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
@@ -128,8 +124,8 @@ var Player = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

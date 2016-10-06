@@ -21,7 +21,10 @@ var DropDown = Classe(BaseInput, {
     _optionPartial: partial(require("./dropDownOption.hbs")),
 
     /**
+     * Sets the value to an item in the drop down
+     *
      * @override
+     * @returns {boolean} true if the value was found and set to, false otherwise
      */
     setValue: function(newValue) {
         for(var i = 0; i < this._options.length; i++) {
@@ -58,7 +61,7 @@ var DropDown = Classe(BaseInput, {
         }
 
         this.setValue(this._options[0].value);
-    }
+    },
 });
 
 module.exports = DropDown;

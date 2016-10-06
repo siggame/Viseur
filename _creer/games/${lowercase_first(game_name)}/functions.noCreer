@@ -12,7 +12,7 @@ if not 'vis' in shared:
         elif base_type == "int" or base_type == "float":
             return "number"
         elif type_obj['is_game_object']:
-            return base_type + "ID"
+            return base_type + "State"
         else:
             return base_type
     shared['vis']['type'] = vis_type
