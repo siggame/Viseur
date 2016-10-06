@@ -19,7 +19,7 @@ var Renderer = Classe(Observable, BaseElement, {
      * @constructor
      * @param {Object} args - initialization args
      */
-    const: function(args) {
+    init: function(args) {
         args = $.extend({}, args); // make a copy
 
         Observable.init.call(this);
@@ -57,13 +57,15 @@ var Renderer = Classe(Observable, BaseElement, {
             $parent: this.$element,
         });
 
-        var animate = function animate() {
-            window.requestAnimationFrame(this); // this is the animate function itself
+        /* eslint-disable require-jsdoc */
+        function animate() {
+            window.requestAnimationFrame(animate); // this is the animate function itself
 
             self._emit("rendering");
 
             self._renderer.render(self.rootContainer);
-        };
+        }
+        /* eslint-enable require-jsdoc */
 
         window.requestAnimationFrame(animate);
     },
