@@ -21,13 +21,6 @@ else:
 
 ${merge("//", "requires", "// any additional requires you want can be required here safely between Creer runs")}
 
-% if obj_key != "Game":
-/**
- * @typedef {Object} ${obj_key}ID - a "shallow" state of a ${obj_key}, which is just an object with an `id`.
- * @property {string} id - the if of the ${obj_key}State it represents in game.gameObjects
- */
-% endif
-
 /**
  * @typedef {Object} ${obj_key}State - A state representing a ${obj_key}
 % for property in properties:
@@ -48,7 +41,8 @@ var ${obj_key} = Classe(${", ".join(parent_classes)}, {
      * Initializes a ${obj_key} with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof ${obj_key}
-     * @private
+     * @param {${obj_key}State} initialState - the intial state of this game object
+     * @param {Game} game - the game this ${obj_key} is in
      */
     init: function(initialState, game) {
 % for parent_class in reversed(parent_classes):
@@ -87,6 +81,7 @@ ${merge("        //", "init", "        // initialization logic goes here")}
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
      *
      * @private
+     * @param {GameState} state - the starting state of this game
      */
     _start: function(state) {
         BaseGame._start.call(this);
@@ -98,6 +93,7 @@ ${merge("        //", "_start", "        // create some sprites")}
      * initializes the background. It is drawn once automatically after this step.
      *
      * @private
+     * @param {GameState} state - initial state to use the render the background
      */
     _initBackground: function(state) {
         BaseGame._initBackground.call(this);
@@ -110,8 +106,8 @@ ${merge("        //", "_initBackground", "        // initialize a background bro
      *
      * @private
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {${obj_key}State} current - the current (most) game state, will be this.next if this.current is null
+     * @param {${obj_key}State} next - the next (most) game state, will be this.current if this.next is null
      */
     _renderBackground: function(dt, current, next) {
         BaseGame._renderBackground.call(this);
@@ -131,8 +127,8 @@ ${merge("    //", "shouldRender", "    shouldRender: false,")}
      * Called approx 60 times a second to update and render the ${obj_key}. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {${obj_key}State} current - the current (most) game state, will be this.next if this.current is null
+     * @param {${obj_key}State} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
 % for parent_class in reversed(parent_classes):
@@ -178,9 +174,7 @@ ${merge("        //", "_getContextMenu", "        // add context items to the me
      * @param {${shared['vis']['type'](arg_parms['type'])}} ${("[" + arg_parms['name'] + "]") if arg_parms['optional'] else arg_parms['name']} - ${arg_parms['description']}
 % endfor
 % endif
-% if function_parms['returns']:
-     * @param {Function} [callback] - callback that is passed back the return value of ${shared['vis']['type'](function_parms['returns']['type'])} once ran on the server
-% endif
+     * @param {Function} [callback] - callback that is passed back the return value of ${shared['vis']['type'](function_parms['returns']['type']) if function_parms['returns'] else "null"} once ran on the server
      */
     ${function_name}: function(${", ".join(arg_names)}) {
 % if 'arguments' in function_parms:
@@ -208,8 +202,8 @@ ${merge("        //", "_getContextMenu", "        // add context items to the me
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {${obj_key}State} current - the current (most) game state, will be this.next if this.current is null
+     * @param {${obj_key}State} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
 % for parent_class in reversed(parent_classes):

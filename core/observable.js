@@ -13,7 +13,7 @@ var Observable = Classe({
      *
      * @param {string|Array} event - the event name to emit as a string, or an array of string events to emit
      */
-    _emit: function(event /*, args... */) {
+    _emit: function(event /* , args... */) {
         var eventNames = Array.isArray(event) ? event : [ event ];
         var events = eventNames.concat("*"); // always emit to the wildcard (all) event
 
@@ -80,6 +80,8 @@ var Observable = Classe({
      * A simple hanlder for on to happen once, then calls off
      *
      * @see Observable.on
+     * @param {...string} eventName - the event to observe, should be a string "event", or many events "event1 event2"
+     * @param {function} callback - the callback function to run on event
      */
     once: function(eventName, callback) {
         var self = this;
@@ -90,9 +92,9 @@ var Observable = Classe({
     },
 
     /**
-     * Observes all events from the otherObseravle and emits them as an event of this
+     * Observes all events from the otherObservable and emits them as an event of this
      *
-     * @param {Obserable} otherObseravle - the obseravle you want to act as a proxy to
+     * @param {Obserable} otherObservable - the obseravle you want to act as a proxy to
      */
     proxy: function(otherObservable) {
         var self = this;

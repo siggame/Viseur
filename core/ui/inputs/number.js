@@ -6,6 +6,12 @@ var $ = require("jquery");
  * @class Number - a text input for numbers
  */
 var NumberInput = Classe(BaseInput, {
+    /**
+     * Initializes the Number Input
+     *
+     * @constructor
+     * @param {Object} args - initialization args, can have min, max, and step
+     */
     init: function(args) {
         args = $.extend({
             type: "number",
@@ -23,6 +29,8 @@ var NumberInput = Classe(BaseInput, {
     },
 
     /**
+     * Sets the value to a new number
+     *
      * @override
      */
     setValue: function(newValue) {

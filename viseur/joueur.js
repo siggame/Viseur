@@ -74,7 +74,9 @@ var Joueur = Classe(Observable, {
 
         this._ws.onmessage = function(message) {
             if(SettingsManager.get("viseur", "print-io")) {
+                /* eslint-disable no-console */
                 console.log("FROM SERVER <-- ", message.data);
+                /* eslint-enable no-console */
             }
 
             self._received(JSON.parse(message.data));
@@ -195,7 +197,9 @@ var Joueur = Classe(Observable, {
         });
 
         if(SettingsManager.get("viseur", "print-io")) {
+            /* eslint-disable no-console */
             console.log("TO SERVER --> ", str);
+            /* eslint-enable no-console */
         }
 
         this._ws.send(str);
@@ -208,9 +212,9 @@ var Joueur = Classe(Observable, {
      * @param {string} functionName - the function to run
      * @param {Object} args - key value pairs for the function to run
      */
-    run: function(calledID, functionName, args) {
+    run: function(callerID, functionName, args) {
         this.send("run", {
-            caller: {id: calledID},
+            caller: {id: callerID},
             functionName: functionName,
             args: Serializer.serialize(args),
         });

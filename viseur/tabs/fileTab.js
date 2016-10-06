@@ -89,6 +89,7 @@ var FileTab = Classe(BaseElement, {
      * Initializes the "Connect" section
      */
     _initConnectSection: function() {
+        var self = this;
         this.$connectionWrapper = this.$element.find(".connection-info").addClass("collapsed");
         this.$connectionLog = this.$connectionWrapper.find(".connection-log");
 
@@ -161,7 +162,6 @@ var FileTab = Classe(BaseElement, {
             $parent: this.$connectWrapper,
         });
 
-        var self = this;
         this.connectButton.on("clicked", function() {
             self._connect();
         });

@@ -21,7 +21,7 @@ module.exports = [
             { text:"\u25B2 Top", value: "top" },
             { text: "\u25B6 Right", value: "right" },
             { text: "\u25BC Bottom", value: "bottom" },
-            { text: "\u25C0 Left", value: "left" }
+            { text: "\u25C0 Left", value: "left" },
         ],
         default: "right",
     },

@@ -9,7 +9,7 @@ var Slider = Classe(NumberInput, {
     init: function(args) {
         NumberInput.init.call(this, $.extend({
             type: "range",
-            step: "any"
+            step: "any",
         }, args));
     },
 });

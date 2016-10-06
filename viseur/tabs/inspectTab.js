@@ -2,7 +2,7 @@ require("./inspectTab.scss");
 
 var $ = require("jquery");
 var Classe = require("classe");
-var dateFormat = require('dateformat');
+var dateFormat = require("dateformat");
 var BaseElement = require("core/ui/baseElement");
 var Observable = require("core/observable");
 var InspectTreeView = require("./inspectTreeView");
@@ -28,11 +28,11 @@ var InspectTab = Classe(Observable, BaseElement, {
 
 
         this.gameTreeView = new InspectTreeView({
-            $parent: $(".inspect-game", this.$element)
+            $parent: $(".inspect-game", this.$element),
         });
 
         this.dataTreeView = new InspectTreeView({
-            $parent: $(".delta-data", this.$element)
+            $parent: $(".delta-data", this.$element),
         });
 
         this.$deltaType = this.$element.find(".delta-type");
@@ -74,7 +74,7 @@ var InspectTab = Classe(Observable, BaseElement, {
 
             self._emit("highlighted", gameObjectID);
         });
-    }
+    },
 });
 
 module.exports = InspectTab;

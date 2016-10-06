@@ -1,6 +1,6 @@
 require("./basePane.scss");
 
-var dateFormat = require('dateformat');
+var dateFormat = require("dateformat");
 var $ = require("jquery");
 var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
@@ -83,7 +83,7 @@ var BasePane = Classe(BaseElement, {
 
             $player.$element
                 .toggleClass("current-player", state.currentPlayer.id === playerID)
-                .css("background-image", 'url("viseur/images/{}.png")'.format(player.clientType.replace("#", "s").toLowerCase()));
+                .css("background-image", "url('viseur/images/{}.png')".format(player.clientType.replace("#", "s").toLowerCase()));
         }
     },
 

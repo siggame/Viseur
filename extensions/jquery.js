@@ -32,7 +32,7 @@ jQuery.fn.extend({
         }
 
         return this;
-    }
+    },
 });
 
 jQuery.deepCopy = function(obj) {
@@ -48,7 +48,8 @@ jQuery.exitFullscreen = function() {
     }
     else if(document.mozCancelFullScreen) {
         document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
+    }
+    else if(document.webkitExitFullscreen) {
         document.webkitExitFullscreen();
     }
 };

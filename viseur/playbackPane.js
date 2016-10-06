@@ -168,6 +168,8 @@ var PlaybackPane = Classe(Observable, BaseElement, {
      * Invoked when the TimeManager's time changes, so we can update the slider and buttons
      *
      * @private
+     * @param {number} index - the index that was updated to
+     * @param {number} dt - the dt number [0, 1) that was updated
      */
     _timeUpdated: function(index, dt) {
         this.$playbackTimeCurrent.html(index);
@@ -212,8 +214,8 @@ var PlaybackPane = Classe(Observable, BaseElement, {
      * @returns {number} x - the speedSlider's value to represent y
      */
     _sliderFromSpeed: function(y) {
-       var x = Math.sqrt(y/100);
-       return x;
+        var x = Math.sqrt(y/100);
+        return x;
     },
 
     /**
@@ -235,7 +237,7 @@ var PlaybackPane = Classe(Observable, BaseElement, {
      * @param {number} value - the new speed value set to the SettingManager, we will update the speedSLider according to it
      */
     _updateSpeedSlider: function(value) {
-        sliderValue = this._sliderFromSpeed(value || SettingsManager.get("viseur", "playback-speed"));
+        var sliderValue = this._sliderFromSpeed(value || SettingsManager.get("viseur", "playback-speed"));
         this.speedSlider.setValue(-sliderValue);
     },
 

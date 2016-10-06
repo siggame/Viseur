@@ -39,6 +39,9 @@ var SettingsTab = Classe(BaseElement, {
      * Initalizes the settings for a game, invoked when Viseur is ready so it has a game created to load settings from
      *
      * @private
+     * @param {string} namespace - the namespace for the settings to init. Will be a game name or "viseur" for Viseur core settings
+     * @param {Object} settings - key value pairs of settings
+     * @param {$} $parent - jQuery parent element
      */
     _initSettings: function(namespace, settings, $parent) {
         if(settings.length === 0) {

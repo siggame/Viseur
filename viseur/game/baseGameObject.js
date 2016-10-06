@@ -48,7 +48,8 @@ var BaseGameObject = Classe(Observable, {
     /**
      * Initializes the PIXI.Container that this GameObject's sprites can go in
      *
-     * @param {PIXI.Container} parent - the parent container
+     * @param {PIXI.Container} [parent] - the parent container
+     * @returns {PIXI.Container} the container freshly initialized for this
      */
     _initContainer: function(parent) {
         var self = this;
@@ -91,6 +92,8 @@ var BaseGameObject = Classe(Observable, {
 
     /**
      * Invoked when this game object's container is right clicked, to pull up its context menu
+     *
+     * @param {PIXI.Event} event - the pixi even from the right click
      */
     _rightClicked: function(event) {
         this._showContextMenu(event.data.global.x, event.data.global.y);
@@ -101,6 +104,9 @@ var BaseGameObject = Classe(Observable, {
 
     /**
      * Displays a context menu (right click menu) over this game object
+     *
+     * @param {number} x - the x coordinate where it should be shown (in pixels)
+     * @param {number} y - the y coordinate where it should be shown (in pixels)
      */
     _showContextMenu: function(x, y) {
         this.renderer.showContextMenu(this._getFullContextMenu(), x, y);
@@ -152,7 +158,7 @@ var BaseGameObject = Classe(Observable, {
                 callback: function() {
                     self._emit("inspect", self.id);
                 },
-            }
+            },
         ];
 
         return this._bottomContextMenu;

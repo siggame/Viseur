@@ -11,19 +11,14 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} MoveID - a "shallow" state of a Move, which is just an object with an `id`.
- * @property {string} id - the if of the MoveState it represents in game.gameObjects
- */
-
-/**
  * @typedef {Object} MoveState - A state representing a Move
- * @property {PieceID} captured - The Piece captured by this Move, null if no capture.
+ * @property {PieceState} captured - The Piece captured by this Move, null if no capture.
  * @property {string} fromFile - The file the Piece moved from.
  * @property {number} fromRank - The rank the Piece moved from.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {PieceID} piece - The Piece that was moved.
+ * @property {PieceState} piece - The Piece that was moved.
  * @property {string} promotion - The Piece type this Move's Piece was promoted to from a Pawn, empty string if no promotion occured.
  * @property {string} san - The standard algebraic notation (SAN) representation of the move.
  * @property {string} toFile - The file the Piece moved to.
@@ -40,7 +35,8 @@ var Move = Classe(GameObject, {
      * Initializes a Move with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Move
-     * @private
+     * @param {MoveState} initialState - the intial state of this game object
+     * @param {Game} game - the game this Move is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
@@ -86,8 +82,8 @@ var Move = Classe(GameObject, {
      * Called approx 60 times a second to update and render the Move. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {MoveState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {MoveState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
@@ -123,8 +119,8 @@ var Move = Classe(GameObject, {
      * Invoked when the state updates.
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {MoveState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {MoveState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

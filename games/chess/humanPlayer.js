@@ -26,6 +26,7 @@ var HumanPlayer = Class(BaseHumanPlayer, {
      * Set this to true if you have coded the logic to make this human playable. otherwise leave it as false if you don't plan to fill this out.
      *
      * @static
+     * @type {boolean}
      */
     // <<-- Creer-Merge: implimented -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     implimented: true,
@@ -33,7 +34,7 @@ var HumanPlayer = Class(BaseHumanPlayer, {
 
 
 
-     //--- Orders: things the game server tells this player to do --- \
+    // Orders: things the game server tells this player to do \
     /**
      * This is called every time it is this AI.player's turn.
      *

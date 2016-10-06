@@ -17,7 +17,7 @@ var TreeView = Classe(BaseElement, {
             "tree-view-node-root": {
                 $children: this.$element,
                 used: true,
-            }
+            },
         };
 
     },
@@ -168,8 +168,8 @@ var TreeView = Classe(BaseElement, {
     /**
      * gets the value string representation for some subtree (e.g. {} -> "Object")
      *
-     * @param   {Object} subtree - subtree within the tree being displayed
-     * @returns {string}         - the string representation of the subtree
+     * @param {Object} subtree - subtree within the tree being displayed
+     * @returns {string} - the string representation of the subtree
      */
     _getValueStringFor: function(subtree) {
         return String(subtree);
@@ -182,7 +182,7 @@ var TreeView = Classe(BaseElement, {
      * @param {Array.<string>} path - path in tree to subtree
      * @returns {Array.<string>} - the keys of the subtree, sorted
      */
-    _getKeys: function(subtree, keys) {
+    _getKeys: function(subtree, path) {
         if(Array.isArray(subtree)) {
             return Math.range(subtree.length);
         }

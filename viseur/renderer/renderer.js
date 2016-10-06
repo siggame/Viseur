@@ -13,9 +13,14 @@ var ContextMenu = require("core/ui/contextMenu");
  * @class Renderer - Singleton that hanles rendering (visualizing) the game
  */
 var Renderer = Classe(Observable, BaseElement, {
-    init: function(args) {
-        args = $.extend({
-        }, args);
+    /**
+     * Initializes the Renderer, should be called by Visuer
+     *
+     * @constructor
+     * @param {Object} args - initialization args
+     */
+    const: function(args) {
+        args = $.extend({}, args); // make a copy
 
         Observable.init.call(this);
         BaseElement.init.apply(this, arguments);
@@ -52,32 +57,15 @@ var Renderer = Classe(Observable, BaseElement, {
             $parent: this.$element,
         });
 
-        this.contextMenu.setStructure([
-            {
-                icon: "eye",
-                text: "Show more...",
-                callback: function() {
-                    console.log("show somethign...");
-                },
-            },
-            "---",
-            {
-                icon: "camera",
-                text: "Take pic",
-                callback: function() {
-                    console.log("Click, you're on candid camera!");
-                },
-            }
-        ]);
-
-        window.requestAnimationFrame(animate);
-        function animate() {
-            window.requestAnimationFrame(animate);
+        var animate = function animate() {
+            window.requestAnimationFrame(this); // this is the animate function itself
 
             self._emit("rendering");
 
             self._renderer.render(self.rootContainer);
-        }
+        };
+
+        window.requestAnimationFrame(animate);
     },
 
     _template: require("./renderer.hbs"),
@@ -85,7 +73,7 @@ var Renderer = Classe(Observable, BaseElement, {
     /**
      * loads textures into PIXI
      *
-     * @param {Object} key object pairs with the key being the id of the texture and the value being the texture's path
+     * @param {Object} textures - key object pairs with the key being the id of the texture and the value being the texture's path
      * @param {function} callback - callback function to invoke once all functions are loaded
      */
     loadTextures: function(textures, callback) {
@@ -93,19 +81,23 @@ var Renderer = Classe(Observable, BaseElement, {
 
         textures[""] = "viseur/game/blank.png"; // all games have access to the blank (white) square
 
+        var hasTextures = false;
         for(var key in textures) {
-            hasTextures = true;
             if(textures.hasOwnProperty(key)) {
-                loader.add(key, textures[key]);
+                hasTextures = true;
+                if(textures.hasOwnProperty(key)) {
+                    loader.add(key, textures[key]);
+                }
             }
         }
 
         if(!hasTextures) {
-            return callback(false);
+            callback(false);
+            return;
         }
 
         var self = this;
-        loader.load(function (loader, resources) {
+        loader.load(function(loader, resources) {
             self._resources = resources;
             if(callback) {
                 callback();
@@ -125,14 +117,14 @@ var Renderer = Classe(Observable, BaseElement, {
 
         this.resize();
 
-        //https://www.snip2code.com/Snippet/83438/A-base-implementation-of-properly-handli
+        // source: https://www.snip2code.com/Snippet/83438/A-base-implementation-of-properly-handli
     },
 
     /**
      * Resizes the render to fit its container, or resize to fit a new size
      *
-     * @param {number} [mxMaxWidth] - the max width in px the renderer can fill, defaults to the last stored mxMaxWidth
-     * @param {number} [mxMaxHeight] - the max height in px the renderer can fill, defaults to the last stored mxMaxHeight
+     * @param {number} [pxMaxWidth] - the max width in px the renderer can fill, defaults to the last stored mxMaxWidth
+     * @param {number} [pxMaxHeight] - the max height in px the renderer can fill, defaults to the last stored mxMaxHeight
      */
     resize: function(pxMaxWidth, pxMaxHeight) {
         if(arguments.length === 0) {
@@ -197,7 +189,6 @@ var Renderer = Classe(Observable, BaseElement, {
         }
 
         var texture = resource.texture;
-        //*
         var sprite = new PIXI.Sprite(texture);
         sprite.setParent(parentContainer);
 

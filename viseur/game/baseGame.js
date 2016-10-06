@@ -8,6 +8,13 @@ var Viseur = null;
  * @class BaseGame - the base class all games in the games/ folder inherit from
  */
 var BaseGame = Classe(Observable, {
+    /**
+     * Initializes the BaseGame, should be invoked by a Game superclass
+     *
+     * @constructor
+     * @param {Object} gamelog - the gamelog for this game, may be a streaming gamelog
+     * @param {string} [playerID] - the player id of the human player, if there is one
+     */
     init: function(gamelog, playerID) {
         Observable.init.call(this);
         Viseur = require("viseur/"); // require here to avoid cycles
@@ -68,10 +75,15 @@ var BaseGame = Classe(Observable, {
      */
     _renderBackground: function(dt, current, next) {},
 
+    /**
+     * default layers for all games to put containers in, these can be extended
+     *
+     * @type {Array}
+     */
     _layerNames: [
         "background",
         "game",
-        "ui"
+        "ui",
     ],
 
     /**
@@ -90,6 +102,9 @@ var BaseGame = Classe(Observable, {
 
     /**
      * Called at approx 60/sec to render the game, and all the game objects within it
+     *
+     * @param {number} index the index of the state to render
+     * @param {number} dt - the tweening between the index state and the next to render
      */
     render: function(index, dt) {
         if(!this._started) {

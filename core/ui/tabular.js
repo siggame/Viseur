@@ -98,13 +98,12 @@ var Tabular = Classe(BaseElement, {
         tab.$content.removeClass("active").onceTransitionEnds(function() {
             tab.$content.addClass("hidden");
 
-            self.activeTab.$content
-                .removeClass("hidden");
-                setTimeout(function() {
-                    self.activeTab.$content.addClass("active");
-                    self._fading = false;
-                }, 1);
-                //.addClass("active");
+            self.activeTab.$content.removeClass("hidden");
+
+            setTimeout(function() { // HACK: to get the fading between tabs to work
+                self.activeTab.$content.addClass("active");
+                self._fading = false;
+            }, 1);
         });
     },
 

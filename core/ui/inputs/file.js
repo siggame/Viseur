@@ -35,6 +35,8 @@ var File = Classe(BaseInput, {
     },
 
     /**
+     * Does nothing (File inputs cannot be set via JavaScript)
+     *
      * @override
      */
     setValue: function(newValue) {}, // can't set
