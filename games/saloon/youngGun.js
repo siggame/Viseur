@@ -37,7 +37,10 @@ var YoungGun = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        this._initContainer(this.game.layers.game);
+        this.sprite = this.renderer.newSprite("young-gun", this.container);
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -70,7 +73,7 @@ var YoungGun = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -84,7 +87,10 @@ var YoungGun = Classe(GameObject, {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // render where the YoungGun is
+
+        this.container.x = ease(current.tile.x, next.tile.x, dt, "cubicInOut");
+        this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
+
         //<<-- /Creer-Merge: render -->>
     },
 

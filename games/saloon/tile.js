@@ -49,7 +49,7 @@ var Tile = Classe(GameObject, {
 
         this._initContainer(this.game.layers.game);
 
-        this.sprite = this.renderer.newSprite(initialState.isWall ? "wall" : "tile", this.container);
+        this.sprite = this.renderer.newSprite(initialState.isBalcony ? "wall" : "tile", this.container);
 
         if(initialState.hasHazard) {
             this.hazardSprite = this.renderer.newSprite("hazard_broken_glass", this.container);
