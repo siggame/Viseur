@@ -18,10 +18,10 @@ var BaseGame = require("viseur/game/baseGame");
  * @property {number} currentTurn - The current turn number, starting at 0 for the first player's turn.
  * @property {Array.<FurnishingState>} furnishings - Every furnishing in the game.
  * @property {Object.<string, GameObjectState>} gameObjects - A mapping of every game object's ID to the actual game object. Primarily used by the server and client to easily refer to the game objects via ID.
- * @property {Array.<string>} jobs - All the jobs that Cowboys can be assigned within the saloon.
+ * @property {Array.<string>} jobs - All the jobs that Cowboys can be called in with.
  * @property {number} mapHeight - The number of Tiles in the map along the y (vertical) axis.
  * @property {number} mapWidth - The number of Tiles in the map along the x (horizontal) axis.
- * @property {number} maxCowboys - The maximum number of Cowboys a Player can bring into the saloon.
+ * @property {number} maxCowboysPerJob - The maximum number of Cowboys a Player can bring into the saloon of each specific job.
  * @property {number} maxTurns - The maximum number of turns before the game will automatically end.
  * @property {Array.<PlayerState>} players - List of all the players in the game.
  * @property {number} rowdynessToSiesta - When a player's rowdyness reaches or exceeds this number their Cowboys take a collective siesta.

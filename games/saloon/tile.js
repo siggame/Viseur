@@ -13,12 +13,12 @@ var GameObject = require("./gameObject");
 /**
  * @typedef {Object} TileState - A state representing a Tile
  * @property {BottleState} bottle - The beer Bottle currently flying over this Tile.
- * @property {CowboyState} cowboy - The Cowboy that is on this Tile, or null if empty.
- * @property {FurnishingState} furnishing - The furnishing that is on this Tile, or null if empty.
+ * @property {CowboyState} cowboy - The Cowboy that is on this Tile, null otherwise.
+ * @property {FurnishingState} furnishing - The furnishing that is on this Tile, null otherwise.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {boolean} hasHazard - If this Tile is pathable, but has a hazard that damages Cowboys that path through it.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
- * @property {boolean} isWall - If this Tile is a wall of the Saloon, and can never be pathed through.
+ * @property {boolean} isBalcony - If this Tile is a balcony of the Saloon that YoungGuns walk around on, and can never be pathed through by Cowboys.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {TileState} tileEast - The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the map.
  * @property {TileState} tileNorth - The Tile to the 'North' of this one (x, y-1). Null if out of bounds of the map.
@@ -26,6 +26,7 @@ var GameObject = require("./gameObject");
  * @property {TileState} tileWest - The Tile to the 'West' of this one (x-1, y). Null if out of bounds of the map.
  * @property {number} x - The x (horizontal) position of this Tile.
  * @property {number} y - The y (vertical) position of this Tile.
+ * @property {YoungGunState} youngGun - The YoungGun on this tile, null otherwise.
  */
 
 /**
