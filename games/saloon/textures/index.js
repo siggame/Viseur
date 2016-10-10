@@ -3,6 +3,7 @@ module.exports = {
     "tile": "tile.jpg",
     "hazard_broken_glass": "broken_glass.png",
     "wall": "wall.jpg",
+    "wall side": "wall_side.jpg",
     "cowboy": "cowboy.png",
     "piano": "piano.png",
     "furnishing": "furnishing.png",

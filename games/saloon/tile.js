@@ -48,7 +48,15 @@ var Tile = Classe(GameObject, {
 
         this._initContainer(this.game.layers.game);
 
-        this.sprite = this.renderer.newSprite(initialState.isWall ? "wall" : "tile", this.container);
+        //Floor tiles of the balcony
+        if(initialState.isWall) {
+            this.sprite = this.renderer.newSprite("wall", this.container);
+        }
+        //Visible side of the balcony
+        else if(initialState.x > 0 && initialState.x < game.boardContainer.width && initialState.y === 1) {
+            this.sprite = this.renderer.newSprite("wall side", this.container);
+        }
+        else this.sprite = this.renderer.newSprite("tile", this.container);
 
         if(initialState.hasHazard) {
             this.hazardSprite = this.renderer.newSprite("hazard_broken_glass", this.container);
