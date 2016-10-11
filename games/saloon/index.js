@@ -18,6 +18,7 @@ namespace.Game.prototype._gameObjectClasses = {
     "GameObject": require("./gameObject"),
     "Player": require("./player"),
     "Tile": require("./tile"),
+    "YoungGun": require("./youngGun"),
 };
 
 module.exports = namespace;

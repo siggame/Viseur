@@ -12,5 +12,6 @@ module.exports = {
     "furnishing sofa": "furnishing_sofa.png",
     "furnishing table": "furnishing_table.png",
     "bottle": "bottle.png",
+    "young-gun": "young-gun.png",
     //<<-- /Creer-Merge: settings -->>
 };

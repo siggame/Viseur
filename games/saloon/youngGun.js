@@ -1,4 +1,4 @@
-// This is a "class" to represent the Player object in the game. If you want to render it in the game do so here.
+// This is a "class" to represent the YoungGun object in the game. If you want to render it in the game do so here.
 var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
@@ -11,44 +11,36 @@ var GameObject = require("./gameObject");
 //<<-- /Creer-Merge: requires -->>
 
 /**
- * @typedef {Object} PlayerState - A state representing a Player
- * @property {string} clientType - What type of client this is, e.g. 'Python', 'JavaScript', or some other language. For potential data mining purposes.
- * @property {Array.<CowboyState>} cowboys - Every Cowboy owned by this Player.
+ * @typedef {Object} YoungGunState - A state representing a YoungGun
+ * @property {boolean} canCallIn - True if the YoungGun can call in a Cowboy, false otherwise.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
- * @property {number} kills - How many enemy Cowboys this player's team has killed.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {boolean} lost - If the player lost the game or not.
- * @property {string} name - The name of the player.
- * @property {PlayerState} opponent - This player's opponent in the game.
- * @property {string} reasonLost - The reason why the player lost the game.
- * @property {string} reasonWon - The reason why the player won the game.
- * @property {number} rowdyness - How rowdy their team is. When it gets too high their team takes a collective siesta.
- * @property {number} score - How many times their team has played a piano.
- * @property {number} siesta - 0 when not having a team siesta. When greater than 0 represents how many turns left for the team siesta to complete.
- * @property {number} timeRemaining - The amount of time (in ns) remaining for this AI to send commands.
- * @property {boolean} won - If the player won the game or not.
- * @property {YoungGunState} youngGun - The YoungGun this Player uses to call in new Cowboys.
+ * @property {PlayerState} owner - The Player that owns and can control this YoungGun.
+ * @property {TileState} tile - The Tile this YoungGun is currently on. Cowboys they send in will be on the nearest non-balcony Tile.
  */
 
 /**
  * @class
- * @classdesc A player in this game. Every AI controls one player.
+ * @classdesc An eager young person that wants to join your gang, and will call in the veteran Cowboys you need to win the brawl in the saloon.
  * @extends GameObject
  */
-var Player = Classe(GameObject, {
+var YoungGun = Classe(GameObject, {
     /**
-     * Initializes a Player with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
+     * Initializes a YoungGun with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
-     * @memberof Player
-     * @param {PlayerState} initialState - the intial state of this game object
-     * @param {Game} game - the game this Player is in
+     * @memberof YoungGun
+     * @param {YoungGunState} initialState - the intial state of this game object
+     * @param {Game} game - the game this YoungGun is in
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        this._initContainer(this.game.layers.game);
+        this.sprite = this.renderer.newSprite("young-gun", this.container);
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -57,19 +49,19 @@ var Player = Classe(GameObject, {
      *
      * @static
      */
-    name: "Player",
+    name: "YoungGun",
 
     /**
-     * The current state of this Player. Undefined when there is no current state.
+     * The current state of this YoungGun. Undefined when there is no current state.
      *
-     * @type {PlayerState|null})}
+     * @type {YoungGunState|null})}
      */
     current: null,
 
     /**
-     * The next state of this Player. Undefined when there is no next state.
+     * The next state of this YoungGun. Undefined when there is no next state.
      *
-     * @type {PlayerState|null})}
+     * @type {YoungGunState|null})}
      */
     next: null,
 
@@ -81,21 +73,24 @@ var Player = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
-     * Called approx 60 times a second to update and render the Player. Leave empty if it should not be rendered
+     * Called approx 60 times a second to update and render the YoungGun. Leave empty if it should not be rendered
      *
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
-     * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
-     * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {YoungGunState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {YoungGunState} next - the next (most) game state, will be this.current if this.next is null
      */
     render: function(dt, current, next) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // render where the Player is
+
+        this.container.x = ease(current.tile.x, next.tile.x, dt, "cubicInOut");
+        this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
+
         //<<-- /Creer-Merge: render -->>
     },
 
@@ -119,20 +114,32 @@ var Player = Classe(GameObject, {
 
     // Joueur functions - functions invoked for human playable client
 
+    /**
+     * Tells the YoungGun to call in a new Cowbow of the given job to the open Tile nearest to them.
+     *
+     * @param {string} job - The job you want the Cowboy being brought to have.
+     * @param {Function} [callback] - callback that is passed back the return value of CowboyState once ran on the server
+     */
+    callIn: function(job, callback) {
+        this._runOnServer("callIn", {
+            job: job,
+        }, callback);
+    },
+
     // /Joueur functions
 
     /**
      * Invoked when the state updates.
      *
      * @private
-     * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
-     * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {YoungGunState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {YoungGunState} next - the next (most) game state, will be this.current if this.next is null
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // update the Player based on its current and next states
+        // update the YoungGun based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 
@@ -142,4 +149,4 @@ var Player = Classe(GameObject, {
 
 });
 
-module.exports = Player;
+module.exports = YoungGun;
