@@ -12,7 +12,7 @@ var GameObject = require("./gameObject");
 
 /**
  * @typedef {Object} BottleState - A state representing a Bottle
- * @property {TileState} direction - The Direction this Bottle is flying and will move to between turns, can be 'North', 'East', 'South', or 'West'.
+ * @property {string} direction - The Direction this Bottle is flying and will move to between turns, can be 'North', 'East', 'South', or 'West'.
  * @property {string} drunkDirection - The direction any Cowboys hit by this will move, can be 'North', 'East', 'South', or 'West'.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
