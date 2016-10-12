@@ -9,7 +9,8 @@
   "scripts": {
     "visualizer": "./node_modules/.bin/webpack-dev-server --progress --colors --host 0.0.0.0",
     "bundle": "./node_modules/.bin/webpack ./main.js",
-    "lint": "./node_modules/.bin/eslint --cache ./"
+    "lint": "./node_modules/.bin/eslint --cache ./",
+    "fix": "./node_modules/.bin/eslint --fix ./"
   },
   "private": true,
   "dependencies": {
@@ -46,7 +47,7 @@
   },
   "config": {
     "ghooks": {
-      "pre-commit": "./node_modules/.bin/eslint --cache ./",
+      "pre-commit": "eslint --cache ./",
       "post-merge": "npm install",
       "post-rewrite": "npm install"
     }
