@@ -54,8 +54,11 @@ var Tile = Classe(GameObject, {
             this.sprite = this.renderer.newSprite("wall", this.container);
         }
         // Visible side of the balcony
-        else if(initialState.x > 0 && initialState.x < game.boardContainer.width && initialState.y === 1) {
-            this.sprite = this.renderer.newSprite("wall side", this.container);
+        else if(initialState.y === 1) {
+            this.sprite = this.renderer.newSprite(initialState.tileEast.isBalcony ? "wall corner" : "wall side", this.container);
+        }
+        else if(initialState.tileEast.isBalcony) {
+            this.sprite = this.renderer.newSprite("shade", this.container);
         }
         else {
             this.sprite = this.renderer.newSprite("tile", this.container);

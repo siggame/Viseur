@@ -4,6 +4,8 @@ module.exports = {
     "hazard_broken_glass": "broken_glass.png",
     "wall": "wall.jpg",
     "wall side": "wall_side.jpg",
+    "shade": "shade.jpg",
+    "wall corner": "wall_corner.jpg",
     "cowboy": "cowboy.png",
     "piano": "piano.png",
     "furnishing": "furnishing.png",
