@@ -107,6 +107,7 @@ var Viseur = Classe(Observable, {
         $.ajax({
             dataType: "text",
             url: url,
+            crossDomain: true,
             success: function(data) {
                 self.gui.modalMessage("Initializing Visualizer.");
                 self.parseGamelog(data);
