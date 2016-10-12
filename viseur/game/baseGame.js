@@ -111,12 +111,22 @@ var BaseGame = Classe(Observable, {
             return;
         }
 
+        var current = this.current || this.next;
+        var next = this.next || this.current;
+
         this._renderBackground(index, dt);
 
         for(var id in this.gameObjects) {
             if(this.gameObjects.hasOwnProperty(id)) {
                 var gameObject = this.gameObjects[id];
-                if(gameObject.shouldRender) { // game objects by default do not render, as many are invisible
+                // game objects "exist" to be rendered if the have a next or current state, they will not exist if players go back in time to before the game object was created
+                var exists = (current && current.gameObjects.hasOwnProperty(id) ) || (next && next.gameObjects.hasOwnProperty(id));
+
+                if(gameObject.container) {
+                    gameObject.container.visible = exists; // if it does not exist, no not render them, otherwise do, and later we'll call their render()
+                }
+
+                if(exists && gameObject.shouldRender) { // game objects by default do not render, as many are invisible
                     gameObject.render(dt, gameObject.current || gameObject.next, gameObject.next || gameObject.current);
                 }
             }
