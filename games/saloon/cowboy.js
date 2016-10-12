@@ -144,7 +144,7 @@ var Cowboy = Classe(GameObject, {
             this._colorFilter.hue(easeHue, false);
         }
         // if current is drunk
-        else if(!current.isDrunk) {
+        else if(current.isDrunk) {
             // retrieving length of bubbles array
             var numBubbles = this._drunkBubbles.length;
             // if we can still add more bubbles

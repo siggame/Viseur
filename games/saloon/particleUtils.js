@@ -27,6 +27,9 @@ var ParticleBubble = Classe({
 
     getShape: function(dt, curves) {
         // normalizing difference between start and current dt, between start -> 1
+        if(dt < this.startDelta) {
+            dt = this.startDelta;
+        }
         var delta = (dt - this.startDelta) / (1 - this.startDelta);
         // creating sinusoidal movement easing for non rotated y
         var easeX = sineEase(this.startShape.x, this.endShape.x, delta, curves);
