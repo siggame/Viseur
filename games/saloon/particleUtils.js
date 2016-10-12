@@ -4,27 +4,39 @@ var ease = require("core/utils").ease;
 var sineEase = require("games/saloon/extraEases.js").sineEase;
 var rotate2D = require("games/saloon/extraEases.js").rotate2D;
 
-// particle bubble which is used to display upward sinusoidal movement upward of a circular body
+/**
+ * @class
+ * @classdesc particle bubble which is used to display upward sinusoidal movement upward of a circular body
+ */
 var ParticleBubble = Classe({
-    // x = x offset from container x
-    // y = y offset from container y
-    // radius = radius of bubble
-    // start_time = initial dt time of bubble (between 0 -> 1)
-    // game = game object used to get deterministicly seeded random() function
-    // container = PIXI container object for which this object is rendered.
-    // max_x max difference value of x in non rotated coordinates
-    // max_y max difference value for y in non rotated coordinates
-    // max_r = max radius that the bubble will transition to.
+    /**
+     * initializes variables for particle bubble
+     * @param {Object.<PIXI.Circle>} startShape - starting shape for particle bubble
+     * @param {Object.<PIXI.Circle>} endShape - ending shape for particle bubble
+     * @param {number} startDelta - starting delta for particle bubble
+     * @param {Object.<Game>} game - game object
+     */
     init: function(startShape, endShape, startDelta, game) {
+        // starting shape of bubble
         this.startShape = startShape;
+        // ending shape state of bubble
         this.endShape = endShape;
+        // starting delta
         this.startDelta = startDelta;
+        // game object to get random() with deterministic seed
         this.game = game;
         // getting a value between 0-> PI/2
         // rotating the direction of the upward facing bubbles from PI/2 to between PI3/4 and PI/4
-        this.direction = ((game.random() * (Math.PI / 2)) - (Math.PI / 4));// ((game.random() * (Math.PI / 2)) - (Math.PI / 4)) + Math.PI;
+        this.direction = ((game.random() * (Math.PI / 2)) - (Math.PI / 4));
     },
 
+    /**
+     * returns the shape of the particle bubble according to the specified delta dt and number of curves
+     * for the sinusoidal function
+     * @param {number} dt - currently pulled delta for frame
+     * @param {number} curves - number of curves for sinusoidal function
+     * @returns {Object.<PIXI.Circle>} shape state for the particle bubble
+     */
     getShape: function(dt, curves) {
         // normalizing difference between start and current dt, between start -> 1
         if(dt < this.startDelta) {
