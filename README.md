@@ -34,6 +34,13 @@ Node.js and NPM are required to bundle up the files to be served to the browser.
 4. Statup the development server using `npm run visualizer`
 5. In browser, go to `http://localhost:8080`.
 
+### Commiting
+
+1. type: 'npm run lint' to run lint
+2. if you get CRLF and LF error srun 'npm run lintfix' then repeat step 1
+3. fix errors and repeat step 1 on ward until format is correct before you commit
+4. commit
+
 ### Deploying
 
 Never deploy Viseur using `npm run visualizer`, as that starts up a webpack-dev-server, which listens for file changes and rebuilds webpack.

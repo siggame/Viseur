@@ -8,10 +8,12 @@ var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
+var ParticleBubble = require("games/saloon/particleUtils.js");
 
 var GREEN_HUE = 120; // hue for green in degrees
 var GREENISH_HUE = GREEN_HUE/2; // mid tone green for transitioning between greens in drunk phase
 var DEFAULT_HUDE = 0; // default hue in degrees, 0 means no extra hue applied
+var MAX_BUBBLES = 5;
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -64,6 +66,10 @@ var Cowboy = Classe(GameObject, {
 
         // setting default hue for the colorfilter
         this._colorFilter.hue(DEFAULT_HUDE, false);
+        // list of bubbles used to display dunken-ness
+        this._drunkBubbles = [];
+        // graphics module used to display bubbles
+        this._graphics = new PIXI.Graphics();
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -138,7 +144,21 @@ var Cowboy = Classe(GameObject, {
             this._colorFilter.hue(easeHue, false);
         }
         // if current is drunk
-        else if(current.isDrunk) {
+        else if(!current.isDrunk) {
+            // retrieving length of bubbles array
+            var numBubbles = this._drunkBubbles.length;
+            // if we can still add more bubbles
+            if(numBubbles < MAX_BUBBLES) {
+                // add with chance 1/50 to create staggerd effect
+                var chance = Math.floor(this.game.random() * 30);
+                if(chance === 0) {
+                    // create a new bubble with offset 0,0, .1 radius, current dt as start, and with game and container
+                    var startShape = new PIXI.Circle(0.5,0,-0.10,0.01);
+                    var endShape = new PIXI.Circle(0.75,-0.5,0.1);
+                    var temp = new ParticleBubble(startShape, endShape, dt, this.game);
+                    this._drunkBubbles.push(temp);
+                }
+            }
             // make sure that we transition out of green if the next frame isn't drunk
             if(!next.isDrunk) {
                 easeHue = ease(GREEN_HUE, DEFAULT_HUDE, dt, "cubicInOut");
@@ -155,9 +175,29 @@ var Cowboy = Classe(GameObject, {
                 easeHue = ease(GREENISH_HUE, GREEN_HUE, dt, "sineInOut");
             }
             this._colorFilter.hue(easeHue, false);
+            // drawing bubbles
+            var alphaEase = ease(1, 0, dt, "expoIn"); // ease of the alpha of the bubbles
+            this._graphics.clear(); // clear the previous bubble graphics
+            this._graphics.lineStyle(0.02, Color().rgb(100, 222, 100).hexNumber(), alphaEase); // make the lines blue
+            this._graphics.beginFill(Color().rgb(255, 255, 255).hexNumber(), 0); // make middle transparent
+            // draw each bubble
+            for(var i = 0; i < numBubbles; i++) {
+                var tempCircle = this._drunkBubbles[i].getShape(dt, 6);
+                this._graphics.drawCircle(tempCircle.x, tempCircle.y, tempCircle.radius);
+            }
+            // stop filling
+            this._graphics.endFill();
+            // add this graphics object to container.
+            this.container.addChild(this._graphics);
         }
         // otherwise keep no hue
         else {
+            // reset bubbles completley
+            if(this._drunkBubbles.length !== 0) {
+                this._drunkBubbles.length = 0;
+                this._graphics.removeChildren();
+                this._graphics.clear();
+            }
             this._colorFilter.hue(DEFAULT_HUDE, false);
         }
         // console.log(this.container.filters);
