@@ -37,7 +37,7 @@ Node.js and NPM are required to bundle up the files to be served to the browser.
 ### Commiting
 
 1. type: 'npm run lint' to run lint
-2. if you get CRLF and LF error srun 'npm run lintfix' then repeat step 1
+2. if you get CRLF and LF error run 'npm run fix' then repeat step 1
 3. fix errors and repeat step 1 on ward until format is correct before you commit
 4. commit
 
