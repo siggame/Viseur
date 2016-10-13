@@ -5,8 +5,6 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 8.5em;
-    padding: 0 0 1em 0;
     width: 100%;
 
     & .top-game-info {
@@ -32,23 +30,38 @@
                 text-align: center;
 
                 & .player {
-                    padding: 1em;
+                    padding: 0.5em;
                     background-color: $white;
-                    border: 0.5em $light-gray solid;
+                    border: 0.25em $light-gray solid;
                     color: $white;
 
                     // programming language background
                     background-repeat: no-repeat;
                     background-position: center right 16px;
-                    background-size: 48px 48px;
+                    background-size: 1.75em 1.75em;
+
+                    & > li {
+                        display: inline;
+                        margin-right: 1em;
+
+                        &:last-child {
+                            margin-right: 0;
+                        }
+                    }
 
                     & .player-name {
                         font-weight: bold;
-                        font-size: 1.5em;
                     }
 
-                    & .player-time {
+                    & .player-timeRemaining {
                         color: $light-gray;
+
+                        &:before {
+                            content: "(";
+                        }
+                        &:after {
+                            content: ")";
+                        }
                     }
 
                     & .player-reason-won,

@@ -40,22 +40,71 @@ var BasePane = Classe(BaseElement, {
         this._$top = this.$element.find(".top-game-info");
         this._$currentTurn = this.$element.find(".current-turn");
 
+        // clean shorthand player stats
+        this._playerStats = this._getPlayerStats();
+        var stat;
+        for(i = 0; i < this._playerStats.length; i++) {
+            stat = this._playerStats[i];
+
+            if(typeof(stat) === "string") { // it is shorthand
+                stat = { key: stat };
+            }
+
+            stat.title = stat.title || ("Player's " + stat.key);
+
+            this._playerStats[i] = stat;
+        }
+
         var $players = this.$element.find(".player");
         this._$players = {};
         for(i = 0; i < $players.length; i++) {
             var $player = $($players[i]);
 
-            this._$players[playerIDs[i]] = {
+            var player = {
                 $element: $player,
-                $name: $player.find(".player-name"),
-                $time: $player.find(".player-time"),
-                $reasonWon: $player.find(".player-reason-won"),
-                $reasonLost: $player.find(".player-reason-lost"),
+                $stats: {},
             };
+
+            for(var j = 0; j < this._playerStats.length; j++) {
+                stat = this._playerStats[j];
+
+                player.$stats[stat.key] = $("<li>")
+                    .appendTo($player)
+                    .addClass("player-" + stat.key)
+                    .attr("title", stat.title)
+                    .html(stat.key);
+            }
+
+            this._$players[playerIDs[i]] = player;
         }
     },
 
     _template: require("./basePane.hbs"),
+
+    /**
+     * @typedef {Object} PaneStat
+     * @property {string} key - key within the `Player` or `Game` instances
+     * @property {Function} format - function that formats the value of a key during display. Should take the value as an argument and return the formatted value
+     */
+
+    /**
+     * Gets the player stats to show on this BasePane. Intended to be overridden by subclasses and extended
+     *
+     * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane. If a string is found it is tranformed to a PaneStat with the string being the `key`.
+     */
+    _getPlayerStats: function() {
+        return [
+            "name",
+            {
+                key: "timeRemaining",
+                title: "Time Reminaing (in min:sec:ms format)",
+                format: function(timeRemaining) {
+                    var nsAsDate = new Date(Math.round(timeRemaining / 1000000)); // convert ns to ms, which is what Date() expects
+                    return dateFormat(nsAsDate, "MM:ss:l");
+                },
+            },
+        ];
+    },
 
     /**
      * updates the base pane upon a new state
@@ -75,21 +124,22 @@ var BasePane = Classe(BaseElement, {
             var player = state.gameObjects[playerID];
 
             var $player = this._$players[playerID];
-            $player.$name.html(player.name);
-            $player.$reasonWon.html(player.reasonWon);
-            $player.$reasonLost.html(player.reasonLost);
 
-            $player.$time.html(this._formatTimeRemaining(player.timeRemaining));
+            for(var j = 0; j < this._playerStats.length; j++) {
+                var stat = this._playerStats[j];
+                var value = player[stat.key];
+
+                if(stat.format) {
+                    value = stat.format(value);
+                }
+
+                $player.$stats[stat.key].html(value);
+            }
 
             $player.$element
                 .toggleClass("current-player", state.currentPlayer.id === playerID)
-                .css("background-image", "url('viseur/images/{}.png')".format(player.clientType.replace("#", "s").toLowerCase()));
+                .css("background-image", "url('viseur/images/{}.png')".format(player.clientType.replace("#", "s").toLowerCase())); // TODO: use webpack require() on image
         }
-    },
-
-    _formatTimeRemaining: function(timeRemaining) {
-        var nsAsDate = new Date(Math.round(timeRemaining / 1000000)); // convert ns to ms, which is what Date() expects
-        return dateFormat(nsAsDate, "MM:ss:l");
     },
 
     /**
@@ -98,8 +148,6 @@ var BasePane = Classe(BaseElement, {
      * @param {PlayerState} player - the player to tick for
      */
     startTicking: function(player) {
-        var $player = this._$players[player.id];
-
         this._ticking.player = player;
         this._ticking.time = player.timeRemaining;
 
@@ -122,7 +170,7 @@ var BasePane = Classe(BaseElement, {
             var $player = this._$players[this._ticking.player.id];
             this._ticking.time -= (1000 * 1000000); // 1000 ms elapsed on this tick
 
-            $player.$time.html(this._formatTimeRemaining(this._ticking.time));
+            $player.$timeRemaining.html(this._formatTimeRemaining(this._ticking.time));
 
             this._ticking.timer.restart();
         }
