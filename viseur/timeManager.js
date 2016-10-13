@@ -133,7 +133,7 @@ var TimeManager = Classe(Observable, {
             return;
         }
 
-        if(!start && this._currentIndex < this._gamelog.deltas.length - 1) {
+        if(!start && this._currentIndex < this._gamelog.deltas.length) {
             this._timer.restart();
         }
         else {

@@ -75,14 +75,14 @@ var BasePane = Classe(BaseElement, {
      * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane for the player. If a string is found it is tranformed to a PaneStat with the string being the `key`.
      */
     _getPlayerStats: function(state) {
+        var self = this;
         return [
             "name",
             {
                 key: "timeRemaining",
                 title: "Time Reminaing (in min:sec:ms format)",
                 format: function(timeRemaining) {
-                    var nsAsDate = new Date(Math.round(timeRemaining / 1000000)); // convert ns to ms, which is what Date() expects
-                    return dateFormat(nsAsDate, "MM:ss:l");
+                    return self._formatTimeRemaining(timeRemaining);
                 },
             },
         ];
@@ -222,6 +222,17 @@ var BasePane = Classe(BaseElement, {
     },
 
     /**
+     * Formats the time remaining in min:sec:ms format
+     *
+     * @param {number} timeRemaining - time remaining in ns
+     * @returns {string} human reable string of the time remaining in the format min:sec:ms
+     */
+    _formatTimeRemaining: function(timeRemaining) {
+        var nsAsDate = new Date(Math.round(timeRemaining / 1000000)); // convert ns to ms, which is what Date() expects
+        return dateFormat(nsAsDate, "MM:ss:l");
+    },
+
+    /**
      * Starts ticking the time down for a player (human client mode)
      *
      * @param {PlayerState} player - the player to tick for
@@ -249,8 +260,8 @@ var BasePane = Classe(BaseElement, {
             var $player = this._$players[this._ticking.player.id];
             this._ticking.time -= (1000 * 1000000); // 1000 ms elapsed on this tick
 
-            var timeRemainingStat = this._playerStatsList[this._ticking.player.id].stats.timeRemaining;
-            timeRemainingStat.$element.html(this._formatTimeRemaining(this._ticking.time));
+            var timeRemainingStat = this._playerStatsList[this._ticking.player.id].$stats.timeRemaining;
+            timeRemainingStat.html(this._formatTimeRemaining(this._ticking.time));
 
             this._ticking.timer.restart();
         }
