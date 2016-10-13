@@ -7,7 +7,16 @@
     left: 0;
     width: 100%;
 
-    & .top-game-info {
+    & .stats-list > li {
+        display: inline;
+        margin-right: 1em;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    & .top-game-stats {
         width: 100%;
         background-color: $light-black;
         color: $white;
@@ -24,72 +33,44 @@
         & > .players {
             display: table-row;
 
-            & > * {
+            & .player {
                 display: table-cell;
                 vertical-align: middle;
                 text-align: center;
+                padding: 0.5em;
 
-                & .player {
-                    padding: 0.5em;
-                    background-color: $white;
-                    border: 0.25em $light-gray solid;
-                    color: $white;
+                background-color: $white;
+                border: 0.25em $light-gray solid;
+                color: $white;
 
-                    // programming language background
-                    background-repeat: no-repeat;
-                    background-position: center right 16px;
-                    background-size: 1.75em 1.75em;
+                // programming language background
+                background-repeat: no-repeat;
+                background-position: center right 4px;
+                background-size: 1.5em 1.5em;
 
-                    & > li {
-                        display: inline;
-                        margin-right: 1em;
+                & .stat-name {
+                    font-weight: bold;
+                }
 
-                        &:last-child {
-                            margin-right: 0;
-                        }
+                & .stat-timeRemaining {
+                    color: $light-gray;
+
+                    &:before {
+                        content: "(";
                     }
-
-                    & .player-name {
-                        font-weight: bold;
-                    }
-
-                    & .player-timeRemaining {
-                        color: $light-gray;
-
-                        &:before {
-                            content: "(";
-                        }
-                        &:after {
-                            content: ")";
-                        }
-                    }
-
-                    & .player-reason-won,
-                    & .player-reason-lost {
-                        margin-top: 0.5em;
-
-                        &:empty {
-                            display: none;
-                        }
-                    }
-
-                    & .player-reason-won:before {
-                        content: "Won - ";
-                    }
-
-                    & .player-reason-lost:before {
-                        content: "Lost - ";
+                    &:after {
+                        content: ")";
                     }
                 }
 
-                & .player.current-player {
+                &.current-player {
                     border-color: $secondary;
                 }
             }
-        }
-    }
 
-    & .player-wrapper:nth-child(2) .player {
-        background-position: center left 16px;
+            &.number-of-players-2 .player-1 {
+                background-position: center left 4px;
+            }
+        }
     }
 }

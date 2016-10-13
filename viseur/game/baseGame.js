@@ -51,7 +51,7 @@ var BaseGame = Classe(Observable, {
         var state = this._updateState(Viseur.getCurrentState());
 
         this.pane = new this.namespace.Pane(this, this.next);
-        this.pane.update(state);
+        this.pane.update(this.current || this.next);
 
         if(this.humanPlayer) {
             this.humanPlayer.setPlayer(this.gameObjects[this._playerID]);
@@ -171,7 +171,7 @@ var BaseGame = Classe(Observable, {
         }
 
         if(this.pane) {
-            this.pane.update(state);
+            this.pane.update(this.current || this.next);
         }
 
         this._stateUpdated(this.current || this.next, this.next || this.current);

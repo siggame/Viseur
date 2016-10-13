@@ -16,9 +16,53 @@ var Pane = Classe(BasePane, {
         //<<-- /Creer-Merge: style -->>
     },
 
-    //<<-- Creer-Merge: hbs -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    //_template: require("./pane.hbs"),
-    //<<-- /Creer-Merge: hbs -->>
+    /**
+     * Gets the stats to show on the top bar of the pane, which tracks stats in the game
+     *
+     * @override
+     * @param {GameState} state - the initial state of the game
+     * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane for the game. If a string is found it is tranformed to a PaneStat with the string being the `key`.
+     */
+    _getGameStats: function(state) {
+        var stats = BasePane._getGameStats.apply(this, arguments);
+
+        //<<-- Creer-Merge: game-stats -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // push PaneStats onto the stats array here if you want to show additional values
+        //<<-- /Creer-Merge: game-stats -->>
+
+        return stats;
+    },
+
+    /**
+     * Gets the stats to show on each player pane, which tracks stats for that player
+     *
+     * @override
+     * @param {GameState} state - the initial state of the game
+     * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane for the player. If a string is found it is tranformed to a PaneStat with the string being the `key`.
+     */
+    _getPlayerStats: function(state) {
+        var stats = BasePane._getPlayerStats.apply(this, arguments);
+
+        //<<-- Creer-Merge: player-stats -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // push PaneStats onto the stats array here if you want to show additional values
+        //<<-- /Creer-Merge: player-stats -->>
+
+        return stats;
+    },
+
+    /**
+     * Called when the game state updates. Stats are updated automatically, but you can update things here like the progress bars
+     *
+     * @param {GameState} state - the current(most) state of the game to update reflecting
+     */
+    update: function(state) {
+        BasePane.update.apply(this, arguments);
+
+        //<<-- Creer-Merge: update -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // you can update things for the pane here
+        //<<-- /Creer-Merge: update -->>
+    },
+
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // add more functions for your pane here

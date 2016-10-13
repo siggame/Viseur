@@ -2,12 +2,14 @@
 
 ${merge("//", "scss", """
 .game-pane.game-""" + game_name + """ {
-    & .player-wrapper:nth-child(1) .player {
-        background-color: #C33 !important;
+    & .player-0 {
+        // you can style the first player here
+        background-color: #C33 !important; // red
     }
 
-    & .player-wrapper:nth-child(2) .player {
-        background-color: #33C !important;
+    & .player-1 {
+        // you can style the second player here
+        background-color: #33C !important; // blue
     }
 }
 

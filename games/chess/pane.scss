@@ -3,16 +3,16 @@
 //<<-- Creer-Merge: scss -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
 .game-pane.game-Chess {
-    & .player-wrapper:nth-child(1) .player {
+    & .player-0 {
         background-color: #FFF !important;
         color: $black !important;
 
-        & .player-time {
+        & .stat-timeRemaining {
             color: $light-black !important;
         }
     }
 
-    & .player-wrapper:nth-child(2) .player {
+    & .player-1 {
         background-color: #000 !important;
     }
 }
