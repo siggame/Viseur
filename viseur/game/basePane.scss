@@ -22,6 +22,31 @@
         color: $white;
         text-align: center;
         padding: 0.25em 0;
+
+        & .stats-list {
+            position: relative;
+            width: 100%;
+            z-index: 1001;
+        }
+
+        & .player-progress-bars {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+
+            & > div {
+                height: 1em;
+                display: inline-block;
+            }
+
+            & .player-0-progress-bar {
+                background-color: #C33;
+            }
+
+            & .player-1-progress-bar {
+                background-color: #33C;
+            }
+        }
     }
 
     & .players-wrapper {

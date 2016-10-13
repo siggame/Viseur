@@ -47,9 +47,14 @@ var BasePane = Classe(BaseElement, {
         this._$players = this.$element.find(".players");
         this._$players.addClass("number-of-players-" + playerIDs.length);
         this._playerStatsList = {}; // indexed by player id
+        this._$playerProgressBars = []; // indexed by player index in game.players
+        var $playerProgressBarsDiv = this.$element.find(".player-progress-bars");
 
         for(i = 0; i < playerIDs.length; i++) {
             this._playerStatsList[playerIDs[i]] = this._createStatList(playerStats, this._$players, "player player-" + i);
+            this._$playerProgressBars[i] = $("<div>")
+                .addClass("player-{}-progress-bar".format(i))
+                .appendTo($playerProgressBarsDiv);
         }
     },
 
@@ -194,6 +199,29 @@ var BasePane = Classe(BaseElement, {
     },
 
     /**
+     * Sets the progress bars to a certain percentage for each of them
+     *
+     * @param {?Array<number>} progresses - null if they have no progress (hides bars), or an array of numbers, indexed by their location in game.players, with each value being [0, 1] for their progress..
+     */
+    _setPlayersProgresses: function(progresses) {
+        var sum = 0;
+        if(progresses) {
+            sum = Math.sum(progresses);
+        }
+
+        for(var i = 0; i < this._$playerProgressBars.length; i++) {
+            var $bar = this._$playerProgressBars[i];
+
+            var percentage = 0;
+            if(sum > 0) {
+                percentage = progresses[i] / sum;
+            }
+
+            $bar.css("width", (percentage * 100) + "%");
+        }
+    },
+
+    /**
      * Starts ticking the time down for a player (human client mode)
      *
      * @param {PlayerState} player - the player to tick for
@@ -221,7 +249,8 @@ var BasePane = Classe(BaseElement, {
             var $player = this._$players[this._ticking.player.id];
             this._ticking.time -= (1000 * 1000000); // 1000 ms elapsed on this tick
 
-            $player.$timeRemaining.html(this._formatTimeRemaining(this._ticking.time));
+            var timeRemainingStat = this._playerStatsList[this._ticking.player.id].stats.timeRemaining;
+            timeRemainingStat.$element.html(this._formatTimeRemaining(this._ticking.time));
 
             this._ticking.timer.restart();
         }
