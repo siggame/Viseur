@@ -33,18 +33,11 @@
             position: absolute;
             z-index: 1000;
             width: 100%;
+            opacity: 0.666;
 
             & > div {
                 height: 1em;
                 display: inline-block;
-            }
-
-            & .player-0-progress-bar {
-                background-color: #C33;
-            }
-
-            & .player-1-progress-bar {
-                background-color: #33C;
             }
         }
     }

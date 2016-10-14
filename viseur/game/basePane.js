@@ -53,9 +53,11 @@ var BasePane = Classe(BaseElement, {
         var $playerProgressBarsDiv = this.$element.find(".player-progress-bars");
 
         for(i = 0; i < playerIDs.length; i++) {
-            this._playerStatsList[playerIDs[i]] = this._createStatList(playerStats, this._$players, "player player-" + i, this.playersColors[i]);
+            var color = this.playersColors[i];
+            this._playerStatsList[playerIDs[i]] = this._createStatList(playerStats, this._$players, "player player-" + i, color);
             this._$playerProgressBars[i] = $("<div>")
                 .addClass("player-{}-progress-bar".format(i))
+                .css("background-color", color.rgbString())
                 .appendTo($playerProgressBarsDiv);
         }
     },
