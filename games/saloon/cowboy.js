@@ -56,14 +56,11 @@ var Cowboy = Classe(GameObject, {
         // TODO: add different sprites for different cowboy jobs
         // TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
 
-
-        console.log(initialState.job);
         var COWBOY_TEXTURE_MAP = {
             Sharpshooter: "cowboy_sharpshooter",
             Bartender: "cowboy_bartender",
-            Brawler: "cowboy_brawler"
+            Brawler: "cowboy_brawler",
         };
-
 
         this.sprite = this.renderer.newSprite(COWBOY_TEXTURE_MAP[initialState.job], this.container);
         // creating filter for use in changin color of cowboy
