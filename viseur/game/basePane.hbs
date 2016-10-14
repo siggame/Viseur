@@ -1,19 +1,8 @@
 <div class="game-pane">
-	<div class="top-game-info">
-	Turn: <span class="current-turn"></span>
+	<div class="top-game-stats">
+		<div class="player-progress-bars"></div>
 	</div>
 	<div class="players-wrapper">
-		<div class="players">
-		{{#each players}}
-			<div class="player-wrapper">
-				<div class="player player-{{this}}">
-					<div class="player-name"></div>
-					<div class="player-time"></div>
-					<div class="player-reason-won"></div>
-					<div class="player-reason-lost"></div>
-				</div>
-			</div>
-		{{/each}}
-		</div>
+		<div class="players"></div>
 	</div>
 </div>

@@ -133,12 +133,14 @@ var TimeManager = Classe(Observable, {
             return;
         }
 
-        if(!start && this._currentIndex < this._gamelog.deltas.length - 1) {
-            this._timer.restart();
-        }
-        else {
-            this._pause(this._currentIndex, 0);
-            this._emit("ended");
+        if(!start) {
+            if(this._currentIndex < this._gamelog.deltas.length) {
+                this._timer.restart();
+            }
+            else {
+                this._pause(this._currentIndex, 0);
+                this._emit("ended");
+            }
         }
     },
 

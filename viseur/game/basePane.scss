@@ -5,16 +5,48 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 8.5em;
-    padding: 0 0 1em 0;
     width: 100%;
 
-    & .top-game-info {
+    & .stats-list > li {
+        display: inline;
+        margin-right: 1em;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    & .top-game-stats {
         width: 100%;
         background-color: $light-black;
         color: $white;
         text-align: center;
         padding: 0.25em 0;
+
+        & .stats-list {
+            position: relative;
+            width: 100%;
+            z-index: 1001;
+        }
+
+        & .player-progress-bars {
+            position: absolute;
+            z-index: 1000;
+            width: 100%;
+
+            & > div {
+                height: 1em;
+                display: inline-block;
+            }
+
+            & .player-0-progress-bar {
+                background-color: #C33;
+            }
+
+            & .player-1-progress-bar {
+                background-color: #33C;
+            }
+        }
     }
 
     & .players-wrapper {
@@ -26,57 +58,42 @@
         & > .players {
             display: table-row;
 
-            & > * {
+            & .player {
                 display: table-cell;
                 vertical-align: middle;
                 text-align: center;
+                padding: 0.5em;
 
-                & .player {
-                    padding: 1em;
-                    background-color: $white;
-                    border: 0.5em $light-gray solid;
-                    color: $white;
+                background-color: $black;
+                border: 0.25em $light-gray solid;
+                color: $white;
 
-                    // programming language background
-                    background-repeat: no-repeat;
-                    background-position: center right 16px;
-                    background-size: 48px 48px;
+                // programming language background
+                background-repeat: no-repeat;
+                background-position: center right 4px;
+                background-size: 1.5em 1.5em;
 
-                    & .player-name {
-                        font-weight: bold;
-                        font-size: 1.5em;
+                & .stat-name {
+                    font-weight: bold;
+                }
+
+                & .stat-timeRemaining {
+                    &:before {
+                        content: "(";
                     }
-
-                    & .player-time {
-                        color: $light-gray;
-                    }
-
-                    & .player-reason-won,
-                    & .player-reason-lost {
-                        margin-top: 0.5em;
-
-                        &:empty {
-                            display: none;
-                        }
-                    }
-
-                    & .player-reason-won:before {
-                        content: "Won - ";
-                    }
-
-                    & .player-reason-lost:before {
-                        content: "Lost - ";
+                    &:after {
+                        content: ")";
                     }
                 }
 
-                & .player.current-player {
+                &.current-player {
                     border-color: $secondary;
                 }
             }
-        }
-    }
 
-    & .player-wrapper:nth-child(2) .player {
-        background-position: center left 16px;
+            &.number-of-players-2 .player-1 {
+                background-position: center left 4px;
+            }
+        }
     }
 }
