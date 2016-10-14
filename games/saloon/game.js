@@ -106,6 +106,21 @@ var Game = Classe(BaseGame, {
     },
 
     /**
+     * Gets the colors of the player, should be indexed by their place in the Game.players array
+     *
+     * @returns {Array.<Color>} - the colors for those players, defaults to red and blue
+     */
+    getPlayersColors: function() {
+        var colors = BaseGame.getPlayersColors.apply(this, arguments);
+
+        //<<-- Creer-Merge: getPlayersColors -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // You can change the players' colors here, by default player 1 is red, player 2 is blue.
+        //<<-- /Creer-Merge: getPlayersColors -->>
+
+        return colors;
+    },
+
+    /**
      * Invoked when the state updates.
      *
      * @private
