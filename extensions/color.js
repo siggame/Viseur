@@ -28,3 +28,13 @@ Color.prototype.colorMatrix = function() {
         0, 0, 0, a,
     ];
 };
+
+/**
+ * Gets the most contrasting color (black or white) relative to this color. Useful for text on this color as a background color
+ * @returns {Color} either black or white
+ */
+Color.prototype.contrastingColor = function() {
+    return (this.hexNumber() > 0xffffff/2) ?
+        Color("black") :
+        Color("white");
+};

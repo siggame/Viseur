@@ -114,6 +114,19 @@ ${merge("        //", "_initBackground", "        // initialize a background bro
 
 ${merge("        //", "_renderBackground", "        // update and re-render whatever you initialize in _initBackground")}
     },
+
+    /**
+     * Gets the colors of the player, should be indexed by their place in the Game.players array
+     *
+     * @returns {Array.<Color>} - the colors for those players, defaults to red and blue
+     */
+    getPlayersColors: function() {
+        var colors = BaseGame.getPlayersColors.apply(this, arguments);
+
+${merge("        //", "getPlayersColors", "        // You can change the players' colors here, by default player 1 is red, player 2 is blue.")}
+
+        return colors;
+    },
 % else:
 
     /**

@@ -1,7 +1,9 @@
 var Classe = require("classe");
 var PIXI = require("pixi.js");
+var Color = require("color");
 var Observable = require("core/observable");
 var SettingsManager = require("viseur/settingsManager");
+var GameOverScreen = require("./gameOverScreen");
 var Viseur = null;
 
 /**
@@ -36,6 +38,11 @@ var BaseGame = Classe(Observable, {
 
         this._playerID = playerID;
         this.humanPlayer = new this.namespace.HumanPlayer(this);
+
+        this.gameOverScreen = new GameOverScreen({
+            $parent: Viseur.gui.$rendererWrapper,
+            game: this,
+        });
     },
 
     /**
@@ -145,6 +152,8 @@ var BaseGame = Classe(Observable, {
             return;
         }
 
+        this.gameOverScreen.hide();
+
         this.current = state.game;
         this.next = state.nextGame;
 
@@ -244,6 +253,15 @@ var BaseGame = Classe(Observable, {
      */
     onSettingChanged: function(key, callback) {
         SettingsManager.onChanged(this.name, key, callback);
+    },
+
+    /**
+     * Gets the colors of the player, should be indexed by their place in the Game.players array
+     *
+     * @returns {Array.<Color>} - the colors for those players, defaults to red and blue
+     */
+    getPlayersColors: function() {
+        return [ Color("#C33"), Color("#33C") ]; // by default player 1 is red, player 2 is blue
     },
 
     /**

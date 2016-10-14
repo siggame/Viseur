@@ -1,5 +1,3 @@
-require("./pane.scss");
-
 var Classe = require("classe");
 var BasePane = require("viseur/game/basePane");
 

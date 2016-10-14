@@ -64,7 +64,7 @@
                 text-align: center;
                 padding: 0.5em;
 
-                background-color: $white;
+                background-color: $black;
                 border: 0.25em $light-gray solid;
                 color: $white;
 
@@ -78,8 +78,6 @@
                 }
 
                 & .stat-timeRemaining {
-                    color: $light-gray;
-
                     &:before {
                         content: "(";
                     }

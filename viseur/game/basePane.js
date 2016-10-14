@@ -23,6 +23,8 @@ var BasePane = Classe(BaseElement, {
         }
 
         this.game = game;
+        this.playersColors = game.getPlayersColors();
+
         this._ticking = {
             timer: new Timer(),
         }; // used to tick down a player's time when in human playable mode
@@ -51,7 +53,7 @@ var BasePane = Classe(BaseElement, {
         var $playerProgressBarsDiv = this.$element.find(".player-progress-bars");
 
         for(i = 0; i < playerIDs.length; i++) {
-            this._playerStatsList[playerIDs[i]] = this._createStatList(playerStats, this._$players, "player player-" + i);
+            this._playerStatsList[playerIDs[i]] = this._createStatList(playerStats, this._$players, "player player-" + i, this.playersColors[i]);
             this._$playerProgressBars[i] = $("<div>")
                 .addClass("player-{}-progress-bar".format(i))
                 .appendTo($playerProgressBarsDiv);
@@ -135,14 +137,21 @@ var BasePane = Classe(BaseElement, {
      * @param {Array.<PaneStat>} stats - all the stats to list
      * @param {$} $parent -jQuery parent for this list
      * @param {string} [classes] - optional classes for the html element
+     * @param {Color} [bgColor] - background color for the list
      * @returns {Object} - container object containing all the parts of this list
      */
-    _createStatList: function(stats, $parent, classes) {
+    _createStatList: function(stats, $parent, classes, bgColor) {
         var list = {
             stats: stats,
             $element: this._statsPartial({classes: classes}, $parent),
             $stats: {},
         };
+
+        if(bgColor) {
+            list.$element
+                .css("background-color", bgColor.rgbString())
+                .css("color", bgColor.contrastingColor().rgbString());
+        }
 
         for(var i = 0; i < stats.length; i++) {
             var stat = stats[i];
