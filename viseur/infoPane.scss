@@ -114,13 +114,16 @@
         }
 
         & section {
-            margin-bottom: 1em;
-            max-height: 9999em; // for animating height
-
             @include collapsable();
+
+            margin-bottom: 1em;
 
             &.collapsed {
                 margin-bottom: 0;
+            }
+
+            &.inspect-game {
+                max-height: none !important; // special case where a max-hieight of 9999 could be too small
             }
         }
     }

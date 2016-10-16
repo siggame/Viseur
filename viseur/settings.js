@@ -4,11 +4,13 @@ var SettingsManager = require("./settingsManager");
 
 // hackish, but no idea where-else to put this
 var onResolutionChanged = function(input) {
-    SettingsManager.on("viseur.resolution-type.changed", function(newValue) {
+    SettingsManager.onChanged("viseur", "resolution-type", function(newValue) {
         input.field.$element.toggleClass("collapsed", newValue !== "Manual");
     });
 
-    input.field.$element.addClass("collapsed");
+    if(SettingsManager.get("viseur", "resolution-type") !== "Manual") {
+        input.field.$element.addClass("collapsed");
+    }
 };
 
 module.exports = [
