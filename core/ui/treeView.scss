@@ -5,7 +5,9 @@
 
 li.tree-view-node {
     & > .node-children {
-        @include collapsable();
+        &.hidden {
+            display: none;
+        }
 
         &:empty {
             &::after {

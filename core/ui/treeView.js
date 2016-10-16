@@ -157,7 +157,7 @@ var TreeView = Classe(BaseElement, {
         this._$nodes[id] = $node;
 
         if(path.length > 1) {
-            $node.$children.addClass("collapsed");
+            $node.$children.addClass("hidden");
         }
 
         this._updateValue($node, value);
@@ -215,14 +215,14 @@ var TreeView = Classe(BaseElement, {
      *
      * @param   {$} $node            - the node clicked
      * @param   {*} value            - the value of what was clicked
-     * @param   {boolean} [collapse] - if it should be force collapsed
+     * @param   {boolean} [collapse] - if it should be force hidden
      */
     _clicked: function($node, value, collapse) {
         if(collapse === undefined) {
-            collapse = !$node.$children.hasClass("collapsed");
+            collapse = !$node.$children.hasClass("hidden");
         }
 
-        $node.$children.toggleClass("collapsed", collapse);
+        $node.$children.toggleClass("hidden", collapse);
 
         if($node.$header) {
             $node.$header
