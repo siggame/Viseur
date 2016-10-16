@@ -21,6 +21,7 @@ var Renderer = Classe(Observable, BaseElement, {
      */
     init: function(args) {
         args = $.extend({}, args); // make a copy
+        var self = this;
 
         Observable.init.call(this);
         BaseElement.init.apply(this, arguments);
@@ -28,17 +29,15 @@ var Renderer = Classe(Observable, BaseElement, {
         this.rootContainer = new PIXI.Container();
 
         this._defaultFontFamily = args.defaultFont || $("body").css("font-family").split(",")[0] || "Arial";
-        this._pxMaxWidth = 800;
-        this._pxMaxHeight = 600;
+        this._pxExternalWidth = 800;
+        this._pxExternalHeight = 600;
         // will be resized, just placeholder dimensions
-        this._renderer = new PIXI.autoDetectRenderer(this._pxMaxWidth, this._pxMaxHeight, {
+        this._renderer = new PIXI.autoDetectRenderer(this._pxExternalWidth, this._pxExternalHeight, {
             antialias: SettingsManager.get("viseur", "anti-aliasing", true),
         });
 
         this._bounds = {};
         this.setSize(1, 1);
-
-        var self = this;
 
         this._graphics = new PIXI.Graphics();
         this.rootContainer.addChild(this._graphics);
@@ -52,6 +51,20 @@ var Renderer = Classe(Observable, BaseElement, {
             .on("contextmenu", function() {
                 return false;
             });
+
+        this.$pixiCanvas = this.$element.find("canvas");
+
+        // when resolution settings change, resize
+        SettingsManager.onChanged("viseur", "resolution-type", function() {
+            self.resize();
+        });
+        SettingsManager.onChanged("viseur", "resolution-width", function() {
+            self.resize();
+        });
+        SettingsManager.onChanged("viseur", "resolution-height", function() {
+            self.resize();
+        });
+
 
         this.contextMenu = new ContextMenu({
             $parent: this.$element,
@@ -125,50 +138,80 @@ var Renderer = Classe(Observable, BaseElement, {
     /**
      * Resizes the render to fit its container, or resize to fit a new size
      *
-     * @param {number} [pxMaxWidth] - the max width in px the renderer can fill, defaults to the last stored mxMaxWidth
-     * @param {number} [pxMaxHeight] - the max height in px the renderer can fill, defaults to the last stored mxMaxHeight
+     * @param {number} [pxExternalWidth] - the max width in px the renderer can fill, defaults to the last stored mxMaxWidth
+     * @param {number} [pxExternalHeight] - the max height in px the renderer can fill, defaults to the last stored mxMaxHeight
      */
-    resize: function(pxMaxWidth, pxMaxHeight) {
-        if(arguments.length === 0) {
-            pxMaxWidth = this._pxMaxWidth;
-            pxMaxHeight = this._pxMaxHeight;
+    resize: function(pxExternalWidth, pxExternalHeight) {
+        if(arguments.length === 0) { // get saved resolution
+            pxExternalWidth = this._pxExternalWidth;
+            pxExternalHeight = this._pxExternalHeight;
         }
-        else {
-            this._pxMaxWidth = pxMaxWidth;
-            this._pxMaxHeight = pxMaxHeight;
+        else { // save this resolution
+            this._pxExternalWidth = pxExternalWidth;
+            this._pxExternalHeight = pxExternalHeight;
         }
 
+        var manualResolution = Boolean(SettingsManager.get("viseur", "resolution-type") === "Manual");
+        var pxInternalWidth = pxExternalWidth;
+        var pxInternalHeight = pxExternalHeight;
+
+        if(manualResolution) {
+            pxInternalWidth = SettingsManager.get("viseur", "resolution-width", 800);
+            pxInternalHeight = SettingsManager.get("viseur", "resolution-height", 600);
+        }
+
+        var scaleRatio = this._getScaleRatio(pxInternalWidth, pxInternalHeight);
+
+        var pxWidth = this._width * scaleRatio;
+        var pxHeight = this._height * scaleRatio;
+
+        this._scaledX = pxWidth / this._width;
+        this._scaledY = pxHeight / this._height;
+
+        this.rootContainer.scale.set(this._scaledX, this._scaledY);
+
+        if(pxWidth !== this._pxWidth || pxHeight !== this._pxHeight) {
+            this._renderer.resize(pxWidth, pxHeight);
+        }
+
+        this._pxWidth = pxWidth;
+        this._pxHeight = pxHeight;
+
+        if(this.$pixiCanvas) {
+            if(manualResolution) {
+                scaleRatio = this._getScaleRatio(pxExternalWidth, pxExternalHeight);
+                pxWidth = this._width * scaleRatio;
+                pxHeight = this._height * scaleRatio;
+                var ratio = parseInt(this.$pixiCanvas.attr("width")) / this._pxWidth;
+                this.$pixiCanvas.css("width", (pxWidth * ratio) + "px");
+            }
+            else {
+                this.$pixiCanvas.removeAttr("style");
+            }
+        }
+
+        var pxX = (pxExternalWidth / 2) - (pxWidth / 2);
+        var pxY = (pxExternalHeight / 2) - (pxHeight / 2);
+        this.$element
+            .css("left", pxX)
+            .css("top", pxY);
+    },
+
+    _getScaleRatio: function(width, height) {
         // scale to fix via width
-        var pxFatness = pxMaxWidth / pxMaxHeight;
+        var pxFatness = width / height;
         var ourFatness = this._width / this._height;
 
         // adjust scaling
         var scaleRatio = 1;
         if(ourFatness >= pxFatness) { // scale for a snug width
-            scaleRatio = pxMaxWidth / this._width;
+            scaleRatio = width / this._width;
         }
         else { // scale for a snug height
-            scaleRatio = pxMaxHeight / this._height;
+            scaleRatio = height / this._height;
         }
 
-        var pxWidth = this._width * scaleRatio;
-        var pxHeight = this._height * scaleRatio;
-        var pxX = (pxMaxWidth / 2) - (pxWidth / 2);
-        var pxY = (pxMaxHeight / 2) - (pxHeight / 2);
-
-        if(pxWidth !== this._pxWidth || pxHeight !== this._pxHeight) {
-            this._renderer.resize(pxWidth, pxHeight);
-        }
-        this.$element
-            .css("left", pxX)
-            .css("top", pxY);
-
-        this._pxWidth = pxWidth;
-        this._pxHeight = pxHeight;
-        this._scaledX = pxWidth / this._width;
-        this._scaledY = pxHeight / this._height;
-
-        this.rootContainer.scale.set(this._scaledX, this._scaledY);
+        return scaleRatio;
     },
 
     /**
