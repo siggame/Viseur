@@ -69,4 +69,11 @@ module.exports = [
         input: "CheckBox",
         default: true,
     },
+    {
+        id: "show-grid",
+        label: "Show Grid",
+        hint: "Displays a grid over the game",
+        input: "CheckBox",
+        default: false,
+    },
 ];
