@@ -8,6 +8,7 @@ var Renderer = require("./renderer/");
 var TimeManager = require("./timeManager");
 var SettingsManager = require("./settingsManager");
 var Joueur = require("./joueur");
+var Tournament = require("./tournament");
 
 var Viseur = Classe(Observable, {
     /**
@@ -331,7 +332,7 @@ var Viseur = Classe(Observable, {
                 callback = this._spectate;
                 break;
             case "human":
-                callback = this._playAsHuman;
+                callback = this.playAsHuman;
                 break;
             case "tournament":
                 callback = this._connectToTournament; // TODO: Do
@@ -384,7 +385,7 @@ var Viseur = Classe(Observable, {
      * @param {string} gameName - name of the game to spectate
      * @param {Object} data - additional data to send to the game server, such as playerName
      */
-    _playAsHuman: function(server, port, gameName, data) {
+    playAsHuman: function(server, port, gameName, data) {
         this.gui.modalMessage("Connecting to game server...");
 
         this._initJoueur(server, port, gameName, data);
@@ -397,6 +398,47 @@ var Viseur = Classe(Observable, {
      */
     hasHumanPlaying: function() {
         return (this._joueur.getPlayerID() !== undefined);
+    },
+
+    /**
+     * Connects to a tournament server to wait for play data to later connect as a human client
+     *
+     * @param {string} server - the server tournament server is running on (without port)
+     * @param {number} port - the port the server is running on
+     * @param {string} gameName - name of the game to spectate
+     * @param {Object} data - additional data to send to the tournament server, such as playerName
+     */
+    _connectToTournament: function(server, port, gameName, data) {
+        var self = this;
+        this._tournament = new Tournament();
+
+        this._tournament.on("error", function(err) {
+            self.gui.modalError(err);
+        });
+
+        this._tournament.on("connected", function() {
+            self._emit("log-connection", "Connected to tournament server, awating game.");
+        });
+
+        this._tournament.on("closed", function() {
+            self._emit("log-connection", "Connected to tournament server closed.");
+        });
+
+        this._tournament.on("playing", function() {
+            self._emit("log-connection", "Now playing " + gameName);
+        });
+
+        this._tournament.on("message", function(str) {
+            self._emit("log-connection", "Message from tournament server: '{}'".format(str));
+        });
+
+
+        this._emit("log-connection", "Connecting to tournament server...");
+        this._tournament.connect($.extend({
+            server: server,
+            port: port,
+            gameName: gameName,
+        }, data));
     },
 
     /**
