@@ -69,7 +69,7 @@ var Joueur = Classe(Observable, {
         };
 
         this._ws.onerror = function(err) {
-            this._emit("errored", err);
+            self._emit("errored", err);
         };
 
         this._ws.onmessage = function(message) {
@@ -218,6 +218,15 @@ var Joueur = Classe(Observable, {
             functionName: functionName,
             args: Serializer.serialize(args),
         });
+    },
+
+    /**
+     * Invoked automatically to handle the 'fatal' events
+     *
+     * @param {Object} data - a delta about what changed in the game
+     */
+    _autoHandleFatal: function(data) {
+        throw new Error("An unexpected fatal error occured on the game server: '{}'.", data.message);
     },
 });
 

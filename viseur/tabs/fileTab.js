@@ -24,6 +24,10 @@ var FileTab = Classe(BaseElement, {
             self._log("Downloading remote gamelog.");
         });
 
+        Viseur.on("log-connection", function(str) {
+            self._log(str);
+        });
+
         Viseur.on("ready", function(gameName, gamelog, unparsedGamelog) {
             self.$localGamelogWrapper.addClass("collapsed");
             self.$remoteGamelogWrapper.addClass("collapsed");
