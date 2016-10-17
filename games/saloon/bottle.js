@@ -42,6 +42,12 @@ var Bottle = Classe(GameObject, {
         this._initContainer(this.game.layers.game);
         this.sprite = this.renderer.newSprite("bottle", this.container);
 
+        // set the anchor to the center of the sprite, then offset it by that amount, so the bottle can spin when animating
+        this.sprite.anchor.x = 0.5;
+        this.sprite.anchor.y = 0.5;
+        this.sprite.position.x = 0.5;
+        this.sprite.position.y = 0.5;
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -102,8 +108,10 @@ var Bottle = Classe(GameObject, {
             this.container.alpha = dt; // fade it out
         }
 
-        this.container.x = ease(current.tile.x, nextTile.x, dt, "cubicInOut");
-        this.container.y = ease(current.tile.y, nextTile.y, dt, "cubicInOut");
+        this.sprite.rotation = 2*Math.PI * dt; // rotate 360 degrees every turn
+
+        this.container.x = ease(current.tile.x, nextTile.x, dt, "linear");
+        this.container.y = ease(current.tile.y, nextTile.y, dt, "linear");
 
         //<<-- /Creer-Merge: render -->>
     },
