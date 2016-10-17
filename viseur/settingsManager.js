@@ -57,6 +57,10 @@ var SettingsManager = Classe(Observable, {
     onChanged: function(namespace, key, callback) {
         var id = this._getID(namespace, key);
 
+        if(!callback) {
+            throw new Error("No callback for on changed {} {}".format(namespace, key));
+        }
+
         this.on(id + ".changed", callback);
     },
 

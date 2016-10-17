@@ -67,7 +67,7 @@ var Game = Classe(BaseGame, {
         //<<-- Creer-Merge: _start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         var length = 8 + this._borderLength*2;
-        this.renderer.setSize(length, length);
+        this.renderer.setSize(length, length, 0.5, 0.5, 0.5, 0.5);
 
         this._highlighedLocations = [];
 

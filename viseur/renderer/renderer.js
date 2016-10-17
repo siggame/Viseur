@@ -26,9 +26,23 @@ var Renderer = Classe(Observable, BaseElement, {
         Observable.init.call(this);
         BaseElement.init.apply(this, arguments);
 
-        this.rootContainer = new PIXI.Container();
+        this._scene = new PIXI.Container();
 
+        // the root of all game pixi elements in the game
+        this.rootContainer = new PIXI.Container();
+        this.rootContainer.setParent(this._scene);
+        this._graphics = new PIXI.Graphics();
+        this.rootContainer.addChild(this._graphics);
+
+        // for by pixel value drawing, e.g. grid outline
+        this._pxContainer = new PIXI.Container();
+        this._pxContainer.setParent(this._scene);
+        this._pxGraphics = new PIXI.Graphics();
+        this._pxContainer.addChild(this._pxGraphics);
+
+        // try to default the font to that of the default css rule
         this._defaultFontFamily = args.defaultFont || $("body").css("font-family").split(",")[0] || "Arial";
+
         this._pxExternalWidth = 800;
         this._pxExternalHeight = 600;
         // will be resized, just placeholder dimensions
@@ -38,9 +52,6 @@ var Renderer = Classe(Observable, BaseElement, {
 
         this._bounds = {};
         this.setSize(1, 1);
-
-        this._graphics = new PIXI.Graphics();
-        this.rootContainer.addChild(this._graphics);
 
         // add the renderer view element to the DOM
         this.$element
@@ -65,6 +76,9 @@ var Renderer = Classe(Observable, BaseElement, {
             self.resize();
         });
 
+        SettingsManager.onChanged("viseur", "show-grid", function() {
+            self._drawGrid();
+        });
 
         this.contextMenu = new ContextMenu({
             $parent: this.$element,
@@ -76,7 +90,7 @@ var Renderer = Classe(Observable, BaseElement, {
 
             self._emit("rendering");
 
-            self._renderer.render(self.rootContainer);
+            self._renderer.render(self._scene);
         }
         /* eslint-enable require-jsdoc */
 
@@ -125,10 +139,20 @@ var Renderer = Classe(Observable, BaseElement, {
      *
      * @param {number} width - width of the renderer
      * @param {number} height - height of the renderer
+     * @param {number} [leftOffset=0] - left x offset for the grid
+     * @param {number} [topOffset=0] - top y offset for the grid
+     * @param {number} [rightOffset=0] - right x offset for the grid
+     * @param {number} [bottomOffset=0] - bottom y offset for the grid
      */
-    setSize: function(width, height) {
+    setSize: function(width, height, leftOffset, topOffset, rightOffset, bottomOffset) {
         this._width = Math.abs(width || 1);
         this._height = Math.abs(height || 1);
+
+        // used to draw the grid
+        this._leftOffset = leftOffset || 0;
+        this._topOffset = topOffset || 0;
+        this._rightOffset = rightOffset || 0;
+        this._bottomOffset = bottomOffset || 0;
 
         this.resize();
 
@@ -195,8 +219,17 @@ var Renderer = Classe(Observable, BaseElement, {
         this.$element
             .css("left", pxX)
             .css("top", pxY);
+
+        this._drawGrid();
     },
 
+    /**
+     * Gets the scale ratio based on availble width/height to draw in
+     *
+     * @param {number} width - availible pixels along x
+     * @param {number} height - availible pixels along y
+     * @returns {number} a number to scale the width and height both by to fill them according to our aspect ratio
+     */
     _getScaleRatio: function(width, height) {
         // scale to fix via width
         var pxFatness = width / height;
@@ -280,10 +313,51 @@ var Renderer = Classe(Observable, BaseElement, {
         return pixiText;
     },
 
+    /**
+     * shows a menu structure as a context menu at the given (x, y)
+     *
+     * @param {Object} menus - ContextMenu structure to show
+     * @param {number} x - x position in pixels relative to top left of canvas
+     * @param {number} y - y postiion in pixels relative to top left of canvas
+     */
     showContextMenu: function(menus, x, y) {
         this.contextMenu.setStructure(menus);
 
         this.contextMenu.show(x, y);
+    },
+
+    /**
+     * Draws a grid over the rootContainer if the setting is enabled
+     */
+    _drawGrid: function() {
+        this._pxGraphics.clear();
+
+        if(!SettingsManager.get("viseur", "show-grid")) {
+            return;
+        }
+
+        this._pxGraphics.lineStyle(1, 0x000000, 0.5);
+
+        var startX = this._leftOffset * this._scaledX;
+        var startY = this._topOffset * this._scaledY;
+        var endX = (this._width - this._rightOffset) * this._scaledX;
+        var endY = (this._height - this._bottomOffset) * this._scaledY;
+
+        // draw vertical lines
+        for(var x = 0; x < this._width; x++) {
+            var dx = x * this._scaledX + startX;
+            this._pxGraphics.moveTo(dx, startY);
+            this._pxGraphics.lineTo(dx, endY);
+            this._pxGraphics.endFill();
+        }
+
+        // draw horizontal lines
+        for(var y = 0; y < this._height; y++) {
+            var dy = y * this._scaledY + startY;
+            this._pxGraphics.moveTo(startX, dy);
+            this._pxGraphics.lineTo(endX, dy);
+            this._pxGraphics.endFill();
+        }
     },
 });
 
