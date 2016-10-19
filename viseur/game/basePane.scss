@@ -48,6 +48,13 @@
         height: 100%;
         table-layout: fixed;
 
+        & .humans-player .stat-name:before {
+            font-style: italic;
+            font-weight: normal;
+            content: "(You)";
+            margin-right: 0.25em;
+        }
+
         & > .players {
             display: table-row;
 

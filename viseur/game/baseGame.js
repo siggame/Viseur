@@ -62,11 +62,12 @@ var BaseGame = Classe(Observable, {
 
         if(this.humanPlayer) {
             this.humanPlayer.setPlayer(this.gameObjects[this._playerID]);
+            this.pane.setHumanPlayer(this._playerID);
         }
     },
 
     /**
-     * Called once to initalize any PIXI objects needed to render the background
+     * Called once to initialize any PIXI objects needed to render the background
      *
      * @private
      */
