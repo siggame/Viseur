@@ -53,8 +53,12 @@ var BasePane = Classe(BaseElement, {
         var $playerProgressBarsDiv = this.$element.find(".player-progress-bars");
 
         for(i = 0; i < playerIDs.length; i++) {
+            var playerID = playerIDs[i];
+
             var color = this.playersColors[i];
-            this._playerStatsList[playerIDs[i]] = this._createStatList(playerStats, this._$players, "player player-" + i, color);
+            var classes = "player player-{} player-id-{}".format(i, playerID);
+
+            this._playerStatsList[playerID] = this._createStatList(playerStats, this._$players, classes, color);
             this._$playerProgressBars[i] = $("<div>")
                 .addClass("player-{}-progress-bar".format(i))
                 .css("background-color", color.rgbString())
@@ -76,7 +80,7 @@ var BasePane = Classe(BaseElement, {
      * Gets the stats to show on each player pane, which tracks stats for that player
      *
      * @param {GameState} state - the initial state of the game
-     * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane for the player. If a string is found it is tranformed to a PaneStat with the string being the `key`.
+     * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane for the player. If a string is found it is transformed to a PaneStat with the string being the `key`.
      */
     _getPlayerStats: function(state) {
         var self = this;
@@ -84,7 +88,7 @@ var BasePane = Classe(BaseElement, {
             "name",
             {
                 key: "timeRemaining",
-                title: "Time Reminaing (in min:sec:ms format)",
+                title: "Time Remaining (in min:sec:ms format)",
                 format: function(timeRemaining) {
                     return self._formatTimeRemaining(timeRemaining);
                 },
@@ -96,7 +100,7 @@ var BasePane = Classe(BaseElement, {
      * Gets the stats to show on the top bar of the pane, which tracks stats in the game
      *
      * @param {GameState} state - the initial state of the game
-     * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane for the game. If a string is found it is tranformed to a PaneStat with the string being the `key`.
+     * @returns {Array.<PaneStat|string>} - All the PaneStats to display on this BasePane for the game. If a string is found it is transformed to a PaneStat with the string being the `key`.
      */
     _getGameStats: function(state) {
         var list = [];
@@ -276,6 +280,15 @@ var BasePane = Classe(BaseElement, {
 
             this._ticking.timer.restart();
         }
+    },
+
+    /**
+     * Sets the player's list as a human player for special styling
+     *
+     * @param {string} playerID - the player's id who is the human player
+     */
+    setHumanPlayer: function(playerID) {
+        this.$element.find(".player-id-" + playerID).addClass("humans-player");
     },
 });
 

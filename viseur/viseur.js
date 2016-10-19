@@ -73,6 +73,7 @@ var Viseur = Classe(Observable, {
             this.loadRemoteGamelog(logUrl);
         }
         else if(this.urlParms.arena) { // then we are in arena mode
+            this.gui.modalMessage("Requesting next gamelog from Arena...");
             $.ajax({
                 dataType: "text",
                 url: this.urlParms.arena,
@@ -204,7 +205,7 @@ var Viseur = Classe(Observable, {
     },
 
     /**
-     * Invokes _updateCurrentState asyncronously if it may take a long time, so the gui can update
+     * Invokes _updateCurrentState asynchronously if it may take a long time, so the gui can update
      *
      * @param {number} index - the new states index, must be between [0, deltas.length]
      */
@@ -224,7 +225,7 @@ var Viseur = Classe(Observable, {
     },
 
     /**
-     * Brings the current state & next state to the one at the specificed index. If the current and passed in indexes are far apart this operation can take a decent chunk of time...
+     * Brings the current state & next state to the one at the specified index. If the current and passed in indexes are far apart this operation can take a decent chunk of time...
      *
      * @param {number} index - the new states index, must be between [0, deltas.length]
      */
@@ -304,7 +305,7 @@ var Viseur = Classe(Observable, {
     },
 
     /**
-     * Called when Viseur thinks it is ready, meaning the renderer has downloaded all assets, the gamelog is loaded, and the game class as been initalized.
+     * Called when Viseur thinks it is ready, meaning the renderer has downloaded all assets, the gamelog is loaded, and the game class as been initialized.
      *
      * @private
      */
@@ -392,7 +393,7 @@ var Viseur = Classe(Observable, {
     },
 
     /**
-     * Checks if there is currenly a human playing
+     * Checks if there is currently a human playing
      *
      * @returns {Boolean} true if there is a human player, false otherwise (including spectator mode)
      */
@@ -409,6 +410,8 @@ var Viseur = Classe(Observable, {
      * @param {Object} data - additional data to send to the tournament server, such as playerName
      */
     _connectToTournament: function(server, port, gameName, data) {
+        this._doubleLog("Connecting to tournament server...");
+
         var self = this;
         this._tournament = new Tournament();
 
@@ -417,11 +420,11 @@ var Viseur = Classe(Observable, {
         });
 
         this._tournament.on("connected", function() {
-            self._emit("log-connection", "Connected to tournament server, awating game.");
+            self._doubleLog("Connected to tournament server, awating game.");
         });
 
         this._tournament.on("closed", function() {
-            self._emit("log-connection", "Connected to tournament server closed.");
+            self._emit("Connected to tournament server closed.");
         });
 
         this._tournament.on("playing", function() {
@@ -432,13 +435,21 @@ var Viseur = Classe(Observable, {
             self._emit("log-connection", "Message from tournament server: '{}'".format(str));
         });
 
-
-        this._emit("log-connection", "Connecting to tournament server...");
         this._tournament.connect($.extend({
             server: server,
             port: port,
             gameName: gameName,
         }, data));
+    },
+
+    /**
+     * Logs a string to the modal and connection tab
+     *
+     * @param {string} str - string to log
+     */
+    _doubleLog: function(str) {
+        this.gui.modalMessage(str);
+        this._emit("log-connection", str);
     },
 
     /**

@@ -56,7 +56,8 @@ var HumanPlayer = Class(BaseHumanPlayer, {
     handleTileClicked: function(pos) {
         var selected = this.game.selectedPiece;
 
-        if(!selected) {
+        // if nothing is selected, or it's not my turn
+        if(!selected || !this._endTurn) {
             return false;
         }
 

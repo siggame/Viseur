@@ -13,7 +13,7 @@ var Joueur = Classe(Observable, {
         Observable.init.call(this);
         Viseur = require("viseur"); // required here to avoid cycles
 
-        // we essentially are going to recieve a gamelog that is being streamed to us, so this is a similar structure
+        // we essentially are going to receive a gamelog that is being streamed to us, so this is a similar structure
         this._gamelog = {
             streaming: true,
             deltas: [],
@@ -53,7 +53,7 @@ var Joueur = Classe(Observable, {
             this._ws = new WebSocket("ws://" + server + ":" + port);
         }
         catch(err) {
-            this.emit("errored", err);
+            this._emit("errored", err);
         }
 
         this._ws.onopen = function() {
