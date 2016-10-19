@@ -43,14 +43,14 @@ var GameOverScreen = Classe(BaseElement, {
         var colors = this.game.getPlayersColors();
         for(var i = 0; i < players.length; i++) {
             var player = players[i];
-            var color = colors[i];
+            var color = colors[i].clone().clearer(0.375);
 
             var $list = (player.won ? this.$winners : this.$losers);
             this._itemPartial({
                 name: player.name,
                 wonOrLost: player.won ? "Won" : "Lost",
                 reason: player.won ? player.reasonWon : player.reasonLost,
-                bgColor: color.rgbString(),
+                bgColor: color.rgbaString(),
                 textColor: color.contrastingColor().rgbString(),
             }, $list);
         }
