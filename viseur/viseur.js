@@ -535,6 +535,7 @@ var Viseur = Classe(Observable, {
      */
     handleError: function(error) {
         if(this.gui) {
+
             this.gui.modalError("Uncaught Error: {} - {}".format(error));
         }
     },
