@@ -66,13 +66,7 @@ var Renderer = Classe(Observable, BaseElement, {
         this.$pixiCanvas = this.$element.find("canvas");
 
         // when resolution settings change, resize
-        SettingsManager.onChanged("viseur", "resolution-type", function() {
-            self.resize();
-        });
-        SettingsManager.onChanged("viseur", "resolution-width", function() {
-            self.resize();
-        });
-        SettingsManager.onChanged("viseur", "resolution-height", function() {
+        SettingsManager.onChanged("viseur", "resolution-scale", function() {
             self.resize();
         });
 
@@ -175,14 +169,9 @@ var Renderer = Classe(Observable, BaseElement, {
             this._pxExternalHeight = pxExternalHeight;
         }
 
-        var manualResolution = Boolean(SettingsManager.get("viseur", "resolution-type") === "Manual");
-        var pxInternalWidth = pxExternalWidth;
-        var pxInternalHeight = pxExternalHeight;
-
-        if(manualResolution) {
-            pxInternalWidth = SettingsManager.get("viseur", "resolution-width", 800);
-            pxInternalHeight = SettingsManager.get("viseur", "resolution-height", 600);
-        }
+        var resolutionScale = SettingsManager.get("viseur", "resolution-scale");
+        var pxInternalWidth = Math.clamp(pxExternalWidth * resolutionScale, 1, 4096); // clamp between 1 to 4096 pixels, with 4096 being the smallest max a browser can do without screwing up our scaling math
+        var pxInternalHeight = Math.clamp(pxExternalHeight * resolutionScale, 1, 4096); // Note: (yes 1x1 would be stupid to render)
 
         var scaleRatio = this._getScaleRatio(pxInternalWidth, pxInternalHeight);
 
@@ -202,14 +191,14 @@ var Renderer = Classe(Observable, BaseElement, {
         this._pxHeight = pxHeight;
 
         if(this.$pixiCanvas) {
-            if(manualResolution) {
+            if(pxExternalWidth !== pxInternalWidth && pxExternalHeight !== pxInternalHeight) { // have css scale it
                 scaleRatio = this._getScaleRatio(pxExternalWidth, pxExternalHeight);
                 pxWidth = this._width * scaleRatio;
                 pxHeight = this._height * scaleRatio;
                 var ratio = parseInt(this.$pixiCanvas.attr("width")) / this._pxWidth;
                 this.$pixiCanvas.css("width", (pxWidth * ratio) + "px");
             }
-            else {
+            else { // pixel perfect fit
                 this.$pixiCanvas.removeAttr("style");
             }
         }

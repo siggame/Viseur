@@ -2,17 +2,6 @@
 
 var SettingsManager = require("./settingsManager");
 
-// hackish, but no idea where-else to put this
-var onResolutionChanged = function(input) {
-    SettingsManager.onChanged("viseur", "resolution-type", function(newValue) {
-        input.field.$element.toggleClass("collapsed", newValue !== "Manual");
-    });
-
-    if(SettingsManager.get("viseur", "resolution-type") !== "Manual") {
-        input.field.$element.addClass("collapsed");
-    }
-};
-
 module.exports = [
     {
         id: "info-pane-side",
@@ -37,30 +26,14 @@ module.exports = [
         default: 1000,
     },
     {
-        id: "resolution-type",
-        label: "Resolution",
-        hint: "'Auto' will resize to the current window's resolution.\n'Manual' can be used to set to a lower resolution for slower computers.",
-        input: "DropDown",
-        options: [ "Auto", "Manual" ],
-        default: "Auto",
-    },
-    {
-        id: "resolution-width",
-        label: "Width",
+        id: "resolution-scale",
+        label: "Resolution Scale",
+        hint: "Up or down samples the resolution.\nValues below 1 render at a lower internal resolution, and may perform faster on older computers.\nValues above 1 may sharpen the image.\n1 is native resolution.",
         input: "Number",
-        min: 300,
-        default: 800,
-        max: screen.width,
-        onInputCreated: onResolutionChanged,
-    },
-    {
-        id: "resolution-height",
-        label: "Height",
-        input: "Number",
-        min: 300,
-        default: 400,
-        max: screen.height,
-        onInputCreated: onResolutionChanged,
+        min: 0.01,
+        max: 2,
+        step: 0.01,
+        default: 1,
     },
     {
         id: "anti-aliasing",
