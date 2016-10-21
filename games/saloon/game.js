@@ -72,6 +72,19 @@ var Game = Classe(BaseGame, {
 
         this.renderer.setSize(state.mapWidth, state.mapHeight);
 
+        this.HIGH_NOON = new Audio('games/saloon/highnoon.mp3');
+
+        var now = new Date();
+        var millisTillHighNoon = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 0) - now;
+
+        var self = this;
+        setTimeout(function(){
+            console.log("ITS HIGH NOON");
+            self.HIGH_NOON.play();
+        }, millisTillHighNoon);
+
+
+
         //<<-- /Creer-Merge: _start -->>
     },
 
