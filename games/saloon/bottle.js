@@ -108,7 +108,8 @@ var Bottle = Classe(GameObject, {
             this.container.alpha = dt; // fade it out
         }
 
-        this.sprite.rotation = 2*Math.PI * dt; // rotate 360 degrees every turn
+
+        this.sprite.rotation = 2*Math.PI * new Date().getTime() / 1000; // rotate 360 degrees every turn
 
         this.container.x = ease(current.tile.x, nextTile.x, dt, "linear");
         this.container.y = ease(current.tile.y, nextTile.y, dt, "linear");
