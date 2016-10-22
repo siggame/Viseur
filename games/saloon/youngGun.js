@@ -139,7 +139,13 @@ var YoungGun = Classe(GameObject, {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // update the YoungGun based on its current and next states
+        // Draw to balcony layer when on bottom row to be drawn in front of rail
+        if(current.tile.tileSouth) {
+            this.container.setParent(this.game.layers.game);
+        }
+        else {
+            this.container.setParent(this.game.layers.balcony);
+        }
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 

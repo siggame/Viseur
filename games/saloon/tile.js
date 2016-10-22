@@ -48,10 +48,22 @@ var Tile = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
+        this.railContainer = new PIXI.Container();
+        this.railContainer.setParent(this.game.layers.balcony);
 
         // Floor tiles of the balcony
         if(initialState.isBalcony) {
             this.sprite = this.renderer.newSprite("wall", this.container);
+            if(!(initialState.tileEast && initialState.tileWest) && initialState.tileNorth && initialState.tileSouth) {
+                this.railSprite = this.renderer.newSprite("ver rail", this.railContainer);
+                this.railContainer.x = initialState.x + (initialState.tileEast ? 0.55 : -0.55);
+                this.railContainer.y = initialState.y - 0.4;
+            }
+            else if(!(initialState.tileNorth && initialState.tileSouth) && initialState.tileEast && initialState.tileWest) {
+                this.railSprite = this.renderer.newSprite("hor rail", this.railContainer);
+                this.railContainer.x = initialState.x;
+                this.railContainer.y = initialState.y + (initialState.tileSouth ? 0.45 : -0.4);
+            }
         }
         // Visible side of the balcony
         else if(initialState.tileNorth.isBalcony) {
