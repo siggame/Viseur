@@ -13,6 +13,7 @@ var BaseGame = require("viseur/game/baseGame");
 /**
  * @typedef {Object} GameState - A state representing a Game
  * @property {Array.<BottleState>} bottles - All the beer Bottles currently flying across the saloon in the game.
+ * @property {number} brawlerDamage - How much damage is applied to neighboring things bit by the Sharpshooter between turns.
  * @property {Array.<CowboyState>} cowboys - Every Cowboy in the game.
  * @property {PlayerState} currentPlayer - The player whose turn it is currently. That player can send commands. Other players cannot.
  * @property {number} currentTurn - The current turn number, starting at 0 for the first player's turn.
@@ -26,13 +27,14 @@ var BaseGame = require("viseur/game/baseGame");
  * @property {Array.<PlayerState>} players - List of all the players in the game.
  * @property {number} rowdynessToSiesta - When a player's rowdyness reaches or exceeds this number their Cowboys take a collective siesta.
  * @property {string} session - A unique identifier for the game instance that is being played.
+ * @property {number} sharpshooterDamage - How much damage is applied to things hit by Sharpshooters when they act.
  * @property {number} siestaLength - How long siestas are for a player's team.
  * @property {Array.<TileState>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
  */
 
 /**
  * @class
- * @classdesc Use cowboys to have a good time and play some music on a Piano, while brawling with enemy Coyboys.
+ * @classdesc Use cowboys to have a good time and play some music on a Piano, while brawling with enemy Cowboys.
  * @extends BaseGame
  */
 var Game = Classe(BaseGame, {

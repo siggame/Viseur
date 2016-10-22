@@ -12,12 +12,13 @@ var GameObject = require("./gameObject");
 
 /**
  * @typedef {Object} YoungGunState - A state representing a YoungGun
+ * @property {TileState} callInTile - The Tile that a Cowboy will be called in on if this YoungGun calls in a Cowboy.
  * @property {boolean} canCallIn - True if the YoungGun can call in a Cowboy, false otherwise.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {PlayerState} owner - The Player that owns and can control this YoungGun.
- * @property {TileState} tile - The Tile this YoungGun is currently on. Cowboys they send in will be on the nearest non-balcony Tile.
+ * @property {TileState} tile - The Tile this YoungGun is currently on.
  */
 
 /**
@@ -115,7 +116,7 @@ var YoungGun = Classe(GameObject, {
     // Joueur functions - functions invoked for human playable client
 
     /**
-     * Tells the YoungGun to call in a new Cowbow of the given job to the open Tile nearest to them.
+     * Tells the YoungGun to call in a new Cowboy of the given job to the open Tile nearest to them.
      *
      * @param {string} job - The job you want the Cowboy being brought to have.
      * @param {Function} [callback] - callback that is passed back the return value of CowboyState once ran on the server
