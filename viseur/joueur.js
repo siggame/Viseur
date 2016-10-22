@@ -61,7 +61,7 @@ var Joueur = Classe(Observable, {
 
             self.send("play", $.extend({
                 gameName: gameName,
-                requestedSession: optionalArgs.session || "*",
+                requestedSession: optionalArgs.session || "new",
                 spectating: Boolean(optionalArgs.spectating),
                 clientType: "Human",
                 playerName: optionalArgs.playerName || "Human",

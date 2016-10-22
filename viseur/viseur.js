@@ -12,7 +12,7 @@ var Tournament = require("./tournament");
 
 var Viseur = Classe(Observable, {
     /**
-     * A hackish way of initializing itself after being required, as being a singleton others requiring it would cause cyclical rferences otherwise
+     * A hackish way of initializing itself after being required, as being a singleton others requiring it would cause cyclical references otherwise
      */
     start: function() {
         var GUI = require("./gui");
@@ -52,7 +52,7 @@ var Viseur = Classe(Observable, {
     _games: require("games/"),
 
     /**
-     * parses URL parameters and does whatever they do, ingores unknown url parms.
+     * parses URL parameters and does whatever they do, ignores unknown url parms.
      *
      * @private
      */
@@ -169,7 +169,7 @@ var Viseur = Classe(Observable, {
     /**
      * Initializes the Game object for the specified gameName. The class created will be the one in /games/{gameName}/game.js
      *
-     * @param {string} gameName - name of the game to initialize. Must be a valid game name, or throwns an error
+     * @param {string} gameName - name of the game to initialize. Must be a valid game name, or throws an error
      * @param {string} [playerID] - id of the player if this game has a human player
      */
     _initGame: function(gameName, playerID) {
@@ -219,7 +219,7 @@ var Viseur = Classe(Observable, {
                 self.gui.hideModal();
             });
         }
-        else { // just do it syncronously
+        else { // just do it synchronously
             this._updateCurrentState(index);
         }
     },
@@ -354,13 +354,14 @@ var Viseur = Classe(Observable, {
      * @param {string} server - the server Cerveau is running on (without port)
      * @param {number} port - the port the server is running on
      * @param {string} gameName - name of the game to spectate
+     * @param {Object} data - additional connection data
      */
-    _spectate: function(server, port, gameName) {
+    _spectate: function(server, port, gameName, data) {
         this.gui.modalMessage("Spectating game...");
 
-        this._initJoueur(server, port, gameName, {
+        this._initJoueur(server, port, gameName, $.extend({
             spectating: true,
-        });
+        }, data));
     },
 
     /**

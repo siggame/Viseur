@@ -213,7 +213,7 @@ var Renderer = Classe(Observable, BaseElement, {
     },
 
     /**
-     * Gets the scale ratio based on availble width/height to draw in
+     * Gets the scale ratio based on available width/height to draw in
      *
      * @param {number} width - availible pixels along x
      * @param {number} height - availible pixels along y
@@ -307,7 +307,7 @@ var Renderer = Classe(Observable, BaseElement, {
      *
      * @param {Object} menus - ContextMenu structure to show
      * @param {number} x - x position in pixels relative to top left of canvas
-     * @param {number} y - y postiion in pixels relative to top left of canvas
+     * @param {number} y - y position in pixels relative to top left of canvas
      */
     showContextMenu: function(menus, x, y) {
         this.contextMenu.setStructure(menus);
