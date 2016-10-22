@@ -6,6 +6,8 @@ module.exports = {
     "wall side": "wall_side.jpg",
     "shade": "shade.jpg",
     "wall corner": "wall_corner.jpg",
+    "hor rail": "rail_h.png",
+    "ver rail": "rail_v.png",
     "cowboy": "cowboy.png",
     "cowboy_sharpshooter": "cowboy_sharpshooter.png",
     "cowboy_bartender": "cowboy_bartender.png",
