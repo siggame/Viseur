@@ -3,6 +3,7 @@ var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
 var ease = require("core/utils").ease;
+var Viseur = require("viseur/");
 
 var GameObject = require("./gameObject");
 
@@ -109,7 +110,10 @@ var Bottle = Classe(GameObject, {
         }
 
 
-        this.sprite.rotation = 2*Math.PI * new Date().getTime() / 1000; // rotate 360 degrees every turn
+        if(this._lastDT !== dt) { // do not rotate when paused
+            this._lastDT = dt;
+            this.sprite.rotation = 2*Math.PI * new Date().getTime() / 1000; // rotate at a constant rate, not dependent on dt
+        }
 
         this.container.x = ease(current.tile.x, nextTile.x, dt, "linear");
         this.container.y = ease(current.tile.y, nextTile.y, dt, "linear");
