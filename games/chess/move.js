@@ -19,7 +19,7 @@ var GameObject = require("./gameObject");
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {PieceState} piece - The Piece that was moved.
- * @property {string} promotion - The Piece type this Move's Piece was promoted to from a Pawn, empty string if no promotion occured.
+ * @property {string} promotion - The Piece type this Move's Piece was promoted to from a Pawn, empty string if no promotion occurred.
  * @property {string} san - The standard algebraic notation (SAN) representation of the move.
  * @property {string} toFile - The file the Piece moved to.
  * @property {number} toRank - The rank the Piece moved to.
@@ -35,7 +35,7 @@ var Move = Classe(GameObject, {
      * Initializes a Move with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Move
-     * @param {MoveState} initialState - the intial state of this game object
+     * @param {MoveState} initialState - the initial state of this game object
      * @param {Game} game - the game this Move is in
      */
     init: function(initialState, game) {
@@ -84,8 +84,10 @@ var Move = Classe(GameObject, {
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {MoveState} current - the current (most) game state, will be this.next if this.current is null
      * @param {MoveState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    render: function(dt, current, next) {
+    render: function(dt, current, next, reason, nextReason) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -121,6 +123,8 @@ var Move = Classe(GameObject, {
      * @private
      * @param {MoveState} current - the current (most) game state, will be this.next if this.current is null
      * @param {MoveState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

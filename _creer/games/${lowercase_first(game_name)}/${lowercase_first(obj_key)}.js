@@ -41,7 +41,7 @@ var ${obj_key} = Classe(${", ".join(parent_classes)}, {
      * Initializes a ${obj_key} with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof ${obj_key}
-     * @param {${obj_key}State} initialState - the intial state of this game object
+     * @param {${obj_key}State} initialState - the initial state of this game object
      * @param {Game} game - the game this ${obj_key} is in
      */
     init: function(initialState, game) {
@@ -108,8 +108,10 @@ ${merge("        //", "_initBackground", "        // initialize a background bro
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {${obj_key}State} current - the current (most) game state, will be this.next if this.current is null
      * @param {${obj_key}State} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    _renderBackground: function(dt, current, next) {
+    _renderBackground: function(dt, current, next, reason, nextReason) {
         BaseGame._renderBackground.call(this);
 
 ${merge("        //", "_renderBackground", "        // update and re-render whatever you initialize in _initBackground")}
@@ -142,8 +144,10 @@ ${merge("    //", "shouldRender", "    shouldRender: false,")}
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {${obj_key}State} current - the current (most) game state, will be this.next if this.current is null
      * @param {${obj_key}State} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    render: function(dt, current, next) {
+    render: function(dt, current, next, reason, nextReason) {
 % for parent_class in reversed(parent_classes):
         ${parent_class}.render.apply(this, arguments);
 % endfor
@@ -217,6 +221,8 @@ ${merge("        //", "_getContextMenu", "        // add context items to the me
      * @private
      * @param {${obj_key}State} current - the current (most) game state, will be this.next if this.current is null
      * @param {${obj_key}State} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {
 % for parent_class in reversed(parent_classes):

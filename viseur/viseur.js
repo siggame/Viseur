@@ -155,10 +155,11 @@ var Viseur = Classe(Observable, {
         // else we didn't "load" the gamelog, it's streaming to us
 
         // we keep the current and next state here, fully merged with all game information.
+        var delta = gamelog.deltas[0];
         this._mergedDelta = {
             index: -1,
             currentState: null,
-            nextState: this._parser.mergeDelta({}, gamelog.deltas[0].game),
+            nextState: this._parser.mergeDelta({}, delta.game),
         };
 
         if(!this._joueur && gamelog.deltas.length > 0) {
@@ -230,17 +231,20 @@ var Viseur = Classe(Observable, {
      * @param {number} index - the new states index, must be between [0, deltas.length]
      */
     _updateCurrentState: function(index) {
+        var d = this._mergedDelta;
+        var deltas = this._rawGamelog.deltas;
+
         if(index < 0) {
             this._currentState = {
-                game: this._mergedDelta.currentState,
-                nextGame: this._mergedDelta.nextState,
+                game: d.currentState,
+                nextGame: d.nextState,
+                reason: null,
+                nextReason: this._deltaToReason(deltas[0]),
             };
 
             return;
         }
 
-        var d = this._mergedDelta;
-        var deltas = this._rawGamelog.deltas;
         var indexChanged = (index !== d.index);
 
         d.currentState = d.currentState || {};
@@ -262,7 +266,6 @@ var Viseur = Classe(Observable, {
             }
 
             if(d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
-                // wouldn't this skip two states? shouldnt it be null at the end?
                 d.nextState = this._parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
             }
         }
@@ -285,14 +288,34 @@ var Viseur = Classe(Observable, {
             d.index--;
         }
 
+        var delta = deltas[d.index];
+        var nextDelta = deltas[d.index + 1];
         if(indexChanged) {
-            this._currentState = $.extend({}, deltas[d.index], {
+            this._currentState = $.extend({}, delta, {
                 game: d.currentState,
                 nextGame: d.nextState,
+                reason: this._deltaToReason(delta),
+                nextReason: this._deltaToReason(nextDelta),
             });
 
             this._emit("state-changed", this._currentState);
         }
+    },
+
+    /**
+     * Formats a delta to a simpler delta reason structure
+     *
+     * @param {Object} delta - raw delta from the gamelog to format
+     * @returns {Object|null} the type of delta and it's data in one object, null if no delta
+     */
+    _deltaToReason: function(delta) {
+        if(delta) {
+            return $.extend({
+                type: delta.type,
+            }, delta.data || {});
+        }
+
+        return null;
     },
 
     /**

@@ -65,6 +65,7 @@ var Joueur = Classe(Observable, {
                 spectating: Boolean(optionalArgs.spectating),
                 clientType: "Human",
                 playerName: optionalArgs.playerName || "Human",
+                metaDeltas: true,
             }, optionalArgs));
         };
 
@@ -156,12 +157,10 @@ var Joueur = Classe(Observable, {
     /**
      * Invoked automatically to handle the 'delta' events
      *
-     * @param {Object} data - a delta about what changed in the game
+     * @param {Object} data - a meta delta (complete delta, with reasons why it occured) about what changed in the game
      */
     _autoHandleDelta: function(data) {
-        this._gamelog.deltas.push({
-            game: data,
-        });
+        this._gamelog.deltas.push(data);
     },
 
     /**
