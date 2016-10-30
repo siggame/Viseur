@@ -3,7 +3,6 @@ var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
 var ease = require("core/utils").ease;
-var Viseur = require("viseur/");
 
 var GameObject = require("./gameObject");
 
@@ -32,7 +31,7 @@ var Bottle = Classe(GameObject, {
      * Initializes a Bottle with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Bottle
-     * @param {BottleState} initialState - the intial state of this game object
+     * @param {BottleState} initialState - the initial state of this game object
      * @param {Game} game - the game this Bottle is in
      */
     init: function(initialState, game) {
@@ -90,8 +89,10 @@ var Bottle = Classe(GameObject, {
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {BottleState} current - the current (most) game state, will be this.next if this.current is null
      * @param {BottleState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    render: function(dt, current, next) {
+    render: function(dt, current, next, reason, nextReason) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -149,6 +150,8 @@ var Bottle = Classe(GameObject, {
      * @private
      * @param {BottleState} current - the current (most) game state, will be this.next if this.current is null
      * @param {BottleState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

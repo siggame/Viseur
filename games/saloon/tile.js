@@ -39,7 +39,7 @@ var Tile = Classe(GameObject, {
      * Initializes a Tile with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Tile
-     * @param {TileState} initialState - the intial state of this game object
+     * @param {TileState} initialState - the initial state of this game object
      * @param {Game} game - the game this Tile is in
      */
     init: function(initialState, game) {
@@ -124,8 +124,10 @@ var Tile = Classe(GameObject, {
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {TileState} current - the current (most) game state, will be this.next if this.current is null
      * @param {TileState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    render: function(dt, current, next) {
+    render: function(dt, current, next, reason, nextReason) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -161,6 +163,8 @@ var Tile = Classe(GameObject, {
      * @private
      * @param {TileState} current - the current (most) game state, will be this.next if this.current is null
      * @param {TileState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
