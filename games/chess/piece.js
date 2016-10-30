@@ -33,7 +33,7 @@ var Piece = Classe(GameObject, {
      * Initializes a Piece with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Piece
-     * @param {PieceState} initialState - the intial state of this game object
+     * @param {PieceState} initialState - the initial state of this game object
      * @param {Game} game - the game this Piece is in
      */
     init: function(initialState, game) {
@@ -89,8 +89,10 @@ var Piece = Classe(GameObject, {
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {PieceState} current - the current (most) game state, will be this.next if this.current is null
      * @param {PieceState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    render: function(dt, current, next) {
+    render: function(dt, current, next, reason, nextReason) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -193,6 +195,8 @@ var Piece = Classe(GameObject, {
      * @private
      * @param {PieceState} current - the current (most) game state, will be this.next if this.current is null
      * @param {PieceState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);

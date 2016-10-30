@@ -135,7 +135,13 @@ var BaseGame = Classe(Observable, {
                 }
 
                 if(exists && gameObject.shouldRender) { // game objects by default do not render, as many are invisible
-                    gameObject.render(dt, gameObject.current || gameObject.next, gameObject.next || gameObject.current);
+                    gameObject.render(
+                        dt,
+                        gameObject.current || gameObject.next,
+                        gameObject.next || gameObject.current,
+                        this._currentReason,
+                        this._nextReason
+                    );
                 }
             }
         }
@@ -167,16 +173,24 @@ var BaseGame = Classe(Observable, {
             stateGameObjects = state.nextGame.gameObjects;
         }
 
+        // initialize new game objects we have not seen yet
         for(var id in stateGameObjects) {
+            if(stateGameObjects.hasOwnProperty(id) && !this.gameObjects[id]) {
+                this._initGameObject(id, (state.game && state.game.gameObjects[id]) || (state.nextGame && state.nextGame.gameObjects[id]));
+            }
+        }
+
+        // save the reasons for the current and next deltas
+        this._currentReason = this._hookupGameObjectReferences(state.reason);
+        this._nextReason = this._hookupGameObjectReferences(state.nextReason);
+
+        // update all the game objects now (including those we may have just created)
+        for(id in stateGameObjects) {
             if(stateGameObjects.hasOwnProperty(id)) {
                 var currentGameObject = state.game ? state.game.gameObjects[id] : null;
                 var nextGameObject = state.nextGame ? state.nextGame.gameObjects[id] : null;
 
-                if(!this.gameObjects[id]) { // this is the first time we've seen this game object, so create its instance
-                    this._initGameObject(id, currentGameObject || nextGameObject);
-                }
-
-                this.gameObjects[id].update(currentGameObject, nextGameObject);
+                this.gameObjects[id].update(currentGameObject, nextGameObject, this._currentReason, this._nextReason);
             }
         }
 
@@ -184,17 +198,58 @@ var BaseGame = Classe(Observable, {
             this.pane.update(this.current || this.next);
         }
 
-        this._stateUpdated(this.current || this.next, this.next || this.current);
+        this._stateUpdated(this.current || this.next, this.next || this.current, this._currentReason, this._nextReason);
 
         return state;
     },
 
     /**
-     * Invoked when the state updates. Intended to be overriden by subclass(es)
+     * The reason why a delta occured, including data about that event
+     * @typedef {Object} DeltaReason
+     * @property {string} type - reason name, e.g. `start`, `ran`, `finished`, or `disconnect`
+     * @property {Object} [data] - data about the event
+     * @property {Player} [data.player] - present when the player requests something be `ran` or they `disconnect`
+     * @property {Object} [data.run] - present when `ran`.
+     * @property {Object} [data.run.args] - arguments sent from the client to the run function.
+     * @property {GameObject} [data.run.caller] - The game object invoking this run
+     * @property {string} [data.run.functionName] - the string name of the member function of the caller to run server-side
+     * @property {*} [returned] - present when `ran`, and will be the return value from that `ran`
+     * @property {boolean} [timeout] - true when `disconnect` if the disconnect was forced due to timeout, false otherwise (the client disconnected gracefully, probably due to exception being thrown on their end)
+     */
+
+    /**
+     * find game object references, and hooks them up in an object
+     *
+     * @param {Object} obj - object to search through and clone, hooking up game object references
+     * @returns {Object} a new object, with no game object references
+     */
+    _hookupGameObjectReferences: function(obj) {
+        if(typeof(obj) !== "object" || obj === null) {
+            return obj;
+        }
+
+        if(typeof(obj.id) === "string") { // it's a game object reference
+            return this.gameObjects[obj.id];
+        }
+
+        var cloned = {};
+        for(var key in obj) {
+            if(obj.hasOwnProperty(key)) {
+                cloned[key] = this._hookupGameObjectReferences(obj[key]);
+            }
+        }
+
+        return cloned;
+    },
+
+    /**
+     * Invoked when the state updates. Intended to be overridden by subclass(es)
      *
      * @private
-     * @param {Object} current - the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {GameState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {GameState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {},
 

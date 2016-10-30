@@ -19,7 +19,7 @@ var Chess = require("chess.js");
  * @property {string} fen - Forsyth–Edwards Notation, a notation that describes the game board.
  * @property {Object.<string, GameObjectState>} gameObjects - A mapping of every game object's ID to the actual game object. Primarily used by the server and client to easily refer to the game objects via ID.
  * @property {number} maxTurns - The maximum number of turns before the game will automatically end.
- * @property {Array.<MoveState>} moves -  The list of Moves that have occured, in order.
+ * @property {Array.<MoveState>} moves - The list of Moves that have occurred, in order.
  * @property {Array.<PieceState>} pieces - All the uncaptured Pieces in the game.
  * @property {Array.<PlayerState>} players - List of all the players in the game.
  * @property {string} session - A unique identifier for the game instance that is being played.
@@ -209,8 +209,10 @@ var Game = Classe(BaseGame, {
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {GameState} current - the current (most) game state, will be this.next if this.current is null
      * @param {GameState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    _renderBackground: function(dt, current, next) {
+    _renderBackground: function(dt, current, next, reason, nextReason) {
         BaseGame._renderBackground.call(this);
 
         //<<-- Creer-Merge: _renderBackground -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -242,6 +244,8 @@ var Game = Classe(BaseGame, {
      * @private
      * @param {GameState} current - the current (most) game state, will be this.next if this.current is null
      * @param {GameState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {
         BaseGame._stateUpdated.apply(this, arguments);

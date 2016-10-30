@@ -22,7 +22,7 @@ var GameObject = require("./gameObject");
  * @property {boolean} madeMove - If the Player has made their move for the turn. true means they can no longer move a Piece this turn.
  * @property {string} name - The name of the player.
  * @property {PlayerState} opponent - This player's opponent in the game.
- * @property {Array.<PieceState>} pieces - All the unpcaptured chess Pieces owned by this player.
+ * @property {Array.<PieceState>} pieces - All the uncaptured chess Pieces owned by this player.
  * @property {number} rankDirection - The direction your Pieces must go along the rank axis until they reach the other side.
  * @property {string} reasonLost - The reason why the player lost the game.
  * @property {string} reasonWon - The reason why the player won the game.
@@ -40,7 +40,7 @@ var Player = Classe(GameObject, {
      * Initializes a Player with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
      * @memberof Player
-     * @param {PlayerState} initialState - the intial state of this game object
+     * @param {PlayerState} initialState - the initial state of this game object
      * @param {Game} game - the game this Player is in
      */
     init: function(initialState, game) {
@@ -89,8 +89,10 @@ var Player = Classe(GameObject, {
      * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
      * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
      * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    render: function(dt, current, next) {
+    render: function(dt, current, next, reason, nextReason) {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -126,6 +128,8 @@ var Player = Classe(GameObject, {
      * @private
      * @param {PlayerState} current - the current (most) game state, will be this.next if this.current is null
      * @param {PlayerState} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {
         GameObject._stateUpdated.apply(this, arguments);
