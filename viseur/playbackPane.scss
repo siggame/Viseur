@@ -101,7 +101,7 @@
 
 
     & #speed-slider:before {
-        @include icon(clock-o);
+        @include icon(tachometer);
         font-size: 2em;
         margin-left: -1.125em;
         color: $black;
