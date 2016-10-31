@@ -104,14 +104,20 @@ var Bottle = Classe(GameObject, {
 
         this.container.alpha = 1;
 
+        // if for the next state it died, fade it out
         var nextTile = next.tile;
         if(next.isDestroyed) {
             nextTile = current.tile; // it would normally be null, this way we can render it on it's tile of death
-            this.container.alpha = dt; // fade it out
+            this.container.alpha = ease(1 - dt, "cubicInOut"); // fade it out
         }
 
+        // if this did not exist at first, fade it in
+        if(!this.current) {
+            this.container.alpha = ease(dt, "cubicInOut");
+        }
 
-        if(this._lastDT !== dt) { // do not rotate when paused
+        // rotate the bottle based on real tile when not paused
+        if(this._lastDT !== dt) {
             this._lastDT = dt;
             this.sprite.rotation = 2*Math.PI * new Date().getTime() / 1000; // rotate at a constant rate, not dependent on dt
         }
