@@ -6,7 +6,7 @@ module.exports = [
     {
         id: "info-pane-side",
         label: "Docked Side",
-        hint: "Which side this info pane will be snapped to",
+        hint: "Which side this info pane will be snapped to.",
         input: "DropDown",
         options: [
             { text:"\u25B2 Top", value: "top" },
@@ -38,14 +38,14 @@ module.exports = [
     {
         id: "anti-aliasing",
         label: "Anti-Aliasing",
-        hint: "Only works in Google Chrome",
+        hint: "Forces FXAA to be applied. Requires restart.",
         input: "CheckBox",
         default: true,
     },
     {
         id: "show-grid",
         label: "Show Grid",
-        hint: "Displays a grid over the game",
+        hint: "Displays a grid over the game.",
         input: "CheckBox",
         default: false,
     },

@@ -45,9 +45,14 @@ var Renderer = Classe(Observable, BaseElement, {
 
         this._pxExternalWidth = 800;
         this._pxExternalHeight = 600;
+
+        // check only now for anti-aliasing, because them changing it requires a restart to see it inverted
+        var aa = SettingsManager.get("viseur", "anti-aliasing", true);
+
         // will be resized, just placeholder dimensions
         this._renderer = new PIXI.autoDetectRenderer(this._pxExternalWidth, this._pxExternalHeight, {
-            antialias: SettingsManager.get("viseur", "anti-aliasing", true),
+            antialias: aa,
+            forceFXAA: aa,
         });
 
         this._bounds = {};
