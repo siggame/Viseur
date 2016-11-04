@@ -23,7 +23,7 @@ var GameObject = require("./gameObject");
  * @property {PlayerState} opponent - This player's opponent in the game.
  * @property {string} reasonLost - The reason why the player lost the game.
  * @property {string} reasonWon - The reason why the player won the game.
- * @property {number} rowdyness - How rowdy their team is. When it gets too high their team takes a collective siesta.
+ * @property {number} rowdiness - How rowdy their team is. When it gets too high their team takes a collective siesta.
  * @property {number} score - How many times their team has played a piano.
  * @property {number} siesta - 0 when not having a team siesta. When greater than 0 represents how many turns left for the team siesta to complete.
  * @property {number} timeRemaining - The amount of time (in ns) remaining for this AI to send commands.

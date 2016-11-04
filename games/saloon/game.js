@@ -12,6 +12,7 @@ var BaseGame = require("viseur/game/baseGame");
 
 /**
  * @typedef {Object} GameState - A state representing a Game
+ * @property {number} bartenderCooldown - How many turns a Bartender will be busy for after throwing a Bottle.
  * @property {Array.<BottleState>} bottles - All the beer Bottles currently flying across the saloon in the game.
  * @property {number} brawlerDamage - How much damage is applied to neighboring things bit by the Sharpshooter between turns.
  * @property {Array.<CowboyState>} cowboys - Every Cowboy in the game.
@@ -25,11 +26,12 @@ var BaseGame = require("viseur/game/baseGame");
  * @property {number} maxCowboysPerJob - The maximum number of Cowboys a Player can bring into the saloon of each specific job.
  * @property {number} maxTurns - The maximum number of turns before the game will automatically end.
  * @property {Array.<PlayerState>} players - List of all the players in the game.
- * @property {number} rowdynessToSiesta - When a player's rowdyness reaches or exceeds this number their Cowboys take a collective siesta.
+ * @property {number} rowdinessToSiesta - When a player's rowdiness reaches or exceeds this number their Cowboys take a collective siesta.
  * @property {string} session - A unique identifier for the game instance that is being played.
  * @property {number} sharpshooterDamage - How much damage is applied to things hit by Sharpshooters when they act.
  * @property {number} siestaLength - How long siestas are for a player's team.
  * @property {Array.<TileState>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
+ * @property {number} turnsDrunk - How many turns a Cowboy will be drunk for if a bottle breaks on it.
  */
 
 /**
