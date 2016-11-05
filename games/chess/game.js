@@ -247,7 +247,7 @@ var Game = Classe(BaseGame, {
      * @param {DeltaReason} reason - the reason for the current delta
      * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    _stateUpdated: function(current, next) {
+    _stateUpdated: function(current, next, reason, nextReason) {
         BaseGame._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
