@@ -224,7 +224,7 @@ ${merge("        //", "_getContextMenu", "        // add context items to the me
      * @param {DeltaReason} reason - the reason for the current delta
      * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    _stateUpdated: function(current, next) {
+    _stateUpdated: function(current, next, reason, nextReason) {
 % for parent_class in reversed(parent_classes):
         ${parent_class}._stateUpdated.apply(this, arguments);
 % endfor

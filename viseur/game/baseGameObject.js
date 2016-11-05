@@ -11,7 +11,7 @@ var BaseGameObject = Classe(Observable, {
     /**
      * Initializes a BaseGameObject, should be invoked by subclass
      *
-     * @param {Object} initialState - fully merged delta state for this object's first existance
+     * @param {Object} initialState - fully merged delta state for this object's first existence
      * @param {BaseGame} game - The game this game object is being rendered in
      */
     init: function(initialState, game) {
@@ -28,20 +28,30 @@ var BaseGameObject = Classe(Observable, {
      *
      * @param {Object} current - the current state
      * @param {Object} next - the next state
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    update: function(current, next) {
+    update: function(current, next, reason, nextReason) {
         this.current = current || null;
         this.next = next || null;
 
-        this._stateUpdated(current || next, next || current);
+        // these are all shorthand args sent so we don't have to lookup via this.current and check if it exists
+        this._stateUpdated(
+            current || next,
+            next || current,
+            reason || nextReason,
+            nextReason || reason
+        );
     },
 
     /**
-     * Inoked when the state updates. Intended to be overriden by subclass(es)
+     * Invoked when the state updates. Intended to be overridden by subclass(es)
      *
      * @private
      * @param {Object} current - the current (most) game state, will be this.next if this.current is null
      * @param {Object} next - the next (most) game state, will be this.current if this.next is null
+     * @param {DeltaReason} reason - the reason for the current delta
+     * @param {DeltaReason} nextReason - the reason for the next delta
      */
     _stateUpdated: function(current, next) {},
 
@@ -113,19 +123,19 @@ var BaseGameObject = Classe(Observable, {
     },
 
     /**
-     * Gets the full context menu (_getContextMenu + _getBottomContextMenu) and removes unneeded seperators
+     * Gets the full context menu (_getContextMenu + _getBottomContextMenu) and removes unneeded separators
      *
      * @returns {Array} - Any array of items valid for a ContextMenu
      */
     _getFullContextMenu: function() {
         var menu = this._getContextMenu().concat(this._getBottomContextMenu());
 
-        // pop items off the front that are just seperators
+        // pop items off the front that are just separators
         while(menu[0] === "---") {
             menu.shift();
         }
 
-        // pop items off the back that are just seperators
+        // pop items off the back that are just separators
         while(menu.last() === "---") {
             menu.pop();
         }
@@ -213,7 +223,7 @@ var BaseGameObject = Classe(Observable, {
     _uxHighlightColor: Color().rgb(255, 251, 204), // color to highlight with
 
     /**
-     * Initializes the PIXI objects for drawing a rounded rectable around the GameObject for highlights
+     * Initializes the PIXI objects for drawing a rounded rectangle around the GameObject for highlights
      */
     _initGraphicsForUX: function() {
         this._uxGraphics = new PIXI.Graphics();
