@@ -52,6 +52,8 @@ var Cowboy = Classe(GameObject, {
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
+        this.job = initialState.job;
+
         this._initContainer(this.game.layers.game);
         // TODO: add different sprites for different cowboy jobs
         // TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
@@ -62,7 +64,7 @@ var Cowboy = Classe(GameObject, {
             Brawler: "cowboy_brawler",
         };
 
-        this.sprite = this.renderer.newSprite(COWBOY_TEXTURE_MAP[initialState.job], this.container);
+        this.sprite = this.renderer.newSprite(COWBOY_TEXTURE_MAP[this.job], this.container);
         // creating filter for use in changin color of cowboy
         this._colorFilter = new PIXI.filters.ColorMatrixFilter();
         // default matrix used, multiplies 1 by all RGBA values
@@ -73,10 +75,19 @@ var Cowboy = Classe(GameObject, {
 
         // setting default hue for the colorfilter
         this._colorFilter.hue(DEFAULT_HUDE, false);
-        // list of bubbles used to display dunken-ness
+        // list of bubbles used to display drunken-ness
         this._drunkBubbles = [];
         // graphics module used to display bubbles
         this._graphics = new PIXI.Graphics();
+
+        switch(this.job) {
+            case "Sharpshooter":
+                // create initial shot sprites
+                this._shotSprites = [ this.renderer.newSprite("shot_head", this.game.layers.bullets) ];
+                this._shotSprites[0].anchor.set(0.5, 0.5);
+                break;
+        }
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -179,13 +190,13 @@ var Cowboy = Classe(GameObject, {
                 easeHue = ease(GREEN_HUE, DEFAULT_HUDE, dt, "cubicInOut");
                 this._colorFilter.hue(easeHue, false);
             }
-            // otherwise stay green and fluxuate the color hue
+            // otherwise stay green and fluctuate the color hue
 
-            // easing to less green for fluxuation
+            // easing to less green for fluctuation
             if(dt <= 0.5) {
                 easeHue = ease(GREEN_HUE, GREENISH_HUE, dt, "sineInOut");
             }
-            // easing to more green for fluxuation
+            // easing to more green for fluctuation
             else {
                 easeHue = ease(GREENISH_HUE, GREEN_HUE, dt, "sineInOut");
             }
@@ -207,7 +218,7 @@ var Cowboy = Classe(GameObject, {
         }
         // otherwise keep no hue
         else {
-            // reset bubbles completley
+            // reset bubbles completely
             if(this._drunkBubbles.length !== 0) {
                 this._drunkBubbles.length = 0;
                 this._graphics.removeChildren();
@@ -218,6 +229,15 @@ var Cowboy = Classe(GameObject, {
         // console.log(this.container.filters);
 
         // this._colorFilter.matrix = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+
+        // if sharpshooter shooting
+        if(this._shotVisible) { // then fade it in and out
+            var alpha = ease(1 - dt, "cubicInOut"); // fade it out, it displays instantly as shots as sudden
+
+            for(var s = 0; s < this._shotSprites.length; s++) {
+                this._shotSprites[s].alpha = alpha;
+            }
+        }
 
         //<<-- /Creer-Merge: render -->>
     },
@@ -295,16 +315,82 @@ var Cowboy = Classe(GameObject, {
      * @param {DeltaReason} reason - the reason for the current delta
      * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    _stateUpdated: function(current, next) {
+    _stateUpdated: function(current, next, reason, nextReason) {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // update the Cowboy based on its current and next states
+
+        if(nextReason && nextReason.run && nextReason.run.caller === this) {
+            var run = nextReason.run;
+            switch(this.job) {
+                case "Sharpshooter":
+                    if(run.functionName === "act" && nextReason.returned === true) { // they successfully shot
+                        this.showShot(current.tile, run.args.tile, current.focus);
+                    }
+                    break;
+            }
+        }
+        else {
+            this.visibleShot(false);
+        }
+
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    // any additional functions you want to add to this class can be perserved here
+    visibleShot: function(show) {
+        show = Boolean(show);
+        this._shotVisible = show;
+
+        if(!this._shotSprites) {
+            return;
+        }
+
+        for(var i = 0; i < this._shotSprites.length; i++) {
+            this._shotSprites[i].visible = show;
+        }
+    },
+
+    showShot: function(from, to, distance) {
+        this.visibleShot(true);
+
+        var dx = from.x - to.x;
+        var dy = from.y - to.y;
+        var rotation = 0;
+
+        if(dx !== 0) { // shot to the West or East
+            if(dx > 0) { // East
+                dx = 1;
+                rotation = Math.PI;
+            }
+            else { // dx < 0, West
+                dx = -1;
+            }
+        }
+        else { // dy !== 0, so shot to the North or South
+            if(dy > 0) { // South
+                dy = 1;
+                rotation = Math.PI * 1.5;
+            }
+            else { // dy < 0, North
+                dy = -1;
+                rotation = Math.PI * 0.5;
+            }
+        }
+
+        for(var i = 0; i < distance; i++) {
+            var sprite = this._shotSprites[i];
+            if(!sprite) {
+                sprite = this.renderer.newSprite("shot_body", this.game.layers.bullets);
+                sprite.anchor.set(0.5);
+                this._shotSprites.push(sprite);
+            }
+
+            sprite.x = from.x + 0.5 + dx*(i+1);
+            sprite.y = from.y + 0.5 + dy*(i+1);
+            sprite.rotation = rotation;
+        }
+    },
     //<<-- /Creer-Merge: functions -->>
 
 });

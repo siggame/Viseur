@@ -47,6 +47,9 @@ var Tile = Classe(GameObject, {
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
+        this.x = initialState.x;
+        this.y = initialState.y;
+
         this._initContainer(this.game.layers.game);
         this.railContainer = new PIXI.Container();
         this.railContainer.setParent(this.game.layers.balcony);
@@ -166,7 +169,7 @@ var Tile = Classe(GameObject, {
      * @param {DeltaReason} reason - the reason for the current delta
      * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    _stateUpdated: function(current, next) {
+    _stateUpdated: function(current, next, reason, nextReason) {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
