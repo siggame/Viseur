@@ -265,7 +265,10 @@ var Renderer = Classe(Observable, BaseElement, {
         sprite.setParent(parentContainer);
 
         // now scale the sprite, as it defaults to the dimensions of it's texture's pixel size
-        sprite.scale.set(width / texture.width, height / texture.height);
+        sprite.unscale = function() {
+            sprite.scale.set(width / texture.width, height / texture.height);
+        };
+        sprite.unscale();
 
         return sprite;
     },
