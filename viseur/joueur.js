@@ -89,7 +89,7 @@ var Joueur = Classe(Observable, {
     },
 
     /**
-     * Invoked when we recieve some data from the websocket
+     * Invoked when we receive some data from the websocket
      *
      * @param {Object} data - Cerveau interchange formatted data
      */
@@ -157,7 +157,7 @@ var Joueur = Classe(Observable, {
     /**
      * Invoked automatically to handle the 'delta' events
      *
-     * @param {Object} data - a meta delta (complete delta, with reasons why it occured) about what changed in the game
+     * @param {Object} data - a meta delta (complete delta, with reasons why it occurred) about what changed in the game
      */
     _autoHandleDelta: function(data) {
         this._gamelog.deltas.push(data);
@@ -225,7 +225,7 @@ var Joueur = Classe(Observable, {
      * @param {Object} data - a delta about what changed in the game
      */
     _autoHandleFatal: function(data) {
-        throw new Error("An unexpected fatal error occured on the game server: '{}'.", data.message);
+        throw new Error("An unexpected fatal error occurred on the game server: '{}'.", data.message);
     },
 });
 
