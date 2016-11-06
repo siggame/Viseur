@@ -80,6 +80,11 @@ var Cowboy = Classe(GameObject, {
         // graphics module used to display bubbles
         this._graphics = new PIXI.Graphics();
 
+        this._bloodSprite = this.renderer.newSprite("blood", this.container);
+        this._bloodSprite.anchor.set(0.5, 0.5);
+        this._bloodSprite.x = 0.5;
+        this._bloodSprite.y = 0.5;
+
         switch(this.job) {
             case "Sharpshooter":
                 // create initial shot sprites
@@ -144,6 +149,15 @@ var Cowboy = Classe(GameObject, {
         }
 
         this.container.alpha = 1;
+
+        if(current.health === next.health) {
+            this._bloodSprite.visible = false;
+        }
+        else {
+            this._bloodSprite.visible = true;
+            this._bloodSprite.alpha = ease(1 - dt, "cubicInOut"); // fade it out
+            this._bloodSprite.rotation = (current.tile.x + current.tile.y);
+        }
 
         // if for the next state it died, fade it out
         var nextTile = next.tile;

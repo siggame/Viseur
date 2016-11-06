@@ -22,5 +22,6 @@ module.exports = {
     "shot_head": "shot_head.png",
     "shot_body": "shot_body.png",
     "young-gun": "young-gun.png",
+    "blood": "blood.png",
     //<<-- /Creer-Merge: settings -->>
 };
