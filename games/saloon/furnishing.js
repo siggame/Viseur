@@ -45,17 +45,25 @@ var Furnishing = Classe(GameObject, {
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
+        this.x = initialState.tile.x;
+        this.y = initialState.tile.y;
+
         this._initContainer(this.game.layers.game);
         // getting deterministic PRN between 0 -> furnishingTextures.length() - 1, since random is 0->1 exclusive on 1,
         // truncating will give us integers only in the desired range
         var selection = Math.floor(this.game.random() * furnishingTextures.length);
-        // despite the fact that this can be inlined inside of sprite assignment, it's more readable as a seperate variable,
+        // despite the fact that this can be inlined inside of sprite assignment, it's more readable as a separate variable,
         // and can be added as a member later if need be.  Gets the string for the selected non piano texture
         var selectedTexture = furnishingTextures[selection];
         this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": selectedTexture, this.container);
 
-        this.container.x = initialState.tile.x;
-        this.container.y = initialState.tile.y;
+        if(initialState.isPiano) {
+            this._musicSprite = this.renderer.newSprite("music", this.game.layers.music);
+            this._musicSprite.x = this.x;
+        }
+
+        this.container.x = this.x;
+        this.container.y = this.y;
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -114,6 +122,32 @@ var Furnishing = Classe(GameObject, {
 
             if(next.isDestroyed) {
                 this.container.alpha = ease(1 - dt, "cubicInOut"); // fade it out as it's destroyed
+            }
+
+            if(this._musicSprite) {
+                if(current.isPlaying || next.isPlaying) {
+                    this._musicSprite.visible = true;
+
+                    var alpha = 1;
+                    var y = this.y;
+                    if(!current.isPlaying && next.isPlaying) { // music notes need to move up
+                        alpha = ease(dt, "cubicInOut");
+                        y -= alpha/2;
+                    }
+                    else if(current.isPlaying && !next.isPlaying) { // music notes need to move down
+                        alpha = ease(1 - dt, "cubicInOut");
+                        y -= alpha/2;
+                    }
+                    else { // current and next isPlaying
+                        y -= 0.5;
+                    }
+
+                    this._musicSprite.alpha = alpha;
+                    this._musicSprite.y = y;
+                }
+                else {
+                    this._musicSprite.visible = false;
+                }
             }
         }
 
