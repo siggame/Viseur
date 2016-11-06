@@ -1,4 +1,5 @@
 var Color = require("color");
+var PIXI = require("pixi.js");
 
 /**
  * An extension that converts the color's hex string to a hex number, e.g. #FFCC00 -> 0xFFCC00 === 16763904
@@ -27,6 +28,18 @@ Color.prototype.colorMatrix = function() {
         0, 0, b, 0,
         0, 0, 0, a,
     ];
+};
+
+/**
+ * Gets a PIXI ColorMatrixFilter set to this color
+ *
+ * @return {PIXI.ColorMatrixFilter} - this as a PIXI ColorMatrixFilter
+ */
+Color.prototype.colorMatrixFilter = function() {
+    var filter = new PIXI.filters.ColorMatrixFilter();
+    filter.matrix = this.colorMatrix();
+
+    return filter;
 };
 
 /**
