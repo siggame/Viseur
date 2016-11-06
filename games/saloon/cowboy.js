@@ -55,16 +55,21 @@ var Cowboy = Classe(GameObject, {
         this.job = initialState.job;
 
         this._initContainer(this.game.layers.game);
-        // TODO: add different sprites for different cowboy jobs
-        // TODO: add different sprites for different cowboy states (drunk, dead, focused, busy)
 
-        var COWBOY_TEXTURE_MAP = {
-            Sharpshooter: "cowboy_sharpshooter",
-            Bartender: "cowboy_bartender",
-            Brawler: "cowboy_brawler",
-        };
+        this.spriteBottom = this.renderer.newSprite("cowboy_" + initialState.job.toLowerCase() + "_bottom", this.container);
+        this.spriteTop = this.renderer.newSprite("cowboy_" + initialState.job.toLowerCase() + "_top", this.container);
 
-        this.sprite = this.renderer.newSprite(COWBOY_TEXTURE_MAP[this.job], this.container);
+        var owner = game.gameObjects[initialState.owner.id];
+        if(owner.id === "0") { // then they are first player, so flip them
+            this.spriteBottom.scale.x *= -1;
+            this.spriteBottom.anchor.x += 1;
+            this.spriteTop.scale.x *= -1;
+            this.spriteTop.anchor.x += 1;
+        }
+
+        // color the top of the sprite as the player's color
+        this.spriteTop.filters = [ owner.getColor().colorMatrixFilter() ];
+
         // creating filter for use in changin color of cowboy
         this._colorFilter = new PIXI.filters.ColorMatrixFilter();
         // default matrix used, multiplies 1 by all RGBA values

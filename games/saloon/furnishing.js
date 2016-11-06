@@ -116,6 +116,7 @@ var Furnishing = Classe(GameObject, {
 
         if(current.isDestroyed) {
             this.container.visible = false;
+            this._musicSprite.visible = false;
         }
         else {
             this.container.visible = true;

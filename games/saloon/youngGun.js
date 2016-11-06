@@ -40,7 +40,19 @@ var YoungGun = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this._initContainer(this.game.layers.game);
-        this.sprite = this.renderer.newSprite("young-gun", this.container);
+        this.spriteBottom = this.renderer.newSprite("young-gun_bottom", this.container);
+        this.spriteTop = this.renderer.newSprite("young-gun_top", this.container);
+
+        var owner = game.gameObjects[initialState.owner.id];
+        if(owner.id === "0") { // then they are first player, so flip them
+            this.spriteBottom.scale.x *= -1;
+            this.spriteBottom.anchor.x += 1;
+            this.spriteTop.scale.x *= -1;
+            this.spriteTop.anchor.x += 1;
+        }
+
+        // color the top of the sprite as the player's color
+        this.spriteTop.filters = [ owner.getColor().colorMatrixFilter() ];
 
         //<<-- /Creer-Merge: init -->>
     },

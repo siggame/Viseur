@@ -46,11 +46,20 @@ var Pane = Classe(BasePane, {
         stats.push(
             {
                 key: "score",
-                label: "Score",
+                icon: "music",
             },
             {
                 key: "kills",
-                label: "Kills",
+                icon: "🕱",
+            },
+            {
+                key: "rowdiness",
+                icon: "beer",
+            },
+            {
+                key: "siesta",
+                title: "Number of turns remaining for the Player's siesta to end",
+                icon: "bed",
             }
         );
         //<<-- /Creer-Merge: player-stats -->>
