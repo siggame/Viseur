@@ -8,12 +8,10 @@ var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
-var ParticleBubble = require("games/saloon/particleUtils.js");
 
-var GREEN_HUE = 120; // hue for green in degrees
-var GREENISH_HUE = GREEN_HUE/2; // mid tone green for transitioning between greens in drunk phase
-var DEFAULT_HUDE = 0; // default hue in degrees, 0 means no extra hue applied
-var MAX_BUBBLES = 5;
+var DRUNK_HUE = 120;
+var DEFAULT_HUE = 0;
+
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -69,22 +67,11 @@ var Cowboy = Classe(GameObject, {
 
         // color the top of the sprite as the player's color
         this.spriteTop.filters = [ owner.getColor().colorMatrixFilter() ];
+        // color the bottom (skin) green when drunk
+        this._drunkFilter = Color("white").colorMatrixFilter();
+        this.spriteBottom.filters = [ this._drunkFilter ];
 
-        // creating filter for use in changin color of cowboy
-        this._colorFilter = new PIXI.filters.ColorMatrixFilter();
-        // default matrix used, multiplies 1 by all RGBA values
-        this._colorFilter.matrix = [1, 0, 0, 0, 0,
-                                    0, 1, 0, 0, 0,
-                                    0, 0, 1, 0, 0,
-                                    0, 0, 0, 1, 0];
-
-        // setting default hue for the colorfilter
-        this._colorFilter.hue(DEFAULT_HUDE, false);
-        // list of bubbles used to display drunken-ness
-        this._drunkBubbles = [];
-        // graphics module used to display bubbles
-        this._graphics = new PIXI.Graphics();
-
+        // blood damage animation
         this._bloodSprite = this.renderer.newSprite("blood", this.container);
         this._bloodSprite.anchor.set(0.5, 0.5);
         this._bloodSprite.x = 0.5;
@@ -153,8 +140,10 @@ var Cowboy = Classe(GameObject, {
             return; // no need to render further
         }
 
+        // if we got here we are visible!
         this.container.alpha = 1;
 
+        // display blood if we got hit
         if(current.health === next.health) {
             this._bloodSprite.visible = false;
         }
@@ -176,78 +165,24 @@ var Cowboy = Classe(GameObject, {
             this.container.alpha = ease(dt, "cubicInOut");
         }
 
+        // move the container if we moved
         this.container.x = ease(current.tile.x, nextTile.x, dt, "cubicInOut");
         this.container.y = ease(current.tile.y, nextTile.y, dt, "cubicInOut");
 
-        // setting the current colorfilter for the given render container
-        this.container.filters = [this._colorFilter];
-        var easeHue;
         // if the next frame has drunk
-        if(next.isDrunk) {
-            // we'll want to create a transition to green.
-            easeHue = ease(DEFAULT_HUDE, GREEN_HUE, dt, "cubicInOut");
-            this._colorFilter.hue(easeHue, false);
+        var drunkHue = 0; // default to not drunk hue
+        if(current.isDrunk && !next.isDrunk) { // then we are fading out of drunk-ness
+            drunkHue = ease(DEFAULT_HUE, DRUNK_HUE, 1 - dt, "cubicInOut");
         }
-        // if current is drunk
-        else if(current.isDrunk) {
-            // retrieving length of bubbles array
-            var numBubbles = this._drunkBubbles.length;
-            // if we can still add more bubbles
-            if(numBubbles < MAX_BUBBLES) {
-                // add with chance 1/50 to create staggerd effect
-                var chance = Math.floor(this.game.random() * 30);
-                if(chance === 0) {
-                    // create a new bubble with offset 0,0, .1 radius, current dt as start, and with game and container
-                    var startShape = new PIXI.Circle(0.5,0,-0.10,0.01);
-                    var endShape = new PIXI.Circle(0.75,-0.5,0.1);
-                    var temp = new ParticleBubble(startShape, endShape, dt, this.game);
-                    this._drunkBubbles.push(temp);
-                }
-            }
-            // make sure that we transition out of green if the next frame isn't drunk
-            if(!next.isDrunk) {
-                easeHue = ease(GREEN_HUE, DEFAULT_HUDE, dt, "cubicInOut");
-                this._colorFilter.hue(easeHue, false);
-            }
-            // otherwise stay green and fluctuate the color hue
+        else if(!current.isDrunk && next.isDrunk) { // then we are fading into drunk-ness
+            drunkHue = ease(DEFAULT_HUE, DRUNK_HUE, dt, "cubicInOut");
+        }
+        else if(current.isDrunk && next.isDrunk) { // we are just drunk
+            drunkHue = DRUNK_HUE;
+        }
 
-            // easing to less green for fluctuation
-            if(dt <= 0.5) {
-                easeHue = ease(GREEN_HUE, GREENISH_HUE, dt, "sineInOut");
-            }
-            // easing to more green for fluctuation
-            else {
-                easeHue = ease(GREENISH_HUE, GREEN_HUE, dt, "sineInOut");
-            }
-            this._colorFilter.hue(easeHue, false);
-            // drawing bubbles
-            var alphaEase = ease(1, 0, dt, "expoIn"); // ease of the alpha of the bubbles
-            this._graphics.clear(); // clear the previous bubble graphics
-            this._graphics.lineStyle(0.02, Color().rgb(100, 222, 100).hexNumber(), alphaEase); // make the lines blue
-            this._graphics.beginFill(Color().rgb(255, 255, 255).hexNumber(), 0); // make middle transparent
-            // draw each bubble
-            for(var i = 0; i < numBubbles; i++) {
-                var tempCircle = this._drunkBubbles[i].getShape(dt, 6);
-                this._graphics.drawCircle(tempCircle.x, tempCircle.y, tempCircle.radius);
-            }
-            // stop filling
-            this._graphics.endFill();
-            // add this graphics object to container.
-            this.container.addChild(this._graphics);
-        }
-        // otherwise keep no hue
-        else {
-            // reset bubbles completely
-            if(this._drunkBubbles.length !== 0) {
-                this._drunkBubbles.length = 0;
-                this._graphics.removeChildren();
-                this._graphics.clear();
-            }
-            this._colorFilter.hue(DEFAULT_HUDE, false);
-        }
-        // console.log(this.container.filters);
-
-        // this._colorFilter.matrix = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+        // update the drunk color matrix filter to the hue of how drunk we are
+        this._drunkFilter.hue(drunkHue, false);
 
         // if sharpshooter shooting
         if(this._shotVisible) { // then fade it in and out
