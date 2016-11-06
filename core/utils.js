@@ -40,6 +40,15 @@ module.exports = {
     },
 
     /**
+     * Eases a number between 0 to 1 from 0, to 1, and back to 0
+     * @param {number} x - number to ease, must range from [0, 1]
+     * @return {number} the easing up then down, will range from [0, 1]
+     */
+    updown: function(x) {
+        return -4*(-1+x)*x;
+    },
+
+    /**
      * Takes a string and tries to convert it to the primitive it looks like
      *
      * @param {string} str - string to try to convert
