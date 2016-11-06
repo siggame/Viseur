@@ -73,17 +73,14 @@
                 background-position: center right 4px;
                 background-size: 1.5em 1.5em;
 
-                & .stat-name {
-                    font-weight: bold;
+                & li.stat {
+                    & .icon {
+                        margin-right: 0.125em;
+                    }
                 }
 
-                & .stat-timeRemaining {
-                    &:before {
-                        content: "(";
-                    }
-                    &:after {
-                        content: ")";
-                    }
+                & .stat-name {
+                    font-weight: bold;
                 }
 
                 &.current-player {

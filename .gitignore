@@ -45,8 +45,9 @@ bundle/
 # other
 *.ai
 
-# JetBrains IDEs
+# IDEs
 .idea/
+*.sublime-*
 
 # eslinter cache
 .eslintcache

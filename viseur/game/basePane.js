@@ -88,7 +88,8 @@ var BasePane = Classe(BaseElement, {
             "name",
             {
                 key: "timeRemaining",
-                title: "Time Remaining (in min:sec:ms format)",
+                title: "Player's time remaining (in min:sec:ms format)",
+                icon: "clock-o",
                 format: function(timeRemaining) {
                     return self._formatTimeRemaining(timeRemaining);
                 },
@@ -164,6 +165,7 @@ var BasePane = Classe(BaseElement, {
 
             list.$stats[stat.key] = $("<li>")
                 .appendTo(list.$element)
+                .addClass("stat")
                 .addClass("stat-" + stat.key)
                 .attr("title", stat.title)
                 .html(stat.key);
@@ -207,6 +209,19 @@ var BasePane = Classe(BaseElement, {
 
             if(stat.label) {
                 value = "{}: {}".format(stat.label, value);
+            }
+
+            if(stat.icon) {
+                // assume font awesome icon
+                var icon = "<i class=\"icon fa fa-{}\" aria-hidden=\"true\"></i>";
+
+                // but check to make sure it's not a Unicode icon
+                if(stat.icon.charCodeAt(0) > 255) { // then it's a Unicode character
+                    icon = "<i class=\"icon\">{}</i>";
+                }
+
+                icon = icon.format(stat.icon);
+                value = "{} {}".format(icon, value);
             }
 
             statsList.$stats[stat.key].html(value);
