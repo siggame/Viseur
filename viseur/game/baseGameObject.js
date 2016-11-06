@@ -21,6 +21,23 @@ var BaseGameObject = Classe(Observable, {
 
         this.game = game;
         this.renderer = game.renderer;
+
+        if(this.gameObjectName === "Player") { // then hookup our color
+            var colors = game.getPlayersColors();
+            var state = game.current || game.next;
+
+            for(var i = 0; i < state.players.length; i++) {
+                if(state.players[i].id === this.id) {
+                    (function(self, color) {
+                        self.getColor = function() {
+                            return color;
+                        };
+                    })(this, colors[i]);
+
+                    break; // we found our color
+                }
+            }
+        }
     },
 
     /**
