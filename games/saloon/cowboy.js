@@ -304,8 +304,14 @@ var Cowboy = Classe(GameObject, {
             var attacking = Boolean(nextReason && nextReason.order === "runTurn" && nextReason.player.id === next.owner.id);
             this._brawlerAttack.visible = attacking;
             if(attacking) {
-                this._brawlerAttack.x = next.tile.x + 0.5;
-                this._brawlerAttack.y = next.tile.y + 0.5;
+                var tile = (current.tile || next.tile);
+                if(tile) {
+                    this._brawlerAttack.x = tile.x + 0.5;
+                    this._brawlerAttack.y = tile.y + 0.5;
+                }
+                else { // invalid order
+                    this._brawlerAttack.visible = false;
+                }
             }
         }
 
