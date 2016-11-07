@@ -337,10 +337,10 @@ var Viseur = Classe(Observable, {
             this.gui.hideModal();
             this._emit("ready", this.game, this._rawGamelog, this._unparsedGamelog);
             var self = this;
-            // HACK: wait 5 seconds, then resize the renderer because the panel sometimes (seemingly randomly) is the wrong height
+            // HACK: wait 1 second, then resize the gui because the panel sometimes (seemingly randomly) is the wrong height
             setTimeout(function() {
-                self.renderer.resize();
-            }, 5000);
+                self.gui.resize();
+            }, 1000);
         }
     },
 
