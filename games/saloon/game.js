@@ -162,7 +162,7 @@ var Game = Classe(BaseGame, {
      * @override
      */
     _initLayers: function() {
-        this._layerNames.push("balcony", "bullets", "music");
+        this._layerNames.push("brawl", "balcony", "bullets", "music");
         BaseGame._initLayers.apply(this, arguments);
     },
     //<<-- /Creer-Merge: functions -->>

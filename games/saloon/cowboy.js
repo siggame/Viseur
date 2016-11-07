@@ -83,6 +83,12 @@ var Cowboy = Classe(GameObject, {
                 this._shotSprites = [ this.renderer.newSprite("shot_head", this.game.layers.bullets) ];
                 this._shotSprites[0].anchor.set(0.5, 0.5);
                 break;
+            case "Brawler":
+                this._brawlerAttack = this.renderer.newSprite("brawl-attack", this.game.layers.brawl);
+                this._brawlerAttack.anchor.set(0.5, 0.5);
+                this._brawlerAttack.visible = false;
+                this._brawlerAttack.scale.x *= 2;
+                this._brawlerAttack.scale.y *= 2;
         }
 
         //<<-- /Creer-Merge: init -->>
@@ -144,13 +150,14 @@ var Cowboy = Classe(GameObject, {
         this.container.alpha = 1;
 
         // display blood if we got hit
+        var randomRotation = (current.tile.x + current.tile.y); // random-ish
         if(current.health === next.health) {
             this._bloodSprite.visible = false;
         }
         else {
             this._bloodSprite.visible = true;
             this._bloodSprite.alpha = ease(1 - dt, "cubicInOut"); // fade it out
-            this._bloodSprite.rotation = (current.tile.x + current.tile.y);
+            this._bloodSprite.rotation = randomRotation;
         }
 
         // if for the next state it died, fade it out
@@ -191,6 +198,11 @@ var Cowboy = Classe(GameObject, {
             for(var s = 0; s < this._shotSprites.length; s++) {
                 this._shotSprites[s].alpha = alpha;
             }
+        }
+
+        // if brawler is brawling
+        if(this._brawlerAttack && this._brawlerAttack.visible) {
+            this._brawlerAttack.rotation = randomRotation + 2*Math.PI*dt;
         }
 
         //<<-- /Creer-Merge: render -->>
@@ -288,6 +300,15 @@ var Cowboy = Classe(GameObject, {
             this.visibleShot(false);
         }
 
+        if(this.job === "Brawler") {
+            var attacking = Boolean(nextReason && nextReason.order === "runTurn" && nextReason.player.id === next.owner.id);
+            this._brawlerAttack.visible = attacking;
+            if(attacking) {
+                this._brawlerAttack.x = next.tile.x + 0.5;
+                this._brawlerAttack.y = next.tile.y + 0.5;
+            }
+        }
+
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 
@@ -300,9 +321,11 @@ var Cowboy = Classe(GameObject, {
             return;
         }
 
+        // hide all the shots by default
         for(var i = 0; i < this._shotSprites.length; i++) {
-            this._shotSprites[i].visible = show;
+            this._shotSprites[i].visible = false;
         }
+        // showShot will show the correct one(s)
     },
 
     showShot: function(from, to, distance) {
@@ -332,7 +355,8 @@ var Cowboy = Classe(GameObject, {
             }
         }
 
-        for(var i = 0; i < distance; i++) {
+        var i;
+        for(i = 0; i < distance; i++) {
             var sprite = this._shotSprites[i];
             if(!sprite) {
                 sprite = this.renderer.newSprite("shot_body", this.game.layers.bullets);
@@ -340,6 +364,7 @@ var Cowboy = Classe(GameObject, {
                 this._shotSprites.push(sprite);
             }
 
+            sprite.visible = true;
             sprite.x = from.x + 0.5 + dx*(i+1);
             sprite.y = from.y + 0.5 + dy*(i+1);
             sprite.rotation = rotation;

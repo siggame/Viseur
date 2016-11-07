@@ -38,6 +38,7 @@ module.exports = {
     "shot_body": "shot_body.png",
     "blood": "blood.png",
     "music": "music.png",
+    "brawl-attack": "brawl-attack.png",
 
     //<<-- /Creer-Merge: settings -->>
 };
