@@ -36,7 +36,7 @@ module.exports = {
     "bottle": "bottle.png",
     "shot_head": "shot_head.png",
     "shot_body": "shot_body.png",
-    "blood": "blood.png",
+    "hit": "hit.png",
     "music": "music.png",
     "brawl-attack": "brawl-attack.png",
 

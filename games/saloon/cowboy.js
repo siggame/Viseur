@@ -71,11 +71,11 @@ var Cowboy = Classe(GameObject, {
         this._drunkFilter = Color("white").colorMatrixFilter();
         this.spriteBottom.filters = [ this._drunkFilter ];
 
-        // blood damage animation
-        this._bloodSprite = this.renderer.newSprite("blood", this.container);
-        this._bloodSprite.anchor.set(0.5, 0.5);
-        this._bloodSprite.x = 0.5;
-        this._bloodSprite.y = 0.5;
+        // hit damage animation
+        this._hitSprite = this.renderer.newSprite("hit", this.container);
+        this._hitSprite.anchor.set(0.5, 0.5);
+        this._hitSprite.x = 0.5;
+        this._hitSprite.y = 0.5;
 
         switch(this.job) {
             case "Sharpshooter":
@@ -149,15 +149,15 @@ var Cowboy = Classe(GameObject, {
         // if we got here we are visible!
         this.container.alpha = 1;
 
-        // display blood if we got hit
+        // display the hit if took damage
         var randomRotation = (current.tile.x + current.tile.y); // random-ish
         if(current.health === next.health) {
-            this._bloodSprite.visible = false;
+            this._hitSprite.visible = false;
         }
         else {
-            this._bloodSprite.visible = true;
-            this._bloodSprite.alpha = ease(1 - dt, "cubicInOut"); // fade it out
-            this._bloodSprite.rotation = randomRotation;
+            this._hitSprite.visible = true;
+            this._hitSprite.alpha = ease(1 - dt, "cubicInOut"); // fade it out
+            this._hitSprite.rotation = randomRotation;
         }
 
         // if for the next state it died, fade it out
