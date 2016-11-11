@@ -8,11 +8,6 @@ var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
-
-// contains the array of textures for furnishings, excluding piano, that can possibly be randomly selected for.
-// if you add a new furnishing add the name of it here.
-var furnishingTextures = ["furnishing", "furnishing chair", "furnishing lamp", "furnishing sofa", "furnishing table"];
-
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -49,15 +44,10 @@ var Furnishing = Classe(GameObject, {
         this.y = initialState.tile.y;
 
         this._initContainer(this.game.layers.game);
-        // getting deterministic PRN between 0 -> furnishingTextures.length() - 1, since random is 0->1 exclusive on 1,
-        // truncating will give us integers only in the desired range
-        var selection = Math.floor(this.game.random() * furnishingTextures.length);
-        // despite the fact that this can be inlined inside of sprite assignment, it's more readable as a separate variable,
-        // and can be added as a member later if need be.  Gets the string for the selected non piano texture
-        var selectedTexture = furnishingTextures[selection];
-        this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": selectedTexture, this.container);
+        this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": "furnishing", this.container);
 
         if(initialState.isPiano) {
+            // then it needs music sprites too
             this._musicSprite = this.renderer.newSprite("music", this.game.layers.music);
             this._musicSprite.x = this.x;
         }
@@ -126,6 +116,9 @@ var Furnishing = Classe(GameObject, {
 
             if(next.isDestroyed) {
                 this.container.alpha = ease(1 - dt, "cubicInOut"); // fade it out as it's destroyed
+            }
+            else {
+                this.container.alpha = 1;
             }
 
             if(this._musicSprite) {
