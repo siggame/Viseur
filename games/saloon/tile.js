@@ -50,7 +50,7 @@ var Tile = Classe(GameObject, {
         this.x = initialState.x;
         this.y = initialState.y;
 
-        this._initContainer(this.game.layers.game);
+        this._initContainer(this.game.layers.background);
         this.railContainer = new PIXI.Container();
         this.railContainer.setParent(this.game.layers.balcony);
 

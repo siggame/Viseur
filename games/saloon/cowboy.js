@@ -11,6 +11,7 @@ var GameObject = require("./gameObject");
 
 var DRUNK_HUE = 120;
 var DEFAULT_HUE = 0;
+var TILE_DIRECTIONS = [ "North", "East", "South", "West" ];
 
 //<<-- /Creer-Merge: requires -->>
 
@@ -82,6 +83,9 @@ var Cowboy = Classe(GameObject, {
                 // create initial shot sprites
                 this._shotSprites = [ this.renderer.newSprite("shot_head", this.game.layers.bullets) ];
                 this._shotSprites[0].anchor.set(0.5, 0.5);
+                this._focusTiles = [];
+                this._freeFocusSprites = [];
+                this._allFocusSprites = [];
                 break;
             case "Brawler":
                 this._brawlerAttack = this.renderer.newSprite("brawl-attack", this.game.layers.brawl);
@@ -89,6 +93,7 @@ var Cowboy = Classe(GameObject, {
                 this._brawlerAttack.visible = false;
                 this._brawlerAttack.scale.x *= 2;
                 this._brawlerAttack.scale.y *= 2;
+                break;
         }
 
         //<<-- /Creer-Merge: init -->>
@@ -192,8 +197,9 @@ var Cowboy = Classe(GameObject, {
         this._drunkFilter.hue(drunkHue, false);
 
         // if sharpshooter shooting
+        var alpha;
         if(this._shotVisible) { // then fade it in and out
-            var alpha = ease(1 - dt, "cubicInOut"); // fade it out, it displays instantly as shots as sudden
+            alpha = ease(1 - dt, "cubicInOut"); // fade it out, it displays instantly as shots as sudden
 
             for(var s = 0; s < this._shotSprites.length; s++) {
                 this._shotSprites[s].alpha = alpha;
@@ -203,6 +209,31 @@ var Cowboy = Classe(GameObject, {
         // if brawler is brawling
         if(this._brawlerAttack && this._brawlerAttack.visible) {
             this._brawlerAttack.rotation = randomRotation + 2*Math.PI*dt;
+        }
+
+        if(this._focusTiles && this._focusTiles.length > 0) {
+            var focusScalar = this.game.getSetting("sharpshooter-focus");
+            for(var i = 0; i < this._focusTiles.length; i++) {
+                var f = this._focusTiles[i];
+
+                if(focusScalar === 0) {
+                    f.sprite.visible = false;
+                    continue; // no need to figure out alpha, as it's hidden
+                }
+                else {
+                    f.sprite.visible = true;
+                }
+
+                alpha = 1;
+                if(f.fade === "in") {
+                    alpha = dt;
+                }
+                else if(f.fade === "out") {
+                    alpha = 1 - dt;
+                }
+
+                f.sprite.alpha = ease(alpha * focusScalar, "cubicInOut");
+            }
         }
 
         //<<-- /Creer-Merge: render -->>
@@ -285,6 +316,7 @@ var Cowboy = Classe(GameObject, {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        var tile;
 
         if(nextReason && nextReason.run && nextReason.run.caller === this) {
             var run = nextReason.run;
@@ -304,7 +336,7 @@ var Cowboy = Classe(GameObject, {
             var attacking = Boolean(nextReason && nextReason.order === "runTurn" && nextReason.player.id === next.owner.id);
             this._brawlerAttack.visible = attacking;
             if(attacking) {
-                var tile = (current.tile || next.tile);
+                tile = (current.tile || next.tile);
                 if(tile) {
                     this._brawlerAttack.x = tile.x + 0.5;
                     this._brawlerAttack.y = tile.y + 0.5;
@@ -314,11 +346,85 @@ var Cowboy = Classe(GameObject, {
                 }
             }
         }
+        else if(this.job === "Sharpshooter") {
+            this._focusTiles.length = 0;
+
+            if(current.focus > 0 || next.focus > 0) {
+                this._reclaimFocusSprites();
+                // then show its focus
+                var fade; // no change
+                if(current.focus > next.focus) {
+                    // fade out
+                    fade = "out";
+                }
+                else if(current.focus < next.focus) {
+                    // fade in
+                    fade = "in";
+                }
+
+                var distance = Math.max(current.focus, next.focus);
+                for(var d = 0; d < TILE_DIRECTIONS.length; d++) {
+                    var direction = TILE_DIRECTIONS[d];
+                    tile = current.tile;
+
+                    if(!tile) {
+                        break;
+                    }
+
+                    for(var i = 0; i < distance; i++) {
+                        tile = tile["tile" + direction];
+
+                        if(!tile || tile.isBalcony) {
+                            break; // off map
+                        }
+
+                        var thisFade = fade;
+                        if(fade === "in") { // fade in the new tile
+                            thisFade = i === distance-1 ? "in" : undefined;
+                        }
+
+                        var sprite = this._getFocusSprite();
+
+                        sprite.visible = true;
+                        sprite.x = tile.x;
+                        sprite.y = tile.y;
+
+                        this._focusTiles.push({
+                            sprite: sprite,
+                            fade: thisFade,
+                        });
+                    }
+                }
+            }
+        }
 
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+    _getFocusSprite: function() {
+        var sprite = this._freeFocusSprites.pop();
+        if(sprite) {
+            return sprite;
+        }
+
+        var newSprite = this.renderer.newSprite("", this.game.layers.background);
+        this._allFocusSprites.push(newSprite);
+
+        newSprite.filters = this.spriteTop.filters; // team's color matrix filter
+
+        return newSprite;
+    },
+
+    _reclaimFocusSprites: function() {
+        this._freeFocusSprites.length = 0;
+        for(var i = 0; i < this._allFocusSprites.length; i++) {
+            var sprite = this._allFocusSprites[i];
+            sprite.visible = false;
+            this._freeFocusSprites.push(sprite);
+        }
+    },
+
     visibleShot: function(show) {
         show = Boolean(show);
         this._shotVisible = show;
