@@ -14,7 +14,7 @@ var CheckBox = Classe(BaseInput, {
      */
     init: function(args) {
         BaseInput.init.call(this, $.extend({
-            value: false,
+            value: Boolean(args.value),
             type: "checkbox",
         }, args));
     },

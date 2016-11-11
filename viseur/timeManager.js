@@ -85,6 +85,13 @@ var TimeManager = Classe(Observable, {
     },
 
     /**
+     * Forces the time manager to play
+     */
+    play: function() {
+        this._play();
+    },
+
+    /**
      * force plays the next animation
      *
      * @param {number} [index] - the index to play at

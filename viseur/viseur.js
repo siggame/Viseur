@@ -79,19 +79,30 @@ var Viseur = Classe(Observable, {
                 url: this.urlParms.arena,
                 crossDomain: true,
                 success: function(gamelogURL) {
-                    self.gui.goFullscreen();
+                    var presentation = Object.hasOwnProperty.call(self.urlParms, "presentation");
+                    if(presentation) {
+                        self.gui.goFullscreen();
+                    }
+
+                    // load the gamelog (modal should be fullscreened)
                     self.loadRemoteGamelog(gamelogURL);
+
+                    if(presentation) {
+                        self.on("delayed-ready", function() {
+                            self.timeManager.play();
+                        });
+                    }
                 },
                 error: function() {
                     self.gui.modalError("Error loading gamelog url from arena.");
                 },
             });
 
-            // when we finish playback (the timer reaches its end), wait 3 seconds, then reload the window (which will grab a new gamelog and do all this again)
+            // when we finish playback (the timer reaches its end), wait 5 seconds, then reload the window (which will grab a new gamelog and do all this again)
             this.timeManager.on("ended", function() {
                 setTimeout(function() {
                     location.reload();
-                }, 3000);
+                }, 5000);
             });
         }
     },
@@ -340,6 +351,7 @@ var Viseur = Classe(Observable, {
             // HACK: wait 1 second, then resize the gui because the panel sometimes (seemingly randomly) is the wrong height
             setTimeout(function() {
                 self.gui.resize();
+                self._emit("delayed-ready"); // ready but delayed so we are super ready (arena mode play)
             }, 1000);
         }
     },
@@ -396,10 +408,22 @@ var Viseur = Classe(Observable, {
      * Starts up "arena" mode, which grabs gamelogs from a url, then plays, it, then repeats
      *
      * @param {String} url - url to start grabbing arena gamelog urls from
+     * @param {number} _port - don't care about
+     * @param {string} _gameName - don't care about
+     * @param {Object} data - will contain `presentationMode` to check
      */
-    _startArena: function(url) {
+    _startArena: function(url, _port, _gameName, data) {
         if(utils.validateURL(url)) {
             this.urlParms.arena = url;
+
+            if(data.presentationMode) {
+                this.urlParms.presentation = null; // this way the url parm will be ?presentation, no value. it's presence tell us we want it
+            }
+            else {
+                delete this.urlParms.presentation; // remove the key, meaning false
+            }
+
+            // this refreshes the page, as we want
             location.search = queryString.stringify(this.urlParms);
         }
         else {
