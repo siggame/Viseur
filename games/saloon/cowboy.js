@@ -9,6 +9,8 @@ var GameObject = require("./gameObject");
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
 
+var updown = require("core/utils").updown;
+
 var DRUNK_HUE = 120;
 var DEFAULT_HUE = 0;
 var TILE_DIRECTIONS = [ "North", "East", "South", "West" ];
@@ -181,6 +183,16 @@ var Cowboy = Classe(GameObject, {
         this.container.x = ease(current.tile.x, nextTile.x, dt, "cubicInOut");
         this.container.y = ease(current.tile.y, nextTile.y, dt, "cubicInOut");
 
+        // move us towards the piano if we played it
+        if(this._playing) {
+            var d = updown(dt);
+            var dx = (this._playing.x - current.tile.x)/2;
+            var dy = (this._playing.y - current.tile.y)/2;
+
+            this.container.x += dx*d;
+            this.container.y += dy*d;
+        }
+
         // if the next frame has drunk
         var drunkHue = 0; // default to not drunk hue
         if(current.isDrunk && !next.isDrunk) { // then we are fading out of drunk-ness
@@ -317,6 +329,7 @@ var Cowboy = Classe(GameObject, {
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         var tile;
+        this._playing = null;
 
         if(nextReason && nextReason.run && nextReason.run.caller === this) {
             var run = nextReason.run;
@@ -326,6 +339,11 @@ var Cowboy = Classe(GameObject, {
                         this.showShot(current.tile, run.args.tile, current.focus);
                     }
                     break;
+            }
+
+            if(run.functionName === "play" && nextReason.returned === true) {
+                // then they played a piano
+                this._playing = run.args.piano;
             }
         }
         else {
