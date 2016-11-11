@@ -348,9 +348,9 @@ var Cowboy = Classe(GameObject, {
         }
         else if(this.job === "Sharpshooter") {
             this._focusTiles.length = 0;
+            this._reclaimFocusSprites();
 
             if(current.focus > 0 || next.focus > 0) {
-                this._reclaimFocusSprites();
                 // then show its focus
                 var fade; // no change
                 if(current.focus > next.focus) {
