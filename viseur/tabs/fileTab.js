@@ -159,6 +159,13 @@ var FileTab = Classe(BaseElement, {
             placeholder: "Human",
         });
 
+        this.presentationInput = new inputs.CheckBox({
+            id: "presentation-mode",
+            label: "Presentation Mode",
+            $parent: this.$connectWrapper,
+            value: true,
+        });
+
         this.connectButton = new inputs.Button({
             id: "connect-connect",
             text: "Connect",
@@ -195,12 +202,14 @@ var FileTab = Classe(BaseElement, {
         var showPort = true;
         var showGame = true;
         var showSession = false;
+        var showPresentation = false;
         var humanPlayable = false;
 
         switch(newType) {
             case "Arena":
                 showPort = false;
                 showGame = false;
+                showPresentation = true;
                 break;
             case "Human":
                 port = 3088;
@@ -228,6 +237,8 @@ var FileTab = Classe(BaseElement, {
         this.sessionInput.field.$element.toggleClass("collapsed", !showSession);
 
         this.gameInput.field.$element.toggleClass("collapsed", !showGame);
+
+        this.presentationInput.field.$element.toggleClass("collapsed", !showPresentation);
     },
 
     /**
@@ -247,6 +258,7 @@ var FileTab = Classe(BaseElement, {
             port: self.portInput.getValue(),
             session: self.sessionInput.getValue() || "new",
             playerName: self.nameInput.getValue() || "Human",
+            presentationMode: self.presentationInput.getValue(),
         };
 
         this._log("Connecting to {server}:{port}.".format(args));
