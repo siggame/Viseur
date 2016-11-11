@@ -50,7 +50,7 @@ var Pane = Classe(BasePane, {
             },
             {
                 key: "kills",
-                icon: "🕱",
+                icon: "times",
             },
             {
                 key: "rowdiness",
