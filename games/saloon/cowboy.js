@@ -60,6 +60,8 @@ var Cowboy = Classe(GameObject, {
         this.spriteBottom = this.renderer.newSprite("cowboy_" + initialState.job.toLowerCase() + "_bottom", this.container);
         this.spriteTop = this.renderer.newSprite("cowboy_" + initialState.job.toLowerCase() + "_top", this.container);
 
+        this._maxHealth = initialState.health;
+
         var owner = game.gameObjects[initialState.owner.id];
         if(owner.id === "0") { // then they are first player, so flip them
             this.spriteBottom.scale.x *= -1;
@@ -97,6 +99,15 @@ var Cowboy = Classe(GameObject, {
                 this._brawlerAttack.scale.y *= 2;
                 break;
         }
+
+        this.healthBarBg = this.renderer.newSprite("", this.container);
+        this.healthBarBg.scale.y *= 0.066;
+        this.healthBarBg.filters = [ Color("black").colorMatrixFilter() ];
+
+        this.healthBar = this.renderer.newSprite("", this.container);
+        this.healthBar.scale.y *= 0.066;
+        this._maxXScale = this.healthBar.scale.x;
+        this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -155,6 +166,8 @@ var Cowboy = Classe(GameObject, {
 
         // if we got here we are visible!
         this.container.alpha = 1;
+
+        this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
 
         // display the hit if took damage
         var randomRotation = (current.tile.x + current.tile.y); // random-ish

@@ -43,6 +43,8 @@ var Bottle = Classe(GameObject, {
         this.sprite = this.renderer.newSprite("bottle", this.container);
 
         // set the anchor to the center of the sprite, then offset it by that amount, so the bottle can spin when animating
+        this.sprite.scale.x *= 0.75;
+        this.sprite.scale.y *= 0.75;
         this.sprite.anchor.x = 0.5;
         this.sprite.anchor.y = 0.5;
         this.sprite.position.x = 0.5;

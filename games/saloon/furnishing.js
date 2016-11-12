@@ -43,6 +43,8 @@ var Furnishing = Classe(GameObject, {
         this.x = initialState.tile.x;
         this.y = initialState.tile.y;
 
+        this._maxHealth = initialState.health;
+
         this._initContainer(this.game.layers.game);
         this.sprite = this.renderer.newSprite(initialState.isPiano ? "piano": "furnishing", this.container);
 
@@ -54,6 +56,15 @@ var Furnishing = Classe(GameObject, {
 
         this.container.x = this.x;
         this.container.y = this.y;
+
+        this.healthBarBg = this.renderer.newSprite("", this.container);
+        this.healthBarBg.scale.y *= 0.066;
+        this.healthBarBg.filters = [ Color("black").colorMatrixFilter() ];
+
+        this.healthBar = this.renderer.newSprite("", this.container);
+        this.healthBar.scale.y *= 0.066;
+        this._maxXScale = this.healthBar.scale.x;
+        this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -113,7 +124,7 @@ var Furnishing = Classe(GameObject, {
         }
         else {
             this.container.visible = true;
-
+            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
             if(next.isDestroyed) {
                 this.container.alpha = ease(1 - dt, "cubicInOut"); // fade it out as it's destroyed
             }
