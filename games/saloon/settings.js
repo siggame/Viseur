@@ -10,5 +10,13 @@ module.exports = [
         step: 0.01,
         default: 0.33,
     },
+    {
+        id: "display-health-bars",
+        label: "Show Health",
+        hint: "Should health bars be displayed above Cowboys and Furnishings",
+        input: "CheckBox",
+        default: true,
+    },
+
     //<<-- /Creer-Merge: settings -->>
 ];

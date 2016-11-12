@@ -167,14 +167,23 @@ var Cowboy = Classe(GameObject, {
         // if we got here we are visible!
         this.container.alpha = 1;
 
-        this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
+        // update their health bar
+        if(this.game.getSetting("display-health-bars")) {
+            this.healthBar.visible = true;
+            this.healthBarBg.visible = true;
+            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
+        }
+        else {
+            this.healthBar.visible = false;
+            this.healthBarBg.visible = false;
+        }
 
         // display the hit if took damage
         var randomRotation = (current.tile.x + current.tile.y); // random-ish
         if(current.health === next.health) {
             this._hitSprite.visible = false;
         }
-        else {
+        else { // we got hit!
             this._hitSprite.visible = true;
             this._hitSprite.alpha = ease(1 - dt, "cubicInOut"); // fade it out
             this._hitSprite.rotation = randomRotation;
@@ -474,8 +483,8 @@ var Cowboy = Classe(GameObject, {
     showShot: function(from, to, distance) {
         this.visibleShot(true);
 
-        var dx = from.x - to.x;
-        var dy = from.y - to.y;
+        var dx = -(from.x - to.x);
+        var dy = -(from.y - to.y);
         var rotation = 0;
 
         if(dx !== 0) { // shot to the West or East

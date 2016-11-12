@@ -57,6 +57,7 @@ var Furnishing = Classe(GameObject, {
         this.container.x = this.x;
         this.container.y = this.y;
 
+        // health bar
         this.healthBarBg = this.renderer.newSprite("", this.container);
         this.healthBarBg.scale.y *= 0.066;
         this.healthBarBg.filters = [ Color("black").colorMatrixFilter() ];
@@ -65,6 +66,12 @@ var Furnishing = Classe(GameObject, {
         this.healthBar.scale.y *= 0.066;
         this._maxXScale = this.healthBar.scale.x;
         this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
+
+        // hit sprite
+        this._hitSprite = this.renderer.newSprite("hit", this.container);
+        this._hitSprite.anchor.set(0.5, 0.5);
+        this._hitSprite.x = 0.5;
+        this._hitSprite.y = 0.5;
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -121,41 +128,66 @@ var Furnishing = Classe(GameObject, {
             if(this._musicSprite) {
                 this._musicSprite.visible = false;
             }
+
+            return;
+        }
+
+        // else we are visible!
+        this.container.visible = true;
+
+        // update their health bar
+        if(this.game.getSetting("display-health-bars")) {
+            this.healthBar.visible = true;
+            this.healthBarBg.visible = true;
+            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
         }
         else {
-            this.container.visible = true;
-            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
-            if(next.isDestroyed) {
-                this.container.alpha = ease(1 - dt, "cubicInOut"); // fade it out as it's destroyed
+            this.healthBar.visible = false;
+            this.healthBarBg.visible = false;
+        }
+
+        // display the hit if took damage
+        var randomRotation = (current.tile.x + current.tile.y); // random-ish
+        if(current.health === next.health) {
+            this._hitSprite.visible = false;
+        }
+        else { // we got hit!
+            this._hitSprite.visible = true;
+            this._hitSprite.alpha = ease(1 - dt, "cubicInOut"); // fade it out
+            this._hitSprite.rotation = randomRotation;
+        }
+
+        // fade out if destroyed next turn
+        if(next.isDestroyed) {
+            this.container.alpha = ease(1 - dt, "cubicInOut");
+        }
+        else {
+            this.container.alpha = 1;
+        }
+
+        if(this._musicSprite) {
+            if(current.isPlaying || next.isPlaying) {
+                this._musicSprite.visible = true;
+
+                var alpha = 1;
+                var y = this.y;
+                if(!current.isPlaying && next.isPlaying) { // music notes need to move up
+                    alpha = ease(dt, "cubicInOut");
+                    y -= alpha/2;
+                }
+                else if(current.isPlaying && !next.isPlaying) { // music notes need to move down
+                    alpha = ease(1 - dt, "cubicInOut");
+                    y -= alpha/2;
+                }
+                else { // current and next isPlaying
+                    y -= 0.5;
+                }
+
+                this._musicSprite.alpha = alpha;
+                this._musicSprite.y = y;
             }
             else {
-                this.container.alpha = 1;
-            }
-
-            if(this._musicSprite) {
-                if(current.isPlaying || next.isPlaying) {
-                    this._musicSprite.visible = true;
-
-                    var alpha = 1;
-                    var y = this.y;
-                    if(!current.isPlaying && next.isPlaying) { // music notes need to move up
-                        alpha = ease(dt, "cubicInOut");
-                        y -= alpha/2;
-                    }
-                    else if(current.isPlaying && !next.isPlaying) { // music notes need to move down
-                        alpha = ease(1 - dt, "cubicInOut");
-                        y -= alpha/2;
-                    }
-                    else { // current and next isPlaying
-                        y -= 0.5;
-                    }
-
-                    this._musicSprite.alpha = alpha;
-                    this._musicSprite.y = y;
-                }
-                else {
-                    this._musicSprite.visible = false;
-                }
+                this._musicSprite.visible = false;
             }
         }
 
