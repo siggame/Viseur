@@ -317,7 +317,13 @@ var BaseGame = Classe(Observable, {
      * @returns {Array.<Color>} - the colors for those players, defaults to red and blue
      */
     getPlayersColors: function() {
-        return [ Color("#C33"), Color("#33C") ]; // by default player 1 is red, player 2 is blue
+        var colors = [ Color("#C33"), Color("#33C") ]; // the default colors
+
+        colors[0].contrastingColor = function() {
+            return Color("white");
+        };
+
+        return colors; // by default player 1 is red, player 2 is blue
     },
 
     /**
