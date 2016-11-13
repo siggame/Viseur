@@ -60,7 +60,7 @@ var Cowboy = Classe(GameObject, {
         this.spriteBottom = this.renderer.newSprite("cowboy_" + initialState.job.toLowerCase() + "_bottom", this.container);
         this.spriteTop = this.renderer.newSprite("cowboy_" + initialState.job.toLowerCase() + "_top", this.container);
 
-        this._maxHealth = initialState.health;
+        this._maxHealth = 10;
 
         var owner = game.gameObjects[initialState.owner.id];
         if(owner.id === "0") { // then they are first player, so flip them
