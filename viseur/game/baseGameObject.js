@@ -3,6 +3,8 @@ var Classe = require("classe");
 var PIXI = require("pixi.js");
 var Color = require("color");
 var Observable = require("core/observable");
+var ease = require("core/utils").ease;
+var SettingsManager = require("viseur/settingsManager");
 
 /**
  * @class BaseGameObject - the base class all GameObjects inherit from
@@ -210,8 +212,12 @@ var BaseGameObject = Classe(Observable, {
 
     /**
      * Renders the GameObject, this is the main method that developers will override in the inheriting class to render them via game logic
+     *
+     * @param {Number} dt - a floating point number [0, 1) which represents how far into the next turn that current turn we are rendering is at
+     * @param {GameOjectState} current - the current (most) game state, will be this.next if this.current is null
+     * @param {GameObjectState} next - the next (most) game state, will be this.current if this.next is null
      */
-    render: function() {
+    render: function(dt, current, next) {
         if(this._highlightAlpha !== undefined) {
             if(!this._uxGraphics) {
                 this._initGraphicsForUX();
@@ -234,6 +240,33 @@ var BaseGameObject = Classe(Observable, {
 
             this._uxGraphics.drawRoundedRect(0, 0, this.container.width, this.container.height, 0.1);
             this._uxGraphics.endFill();
+        }
+
+        if(this.container) {
+            if(next.logs.length > 0 && SettingsManager.get("viseur", "show-logged-text")) {
+                var alpha = 1;
+                if(current.logs.length < next.logs.length) {
+                    alpha = ease(dt, "cubicInOut"); // fade it in
+                }
+                // then they logged a string, so show it above their head
+                var str = next.logs.last();
+
+                if(!this._logText) {
+                    this._logText = this.renderer.newPixiText(str, this.container, {
+                        height: 0.25,
+                        fill: Color("white"),
+                    });
+                    this._logText.anchor.set(0.5);
+                    this._logText.x = 0.5;
+                }
+
+                this._logText.visible = true;
+                this._logText.alpha = alpha;
+                this._logText.text = str;
+            }
+            else if(this._logText) {
+                this._logText.visible = false;
+            }
         }
     },
 

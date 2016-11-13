@@ -49,4 +49,11 @@ module.exports = [
         input: "CheckBox",
         default: false,
     },
+    {
+        id: "show-logged-text",
+        label: "Show Logs",
+        hint: "Displays logged text above GameObjects",
+        input: "CheckBox",
+        default: true,
+    },
 ];
