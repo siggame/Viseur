@@ -6,6 +6,7 @@ var partial = require("core/partial");
 var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
 var Timer = require("core/timer");
+var utils = require("core/utils");
 var Viseur = null;
 
 /**
@@ -222,6 +223,11 @@ var BasePane = Classe(BaseElement, {
 
                 icon = icon.format(stat.icon);
                 value = "{} {}".format(icon, value);
+            }
+
+            if(stat.key === "name") {
+                // escape their name so they can't do code injection
+                value = utils.escapeHTML(value);
             }
 
             statsList.$stats[stat.key].html(value);

@@ -4,6 +4,7 @@ var $ = require("jquery");
 var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
 var partial = require("core/partial");
+var utils = require("core/utils");
 var Viseur = null;
 
 /**
@@ -42,16 +43,17 @@ var GameOverScreen = Classe(BaseElement, {
         var players = (this.game.current || this.game.next).players;
         var colors = this.game.getPlayersColors();
         for(var i = 0; i < players.length; i++) {
+            var originalColor = colors[i];
             var player = players[i];
-            var color = colors[i].clone().clearer(0.375);
+            var color = originalColor.clone().clearer(0.375);
 
             var $list = (player.won ? this.$winners : this.$losers);
             this._itemPartial({
-                name: player.name,
+                name: utils.escapeHTML(player.name),
                 wonOrLost: player.won ? "Won" : "Lost",
                 reason: player.won ? player.reasonWon : player.reasonLost,
                 bgColor: color.rgbaString(),
-                textColor: color.contrastingColor().rgbString(),
+                textColor: originalColor.contrastingColor().rgbString(),
             }, $list);
         }
 

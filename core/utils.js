@@ -1,6 +1,15 @@
 // Utils - utility functions used across classes
 var eases = require("eases");
 
+var entityMap = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;",
+    "/": "&#x2F;",
+};
+
 module.exports = {
     capitalizeFirstLetter: function(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -82,5 +91,16 @@ module.exports = {
         var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
 
         return regexp.test(str);
+    },
+
+    /**
+     * Escapes a string to be displayed in HTML, but not AS HTML.
+     * @param {String} str - the string to escape
+     * @returns {String} str now escaped
+     */
+    escapeHTML: function(str) {
+        return String(str).replace(/[&<>"'\/]/g, function(s) {
+            return entityMap[s];
+        });
     },
 };
