@@ -7,10 +7,10 @@
     "url": "git://github.com/siggame/Viseur"
   },
   "scripts": {
-    "visualizer": "./node_modules/.bin/webpack-dev-server --progress --colors --host 0.0.0.0",
-    "bundle": "./node_modules/.bin/webpack ./main.js",
-    "lint": "./node_modules/.bin/eslint --cache ./",
-    "fix": "./node_modules/.bin/eslint --fix ./"
+    "visualizer": "webpack-dev-server --progress --colors --host 0.0.0.0",
+    "bundle": "webpack ./main.js",
+    "lint": "eslint --cache ./",
+    "fix": "eslint --fix ./"
   },
   "private": true,
   "dependencies": {
