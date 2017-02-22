@@ -18,7 +18,7 @@
     "cadre-js-extensions": "siggame/Cadre-js-extensions",
     "chess.js": "0.10.2",
     "classe": "1.0.0",
-    "color": "1.0.3",
+    "color": "0.11.4",
     "css-loader": "^0.26.1",
     "dateformat": "2.0.0",
     "eases": "1.0.8",
