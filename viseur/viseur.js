@@ -74,18 +74,26 @@ var Viseur = Classe(Observable, {
         }
         else if(this.urlParms.arena) { // then we are in arena mode
             this.gui.modalMessage("Requesting next gamelog from Arena...");
-            $.ajax({
+            $.ajax({ 
                 dataType: "text",
                 url: this.urlParms.arena,
                 crossDomain: true,
-                success: function(gamelogURL) {
+                success: function(gamelog) { 
                     var presentation = Object.hasOwnProperty.call(self.urlParms, "presentation");
                     if(presentation) {
                         self.gui.goFullscreen();
                     }
-
-                    // load the gamelog (modal should be fullscreened)
-                    self.loadRemoteGamelog(gamelogURL);
+                    
+                    if(gamelog != null) {
+                        self.gui.modalMessage("Initializing Visualizer.");
+                        self.parseGamelog(gamelog);
+                    }
+                    else {
+                        self.gui.modalMessage("Gamelog Not Found. Checking again in 5 seconds.");
+                        setTimeout(function() {
+                            location.reload();
+                        }, 5000);
+                    }
 
                     if(presentation) {
                         self.on("delayed-ready", function() {
@@ -95,7 +103,7 @@ var Viseur = Classe(Observable, {
                 },
                 error: function() {
                     self.gui.modalError("Error loading gamelog url from arena.");
-                },
+                }
             });
 
             // when we finish playback (the timer reaches its end), wait 5 seconds, then reload the window (which will grab a new gamelog and do all this again)
@@ -111,7 +119,7 @@ var Viseur = Classe(Observable, {
      * Does an ajax call to load a remote gamelog at some url
      *
      * @param {string} url - a url that will respond with the gamelog to load
-     */
+     */ 
     loadRemoteGamelog: function(url) {
         var self = this;
         this.gui.modalMessage("Loading remote gamelog");
@@ -129,7 +137,7 @@ var Viseur = Classe(Observable, {
                 self.gui.modalError("Error loading remote gamelog.");
             },
         });
-    },
+    }, /**/
 
     /**
      * Parses a json string to a gamelog
