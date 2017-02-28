@@ -15,6 +15,7 @@ var GameObject = require("./gameObject");
  * @property {number} actions - The number of actions this job can make per turn.
  * @property {number} carryLimit - How many resources a beaver with this job can hold at once.
  * @property {number} chopping - Scalar for how many branches this job harvests at once.
+ * @property {number} cost - How many fish this Job costs to recruit.
  * @property {number} damage - The amount of damage this job does per attack.
  * @property {number} distracts - How many turns a beaver attacked by this job is distracted by.
  * @property {number} fishing - Scalar for how many fish this job harvests at once.
@@ -115,6 +116,18 @@ var Job = Classe(GameObject, {
 
 
     // Joueur functions - functions invoked for human playable client
+
+    /**
+     * Recruits a Beaver of this Job to a lodge
+     *
+     * @param {TileState} lodge - The Tile that is a lodge owned by you that you wish to spawn the Beaver of this Job on.
+     * @param {Function} [callback] - callback that is passed back the return value of BeaverState once ran on the server
+     */
+    recruit: function(lodge, callback) {
+        this._runOnServer("recruit", {
+            lodge: lodge,
+        }, callback);
+    },
 
     // /Joueur functions
 

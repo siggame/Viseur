@@ -12,14 +12,14 @@ var GameObject = require("./gameObject");
 
 /**
  * @typedef {Object} BeaverState - A state representing a Beaver
- * @property {number} actions - The number of actions remaining for this beaver this turn.
+ * @property {number} actions - The number of actions remaining for the beaver this turn.
  * @property {number} branches - The number of branches this beaver is holding.
  * @property {number} distracted - Number of turns this beaver is distracted for (0 means not distracted).
  * @property {number} fish - The number of fish this beaver is holding.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {number} health - How much health this beaver has left.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
- * @property {JobState} job - The job this beaver was recruited to do.
+ * @property {JobState} job - The Job this beaver was recruited to do.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {number} moves - How many moves this beaver has left this turn.
  * @property {PlayerState} owner - The Player that owns and can control this beaver.
@@ -117,7 +117,7 @@ var Beaver = Classe(GameObject, {
     // Joueur functions - functions invoked for human playable client
 
     /**
-     * Attacks another adjacent beaver, and deals damage to their health.
+     * Attacks another adjacent beaver.
      *
      * @param {TileState} tile - The tile of the beaver you want to attack.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
@@ -129,12 +129,12 @@ var Beaver = Classe(GameObject, {
     },
 
     /**
-     * Builds a lodge on this tile. Requires 10 branches.
+     * Builds a lodge on the Beavers current tile.
      *
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
-    build_lodge: function(callback) {
-        this._runOnServer("build_lodge", {
+    buildLodge: function(callback) {
+        this._runOnServer("buildLodge", {
         }, callback);
     },
 
@@ -142,10 +142,14 @@ var Beaver = Classe(GameObject, {
      * Drops some of the given resource on the beaver's tile. Fish dropped in water disappear instantly, and fish dropped on land die one per tile per turn.
      *
      * @param {string} resource - The type of resource to drop ('branch' or 'fish').
-     * @param {number} amount - The amount of the resource to drop.
+     * @param {number} [amount] - The amount of the resource to drop, numbers <= 0 will drop all of that type.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
     drop: function(resource, amount, callback) {
+        if(arguments.length <= 1) {
+            amount = 0;
+        }
+
         this._runOnServer("drop", {
             resource: resource,
             amount: amount,
@@ -153,7 +157,7 @@ var Beaver = Classe(GameObject, {
     },
 
     /**
-     * Harvests the resource (created by a spawner) on an adjacent tile.
+     * Harvests the branches or fish from a Spawner on an adjacent tile.
      *
      * @param {TileState} tile - The tile you want to harvest.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
@@ -177,12 +181,20 @@ var Beaver = Classe(GameObject, {
     },
 
     /**
-     * Picks up all of the branches/fish on the beaver's tile. Must not be holding anything.
+     * Picks up some branches or fish on the beaver's tile.
      *
+     * @param {string} resource - The type of resource to pickup ('branch' or 'fish').
+     * @param {number} [amount] - The amount of the resource to drop, numbers <= 0 will pickup all of that type.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
-    pickup: function(callback) {
+    pickup: function(resource, amount, callback) {
+        if(arguments.length <= 1) {
+            amount = 0;
+        }
+
         this._runOnServer("pickup", {
+            resource: resource,
+            amount: amount,
         }, callback);
     },
 
