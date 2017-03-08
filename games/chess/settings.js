@@ -14,7 +14,7 @@ module.exports = [
         "label": "Pawn Promotion",
         "hint": "Human Only: Sets the piece to which the pawn is promoted upon promotion",
         "input": "DropDown",
-        "options": [ "Queen", "Knight" "Bishop", "Rook" ],
+        "options": [ "Queen", "Knight", "Bishop", "Rook" ],
     },
 
     //<<-- /Creer-Merge: settings -->>
