@@ -1,3 +1,3 @@
 module.exports = {
-${merge("    //", "settings", '    //"example": "example.png",')}
+${merge("    //", "settings", '    // "example": "example.png",')}
 };
