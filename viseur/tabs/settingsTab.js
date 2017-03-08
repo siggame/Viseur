@@ -15,6 +15,8 @@ var SettingsTab = Classe(BaseElement, {
     init: function(args) {
         BaseElement.init.apply(this, arguments);
 
+        this._settingInputs = [];
+
         this.$coreSettings = this.$element.find(".core-settings");
 
         this._initSettings("viseur", coreSettings, this.$coreSettings);
@@ -66,7 +68,16 @@ var SettingsTab = Classe(BaseElement, {
                 setting.onInputCreated(input);
             }
 
-            input.setValue(SettingsManager.get(namespace, setting.id, setting.default));
+            var defaultValue;
+            // if the setting has a set default value use it, otherwise get whatever the input defaulted its options to
+            if(Object.hasOwnProperty.call(setting, "default")) {
+                defaultValue = setting.default;
+            }
+            else {
+                defaultValue = input.getValue();
+            }
+
+            input.setValue(SettingsManager.get(namespace, setting.id, defaultValue));
 
             this._setupInput(input, namespace, setting.id);
         }
@@ -88,6 +99,9 @@ var SettingsTab = Classe(BaseElement, {
         SettingsManager.on("{}.{}.changed".format(namespace, id), function(newValue) {
             input.setValue(newValue);
         });
+
+        // finally store it for easy lookup
+        this._settingInputs.push(input);
     },
 });
 
