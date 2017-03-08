@@ -67,7 +67,7 @@ var HumanPlayer = Class(BaseHumanPlayer, {
         for(var i = 0; i < moves.length; i++) {
             var move = moves[i];
             if(move.to === pos && move.from === (state.file + state.rank)) {
-                selected.move(move.to[0], parseInt(move.to[1]), "Queen");
+                selected.move(move.to[0], parseInt(move.to[1]), this.game.getSetting("pawn-promotion"));
                 this._endTurn(true);
                 this._endTurn = null;
                 return true;
