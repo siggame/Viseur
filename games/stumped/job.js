@@ -17,7 +17,7 @@ var GameObject = require("./gameObject");
  * @property {number} chopping - Scalar for how many branches this job harvests at once.
  * @property {number} cost - How many fish this Job costs to recruit.
  * @property {number} damage - The amount of damage this job does per attack.
- * @property {number} distracts - How many turns a beaver attacked by this job is distracted by.
+ * @property {number} distractionPower - How many turns a beaver attacked by this job is distracted by.
  * @property {number} fishing - Scalar for how many fish this job harvests at once.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {number} health - The amount of starting health this job has.
@@ -120,12 +120,12 @@ var Job = Classe(GameObject, {
     /**
      * Recruits a Beaver of this Job to a lodge
      *
-     * @param {TileState} lodge - The Tile that is a lodge owned by you that you wish to spawn the Beaver of this Job on.
+     * @param {TileState} tile - The Tile that is a lodge owned by you that you wish to spawn the Beaver of this Job on.
      * @param {Function} [callback] - callback that is passed back the return value of BeaverState once ran on the server
      */
-    recruit: function(lodge, callback) {
+    recruit: function(tile, callback) {
         this._runOnServer("recruit", {
-            lodge: lodge,
+            tile: tile,
         }, callback);
     },
 

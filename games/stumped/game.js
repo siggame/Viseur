@@ -19,6 +19,7 @@ var BaseGame = require("viseur/game/baseGame");
  * @property {number} freeBeaversCount - When a Player has less Beavers than this number, recruiting other Beavers is free.
  * @property {Object.<string, GameObjectState>} gameObjects - A mapping of every game object's ID to the actual game object. Primarily used by the server and client to easily refer to the game objects via ID.
  * @property {Array.<JobState>} jobs - All the Jobs that Beavers can have in the game.
+ * @property {number} lodgeCostConstant - Constant number used to calculate what it costs to spawn a new lodge.
  * @property {number} lodgesCompleteToWin - How many lodges must be complete at once to win the game.
  * @property {number} mapHeight - The number of Tiles in the map along the y (vertical) axis.
  * @property {number} mapWidth - The number of Tiles in the map along the x (horizontal) axis.
@@ -26,6 +27,7 @@ var BaseGame = require("viseur/game/baseGame");
  * @property {Array.<PlayerState>} players - List of all the players in the game.
  * @property {string} session - A unique identifier for the game instance that is being played.
  * @property {Array.<SpawnerState>} spawner - Every Spawner in the game.
+ * @property {number} spawnerHarvestConstant - Constant number used to calculate how many breanches/fish Beavers harvest from spawners.
  * @property {Array.<string>} spawnerTypes - All the types of spawners in the game.
  * @property {Array.<TileState>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
  */

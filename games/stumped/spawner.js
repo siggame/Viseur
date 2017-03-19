@@ -13,10 +13,11 @@ var GameObject = require("./gameObject");
 /**
  * @typedef {Object} SpawnerState - A state representing a Spawner
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
- * @property {number} health - How much of the resource is left.
+ * @property {boolean} hasBeenHarvested - True if this Spawner has been harvested this turn, and it will not heal at the end of the turn, false otherwise.
+ * @property {number} health - How much health this spawner has, which is used to calculate how much of its resource can be harvested.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {TileState} tile - The tile this resource is on.
+ * @property {TileState} tile - The tile this Spawner is on.
  * @property {string} type - What type of resource this is ('Fish' or 'Branch').
  */
 

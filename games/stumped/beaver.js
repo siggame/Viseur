@@ -14,7 +14,6 @@ var GameObject = require("./gameObject");
  * @typedef {Object} BeaverState - A state representing a Beaver
  * @property {number} actions - The number of actions remaining for the beaver this turn.
  * @property {number} branches - The number of branches this beaver is holding.
- * @property {number} distracted - Number of turns this beaver is distracted for (0 means not distracted).
  * @property {number} fish - The number of fish this beaver is holding.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {number} health - How much health this beaver has left.
@@ -23,7 +22,9 @@ var GameObject = require("./gameObject");
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {number} moves - How many moves this beaver has left this turn.
  * @property {PlayerState} owner - The Player that owns and can control this beaver.
+ * @property {boolean} recruited - True if the Beaver has finished being recruited and can do things, False otherwise.
  * @property {TileState} tile - The tile this beaver is on.
+ * @property {number} turnsDistracted - Number of turns this beaver is distracted for (0 means not distracted).
  */
 
 /**
@@ -144,12 +145,12 @@ var Beaver = Classe(GameObject, {
     /**
      * Attacks another adjacent beaver.
      *
-     * @param {TileState} tile - The tile of the beaver you want to attack.
+     * @param {BeaverState} beaver - The beaver to attack. Must be on an adjacent tile.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
-    attack: function(tile, callback) {
+    attack: function(beaver, callback) {
         this._runOnServer("attack", {
-            tile: tile,
+            beaver: beaver,
         }, callback);
     },
 
@@ -166,16 +167,18 @@ var Beaver = Classe(GameObject, {
     /**
      * Drops some of the given resource on the beaver's tile. Fish dropped in water disappear instantly, and fish dropped on land die one per tile per turn.
      *
+     * @param {TileState} tile - The Tile to drop branches/fish on. Must be the same Tile that the Beaver is on, or an adjacent one.
      * @param {string} resource - The type of resource to drop ('branch' or 'fish').
-     * @param {number} [amount] - The amount of the resource to drop, numbers <= 0 will drop all of that type.
+     * @param {number} [amount] - The amount of the resource to drop, numbers <= 0 will drop all the resource type.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
-    drop: function(resource, amount, callback) {
-        if(arguments.length <= 1) {
+    drop: function(tile, resource, amount, callback) {
+        if(arguments.length <= 2) {
             amount = 0;
         }
 
         this._runOnServer("drop", {
+            tile: tile,
             resource: resource,
             amount: amount,
         }, callback);
@@ -184,19 +187,19 @@ var Beaver = Classe(GameObject, {
     /**
      * Harvests the branches or fish from a Spawner on an adjacent tile.
      *
-     * @param {TileState} tile - The tile you want to harvest.
+     * @param {SpawnerState} spawner - The Spawner you want to harvest. Must be on an adjacent tile.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
-    harvest: function(tile, callback) {
+    harvest: function(spawner, callback) {
         this._runOnServer("harvest", {
-            tile: tile,
+            spawner: spawner,
         }, callback);
     },
 
     /**
      * Moves this beaver from its current tile to an adjacent tile.
      *
-     * @param {TileState} tile - The tile this beaver should move to. Costs 2 moves normally, 3 if moving upstream, and 1 if moving downstream.
+     * @param {TileState} tile - The tile this beaver should move to.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
     move: function(tile, callback) {
@@ -208,16 +211,18 @@ var Beaver = Classe(GameObject, {
     /**
      * Picks up some branches or fish on the beaver's tile.
      *
+     * @param {TileState} tile - The Tile to pickup branches/fish from. Must be the same Tile that the Beaver is on, or an adjacent one.
      * @param {string} resource - The type of resource to pickup ('branch' or 'fish').
-     * @param {number} [amount] - The amount of the resource to drop, numbers <= 0 will pickup all of that type.
+     * @param {number} [amount] - The amount of the resource to drop, numbers <= 0 will pickup all of the resource type.
      * @param {Function} [callback] - callback that is passed back the return value of boolean once ran on the server
      */
-    pickup: function(resource, amount, callback) {
-        if(arguments.length <= 1) {
+    pickup: function(tile, resource, amount, callback) {
+        if(arguments.length <= 2) {
             amount = 0;
         }
 
         this._runOnServer("pickup", {
+            tile: tile,
             resource: resource,
             amount: amount,
         }, callback);
