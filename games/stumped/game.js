@@ -71,7 +71,9 @@ var Game = Classe(BaseGame, {
         BaseGame._start.call(this);
 
         //<<-- Creer-Merge: _start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // create some sprites
+
+        this.renderer.setSize(state.mapWidth, state.mapHeight);
+
         //<<-- /Creer-Merge: _start -->>
     },
 

@@ -62,7 +62,10 @@ var InfoPane = Classe(BaseElement, Observable, {
      * @returns {*} the constructed tab classe as per defined in `tabData`
      */
     _initTab: function(tabData) {
-        var newTab = new tabData.classe({id: tabData.title + "-tab"});
+        var newTab = new tabData.classe({
+            id: tabData.title + "-tab",
+            tabular: this.tabular,
+        });
 
         if(tabData.title === "Inspect") {
             var self = this;

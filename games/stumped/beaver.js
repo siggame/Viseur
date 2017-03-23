@@ -44,7 +44,18 @@ var Beaver = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        // initialize our `this.container` into the game layer
+        // `this.container` holds all our sprites
+        this._initContainer(this.game.layers.game);
+
+        this.sprite = this.renderer.newSprite("beaver", this.container);
+
+        if(initialState.owner.id === "0") { // then they are first player, so flip them
+            this.sprite.scale.x *= -1; // flip horizontally
+            this.sprite.anchor.x += 1; // and move over, as flipping flips it about the top left anchor, so the whole image is to the left prior to moving it back to the right
+        }
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -77,7 +88,7 @@ var Beaver = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -93,31 +104,31 @@ var Beaver = Classe(GameObject, {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        
-        if(current.health == 0) {  // Then beaver is dead.
+
+        if(current.health === 0) {  // Then beaver is dead.
             this.container.visible = false;
             return; // No need to render a dead beaver.
         }
+
         // otherwise, we have a (maybe) happy living beaver
         this.container.visible = true;
 
-        var currentPosition.x = current.x;
-        var currentPosition.y = current.y;
-        var nextPosition.x = next.x;
-        var nextPosition.y = next.y;
+        var currentTile = current.tile;
+        var nextTile = next.tile;
 
-        if(!current.health == 0 && next.health == 0) { // Bever deded :c
-            nextPosition = currentPosition; // Beaver must disappear
-            this.container.alpha = ease(1 - dt, "cubicInout"); //We don't want to see beaver corpses
+        if(current.health > 0 && next.health <= 0) { // the Beaver died between current and next
+            nextTile = currentTile; // dead beavers have no tile in their next state, so use the one they had before
+            this.container.alpha = ease(1 - dt, "cubicInout"); // fade the beaver sprite
         }
-        else
-            this.container.alpha = 1; //ITS ALIVE
+        else {
+            this.container.alpha = 1; // ITS ALIVE
+        }
 
-        // DO THE BEAVER DANCE MOVES
-        this.container.x = ease(currentPosition.x, nextPosition.x, dt, "cubicInout");
-        this.container.y = ease(currentPosition.y, nextPosition.y, dt, "cubicInout");
+        // render the beaver easing the transition from their current tile to their next tile
+        this.container.x = ease(currentTile.x, nextTile.x, dt, "cubicInOut");
+        this.container.y = ease(currentTile.y, nextTile.y, dt, "cubicInOut");
 
-        //Add bottom offset here if desired
+        // Add bottom offset here if desired
 
         //<<-- /Creer-Merge: render -->>
     },

@@ -26,7 +26,6 @@ var InspectTab = Classe(Observable, BaseElement, {
             self._viseurReady(game, gamelog);
         });
 
-
         this.gameTreeView = new InspectTreeView({
             $parent: $(".inspect-game", this.$element),
         });

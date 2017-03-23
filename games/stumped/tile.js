@@ -47,7 +47,14 @@ var Tile = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        this._initContainer(this.game.layers.background);
+
+        this.sprite = this.renderer.newSprite(initialState.type.toLowerCase(), this.container);
+
+        this.container.x = initialState.x;
+        this.container.y = initialState.y;
+
         //<<-- /Creer-Merge: init -->>
     },
 

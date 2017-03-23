@@ -7,7 +7,14 @@ var ease = require("core/utils").ease;
 var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-// any additional requires you want can be required here safely between Creer runs
+
+var STAGES = 4; // how many sprite we have for health
+
+var SPRITE_PREFIX = {
+    "branches": "tree_",
+    "fish": "school_",
+};
+
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -38,7 +45,19 @@ var Spawner = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        this._initContainer(this.game.layers.game);
+
+        this.sprites = [];
+        for(var i = 0; i < STAGES; i++) {
+            this.sprites.push(
+                this.renderer.newSprite(SPRITE_PREFIX[initialState.type] + i, this.container)
+            );
+        }
+
+        this.container.x = initialState.tile.x;
+        this.container.y = initialState.tile.y;
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -71,7 +90,7 @@ var Spawner = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -87,7 +106,32 @@ var Spawner = Classe(GameObject, {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // render where the Spawner is
+
+        // figure out the sprite indexes to render and if they should be faded in/out
+        var currentIndex = Math.min(current.health, STAGES - 1);
+        var nextIndex = Math.min(next.health, STAGES - 1);
+
+        var fade = true;
+        if(currentIndex === nextIndex) {
+            nextIndex = -1; // won't show up
+            fade = false;
+        }
+
+        // and render the appropriate sprites
+        for(var i = 0; i < this.sprites.length; i++) {
+            if(i === currentIndex) {
+                this.sprites[i].visible = true;
+                this.sprites[i].alpha = fade ? ease(1 - dt, "cubicInOut") : 1;
+            }
+            else if(i === nextIndex) { // can only occur on fade out
+                this.sprites[i].visible = true;
+                this.sprites[i].alpha = ease(dt, "cubicInOut");
+            }
+            else {
+                this.sprites[i].visible = false;
+            }
+        }
+
         //<<-- /Creer-Merge: render -->>
     },
 
