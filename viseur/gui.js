@@ -11,6 +11,7 @@ var BaseElement = require("core/ui/baseElement");
 var Observable = require("core/observable");
 var Viseur = require("./");
 var KeyObserver = require("./keyObserver");
+var dateFormat = require("dateformat");
 
 /**
  * @class GUI - all the GUI (DOM) elements in the Viseur
@@ -49,8 +50,12 @@ var GUI = Classe(Observable, BaseElement, {
             $parent: this.$element.parent(),
         });
 
-        Viseur.on("ready", function(gamelog) {
+        Viseur.on("ready", function(game, gamelog) {
             self.$element.addClass("gamelog-loaded");
+            document.title = "{gamelog.gameName} - {gamelog.gameSession} - {date} | Viseur".format({
+                gamelog: gamelog,
+                date: dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z"),
+            });
             setTimeout(function() { // HACK: resize after all transitions finish, because we can't know for sure when the browser will finish css transitions in what order
                 self.resize();
             }, 350); // after all transitions end
