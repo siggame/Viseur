@@ -7,6 +7,9 @@ module.exports = {
 
     // Beavers
     "beaver": "beaver.png",
+    // Lodge
+    "lodge_bottom": "lodge_bottom.png",
+    "lodge_top": "lodge_top.png",
 
     // Trees
     "tree_0": "tree_0.png",
