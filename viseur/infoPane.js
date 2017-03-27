@@ -35,9 +35,13 @@ var InfoPane = Classe(BaseElement, Observable, {
             self.snapTo(newValue);
         });
 
+        this.tabular = new Tabular({
+            id: "info-pane-tabular",
+            $parent: this.$content,
+        });
+
         var tabularTabs = [];
-        var i;
-        for(i = 0; i < tabs.length; i++) {
+        for(var i = 0; i < tabs.length; i++) {
             var tab = tabs[i];
             tabularTabs.push({
                 title: tab.title,
@@ -45,11 +49,7 @@ var InfoPane = Classe(BaseElement, Observable, {
             });
         }
 
-        this.tabular = new Tabular({
-            id: "info-pane-tabular",
-            $parent: this.$content,
-            tabs: tabularTabs,
-        });
+        this.tabular.attachTabs(tabularTabs);
     },
 
     _template: require("./infoPane.hbs"),
@@ -62,7 +62,10 @@ var InfoPane = Classe(BaseElement, Observable, {
      * @returns {*} the constructed tab classe as per defined in `tabData`
      */
     _initTab: function(tabData) {
-        var newTab = new tabData.classe({id: tabData.title + "-tab"});
+        var newTab = new tabData.classe({
+            id: tabData.title + "-tab",
+            tabular: this.tabular,
+        });
 
         if(tabData.title === "Inspect") {
             var self = this;

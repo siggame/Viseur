@@ -3,22 +3,35 @@ require("./tabular.scss");
 var $ = require("jquery");
 var Classe = require("classe");
 var partial = require("../partial");
+var Observable = require("core/observable");
 var BaseElement = require("./baseElement");
 
 /**
  * @class Tabular - a block of content accessed via Tabs
  */
-var Tabular = Classe(BaseElement, {
+var Tabular = Classe(Observable, BaseElement, {
     init: function(args) {
+        Observable.init.call(this);
         BaseElement.init.apply(this, arguments);
 
         this.$tabs = $(".tabular-tabs", this.$element);
         this.$contents = $(".tabular-content", this.$element);
 
+        if(args.tabs) {
+            this.attachTabs(args.tabs);
+        }
+    },
+
+    /**
+     * Attaches tabs to this tabular
+     *
+     * @param {Array<BaseElement>} tabs - list of tabs to attach, only call once
+     */
+    attachTabs: function(tabs) {
         // setup tabs
         this.tabs = [];
-        for(var i = 0; i < args.tabs.length; i++) {
-            var tab = $.extend({}, args.tabs[i]);
+        for(var i = 0; i < tabs.length; i++) {
+            var tab = $.extend({}, tabs[i]);
             tab.$tab = this._tabPartial(tab);
             tab.$content = this._tabContentPartial(tab);
 
@@ -62,20 +75,16 @@ var Tabular = Classe(BaseElement, {
             return; // as it's already the active tab
         }
 
+        var previousActiveTab = this.activeTab;
         this.activeTab = activeTab;
-        activeTab.active = true;
 
         for(var i = 0; i < this.tabs.length; i++) {
             var tab = this.tabs[i];
-            var wasActive = tab !== activeTab && tab.active;
-            if(wasActive) {
-                tab.active = false;
-            }
 
             tab.$tab.toggleClass("active", tab === activeTab);
 
             if(tab !== activeTab) {
-                if(wasActive) { // fade it out, then fade in the active tab
+                if(tab === previousActiveTab) { // fade it out, then fade in the active tab
                     this._fadeTab(tab);
                 }
                 else {
@@ -84,6 +93,10 @@ var Tabular = Classe(BaseElement, {
                         .addClass("hidden");
                 }
             }
+        }
+
+        if(activeTab !== previousActiveTab) {
+            this._emit("tab-changed", activeTab, previousActiveTab);
         }
     },
 

@@ -54,7 +54,7 @@ var GUI = Classe(Observable, BaseElement, {
             self.$element.addClass("gamelog-loaded");
             document.title = "{gamelog.gameName} - {gamelog.gameSession} - {date} | Viseur".format({
                 gamelog: gamelog,
-                date: dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z"),
+                date: gamelog.streaming ? "Live" : dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z") ,
             });
             setTimeout(function() { // HACK: resize after all transitions finish, because we can't know for sure when the browser will finish css transitions in what order
                 self.resize();

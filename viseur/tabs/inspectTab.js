@@ -16,6 +16,8 @@ var InspectTab = Classe(Observable, BaseElement, {
         Observable.init.call(this);
         BaseElement.init.apply(this, arguments);
 
+        this.tabular = args.tabular;
+
         this.$gamelogDate = $(".gamelog-date", this.$element);
         this.$gamelogRandomSeed = $(".gamelog-random-seed", this.$element);
         this.$gamelogGameName = this.$element.find(".gamelog-game-name");
@@ -25,7 +27,6 @@ var InspectTab = Classe(Observable, BaseElement, {
         Viseur.once("ready", function(game, gamelog) {
             self._viseurReady(game, gamelog);
         });
-
 
         this.gameTreeView = new InspectTreeView({
             $parent: $(".inspect-game", this.$element),
@@ -38,12 +39,13 @@ var InspectTab = Classe(Observable, BaseElement, {
         this.$deltaType = this.$element.find(".delta-type");
 
         Viseur.on("state-changed", function(stateData) {
-            var gameObjects = stateData.game.gameObjects;
+            self._update(stateData);
+        });
 
-            self.$deltaType.html(stateData.type);
+        this.tabular.on("tab-changed", function(activeTab) {
+            self.isActiveTab = Boolean(activeTab.content === self);
 
-            self.dataTreeView.display(stateData.data || {}, gameObjects, self.gameTreeView);
-            self.gameTreeView.display(stateData.game, gameObjects);
+            self._update(Viseur.getCurrentState());
         });
     },
 
@@ -74,6 +76,25 @@ var InspectTab = Classe(Observable, BaseElement, {
 
             self._emit("highlighted", gameObjectID);
         });
+    },
+
+    /**
+     * [_update description]
+     *
+     * @private
+     * @param {Object} stateData - the state to update this inspect tree to
+     */
+    _update: function(stateData) {
+        if(!stateData || !this.isActiveTab) {
+            return; // do not update if we are not the active tab
+        }
+
+        var gameObjects = stateData.game.gameObjects;
+
+        this.$deltaType.html(stateData.type);
+
+        this.dataTreeView.display(stateData.data || {}, gameObjects, this.gameTreeView);
+        this.gameTreeView.display(stateData.game, gameObjects);
     },
 });
 
