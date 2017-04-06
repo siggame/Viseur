@@ -10,6 +10,8 @@ var GameObject = require("./gameObject");
 // any additional requires you want can be required here safely between Creer runs
 //<<-- /Creer-Merge: requires -->>
 
+var updown = require("core/utils").updown;
+
 /**
  * @typedef {Object} BeaverState - A state representing a Beaver
  * @property {number} actions - The number of actions remaining for the beaver this turn.
@@ -55,6 +57,15 @@ var Beaver = Classe(GameObject, {
             this.sprite.scale.x *= -1; // flip horizontally
             this.sprite.anchor.x += 1; // and move over, as flipping flips it about the top left anchor, so the whole image is to the left prior to moving it back to the right
         }
+
+        this.healthBarBg = this.renderer.newSprite("", this.container);
+        this.healthBarBg.scale.y *= 0.066;
+        this.healthBarBg.filters = [ Color("black").colorMatrixFilter() ];
+
+        this.healthBar = this.renderer.newSprite("", this.container);
+        this.healthBar.scale.y *= 0.066;
+        this._maxXScale = this.healthBar.scale.x;
+        this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -113,20 +124,45 @@ var Beaver = Classe(GameObject, {
         // otherwise, we have a (maybe) happy living beaver
         this.container.visible = true;
 
+
         var currentTile = current.tile;
         var nextTile = next.tile;
 
         if(current.health > 0 && next.health <= 0) { // the Beaver died between current and next
             nextTile = currentTile; // dead beavers have no tile in their next state, so use the one they had before
-            this.container.alpha = ease(1 - dt, "cubicInout"); // fade the beaver sprite
+            this.container.alpha = ease(1 - dt, "cubicInOut"); // fade the beaver sprite
         }
         else {
             this.container.alpha = 1; // ITS ALIVE
         }
 
+        // update their health bar
+        if(this.game.getSetting("display-health-bars")) {
+            this.healthBar.visible = true;
+            this.healthBarBg.visible = true;
+            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
+        }
+        else {
+            this.healthBar.visible = false;
+            this.healthBarBg.visible = false;
+        }
+
         // render the beaver easing the transition from their current tile to their next tile
         this.container.x = ease(currentTile.x, nextTile.x, dt, "cubicInOut");
         this.container.y = ease(currentTile.y, nextTile.y, dt, "cubicInOut");
+
+        if(this._attacking) {
+            /* this.renderer.newSprite("beaver", this.container);*/
+
+            var d = updown(dt);
+            var dx = (this._attacking.x - current.tile.x)/2;
+            var dy = (this._attacking.y - current.tile.y)/2;
+
+            this.container.x += dx*d;
+            this.container.y += dy*d;
+        }
+
+
 
         // Add bottom offset here if desired
 
@@ -254,7 +290,20 @@ var Beaver = Classe(GameObject, {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // update the Beaver based on its current and next states
+        var tile;
+        this._attacking = null;
+
+        if(nextReason && nextReason.run && nextReason.run.caller === this) {
+            var run = nextReason.run;
+
+            if(run.functionName === "attack" && nextReason.returned === true) {
+                // This beaver gonna fite sumthin
+                this._attacking = run.args.beaver.current.tile;
+
+            }
+
+        }
+
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 

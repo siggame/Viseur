@@ -7,6 +7,10 @@ module.exports = {
 
     // Beavers
     "beaver": "beaver.png",
+
+    // Sprites
+    "attacking": "attacking_ind.png",
+
     // Lodge
     "lodge_bottom": "lodge_bottom.png",
     "lodge_top": "lodge_top.png",
@@ -18,9 +22,9 @@ module.exports = {
     "tree_3": "tree_3.png",
 
     // Schools
-    "school_0": "school_0.png",
-    "school_1": "school_1.png",
-    "school_2": "school_2.png",
-    "school_3": "school_3.png",
+    "school_0": "food_0.png",
+    "school_1": "food_1.png",
+    "school_2": "food_2.png",
+    "school_3": "food_3.png",
     //<<-- /Creer-Merge: settings -->>
 };
