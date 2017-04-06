@@ -145,7 +145,7 @@ var Viseur = Classe(Observable, {
             parsed = JSON.parse(str);
         }
         catch(err) {
-            return self.gui.modalError("Error parsing gamelog");
+            return this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
         }
 
         this.gamelogLoaded(parsed);
