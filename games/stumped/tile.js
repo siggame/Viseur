@@ -52,6 +52,9 @@ var Tile = Classe(GameObject, {
 
         this.sprite = this.renderer.newSprite(initialState.type.toLowerCase(), this.container);
 
+        this.lodgeBottomSprite = this.renderer.newSprite("lodge_bottom", this.container);
+        this.lodgeTopSprite = this.renderer.newSprite("lodge_top", this.container);
+
         this.container.x = initialState.x;
         this.container.y = initialState.y;
 
@@ -87,7 +90,7 @@ var Tile = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -103,7 +106,47 @@ var Tile = Classe(GameObject, {
         GameObject.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // render where the Tile is
+
+        var owner, eased;
+
+        if(current.lodgeOwner) {
+            // then this tile is owned by a player
+            this.lodgeBottomSprite.alpha = 1;
+            this.lodgeTopSprite.alpha = 1;
+            this.lodgeBottomSprite.visible = true;
+            this.lodgeTopSprite.visible = true;
+
+            // set this flag to the color of the owner\
+            // get the actual Player class that the next PlayerState represents
+            owner = this.game.gameObjects[current.lodgeOwner.id];
+            this.lodgeTopSprite.filters = [ owner.getColor().colorMatrixFilter() ];
+
+            if(!next.lodgeOwner) {
+                eased = ease(1 - dt, "cubicInOut"); // fade out
+                this.lodgeBottomSprite.alpha = eased;
+                this.lodgeBottomSprite.alpha = eased;
+            }
+        }
+        else {
+            if(next.lodgeOwner) {
+                this.lodgeBottomSprite.visible = true;
+                this.lodgeTopSprite.visible = true;
+
+                // set this flag to the color of the owner\
+                // get the actual Player class that the next PlayerState represents
+                owner = this.game.gameObjects[next.lodgeOwner.id];
+                this.lodgeTopSprite.filters = [ owner.getColor().colorMatrixFilter() ];
+
+                eased = ease(dt, "cubicInOut"); // fade in
+                this.lodgeBottomSprite.alpha = eased;
+                this.lodgeBottomSprite.alpha = eased;
+            }
+            else {
+                this.lodgeBottomSprite.visible = false;
+                this.lodgeTopSprite.visible = false;
+            }
+        }
+
         //<<-- /Creer-Merge: render -->>
     },
 
