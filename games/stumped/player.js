@@ -13,11 +13,11 @@ var GameObject = require("./gameObject");
 /**
  * @typedef {Object} PlayerState - A state representing a Player
  * @property {Array.<BeaverState>} beavers - The list of Beavers owned by this Player.
- * @property {number} branchesToBuildLodge - How many branches are required to build a lodge for this player.
+ * @property {number} branchesToBuildLodge - How many branches are required to build a lodge for this Player.
  * @property {string} clientType - What type of client this is, e.g. 'Python', 'JavaScript', or some other language. For potential data mining purposes.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
- * @property {Array.<TileState>} lodges - A list of tiles that contain lodges owned by this player.
+ * @property {Array.<TileState>} lodges - A list of Tiles that contain lodges owned by this player.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {boolean} lost - If the player lost the game or not.
  * @property {string} name - The name of the player.

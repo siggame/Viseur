@@ -12,19 +12,19 @@ var GameObject = require("./gameObject");
 
 /**
  * @typedef {Object} JobState - A state representing a Job
- * @property {number} actions - The number of actions this job can make per turn.
- * @property {number} carryLimit - How many resources a beaver with this job can hold at once.
- * @property {number} chopping - Scalar for how many branches this job harvests at once.
- * @property {number} cost - How many fish this Job costs to recruit.
- * @property {number} damage - The amount of damage this job does per attack.
- * @property {number} distractionPower - How many turns a beaver attacked by this job is distracted by.
- * @property {number} fishing - Scalar for how many fish this job harvests at once.
+ * @property {number} actions - The number of actions this Job can make per turn.
+ * @property {number} carryLimit - How many combined resources a beaver with this Job can hold at once.
+ * @property {number} chopping - Scalar for how many branches this Job harvests at once.
+ * @property {number} cost - How much food this Job costs to recruit.
+ * @property {number} damage - The amount of damage this Job does per attack.
+ * @property {number} distractionPower - How many turns a beaver attacked by this Job is distracted by.
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
- * @property {number} health - The amount of starting health this job has.
+ * @property {number} health - The amount of starting health this Job has.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {number} moves - The number of moves this job can make per turn.
- * @property {string} title - The job title ('builder', 'fisher', etc).
+ * @property {number} moves - The number of moves this Job can make per turn.
+ * @property {number} munching - Scalar for how much food this Job harvests at once.
+ * @property {string} title - The Job title.
  */
 
 /**

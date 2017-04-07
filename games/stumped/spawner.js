@@ -21,16 +21,16 @@ var SPRITE_PREFIX = {
  * @typedef {Object} SpawnerState - A state representing a Spawner
  * @property {string} gameObjectName - String representing the top level Class that this game object is an instance of. Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
  * @property {boolean} hasBeenHarvested - True if this Spawner has been harvested this turn, and it will not heal at the end of the turn, false otherwise.
- * @property {number} health - How much health this spawner has, which is used to calculate how much of its resource can be harvested.
+ * @property {number} health - How much health this Spawner has, which is used to calculate how much of its resource can be harvested.
  * @property {string} id - A unique id for each instance of a GameObject or a sub class. Used for client and server communication. Should never change value after being set.
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
- * @property {TileState} tile - The tile this Spawner is on.
- * @property {string} type - What type of resource this is ('Fish' or 'Branch').
+ * @property {TileState} tile - The Tile this Spawner is on.
+ * @property {string} type - What type of resource this is ('food' or 'branches').
  */
 
 /**
  * @class
- * @classdesc A resource spawner that generates branches or fish.
+ * @classdesc A resource spawner that generates branches or food.
  * @extends GameObject
  */
 var Spawner = Classe(GameObject, {
