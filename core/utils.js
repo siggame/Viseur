@@ -42,6 +42,9 @@ module.exports = {
             t = easing(t);
         }
         else {
+            if(!eases[easing]) {
+                throw new Error("Easing '" + easing + "' does not exist!");
+            }
             t = eases[easing].call(eases, t);
         }
 

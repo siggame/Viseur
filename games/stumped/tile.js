@@ -7,7 +7,9 @@ var ease = require("core/utils").ease;
 var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-// any additional requires you want can be required here safely between Creer runs
+
+var RESOURCES = ["branches", "food"];
+
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -50,10 +52,13 @@ var Tile = Classe(GameObject, {
 
         this._initContainer(this.game.layers.background);
 
-        this.sprite = this.renderer.newSprite(initialState.type.toLowerCase(), this.container);
+        this.sprite = this.renderer.newSprite("tile_" + initialState.type.toLowerCase(), this.container);
 
         this.lodgeBottomSprite = this.renderer.newSprite("lodge_bottom", this.container);
         this.lodgeTopSprite = this.renderer.newSprite("lodge_top", this.container);
+
+        this.branchesSprite = this.renderer.newSprite("tile_branches", this.container);
+        this.foodSprite = this.renderer.newSprite("tile_food", this.container);
 
         this.container.x = initialState.x;
         this.container.y = initialState.y;
@@ -107,44 +112,62 @@ var Tile = Classe(GameObject, {
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        var owner, eased;
+        // render resources
+        for(var i = 0; i < RESOURCES.length; i++) {
+            var resource = RESOURCES[i];
+            var sprite = this[resource + "Sprite"];
+            var currentAmount = current[resource];
+            var nextAmount = next[resource];
 
-        if(current.lodgeOwner) {
-            // then this tile is owned by a player
-            this.lodgeBottomSprite.alpha = 1;
-            this.lodgeTopSprite.alpha = 1;
+            if(currentAmount === 0 && nextAmount === 0) {
+                sprite.visible = false;
+            }
+            else {
+                sprite.visible = true;
+
+                var opacity = 1;
+                if(currentAmount === 0) {
+                    // fade in as it's going from 0 to N
+                    opacity = dt;
+                }
+                else if(nextAmount === 0) {
+                    // fade out as it's going from N to 0
+                    opacity = 1 - dt;
+                }
+
+                sprite.opacity = ease(opacity, "cubicInOut");
+            }
+        }
+
+        // render the lodge
+        if(!current.lodgeOwner && !next.lodgeOwner) {
+            // don't render the lodge, it's never used
+            this.lodgeBottomSprite.visible = false;
+            this.lodgeTopSprite.visible = false;
+        }
+        else {
+            // the tile has a lodge on it at some point
+
             this.lodgeBottomSprite.visible = true;
             this.lodgeTopSprite.visible = true;
 
-            // set this flag to the color of the owner\
-            // get the actual Player class that the next PlayerState represents
-            owner = this.game.gameObjects[current.lodgeOwner.id];
-            this.lodgeTopSprite.filters = [ owner.getColor().colorMatrixFilter() ];
+            // and color the top (flag part) of the lodge sprite based on the player's color
+            this.lodgeTopSprite.filters = [ this.game.getColorFor(current.lodgeOwner || next.lodgeOwner).colorMatrixFilter() ];
 
-            if(!next.lodgeOwner) {
-                eased = ease(1 - dt, "cubicInOut"); // fade out
-                this.lodgeBottomSprite.alpha = eased;
-                this.lodgeBottomSprite.alpha = eased;
+            var alpha = 1;
+            if(!current.lodgeOwner) {
+                // then they are creating the lodge on the `next` state
+                // so fade in the lodge (fade from 0 to 1)
+                alpha = ease(dt, "cubicInOut");
             }
-        }
-        else {
-            if(next.lodgeOwner) {
-                this.lodgeBottomSprite.visible = true;
-                this.lodgeTopSprite.visible = true;
+            else if(!next.lodgeOwner) {
+                // then they lost the lodge on the `next` state
+                // so fade it out (1 to 0)
+                alpha = ease(1 - dt, "cubicInOut");
+            }
 
-                // set this flag to the color of the owner\
-                // get the actual Player class that the next PlayerState represents
-                owner = this.game.gameObjects[next.lodgeOwner.id];
-                this.lodgeTopSprite.filters = [ owner.getColor().colorMatrixFilter() ];
-
-                eased = ease(dt, "cubicInOut"); // fade in
-                this.lodgeBottomSprite.alpha = eased;
-                this.lodgeBottomSprite.alpha = eased;
-            }
-            else {
-                this.lodgeBottomSprite.visible = false;
-                this.lodgeTopSprite.visible = false;
-            }
+            this.lodgeBottomSprite.alpha = alpha;
+            this.lodgeTopSprite.alpha = alpha;
         }
 
         //<<-- /Creer-Merge: render -->>

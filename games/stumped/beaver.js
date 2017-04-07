@@ -7,7 +7,9 @@ var ease = require("core/utils").ease;
 var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-// any additional requires you want can be required here safely between Creer runs
+
+var updown = require("core/utils").updown;
+
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -49,12 +51,45 @@ var Beaver = Classe(GameObject, {
         // `this.container` holds all our sprites
         this._initContainer(this.game.layers.game);
 
-        this.sprite = this.renderer.newSprite("beaver", this.container);
+        // the "bottom" of the beaver, which is the body, is based on team id, either 0 or 1.
+        var id = initialState.owner.id;
 
-        if(initialState.owner.id === "0") { // then they are first player, so flip them
-            this.sprite.scale.x *= -1; // flip horizontally
-            this.sprite.anchor.x += 1; // and move over, as flipping flips it about the top left anchor, so the whole image is to the left prior to moving it back to the right
+        // hack for old gamelogs
+        // TODO: remove
+        if(id === "7") {
+            id = 0;
         }
+        if(id === "8") {
+            id = 1;
+        }
+
+        this.bottomSprite = this.renderer.newSprite("beaver_" + id, this.container);
+        this.tailSprite = this.renderer.newSprite("beaver_tail", this.container);
+
+        // color the tail based on our owner's team color
+        this.tailSprite.filters = [ this.game.getColorFor(initialState.owner).colorMatrixFilter() ];
+
+        if(initialState.job.title !== "Basic") {
+            var jobTitle = initialState.job.title.toLowerCase().replace(" ", "");
+            this.jobSprite = this.renderer.newSprite("job_" + jobTitle, this.container);
+        }
+
+        this.attackingSprite = this.renderer.newSprite("attacking", this.container);
+        this.attackingSprite.visible = false;
+
+        this.gatheringSprite = this.renderer.newSprite("gathering", this.container);
+        this.gatheringSprite.visible = false;
+
+        // health bar background
+        this.healthBarBackground = this.renderer.newSprite("", this.container);
+        this.healthBarBackground.scale.y *= 0.066;
+        this.healthBarBackground.filters = [ Color("black").colorMatrixFilter() ];
+
+        // health bar foreground
+        this.healthBar = this.renderer.newSprite("", this.container);
+        this.healthBar.scale.y *= 0.066;
+        this._maxXScale = this.healthBar.scale.x;
+        this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -113,20 +148,63 @@ var Beaver = Classe(GameObject, {
         // otherwise, we have a (maybe) happy living beaver
         this.container.visible = true;
 
+
         var currentTile = current.tile;
         var nextTile = next.tile;
 
         if(current.health > 0 && next.health <= 0) { // the Beaver died between current and next
             nextTile = currentTile; // dead beavers have no tile in their next state, so use the one they had before
-            this.container.alpha = ease(1 - dt, "cubicInout"); // fade the beaver sprite
+            this.container.alpha = ease(1 - dt, "cubicInOut"); // fade the beaver sprite
         }
         else {
             this.container.alpha = 1; // ITS ALIVE
         }
 
+        // update their health bar
+        if(this.game.getSetting("display-health-bars")) {
+            this.healthBar.visible = true;
+            this.healthBarBackground.visible = true;
+            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") / current.job.health * this._maxXScale;
+        }
+        else {
+            this.healthBar.visible = false;
+            this.healthBarBackground.visible = false;
+        }
+
         // render the beaver easing the transition from their current tile to their next tile
         this.container.x = ease(currentTile.x, nextTile.x, dt, "cubicInOut");
         this.container.y = ease(currentTile.y, nextTile.y, dt, "cubicInOut");
+
+        var d;
+        var dx;
+        var dy;
+
+        if(this._attacking) {
+            this.attackingSprite.visible = true;
+            d = updown(dt);
+            dx = (this._attacking.x - current.tile.x)/2;
+            dy = (this._attacking.y - current.tile.y)/2;
+
+            this.container.x += dx*d;
+            this.container.y += dy*d;
+        }
+        else {
+            this.attackingSprite.visible = false;
+        }
+
+        if(this._harvesting) {
+            this.gatheringSprite.visible = true;
+            d = updown(dt);
+            dx = (this._harvesting.x - current.tile.x)/2;
+            dy = (this._harvesting.y - current.tile.y)/2;
+
+            this.container.x += dx*d;
+            this.container.y += dy*d;
+        }
+        else {
+            this.gatheringSprite.visible = false;
+        }
+
 
         // Add bottom offset here if desired
 
@@ -254,7 +332,25 @@ var Beaver = Classe(GameObject, {
         GameObject._stateUpdated.apply(this, arguments);
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // update the Beaver based on its current and next states
+        var tile;
+        this._attacking = null;
+        this._harvesting = null;
+
+        if(nextReason && nextReason.run && nextReason.run.caller === this) {
+            var run = nextReason.run;
+
+            if(run.functionName === "attack" && nextReason.returned === true) {
+                // This beaver gonna fite sumthin
+                this._attacking = run.args.beaver.current.tile;
+            }
+
+            if(run.functionName === "harvest" && nextReason.returned === true) {
+                // This beaver getting some food!
+                this._harvesting = run.args.spawner.current.tile;
+            }
+
+        }
+
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 

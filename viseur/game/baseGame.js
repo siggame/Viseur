@@ -327,6 +327,17 @@ var BaseGame = Classe(Observable, {
     },
 
     /**
+     * Gets the Color for a given PlayerState in this game
+     *
+     * @param {PlayerState} playerState - the player state to get the color for
+     * @returns {Color} the color for that player state
+     */
+    getColorFor: function(playerState) {
+        var playerClassInstance = this.gameObjects[playerState.id];
+        return playerClassInstance.getColor();
+    },
+
+    /**
      * Runs some command on the server, on behalf of this a game object
      *
      * @param {BaseGameObject} baseGameObject - the game object running this

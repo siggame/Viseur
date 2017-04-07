@@ -2,11 +2,31 @@ module.exports = {
     //<<-- Creer-Merge: settings -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
     // Tiles
-    "water": "water.jpg",
-    "land": "land.png",
+    "tile_water": "tile_water.png",
+    "tile_land": "tile_land.png",
+    "tile_branches": "tile_branches.png",
+    "tile_food": "tile_food.png",
 
     // Beavers
-    "beaver": "beaver.png",
+    "beaver_0": "beaver_0.png",
+    "beaver_1": "beaver_1.png",
+    "beaver_tail": "beaver_tail.png",
+
+    // Sprites
+    "attacking": "attacking_ind.png",
+    "gathering": "gathering_ind.png",
+    "distracted1": "distracted_1.png",
+    "distracted2": "distracted_2.png",
+    "distracted3": "distracted_3.png",
+
+    // Jobs
+    "job_builder": "job_builder.png",
+    "job_fighter": "job_fighter.png",
+    "job_hungry": "job_hungry.png",
+    "job_sexylady": "job_sexylady.png",
+    "job_swift": "job_swift.png",
+    "job_tank": "job_tank.png",
+
     // Lodge
     "lodge_bottom": "lodge_bottom.png",
     "lodge_top": "lodge_top.png",
@@ -18,9 +38,9 @@ module.exports = {
     "tree_3": "tree_3.png",
 
     // Schools
-    "school_0": "school_0.png",
-    "school_1": "school_1.png",
-    "school_2": "school_2.png",
-    "school_3": "school_3.png",
+    "food_0": "food_0.png",
+    "food_1": "food_1.png",
+    "food_2": "food_2.png",
+    "food_3": "food_3.png",
     //<<-- /Creer-Merge: settings -->>
 };

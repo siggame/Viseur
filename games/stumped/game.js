@@ -26,7 +26,7 @@ var BaseGame = require("viseur/game/baseGame");
  * @property {Array.<PlayerState>} players - List of all the players in the game.
  * @property {string} session - A unique identifier for the game instance that is being played.
  * @property {Array.<SpawnerState>} spawner - Every Spawner in the game.
- * @property {number} spawnerHarvestConstant - Constant number used to calculate how many breanches/food Beavers harvest from Spawners.
+ * @property {number} spawnerHarvestConstant - Constant number used to calculate how many branches/food Beavers harvest from Spawners.
  * @property {Array.<string>} spawnerTypes - All the types of Spawners in the game.
  * @property {Array.<TileState>} tiles - All the tiles in the map, stored in Row-major order. Use `x + y * mapWidth` to access the correct index.
  */
@@ -117,10 +117,14 @@ var Game = Classe(BaseGame, {
         var colors = BaseGame.getPlayersColors.apply(this, arguments);
 
         //<<-- Creer-Merge: getPlayersColors -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        colors = [
-            Color("#FFCC00"),
-            Color("#9900CC"),
-        ];
+        var gold = Color("#FFCC00");
+        var purple = Color("#9900CC");
+        // override contrasting color to white
+        purple.contrastingColor = function() {
+            return Color("white");
+        };
+
+        colors = [gold, purple];
         //<<-- /Creer-Merge: getPlayersColors -->>
 
         return colors;

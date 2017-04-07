@@ -12,7 +12,7 @@ var STAGES = 4; // how many sprite we have for health
 
 var SPRITE_PREFIX = {
     "branches": "tree_",
-    "fish": "school_",
+    "food": "food_",
 };
 
 //<<-- /Creer-Merge: requires -->>
