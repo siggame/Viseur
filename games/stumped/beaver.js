@@ -53,6 +53,16 @@ var Beaver = Classe(GameObject, {
 
         this.sprite = this.renderer.newSprite("beaver", this.container);
 
+        if(initialState.job.title !== "Basic") {
+            this.jobSprite = this.renderer.newSprite(initialState.job.title, this.container);
+        }
+
+        this.attackingSprite = this.renderer.newSprite("attacking", this.container);
+        this.attackingSprite.visible = false;
+
+        this.gatheringSprite = this.renderer.newSprite("gathering", this.container);
+        this.gatheringSprite.visible = false;
+
         if(initialState.owner.id === "0") { // then they are first player, so flip them
             this.sprite.scale.x *= -1; // flip horizontally
             this.sprite.anchor.x += 1; // and move over, as flipping flips it about the top left anchor, so the whole image is to the left prior to moving it back to the right
@@ -151,17 +161,35 @@ var Beaver = Classe(GameObject, {
         this.container.x = ease(currentTile.x, nextTile.x, dt, "cubicInOut");
         this.container.y = ease(currentTile.y, nextTile.y, dt, "cubicInOut");
 
-        if(this._attacking) {
-            /* this.renderer.newSprite("beaver", this.container);*/
+        var d;
+        var dx;
+        var dy;
 
-            var d = updown(dt);
-            var dx = (this._attacking.x - current.tile.x)/2;
-            var dy = (this._attacking.y - current.tile.y)/2;
+        if(this._attacking) {
+            this.attackingSprite.visible = true;
+            d = updown(dt);
+            dx = (this._attacking.x - current.tile.x)/2;
+            dy = (this._attacking.y - current.tile.y)/2;
 
             this.container.x += dx*d;
             this.container.y += dy*d;
         }
+        else {
+            this.attackingSprite.visible = false;
+        }
 
+        if(this._harvesting) {
+            this.gatheringSprite.visible = true;
+            d = updown(dt);
+            dx = (this._harvesting.x - current.tile.x)/2;
+            dy = (this._harvesting.y - current.tile.y)/2;
+
+            this.container.x += dx*d;
+            this.container.y += dy*d;
+        }
+        else {
+            this.gatheringSprite.visible = false;
+        }
 
 
         // Add bottom offset here if desired
@@ -292,6 +320,7 @@ var Beaver = Classe(GameObject, {
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         var tile;
         this._attacking = null;
+        this._harvesting = null;
 
         if(nextReason && nextReason.run && nextReason.run.caller === this) {
             var run = nextReason.run;
@@ -299,7 +328,11 @@ var Beaver = Classe(GameObject, {
             if(run.functionName === "attack" && nextReason.returned === true) {
                 // This beaver gonna fite sumthin
                 this._attacking = run.args.beaver.current.tile;
+            }
 
+            if(run.functionName === "harvest" && nextReason.returned === true) {
+                // This beaver getting some food!
+                this._harvesting = run.args.spawner.current.tile;
             }
 
         }

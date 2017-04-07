@@ -118,7 +118,10 @@ var Game = Classe(BaseGame, {
         var colors = BaseGame.getPlayersColors.apply(this, arguments);
 
         //<<-- Creer-Merge: getPlayersColors -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // You can change the players' colors here, by default player 1 is red, player 2 is blue.
+        colors = [
+            Color("#FFCC00"),
+            Color("#9900CC"),
+        ];
         //<<-- /Creer-Merge: getPlayersColors -->>
 
         return colors;

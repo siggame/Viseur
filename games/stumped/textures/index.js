@@ -10,6 +10,19 @@ module.exports = {
 
     // Sprites
     "attacking": "attacking_ind.png",
+    "gathering": "gathering_ind.png",
+    "distracted1": "distracted_1.png",
+    "distracted2": "distracted_2.png",
+    "distracted3": "distracted_3.png",
+
+    // Jobs
+    "Build": "builder_overlay.png",
+    "Tank": "defender_overlay.png",
+    "Buff": "fighter_overlay.png",
+    "Fishing": "gatherer_overlay.png",
+    "Hot Lady": "Lady_overlay.png",
+    "Swimming": "swimmer_overlay.png",
+
 
     // Lodge
     "lodge_bottom": "lodge_bottom.png",
