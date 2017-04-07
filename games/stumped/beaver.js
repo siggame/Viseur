@@ -74,11 +74,10 @@ var Beaver = Classe(GameObject, {
             this.jobSprite = this.renderer.newSprite("job_" + jobTitle, this.container);
         }
 
-        this.attackingSprite = this.renderer.newSprite("attacking", this.container);
-        this.attackingSprite.visible = false;
-
-        this.gatheringSprite = this.renderer.newSprite("gathering", this.container);
-        this.gatheringSprite.visible = false;
+        this.attackStatusSprite = this.renderer.newSprite("status_attacking", this.container);
+        this.branchesStatusSprite = this.renderer.newSprite("status_branches", this.container);
+        this.foodStatusSprite = this.renderer.newSprite("status_food", this.container);
+        this.distractedStatusSprite = this.renderer.newSprite("distracted_3", this.container);
 
         // health bar background
         this.healthBarBackground = this.renderer.newSprite("", this.container);
@@ -175,36 +174,40 @@ var Beaver = Classe(GameObject, {
         this.container.x = ease(currentTile.x, nextTile.x, dt, "cubicInOut");
         this.container.y = ease(currentTile.y, nextTile.y, dt, "cubicInOut");
 
-        var d;
-        var dx;
-        var dy;
+
+        // update it's status bubble
+        this.attackStatusSprite.visible = false;
+        this.branchesStatusSprite.visible = false;
+        this.foodStatusSprite.visible = false;
+        this.distractedStatusSprite.visible = current.turnsDistracted > 0;
+
+
+        var bumpInto; // find something to bump into
 
         if(this._attacking) {
-            this.attackingSprite.visible = true;
-            d = updown(dt);
-            dx = (this._attacking.x - current.tile.x)/2;
-            dy = (this._attacking.y - current.tile.y)/2;
+            this.attackStatusSprite.visible = true;
+            bumpInto = this._attacking.current.tile;
+        }
+        else if(this._harvesting) {
+            if(this._harvesting.current.type === "food") {
+                this.foodStatusSprite.visible = true;
+            }
+            else { // tree branches
+                this.branchesStatusSprite.visible = true;
+            }
+
+            bumpInto = this._harvesting.current.tile;
+        }
+
+        // if we found something to bump into, animate it bumping into it half way
+        if(bumpInto) {
+            var d = updown(dt);
+            var dx = (bumpInto.x - current.tile.x)/2;
+            var dy = (bumpInto.y - current.tile.y)/2;
 
             this.container.x += dx*d;
             this.container.y += dy*d;
         }
-        else {
-            this.attackingSprite.visible = false;
-        }
-
-        if(this._harvesting) {
-            this.gatheringSprite.visible = true;
-            d = updown(dt);
-            dx = (this._harvesting.x - current.tile.x)/2;
-            dy = (this._harvesting.y - current.tile.y)/2;
-
-            this.container.x += dx*d;
-            this.container.y += dy*d;
-        }
-        else {
-            this.gatheringSprite.visible = false;
-        }
-
 
         // Add bottom offset here if desired
 
@@ -341,12 +344,12 @@ var Beaver = Classe(GameObject, {
 
             if(run.functionName === "attack" && nextReason.returned === true) {
                 // This beaver gonna fite sumthin
-                this._attacking = run.args.beaver.current.tile;
+                this._attacking = run.args.beaver;
             }
 
             if(run.functionName === "harvest" && nextReason.returned === true) {
                 // This beaver getting some food!
-                this._harvesting = run.args.spawner.current.tile;
+                this._harvesting = run.args.spawner;
             }
 
         }

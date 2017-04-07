@@ -12,12 +12,13 @@ module.exports = {
     "beaver_1": "beaver_1.png",
     "beaver_tail": "beaver_tail.png",
 
-    // Sprites
-    "attacking": "attacking_ind.png",
-    "gathering": "gathering_ind.png",
-    "distracted1": "distracted_1.png",
-    "distracted2": "distracted_2.png",
-    "distracted3": "distracted_3.png",
+    // Statuses
+    "status_attacking": "status_attacking.png",
+    "status_branches": "status_branches.png",
+    "status_food": "status_food.png",
+    "distracted_1": "distracted_1.png",
+    "distracted_2": "distracted_2.png",
+    "distracted_3": "distracted_3.png",
 
     // Jobs
     "job_builder": "job_builder.png",

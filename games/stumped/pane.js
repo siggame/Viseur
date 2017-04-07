@@ -42,7 +42,12 @@ var Pane = Classe(BasePane, {
         var stats = BasePane._getPlayerStats.apply(this, arguments);
 
         //<<-- Creer-Merge: player-stats -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // push PaneStats onto the stats array here if you want to show additional values
+        stats.push(
+            {
+                key: "lodges.length",
+                icon: "star",
+            }
+        );
         //<<-- /Creer-Merge: player-stats -->>
 
         return stats;
@@ -56,8 +61,15 @@ var Pane = Classe(BasePane, {
     update: function(state) {
         BasePane.update.apply(this, arguments);
 
-        //<<-- Creer-Merge: update -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // you can update things for the pane here
+        //<<-- Creer-Merge: update -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.        var scores = [];
+
+        var scores = [];
+        for(var i = 0; i < state.players.length; i++) {
+            scores.push(state.players[i].lodges.length);
+        }
+
+        this._setPlayersProgresses(scores);
+
         //<<-- /Creer-Merge: update -->>
     },
 
