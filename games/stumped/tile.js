@@ -54,6 +54,29 @@ var Tile = Classe(GameObject, {
 
         this.sprite = this.renderer.newSprite("tile_" + initialState.type.toLowerCase(), this.container);
 
+        if(initialState.flowDirection) {
+            this.flowSprite = this.renderer.newSprite("tile_flow_direction", this.container);
+            this.flowSprite.alpha = 0.333;
+
+            switch(initialState.flowDirection.toLowerCase()) {
+                case "east":
+                    break; // default direction
+                case "south":
+                    this.flowSprite.rotation += Math.PI/2;
+                    this.flowSprite.x += 1;
+                    break;
+                case "west":
+                    this.flowSprite.rotation += Math.PI;
+                    this.flowSprite.x += 1;
+                    this.flowSprite.y += 1;
+                    break;
+                case "north":
+                    this.flowSprite.rotation += 3*Math.PI/2;
+                    this.flowSprite.y += 1;
+                    break;
+            }
+        }
+
         this.lodgeBottomSprite = this.renderer.newSprite("lodge_bottom", this.container);
         this.lodgeTopSprite = this.renderer.newSprite("lodge_top", this.container);
 
