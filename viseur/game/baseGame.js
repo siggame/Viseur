@@ -228,7 +228,7 @@ var BaseGame = Classe(Observable, {
             return obj;
         }
 
-        if(typeof(obj.id) === "string") { // it's a game object reference
+        if(Object.hasOwnProperty.call(obj, "id")) { // it's a game object reference
             return this.gameObjects[obj.id];
         }
 

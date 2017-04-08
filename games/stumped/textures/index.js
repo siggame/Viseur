@@ -24,11 +24,11 @@ module.exports = {
 
     // Jobs
     "job_builder": "job_builder.png",
+    "job_bulky": "job_bulky.png",
     "job_fighter": "job_fighter.png",
     "job_hungry": "job_hungry.png",
     "job_sexylady": "job_sexylady.png",
     "job_swift": "job_swift.png",
-    "job_tank": "job_tank.png",
 
     // Lodge
     "lodge_bottom": "lodge_bottom.png",
