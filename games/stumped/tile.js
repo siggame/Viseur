@@ -10,6 +10,95 @@ var GameObject = require("./gameObject");
 
 var RESOURCES = ["branches", "food"];
 
+// bit auto-tiling from: // from: https://gamedevelopment.tutsplus.com/tutorials/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673
+var DIRECTIONS = ["North", "South", "East", "West"];
+var CORNERS = [["North", "West"], ["North", "East"], ["South", "West"], ["South", "East"]];
+
+var DIRECTION_BITS = {
+    NorthWest: 1,
+    North: 2,
+    NorthEast: 4,
+    West: 8,
+    East: 16,
+    SouthWest: 32,
+    South: 64,
+    SouthEast: 128,
+};
+
+var BIT_TO_INDEX = {
+    "2": 1,
+    "8": 2,
+    "10": 3,
+    "11": 4,
+    "16": 5,
+    "18": 6,
+    "22": 7,
+    "24": 8,
+    "26": 9,
+    "27": 10,
+    "30": 11,
+    "31": 12,
+    "64": 13,
+    "66": 14,
+    "72": 15,
+    "74": 16,
+    "75": 17,
+    "80": 18,
+    "82": 19,
+    "86": 20,
+    "88": 21,
+    "90": 22,
+    "91": 23,
+    "94": 24,
+    "95": 25,
+    "104": 26,
+    "106": 27,
+    "107": 28,
+    "120": 29,
+    "122": 30,
+    "123": 31,
+    "126": 32,
+    "127": 33,
+    "208": 34,
+    "210": 35,
+    "214": 36,
+    "216": 37,
+    "218": 38,
+    "219": 39,
+    "222": 40,
+    "223": 41,
+    "248": 42,
+    "250": 43,
+    "251": 44,
+    "254": 45,
+    "255": 46,
+    "0": 47,
+};
+
+/**
+ * Checks if a tile in a direction or two is a land tile for auto-tiling
+ * @param {TileState} state - tile we are looking at
+ * @param {string} direction - direction from tile
+ * @param {string} direction2 - direction from the direction tile
+ * @return {Boolean} true if that is a land tile, false otherwise
+ */
+function isLand(state, direction, direction2) {
+    var neighbor = state["tile" + direction];
+    if(!neighbor) { // off map, just use our type as the off map type
+        neighbor = state;
+    }
+
+    if(neighbor.type.toLowerCase() !== "land") {
+        return false;
+    }
+
+    if(direction2) {
+        return isLand(neighbor, direction2);
+    }
+
+    return true;
+}
+
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -52,7 +141,37 @@ var Tile = Classe(GameObject, {
 
         this._initContainer(this.game.layers.background);
 
-        this.sprite = this.renderer.newSprite("tile_" + initialState.type.toLowerCase(), this.container);
+        var textureKey = "tile_water";
+        if(initialState.type.toLowerCase() === "land") {
+            // make it look cool
+            var sum = 0;
+            for(var i = 0; i < DIRECTIONS.length; i++) {
+                var direction = DIRECTIONS[i];
+
+                if(isLand(initialState, direction)) {
+                    sum += DIRECTION_BITS[direction];
+                }
+            }
+
+            for(i = 0; i < CORNERS.length; i++) {
+                var corner = CORNERS[i];
+                var vert = corner[0];
+                var hor = corner[1];
+
+                if(
+                    isLand(initialState, vert) &&
+                    isLand(initialState, hor) &&
+                    isLand(initialState, vert, hor)
+                ) {
+                    sum += DIRECTION_BITS[vert + hor];
+                }
+            }
+
+            var byte = BIT_TO_INDEX[sum];
+            textureKey = "tileset@" + byte;
+        }
+
+        this.sprite = this.renderer.newSprite(textureKey, this.container);
 
         if(initialState.flowDirection) {
             this.flowSprite = this.renderer.newSprite("tile_flow_direction", this.container);

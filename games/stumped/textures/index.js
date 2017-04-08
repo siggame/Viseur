@@ -7,6 +7,7 @@ module.exports = {
     "tile_branches": "tile_branches.png",
     "tile_food": "tile_food.png",
     "tile_flow_direction": "tile_flow_direction.png",
+    "tileset": {path: "tileset.png", width: 8, height: 6},
 
     // Beavers
     "beaver_0": "beaver_0.png",

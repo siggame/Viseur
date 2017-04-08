@@ -206,7 +206,15 @@ var Viseur = Classe(Observable, {
 
         for(var key in this.game.namespace.textures) {
             if(this.game.namespace.textures.hasOwnProperty(key)) {
-                textures[key] = "games/" + this.game.namespace.dir + "/textures/" + this.game.namespace.textures[key];
+                var val = this.game.namespace.textures[key];
+                if(typeof(val) === "string") {
+                    val = {path: val};
+                }
+
+                val.key = key;
+                val.path = "games/" + this.game.namespace.dir + "/textures/" + val.path;
+
+                textures[key] = val;
             }
         }
         var self = this;

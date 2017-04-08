@@ -107,14 +107,26 @@ var Renderer = Classe(Observable, BaseElement, {
     loadTextures: function(textures, callback) {
         var loader = PIXI.loader;
 
-        textures[""] = "viseur/game/blank.png"; // all games have access to the blank (white) square
+        this._sheets = {};
+        this._textures = {};
+
+        textures[""] = { // all games have access to the blank (white) square
+            key: "",
+            path: "viseur/game/blank.png",
+        };
 
         var hasTextures = false;
         for(var key in textures) {
             if(textures.hasOwnProperty(key)) {
                 hasTextures = true;
-                if(textures.hasOwnProperty(key)) {
-                    loader.add(key, textures[key]);
+                var val = textures[key];
+
+                // it is a sprite sheet, so extract the path and build frames after loaded
+                loader.add(key, val.path);
+
+                // then this is a sheet of frames we need to generate
+                if(val.width) {
+                    this._sheets[key] = val;
                 }
             }
         }
@@ -127,10 +139,42 @@ var Renderer = Classe(Observable, BaseElement, {
         var self = this;
         loader.load(function(loader, resources) {
             self._resources = resources;
+
+            // now build frames for the sprite sheets
+            for(var key in self._sheets) {
+                if(self._sheets.hasOwnProperty(key)) {
+                    var sheet = self._sheets[key];
+                    var texture = resources[key].texture;
+
+                    var width = texture.width/sheet.width;
+                    var height = texture.height/sheet.height;
+
+                    var i = 0;
+                    for(var y = 0; y < sheet.height; y++) {
+                        for(var x = 0; x < sheet.width; x++) {
+                            self._textures[key + "@" + i] = new PIXI.Texture(texture.baseTexture, new PIXI.Rectangle(x*width, y*height, width, height));
+                            i++;
+                        }
+                    }
+                }
+            }
+
             if(callback) {
                 callback();
             }
         });
+    },
+
+    getTexture: function(key) {
+        var resource = this._resources[key];
+        if(resource) {
+            return resource.texture;
+        }
+
+        var texture = this._textures[key];
+        if(texture) {
+            return texture;
+        }
     },
 
     /**
@@ -248,19 +292,19 @@ var Renderer = Classe(Observable, BaseElement, {
      * @param {PIXI.Container} parentContainer - the parent container for the sprite
      * @param {number} [width=1] - the width of the sprite
      * @param {number} [height=1] - the height of the sprite
+     * @param {number} [frame] - the frame in the sprite sheet to use
      * @returns {PIXI.Sprite} a sprite with the given texture key, added to the parentContainer
      */
-    newSprite: function(textureKey, parentContainer, width, height) {
+    newSprite: function(textureKey, parentContainer, width, height, frame) {
         width = Math.abs(Number(width) || 1);
         height = Math.abs(Number(height) || 1);
 
-        var resource = this._resources[textureKey];
-
-        if(!resource) {
-            throw new Error("Cannot load resource '{}' for a new sprite.".format(textureKey));
+        var texture = this.getTexture(textureKey);
+        if(!texture) {
+            throw new Error("Cannot load texture '{}' for a new sprite.".format(textureKey));
         }
 
-        var texture = resource.texture;
+        // texture = new PIXI.Texture(texture.baseTexture, new PIXI.Rectangle(0, 0, texture.width/2, texture.height/2));
         var sprite = new PIXI.Sprite(texture);
         sprite.setParent(parentContainer);
 
