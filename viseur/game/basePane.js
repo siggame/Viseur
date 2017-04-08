@@ -202,7 +202,14 @@ var BasePane = Classe(BaseElement, {
     _updateStatsList: function(statsList, obj) {
         for(var j = 0; j < statsList.stats.length; j++) {
             var stat = statsList.stats[j];
-            var value = obj[stat.key];
+            var value = "UNDEFINED";
+
+            if(stat.hasOwnProperty("key")) {
+                value = utils.traverse(obj, stat.key.split("."));
+            }
+            else { // they should have set a callback
+                value = stat.callback(obj);
+            }
 
             if(stat.format) {
                 value = stat.format(value);

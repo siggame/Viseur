@@ -228,7 +228,7 @@ var BaseGame = Classe(Observable, {
             return obj;
         }
 
-        if(typeof(obj.id) === "string") { // it's a game object reference
+        if(Object.hasOwnProperty.call(obj, "id")) { // it's a game object reference
             return this.gameObjects[obj.id];
         }
 
@@ -324,6 +324,17 @@ var BaseGame = Classe(Observable, {
         };
 
         return colors; // by default player 1 is red, player 2 is blue
+    },
+
+    /**
+     * Gets the Color for a given PlayerState in this game
+     *
+     * @param {PlayerState} playerState - the player state to get the color for
+     * @returns {Color} the color for that player state
+     */
+    getColorFor: function(playerState) {
+        var playerClassInstance = this.gameObjects[playerState.id];
+        return playerClassInstance.getColor();
     },
 
     /**

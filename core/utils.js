@@ -42,6 +42,9 @@ module.exports = {
             t = easing(t);
         }
         else {
+            if(!eases[easing]) {
+                throw new Error("Easing '" + easing + "' does not exist!");
+            }
             t = eases[easing].call(eases, t);
         }
 
@@ -102,5 +105,26 @@ module.exports = {
         return String(str).replace(/[&<>"'\/]/g, function(s) {
             return entityMap[s];
         });
+    },
+
+    /**
+     * Traverses down a tree like object via list of keys
+     *
+     * @param  {Object} obj - tree like object with nested properties to traverse
+     * @param  {Array.<string>} keys - list of keys to traverse, in order
+     * @return {*} whatever value is at the end of the keys path
+     */
+    traverse: function(obj, keys) {
+        for(var i = 0; i < keys.length; i++) {
+            var key = keys[i];
+            if(Object.hasOwnProperty.call(obj, key)) {
+                obj = obj[key];
+            }
+            else {
+                throw new Error("Key '" + key + "' not found in object to traverse");
+            }
+        }
+
+        return obj;
     },
 };
