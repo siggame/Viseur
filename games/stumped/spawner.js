@@ -110,7 +110,7 @@ var Spawner = Classe(GameObject, {
         // figure out the sprite indexes to render and if they should be faded in/out
         var maxHealth = 5; // TODO: Change to this.game.current.maxSpawnerHealth; after Creer run works.
         // var currentIndex = Math.min(current.health, STAGES - 1);
-        var currentIndex = Math.max(0, Math.floor(STAGES * current.health / maxHealth) - 1);    
+        var currentIndex = Math.max(0, Math.floor(STAGES * current.health / maxHealth) - 1);
         var nextIndex = Math.max(0, Math.floor(STAGES * next.health / maxHealth) - 1);
 
         var fade = true;
