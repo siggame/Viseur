@@ -45,7 +45,7 @@ var Pane = Classe(BasePane, {
         stats.push(
             {
                 key: "lodges.length",
-                icon: "star",
+                icon: "flag",
             }
         );
         //<<-- /Creer-Merge: player-stats -->>

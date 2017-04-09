@@ -21,7 +21,7 @@ module.exports = [
         label: "Playback Speed",
         hint: "The time (in ms)  for each animation to be played. Smaller numbers mean faster playback.",
         input: "Number",
-        min: 50,
+        min: 10,
         max: 999999,
         default: 1000,
     },
