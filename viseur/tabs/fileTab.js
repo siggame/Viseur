@@ -1,7 +1,7 @@
 require("./fileTab.scss");
 
 var $ = require("jquery");
-var filesaverjs = require("filesaverjs");
+var filesaver = require("file-saver");
 var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
 var inputs = require("core/ui/inputs/");
@@ -36,7 +36,7 @@ var FileTab = Classe(BaseElement, {
             if(!gamelog.streaming) { // then let them download the gamelog from memory, otherwise it is being streamed so the gamelog in memory is incomplete
                 self.$gamelogDownloadLink.on("click", function() {
                     var blob = new Blob([unparsedGamelog], {type: "application/json;charset=utf-8"});
-                    filesaverjs.saveAs(blob, "{}-{}.json".format(gamelog.gameName, gamelog.gameSession));
+                    filesaver.saveAs(blob, "{}-{}.json".format(gamelog.gameName, gamelog.gameSession));
                 });
 
                 self._log("Gamelog successfuly loaded.");

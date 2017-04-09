@@ -61,7 +61,7 @@ var Pane = Classe(BasePane, {
     update: function(state) {
         BasePane.update.apply(this, arguments);
 
-        //<<-- Creer-Merge: update -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.        var scores = [];
+        //<<-- Creer-Merge: update -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         var scores = [];
         for(var i = 0; i < state.players.length; i++) {
