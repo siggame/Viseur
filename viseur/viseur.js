@@ -16,14 +16,13 @@ var Viseur = Classe(Observable, {
      */
     start: function() {
         var GUI = require("./gui");
+        var self = this;
 
         this.timeManager = new TimeManager();
 
         this.gui = new GUI({
             $parent: $("#main"),
         });
-
-        var self = this;
 
         this.timeManager.on("new-index", function(index) {
             self._updateCurrentStateAsync(index);

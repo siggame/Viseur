@@ -71,7 +71,8 @@ var Cowboy = Classe(GameObject, {
         }
 
         // color the top of the sprite as the player's color
-        this.spriteTop.filters = [ owner.getColor().colorMatrixFilter() ];
+        var ownerColor = owner.getColor();
+        this.spriteTop.filters = [ ownerColor.colorMatrixFilter() ];
         // color the bottom (skin) green when drunk
         this._drunkFilter = Color("white").colorMatrixFilter();
         this.spriteBottom.filters = [ this._drunkFilter ];
@@ -100,14 +101,11 @@ var Cowboy = Classe(GameObject, {
                 break;
         }
 
-        this.healthBarBg = this.renderer.newSprite("", this.container);
-        this.healthBarBg.scale.y *= 0.066;
-        this.healthBarBg.filters = [ Color("black").colorMatrixFilter() ];
-
-        this.healthBar = this.renderer.newSprite("", this.container);
-        this.healthBar.scale.y *= 0.066;
-        this._maxXScale = this.healthBar.scale.x;
-        this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
+        this._initBar(this.container, {
+            width: 0.9,
+            foregroundColor: ownerColor.clone().lighten(0.25),
+            maxValue: initialState.health,
+        });
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -167,15 +165,12 @@ var Cowboy = Classe(GameObject, {
         // if we got here we are visible!
         this.container.alpha = 1;
 
-        // update their health bar
-        if(this.game.getSetting("display-health-bars")) {
-            this.healthBar.visible = true;
-            this.healthBarBg.visible = true;
-            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
-        }
-        else {
-            this.healthBar.visible = false;
-            this.healthBarBg.visible = false;
+        // update their health bar, if they want it to be displayed
+        var displayHealthBar = this.game.getSetting("display-health-bars");
+        this._setBarVisible(displayHealthBar);
+        if(displayHealthBar) {
+            // then update the health
+            this._updateBar(ease(current.health, next.health, dt, "cubicInOut"));
         }
 
         // display the hit if took damage

@@ -67,7 +67,8 @@ var Beaver = Classe(GameObject, {
         this.tailSprite = this.renderer.newSprite("beaver_tail", this.container);
 
         // color the tail based on our owner's team color
-        this.tailSprite.filters = [ this.game.getColorFor(initialState.owner).colorMatrixFilter() ];
+        var ownerColor = this.game.getColorFor(initialState.owner);
+        this.tailSprite.filters = [ ownerColor.colorMatrixFilter() ];
 
         if(initialState.job.title !== "Basic") {
             var jobTitle = initialState.job.title.toLowerCase().replace(" ", "");
@@ -79,16 +80,11 @@ var Beaver = Classe(GameObject, {
         this.foodStatusSprite = this.renderer.newSprite("status_food", this.container);
         this.distractedStatusSprite = this.renderer.newSprite("distracted_3", this.container);
 
-        // health bar background
-        this.healthBarBackground = this.renderer.newSprite("", this.container);
-        this.healthBarBackground.scale.y *= 0.066;
-        this.healthBarBackground.filters = [ Color("black").colorMatrixFilter() ];
-
-        // health bar foreground
-        this.healthBar = this.renderer.newSprite("", this.container);
-        this.healthBar.scale.y *= 0.066;
-        this._maxXScale = this.healthBar.scale.x;
-        this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
+        this._initBar(this.container, {
+            width: 0.9,
+            foregroundColor: ownerColor.clone().lighten(0.75),
+            maxValue: initialState.job.health,
+        });
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -159,15 +155,12 @@ var Beaver = Classe(GameObject, {
             this.container.alpha = 1; // ITS ALIVE
         }
 
-        // update their health bar
-        if(this.game.getSetting("display-health-bars")) {
-            this.healthBar.visible = true;
-            this.healthBarBackground.visible = true;
-            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") / current.job.health * this._maxXScale;
-        }
-        else {
-            this.healthBar.visible = false;
-            this.healthBarBackground.visible = false;
+        // update their health bar, if they want it to be displayed
+        var displayHealthBar = this.game.getSetting("display-health-bars");
+        this._setBarVisible(displayHealthBar);
+        if(displayHealthBar) {
+            // then update the health
+            this._updateBar(ease(current.health, next.health, dt, "cubicInOut"));
         }
 
         // render the beaver easing the transition from their current tile to their next tile

@@ -205,7 +205,12 @@ var BasePane = Classe(BaseElement, {
             var value = "UNDEFINED";
 
             if(stat.hasOwnProperty("key")) {
-                value = utils.traverse(obj, stat.key.split("."));
+                try {
+                    value = utils.traverse(obj, stat.key.split("."));
+                }
+                catch(err) {
+                    value = ""; // assume the key was not found, such as a player's variable was null
+                }
             }
             else { // they should have set a callback
                 value = stat.callback(obj);

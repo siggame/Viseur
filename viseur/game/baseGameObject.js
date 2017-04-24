@@ -43,17 +43,14 @@ var BaseGameObject = Classe(Observable, {
     },
 
     /**
-     * updates the game object's current and next state, prior to rendering
+     * should be invoked after the game object's current and next state, prior to rendering
      *
      * @param {Object} current - the current state
      * @param {Object} next - the next state
      * @param {DeltaReason} reason - the reason for the current delta
      * @param {DeltaReason} nextReason - the reason for the next delta
      */
-    update: function(current, next, reason, nextReason) {
-        this.current = current || null;
-        this.next = next || null;
-
+    updated: function(current, next, reason, nextReason) {
         // these are all shorthand args sent so we don't have to lookup via this.current and check if it exists
         this._stateUpdated(
             current || next,
@@ -125,7 +122,8 @@ var BaseGameObject = Classe(Observable, {
      * @param {PIXI.Event} event - the pixi even from the right click
      */
     _rightClicked: function(event) {
-        this._showContextMenu(event.data.global.x, event.data.global.y);
+        var scale = SettingsManager.get("viseur", "resolution-scale") || 1;
+        this._showContextMenu(event.data.global.x/scale, event.data.global.y/scale);
     },
 
 
@@ -278,6 +276,51 @@ var BaseGameObject = Classe(Observable, {
     _initGraphicsForUX: function() {
         this._uxGraphics = new PIXI.Graphics();
         this._uxGraphics.setParent(this.container);
+    },
+
+    _initBar: function(container, options) {
+        options = options || {};
+
+        var width = options.width || 1;
+        var height = options.height || 0.0667;
+        var maxValue = options.maxValue || 1;
+        var foregroundColor = options.foregroundColor || Color("#44F444");
+        var backgroundColor = options.backgroundColor || Color("black");
+
+        // the health bar
+        this._bar = {};
+        var barContainer = new PIXI.Container();
+        barContainer.setParent(container);
+
+        var background = this.renderer.newSprite("", barContainer);
+        background.height = height;
+        background.width = width;
+        background.filters = [ backgroundColor.colorMatrixFilter() ];
+
+        var foreground = this.renderer.newSprite("", barContainer);
+        foreground.height = height;
+        foreground.width = width;
+        foreground.filters = [ foregroundColor.colorMatrixFilter() ];
+
+        var widthDiff = container.width - width;
+        barContainer.position.set(widthDiff/2, 0);
+
+        this._bar = {
+            width: width,
+            height: height,
+            maxValue: maxValue || 1,
+            container: barContainer,
+            foreground: foreground,
+            background: background,
+        };
+    },
+
+    _setBarVisible: function(visible) {
+        this._bar.container.visible = visible;
+    },
+
+    _updateBar: function(value) {
+        this._bar.foreground.width = this._bar.width * (value / this._bar.maxValue);
     },
 
     /**

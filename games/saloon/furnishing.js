@@ -57,15 +57,10 @@ var Furnishing = Classe(GameObject, {
         this.container.x = this.x;
         this.container.y = this.y;
 
-        // health bar
-        this.healthBarBg = this.renderer.newSprite("", this.container);
-        this.healthBarBg.scale.y *= 0.066;
-        this.healthBarBg.filters = [ Color("black").colorMatrixFilter() ];
-
-        this.healthBar = this.renderer.newSprite("", this.container);
-        this.healthBar.scale.y *= 0.066;
-        this._maxXScale = this.healthBar.scale.x;
-        this.healthBar.filters = [ Color("green").colorMatrixFilter() ];
+        this._initBar(this.container, {
+            width: 0.9,
+            maxValue: initialState.health,
+        });
 
         // hit sprite
         this._hitSprite = this.renderer.newSprite("hit", this.container);
@@ -135,15 +130,12 @@ var Furnishing = Classe(GameObject, {
         // else we are visible!
         this.container.visible = true;
 
-        // update their health bar
-        if(this.game.getSetting("display-health-bars")) {
-            this.healthBar.visible = true;
-            this.healthBarBg.visible = true;
-            this.healthBar.scale.x = ease(current.health, next.health, dt, "cubicInOut") /this._maxHealth * this._maxXScale;
-        }
-        else {
-            this.healthBar.visible = false;
-            this.healthBarBg.visible = false;
+        // update their health bar, if they want it to be displayed
+        var displayHealthBar = this.game.getSetting("display-health-bars");
+        this._setBarVisible(displayHealthBar);
+        if(displayHealthBar) {
+            // then update the health
+            this._updateBar(ease(current.health, next.health, dt, "cubicInOut"));
         }
 
         // display the hit if took damage

@@ -79,7 +79,7 @@ var FireDepartment = Classe(Building, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true, // Yes we want to show them
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -152,6 +152,7 @@ var FireDepartment = Classe(Building, {
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // any additional functions you want to add to this class can be perserved here
+    beamColor: Color("#00BFFF"),
     //<<-- /Creer-Merge: functions -->>
 
 });

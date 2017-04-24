@@ -46,6 +46,15 @@ var WeatherStation = Classe(Building, {
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // initialization logic goes here
+
+        this.intensitySprite = this.renderer.newSprite("arrow", this.game.layers.beams);
+        this.intensitySprite.setRelativePivot(0.5, 0.5);
+        this.intensitySprite.position.set(initialState.x + 0.5, initialState.y + 0.5);
+
+        this.rotationSprite = this.renderer.newSprite("rotation", this.game.layers.beams);
+        this.rotationSprite.setRelativePivot(0.5, 0.5);
+        this.rotationSprite.position.set(initialState.x + 0.5, initialState.y + 0.5);
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -78,7 +87,7 @@ var WeatherStation = Classe(Building, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true, // Yes we want to show them
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -95,6 +104,19 @@ var WeatherStation = Classe(Building, {
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // render where the WeatherStation is
+
+        var direction;
+
+        if(this.rotationSprite.visible) {
+            direction = this.rotationSprite.scale.x > 0 ? 1 : -1;
+            this.rotationSprite.rotation = direction * Math.PI * ease(dt, "cubicIn");
+        }
+
+        if(this.intensitySprite.visible) {
+            direction = this.intensitySprite.rotation === 0 ? 1 : -1;
+            this.intensitySprite.y = current.y - direction * ease(dt, "cubicIn");
+        }
+
         //<<-- /Creer-Merge: render -->>
     },
 
@@ -166,6 +188,25 @@ var WeatherStation = Classe(Building, {
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // update the WeatherStation based on its current and next states
+
+        this.rotationSprite.visible = false;
+        this.rotationSprite.scale.x = Math.abs(this.rotationSprite.scale.x);
+
+        this.intensitySprite.visible = false;
+        this.intensitySprite.rotation = 0;
+
+        if(nextReason && nextReason.run && nextReason.run.caller === this && nextReason.returned === true) {
+            if(nextReason.run.functionName === "rotate") {
+                this.rotationSprite.visible = true;
+                this.rotationSprite.scale.x *= nextReason.run.args.counterclockwise ? -1 : 1;
+            }
+            else { // "intensify"
+                this.intensitySprite.visible = true;
+                var negative = nextReason.run.args.negative;
+                this.intensitySprite.rotation = negative ? Math.PI : 0; // rotate the arrow 180 degrees, so flip is basically
+            }
+        }
+
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 

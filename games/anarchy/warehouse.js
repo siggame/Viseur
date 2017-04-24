@@ -80,7 +80,7 @@ var Warehouse = Classe(Building, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true, // Yes we want to show them
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -96,7 +96,7 @@ var Warehouse = Classe(Building, {
         Building.render.apply(this, arguments);
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // render where the Warehouse is
+
         //<<-- /Creer-Merge: render -->>
     },
 
@@ -153,6 +153,7 @@ var Warehouse = Classe(Building, {
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // any additional functions you want to add to this class can be perserved here
+    beamColor: Color("#FF8C00"),
     //<<-- /Creer-Merge: functions -->>
 
 });

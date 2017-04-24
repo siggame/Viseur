@@ -34,7 +34,7 @@ var BaseGame = Classe(Observable, {
             self._updateState(state);
         });
 
-        this._initLayers();
+        this._initLayers(this._layerNames);
 
         this._playerID = playerID;
         this.humanPlayer = new this.namespace.HumanPlayer(this);
@@ -53,9 +53,9 @@ var BaseGame = Classe(Observable, {
     _start: function() {
         this._started = true;
 
-        this._initBackground();
-
         var state = this._updateState(Viseur.getCurrentState());
+
+        this._initBackground(this.current || this.next);
 
         this.pane = new this.namespace.Pane(this, this.next);
         this.pane.update(this.current || this.next);
@@ -98,13 +98,14 @@ var BaseGame = Classe(Observable, {
      * Initializes layers based on _layerNames
      *
      * @private
+     * @param {Array.<string>} layerNames - list of layer names to initialize a layer for
      */
-    _initLayers: function() {
+    _initLayers: function(layerNames) {
         this.layers = {};
-        for(var i = 0; i < this._layerNames.length; i++) {
+        for(var i = 0; i < layerNames.length; i++) {
             var container = new PIXI.Container();
             container.setParent(this.renderer.rootContainer);
-            this.layers[this._layerNames[i]] = container;
+            this.layers[layerNames[i]] = container;
         }
     },
 
@@ -187,10 +188,17 @@ var BaseGame = Classe(Observable, {
         // update all the game objects now (including those we may have just created)
         for(id in stateGameObjects) {
             if(stateGameObjects.hasOwnProperty(id)) {
-                var currentGameObject = state.game ? state.game.gameObjects[id] : null;
-                var nextGameObject = state.nextGame ? state.nextGame.gameObjects[id] : null;
+                this.gameObjects[id].current = state.game ? state.game.gameObjects[id] : null;
+                this.gameObjects[id].next = state.nextGame ? state.nextGame.gameObjects[id] : null;
+            }
+        }
 
-                this.gameObjects[id].update(currentGameObject, nextGameObject, this._currentReason, this._nextReason);
+        // now that all the game objects are updated, tell them they got updated
+        for(id in stateGameObjects) {
+            if(stateGameObjects.hasOwnProperty(id)) {
+                var gameObject = this.gameObjects[id];
+
+                gameObject.updated(gameObject.current, gameObject.next, this._currentReason, this._nextReason);
             }
         }
 

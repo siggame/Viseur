@@ -26,6 +26,16 @@ var Pane = Classe(BasePane, {
 
         //<<-- Creer-Merge: game-stats -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // push PaneStats onto the stats array here if you want to show additional values
+        stats.push(
+            {
+                key: "currentForecast.intensity",
+                icon: "fire",
+            },
+            {
+                key: "currentForecast.direction",
+                icon: "cloud",
+            }
+        );
         //<<-- /Creer-Merge: game-stats -->>
 
         return stats;
@@ -42,7 +52,24 @@ var Pane = Classe(BasePane, {
         var stats = BasePane._getPlayerStats.apply(this, arguments);
 
         //<<-- Creer-Merge: player-stats -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // push PaneStats onto the stats array here if you want to show additional values
+        stats.push(
+            {
+                key: "headquarters.health",
+                icon: "heart",
+            },
+            {
+                icon: "building-o",
+                callback: function(s) {
+                    return s.buildings.reduce(function(count, building) {
+                        return count + (building.health === 0 ? 0 : 1);
+                    }, 0);
+                },
+            },
+            {
+                key: "bribesRemaining",
+                icon: "money",
+            }
+        );
         //<<-- /Creer-Merge: player-stats -->>
 
         return stats;
@@ -58,6 +85,14 @@ var Pane = Classe(BasePane, {
 
         //<<-- Creer-Merge: update -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // you can update things for the pane here
+
+        var scores = [];
+        for(var i = 0; i < state.players.length; i++) {
+            scores.push(state.players[i].headquarters.health);
+        }
+
+        this._setPlayersProgresses(scores);
+
         //<<-- /Creer-Merge: update -->>
     },
 

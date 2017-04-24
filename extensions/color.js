@@ -47,7 +47,7 @@ Color.prototype.colorMatrixFilter = function() {
  * @returns {Color} either black or white
  */
 Color.prototype.contrastingColor = function() {
-    return (this.hexNumber() > 0xffffff/2) ?
+    return this.light() ?
         Color("black") :
         Color("white");
 };

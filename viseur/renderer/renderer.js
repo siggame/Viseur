@@ -83,20 +83,23 @@ var Renderer = Classe(Observable, BaseElement, {
             $parent: this.$element,
         });
 
-        /* eslint-disable require-jsdoc */
-        function animate() {
-            window.requestAnimationFrame(animate); // this is the animate function itself
+        this._ticker = new PIXI.ticker.Ticker();
+        this._ticker.stop();
+        this._ticker.add(function() {
+            self.render();
+        });
 
-            self._emit("rendering");
-
-            self._renderer.render(self._scene);
-        }
-        /* eslint-enable require-jsdoc */
-
-        window.requestAnimationFrame(animate);
+        this._ticker.start();
     },
 
     _template: require("./renderer.hbs"),
+
+    render: function() {
+        // tell everything that is observing us that they need to update their PIXI objects
+        this._emit("rendering");
+        // and now have PIXI render it
+        this._renderer.render(this._scene);
+    },
 
     /**
      * loads textures into PIXI
@@ -108,6 +111,7 @@ var Renderer = Classe(Observable, BaseElement, {
         var loader = PIXI.loader;
 
         this._sheets = {};
+        this._spriteData = {};
         this._textures = {};
 
         textures[""] = { // all games have access to the blank (white) square
@@ -123,10 +127,11 @@ var Renderer = Classe(Observable, BaseElement, {
 
                 // it is a sprite sheet, so extract the path and build frames after loaded
                 loader.add(key, val.path);
+                this._spriteData[key] = val;
 
                 // then this is a sheet of frames we need to generate
-                if(val.width) {
-                    this._sheets[key] = val;
+                if(val.sheet) {
+                    this._sheets[key] = val.sheet;
                 }
             }
         }
@@ -149,12 +154,25 @@ var Renderer = Classe(Observable, BaseElement, {
                     var width = texture.width/sheet.width;
                     var height = texture.height/sheet.height;
 
-                    var i = 0;
-                    for(var y = 0; y < sheet.height; y++) {
-                        for(var x = 0; x < sheet.width; x++) {
-                            self._textures[key + "@" + i] = new PIXI.Texture(texture.baseTexture, new PIXI.Rectangle(x*width, y*height, width, height));
-                            i++;
+                    // assume x first for the major axis, but they can manually override with the axis: "y" sheet setting
+                    var yFirst = sheet.axis === "y" || sheet.axis === "Y";
+                    var size = sheet.width * sheet.height;
+
+                    // build a separate texture for each part of the sprite sheet
+                    for(var i = 0; i < size; i++) {
+                        var x = 0;
+                        var y = 0;
+
+                        if(yFirst) {
+                            x = Math.floor(i/sheet.height);
+                            y = i%sheet.height;
                         }
+                        else {
+                            x = i%sheet.width;
+                            y = Math.floor(i/sheet.width);
+                        }
+
+                        self._textures[key + "@" + i] = new PIXI.Texture(texture.baseTexture, new PIXI.Rectangle(x*width, y*height, width, height));
                     }
                 }
             }
@@ -165,6 +183,12 @@ var Renderer = Classe(Observable, BaseElement, {
         });
     },
 
+    /**
+     * Gets the texture for a given key
+     *
+     * @param  {string} key - the key of the texture
+     * @return {PIXI.Texture} the texture for that key
+     */
     getTexture: function(key) {
         var resource = this._resources[key];
         if(resource) {
@@ -292,13 +316,9 @@ var Renderer = Classe(Observable, BaseElement, {
      * @param {PIXI.Container} parentContainer - the parent container for the sprite
      * @param {number} [width=1] - the width of the sprite
      * @param {number} [height=1] - the height of the sprite
-     * @param {number} [frame] - the frame in the sprite sheet to use
      * @returns {PIXI.Sprite} a sprite with the given texture key, added to the parentContainer
      */
-    newSprite: function(textureKey, parentContainer, width, height, frame) {
-        width = Math.abs(Number(width) || 1);
-        height = Math.abs(Number(height) || 1);
-
+    newSprite: function(textureKey, parentContainer, width, height) {
         var texture = this.getTexture(textureKey);
         if(!texture) {
             throw new Error("Cannot load texture '{}' for a new sprite.".format(textureKey));
@@ -307,6 +327,16 @@ var Renderer = Classe(Observable, BaseElement, {
         // texture = new PIXI.Texture(texture.baseTexture, new PIXI.Rectangle(0, 0, texture.width/2, texture.height/2));
         var sprite = new PIXI.Sprite(texture);
         sprite.setParent(parentContainer);
+        var spriteDataKey = textureKey.split("@")[0]; // in case they are indexing a sprite sheet, we just need the first part before the '@' for the spriteData
+        var spriteData = this._spriteData[spriteDataKey] || {};
+
+        if(!width || width < 0) {
+            width = spriteData.width || 1;
+        }
+
+        if(!height || height < 0) {
+            height = spriteData.height || 1;
+        }
 
         // now scale the sprite, as it defaults to the dimensions of it's texture's pixel size
         sprite.unscale = function() {
@@ -399,6 +429,26 @@ var Renderer = Classe(Observable, BaseElement, {
             this._pxGraphics.lineTo(endX, dy);
             this._pxGraphics.endFill();
         }
+    },
+
+    /**
+     * Takes a sprite a "stretches" it between two points along it's width, useful for beam type effects
+     *
+     * @param {PIXI.Sprite} sprite - the sprite to use. Assumed to be 1x1 units by default. It's width and pivot will be scaled for the stretching
+     * @param {Object} pointA - the first point, an object with an {x, y} to derive coordinates from
+     * @param {Object} pointB - the second point, an object with an {x, y} to derive coordinates from
+     */
+    renderSpriteBetween: function(sprite, pointA, pointB) {
+        var distance = Math.euclideanDistance(pointA, pointB);
+        sprite.width = distance;
+        sprite.setRelativePivot(0.5, 0.5);
+
+        var angleRadians = Math.atan2(pointB.y - pointA.y, pointB.x - pointA.x);
+        sprite.rotation = angleRadians;
+
+        var midX = (pointA.x + pointB.x)/2;
+        var midY = (pointA.y + pointB.y)/2;
+        sprite.position.set(midX + 0.5, midY + 0.5);
     },
 });
 

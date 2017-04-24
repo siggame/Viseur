@@ -68,7 +68,10 @@ var Game = Classe(BaseGame, {
         BaseGame._start.call(this);
 
         //<<-- Creer-Merge: _start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // create some sprites
+
+        this.maxFire = state.maxFire; // needed by buildings for calculations when they are rendering
+        this.renderer.setSize(state.mapWidth, state.mapHeight);
+
         //<<-- /Creer-Merge: _start -->>
     },
 
@@ -82,7 +85,16 @@ var Game = Classe(BaseGame, {
         BaseGame._initBackground.call(this);
 
         //<<-- Creer-Merge: _initBackground -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialize a background bro
+        this._tileSprites = [];
+        for(var x = 0; x < state.mapWidth; x++) {
+            for(var y = 0; y < state.mapHeight; y++) {
+                var tile = this.renderer.newSprite("tile", this.layers.background);
+                tile.x = x;
+                tile.y = y;
+
+                this._tileSprites.push(tile);
+            }
+        }
         //<<-- /Creer-Merge: _initBackground -->>
     },
 
@@ -113,7 +125,8 @@ var Game = Classe(BaseGame, {
         var colors = BaseGame.getPlayersColors.apply(this, arguments);
 
         //<<-- Creer-Merge: getPlayersColors -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // You can change the players' colors here, by default player 1 is red, player 2 is blue.
+        colors[0] = Color("#008080");
+        colors[1] = Color("#DAA520");
         //<<-- /Creer-Merge: getPlayersColors -->>
 
         return colors;
@@ -138,6 +151,10 @@ var Game = Classe(BaseGame, {
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // any additional functions you want to add to this class can be perserved here
+    _initLayers: function(layerNames) {
+        layerNames.splice(layerNames.indexOf("game") + 1, 0, "beams");
+        return BaseGame._initLayers.call(this, layerNames);
+    },
     //<<-- /Creer-Merge: functions -->>
 
 });

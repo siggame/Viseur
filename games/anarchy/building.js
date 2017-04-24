@@ -8,6 +8,10 @@ var GameObject = require("./gameObject");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
+// This is the number of frames in the "fire" sprite, we use this to bound a number between the range [0, 5]
+var FIRE_FRAMES = 5;
+
+var updown = require("core/utils").updown;
 //<<-- /Creer-Merge: requires -->>
 
 /**
@@ -45,7 +49,73 @@ var Building = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+
+        // initialize our container, after this call, `this.container` will be set to a PIXI.Container, which will be a child of our game's 'game' layer. Background objects should probably go in the 'background', e.g. `this.game.layers.background`
+        this._initContainer(this.game.layers.game);
+
+        // the "alive" building will have a top and bottom sprite, which we can put in this container and threat them as one "object" for the purposes for hiding and showing
+        this.aliveContainer = new PIXI.Container();
+        this.aliveContainer.setParent(this.container);
+
+        // this will be the sprite that shows our building, and we want to put it inside our container
+        // the sprite key is just our class name (gameObjectName), which is set to the appropriate sprite in textures/index.js
+        var baseTextureName = initialState.gameObjectName.toLowerCase(); // this is defensive programming. We don't know if it will be upper or lower case, so we make sure it will always be lower case regardless
+
+        // the back sprite are neutral colors
+        this.buildingSpriteBack = this.renderer.newSprite(baseTextureName + "_back", this.aliveContainer);
+
+        // and the front is a white map we will re-color to the team's color
+        this.buildingSpriteFront = this.renderer.newSprite(baseTextureName + "_front", this.aliveContainer);
+        // by adding their' owner's color's PIXI.ColorMatrixFilter, we recolor the sprite.
+        // e.g. if a pixel is [1, 1, 1] (white) * [1, 0, 0.1] (red with a hint of blue) = [1*1, 1*0, 1*0.1]
+        var color = this.game.getColorFor(initialState.owner);
+        this.buildingSpriteFront.filters = [ color.colorMatrixFilter() ];
+
+        // when we die we need to look burnt up, so we want to initialize that sprite too
+        this.deadSprite = this.renderer.newSprite("dead", this.container);
+
+        this._initBar(this.container, {
+            width: 0.9,
+            foregroundColor: color.clone().lighten(0.75),
+            maxValue: initialState.health,
+        });
+
+        // now we need some nice fire sprites, notice they are a sprite sheet,
+        // so we want a sprite for each part of the sheet
+        this.fireSprites = [];
+        for(var i = 0; i < FIRE_FRAMES; i++) {
+            this.fireSprites.push(this.renderer.newSprite("fire@" + i, this.container));
+        }
+
+        var min = -0.03;
+        var max = 0.03;
+        this._randomX = Math.random() * (max - min) + min;
+        this._randomY = Math.random() * (max - min) + min;
+
+        // the headquarters has no unique sprite, but instead a graffiti marking to easily make it stand out
+        if(initialState.isHeadquarters) {
+            // we have two players with id "0" and "1", so we use that to quickly get their graffiti sprite
+            this.graffitiSprite = this.renderer.newSprite("graffiti_" + initialState.owner.id, this.aliveContainer);
+            // make it partially transparent because it looks nicer
+            this.graffitiSprite.alpha = 0.9;
+        }
+
+        // when we are the target on an attack, we'll highlight ourself so it's clear we are under attack
+        this.targetedSprite = this.renderer.newSprite("beam", this.container);
+        this.targetedSprite.alpha = 0.666; // make it partially opaque so people can still tell what building we are
+        this.targetedSprite.filters = [ Color("red").colorMatrixFilter() ]; // recolor to red
+
+        if(initialState.gameObjectName !== "WeatherStation") {
+            // all the building types shoot beams for animations, except WeatherStations, we we'll just aggregate the logic here
+            this.beamSprite = this.renderer.newSprite("beam", this.game.layers.beams);
+            this.beamSprite.filters = [ Color(this.beamColor).colorMatrixFilter() ];
+        }
+
+        // also buildings never move, so let's move them right now (normally you'd do that in render() if they moved dynamically)
+        // Notice we move the container's (x, y), this is because that moves it's child sprites, the buildingSprite and deadSprite. That way we can move 1 object and all the child nodes move too!
+        this.container.x = initialState.x;
+        this.container.y = initialState.y;
+
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -78,7 +148,7 @@ var Building = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true, // NOTE: we manually set this to true, as buildings should be (re)rendered a lot
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -95,6 +165,78 @@ var Building = Classe(GameObject, {
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // render where the Building is
+
+        // show our building sprite, as it's probably visible, and if not we'll set it to false later
+        this.aliveContainer.alpha = 1;
+        this.aliveContainer.visible = true;
+
+        // if we are being targeted, then display out targetedSprite
+        var run = nextReason && nextReason.run;
+        var beingTargeted = run && (run.args.building === this || run.args.warehouse === this);
+        this.targetedSprite.visible = beingTargeted;
+        // and fade it out
+        var targetedAlpha = ease(1 -dt, "cubicInOut");
+        this.targetedSprite.alpha = targetedAlpha;
+
+        var deadInBothStates = false;
+        if(current.health === 0 || next.health === 0) {
+            // it died at some point, so make the dead sprite visible
+            this.deadSprite.visible = true;
+
+            var alpha = 1; // we want to fade in/out the sprite based on if it currently died or not, so we will use the alpha channel
+            if(current.health === 0 && next.health === 0) {
+                // it is dead, and remains dead, so just hide our normal sprite
+                deadInBothStates = true;
+                this.aliveContainer.visible = false;
+            }
+            else { // current.health !== 0 && next.health === 0, which means it burned down :(
+                alpha = ease(dt, "cubicInOut"); // dt goes from 0 to 1, so at 0 we are not buned down, but as 1 we are
+                this.aliveContainer.alpha = 1 - alpha; // we want to ease out the buildingSprite in the opposite direction
+            }
+            // else keep alpha at 1
+
+            this.deadSprite.alpha = alpha;
+        }
+        else {
+            // it had health through both states, so don't show the dead building sprite
+            this.deadSprite.visible = false;
+        }
+
+        // update their health bar, if they want it to be displayed
+        var displayHealthBar = this.game.getSetting("display-health-bars") && !deadInBothStates;
+        this._setBarVisible(displayHealthBar);
+        if(displayHealthBar) {
+            // then update the health
+            this._updateBar(ease(current.health, next.health, dt, "cubicInOut"));
+        }
+
+        // now the correct building sprite is displayed
+        // so let's look at the fire!
+
+        for(var i = 0; i < FIRE_FRAMES; i++) {
+            this.fireSprites[i].visible = false;
+        }
+
+        // for we need to figure out which fire sprite to use
+        // we'll scale our current fire in the range [0, 20] to the sprite range [0, 5]
+        var percentOnFire = current.fire / this.game.maxFire; // now we know a percentage of how "on fire" we are
+        if(percentOnFire > 0) {
+            // scale that percent to the fire sprite sheet index to represent how on fire we are
+            var fireIndex = Math.round(percentOnFire * (FIRE_FRAMES-1));
+            var fireSprite = this.fireSprites[fireIndex];
+            fireSprite.visible = true;
+
+            if(this.game.getSetting("animate-fire")) {
+                var ud = updown(dt);
+                fireSprite.position.set(this._randomX*ud, this._randomY*ud);
+            }
+        }
+
+        // if we have a beam sprite, and it's visible, fade its alpha
+        if(this.beamSprite && this.beamSprite.visible) {
+            this.beamSprite.alpha = targetedAlpha; // re-use the alpha as we are the one targeting
+        }
+
         //<<-- /Creer-Merge: render -->>
     },
 
@@ -134,6 +276,19 @@ var Building = Classe(GameObject, {
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // update the Building based on its current and next states
+
+        // if this building shoots beams (is not a WeatherStation)
+        if(this.beamSprite) {
+            // assume it's not shooting a beam for this state
+            this.beamSprite.visible = false;
+            // but check if it is
+            if(nextReason && nextReason.run && nextReason.run.caller === this && nextReason.returned > -1) {
+                // and if it is the Building running a verb, show the beam shooting towards a target building
+                this.beamSprite.visible = true;
+                var building = nextReason.run.args.building || nextReason.run.args.warehouse;
+                this.renderer.renderSpriteBetween(this.beamSprite, current, building.current);
+            }
+        }
         //<<-- /Creer-Merge: _stateUpdated -->>
     },
 

@@ -7,7 +7,7 @@ module.exports = {
     "tile_branches": "tile_branches.png",
     "tile_food": "tile_food.png",
     "tile_flow_direction": "tile_flow_direction.png",
-    "tileset": {path: "tileset.png", width: 8, height: 6},
+    "tileset": {path: "tileset.png", sheet: {width: 8, height: 6, axis: "x"}}, // we want 0,1 to be 1, then 0,2 to be 2, and so on, so then 1,0 will be 6
 
     // Beavers
     "beaver_0": "beaver_0.png",
