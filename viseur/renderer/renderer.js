@@ -361,25 +361,27 @@ var Renderer = Classe(Observable, BaseElement, {
             height: 1,
         }, options);
 
+        var height = options.height;
+        delete options.height;
 
-        options.pxSize = options.height * (screen.height/this._height); // the max height in pixels that this text should be drawn at
+        var pxSize = (height * (screen.height/this._height));
+        options.fontSize = pxSize + "px"; // the max height in pixels that this text should be drawn at
 
         if(options.bold) {
-            options.bold = "bold ";
+            options.fontWeight = "bold";
+            delete options.bold;
         }
 
         if(options.fill && options.fill.rgbaString) { // then it is an instance of the 'color' module
             options.fill = options.fill.rgbaString();
         }
 
-        options.font = "{bold}{pxSize}px {fontFamily}".format(options);
-
         var pixiText = new PIXI.Text(text, options);
 
         pixiText.setParent(parent);
 
-        pixiText.scale.x = options.height / options.pxSize;
-        pixiText.scale.y = options.height / options.pxSize;
+        pixiText.scale.x = height/pxSize;
+        pixiText.scale.y = height/pxSize;
 
         return pixiText;
     },

@@ -53,9 +53,11 @@ var BaseGame = Classe(Observable, {
     _start: function() {
         this._started = true;
 
-        var state = this._updateState(Viseur.getCurrentState());
+        var state = Viseur.getCurrentState();
 
-        this._initBackground(this.current || this.next);
+        this._initBackground(state.game || state.nextGame);
+
+        this._updateState(state);
 
         this.pane = new this.namespace.Pane(this, this.next);
         this.pane.update(this.current || this.next);
