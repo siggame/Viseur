@@ -52,23 +52,8 @@ var Beaver = Classe(GameObject, {
         this._initContainer(this.game.layers.game);
 
         // the "bottom" of the beaver, which is the body, is based on team id, either 0 or 1.
-        var id = initialState.owner.id;
-
-        // hack for old gamelogs
-        // TODO: remove
-        if(id === "7") {
-            id = 0;
-        }
-        if(id === "8") {
-            id = 1;
-        }
-
-        this.bottomSprite = this.renderer.newSprite("beaver_" + id, this.container);
+        this.bottomSprite = this.renderer.newSprite("beaver_" + initialState.owner.id, this.container);
         this.tailSprite = this.renderer.newSprite("beaver_tail", this.container);
-
-        // color the tail based on our owner's team color
-        var ownerColor = this.game.getColorFor(initialState.owner);
-        this.tailSprite.filters = [ ownerColor.colorMatrixFilter() ];
 
         if(initialState.job.title !== "Basic") {
             var jobTitle = initialState.job.title.toLowerCase().replace(" ", "");
@@ -82,7 +67,6 @@ var Beaver = Classe(GameObject, {
 
         this._initBar(this.container, {
             width: 0.9,
-            foregroundColor: ownerColor.clone().lighten(0.75),
             maxValue: initialState.job.health,
         });
 
@@ -109,8 +93,6 @@ var Beaver = Classe(GameObject, {
      * @type {BeaverState|null})}
      */
     next: null,
-
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
     /**
      * Set this to `true` if this GameObject should be rendered.
@@ -205,6 +187,20 @@ var Beaver = Classe(GameObject, {
         // Add bottom offset here if desired
 
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+        GameObject.recolor.apply(this, arguments);
+
+        //<<-- Creer-Merge: recolor -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        var owner = this.game.gameObjects[(this.current || this.next).owner.id];
+        var ownerColor = owner.getColor();
+        this.tailSprite.filters = [ ownerColor.colorMatrixFilter() ];
+        this._recolorBar(ownerColor.clone().lighten(0.75));
+        //<<-- /Creer-Merge: recolor -->>
     },
 
     /**

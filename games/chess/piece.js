@@ -20,7 +20,7 @@ var GameObject = require("./gameObject");
  * @property {Array.<string>} logs - Any strings logged will be stored here. Intended for debugging.
  * @property {PlayerState} owner - The player that controls this chess Piece.
  * @property {number} rank - The rank (row) coordinate of the Piece represented as a number [1-8], with 1 starting at the bottom of the board.
- * @property {string} type - The type of chess Piece this is, either: 'King', 'Queen', 'Knight', 'Rook', 'Bishop', or 'Pawn'.
+ * @property {string} type - The type of chess Piece this is, either 'King, 'Queen', 'Knight', 'Rook', 'Bishop', or 'Pawn'.
  */
 
 /**
@@ -41,11 +41,12 @@ var Piece = Classe(GameObject, {
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        this._initialSpriteKey = this._generateSpriteKey(initialState);
+        this.owner = this.game.gameObjects[initialState.owner.id];
+        this._initialType = initialState.type;
 
         this._initContainer(this.game.boardContainer);
 
-        this._spriteInitial = this.renderer.newSprite(this._initialSpriteKey, this.container);
+        this._spriteInitial = this._generateSprite(initialState);
         this._spritePromoted = null; // used if the pawn is promoted
 
         //<<-- /Creer-Merge: init -->>
@@ -71,8 +72,6 @@ var Piece = Classe(GameObject, {
      * @type {PieceState|null})}
      */
     next: null,
-
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
     /**
      * Set this to `true` if this GameObject should be rendered.
@@ -126,6 +125,33 @@ var Piece = Classe(GameObject, {
         this.container.y -= this._bottomOffset; // push it up a bit to look better
 
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+        GameObject.recolor.apply(this, arguments);
+
+        //<<-- Creer-Merge: recolor -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        var color = this.owner.getColor();
+        var ownerState = this.owner.current || this.owner.next;
+        if(ownerState.color.toLowerCase() === "white" && color.hexString() === "#FFFFFF") {
+            color = Color("#D1D2D4");
+        }
+        else if(ownerState.color.toLowerCase() === "black" && color.hexString() === "#000000") {
+            color = Color("#58585A");
+        }
+
+        var initialSpriteTop = this._spriteInitial.getChildAt(1);
+        initialSpriteTop.filters = [ color.colorMatrixFilter() ];
+
+        if(this._spritePromoted) {
+            this._spritePromoted.getChildAt(1).filters = initialSpriteTop.filters;
+        }
+
+        //<<-- /Creer-Merge: recolor -->>
     },
 
     /**
@@ -203,13 +229,12 @@ var Piece = Classe(GameObject, {
 
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        if(!this._spritePromoted) { // check to see if we need to find the promoted sprite
-            var spriteKey = this._generateSpriteKey();
-            if(this._initialSpriteKey !== spriteKey) { // then we need to make that sprite
-                this._spritePromoted = this.renderer.newSprite(spriteKey, this.container);
-            }
+        if(!this._spritePromoted && this._initialType !== (this.next || this.current).type) { // check to see if we need to find the promoted sprite
+            // then we've been promoted
+            this._spritePromoted = this._generateSprite(this.next || this.current);
+            this.recolor();
         }
-        else { // need to display the correct sprite if at this state is has or has not been promoted
+        else if(this._spritePromoted) { // need to display the correct sprite if at this state is has or has not been promoted
             var isPawn = (current.type.toLowerCase() === "pawn");
 
             this._spriteInitial.visible = isPawn;
@@ -232,15 +257,24 @@ var Piece = Classe(GameObject, {
     /**
      * Generates the sprite key for the chess piece
      *
-     * @param {string} [state] - state override, otherwise will use the current or next state
-     * @returns {string} key for a sprite that represents this chess piece
+     * @param {PieceState} [state] - state override, otherwise will use the current or next state
+     * @returns {PIXI.DisplayObject} the sprite or container for the given state
      */
-    _generateSpriteKey: function(state) {
+    _generateSprite: function(state) {
         state = state || this.current || this.next;
-        var color = state.owner.id === "0" ? "white" : "black";
-        var type = state.type.toLowerCase();
 
-        return (color + "-" + type);
+        var type = state.type.toLowerCase();
+        var container = new PIXI.Container();
+        container.setParent(this.container);
+        var back = this.renderer.newSprite("piece_" + type + "_bottom", container);
+
+        var ownersChessColor = state.owner.color.toLowerCase();
+        back.filters = [ Color(ownersChessColor).colorMatrixFilter() ];
+
+        this.renderer.newSprite("piece_" + type + "_top", container);
+        // still needs to be recolored
+
+        return container;
     },
 
     /**

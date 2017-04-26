@@ -53,7 +53,12 @@ var Game = Classe(BaseGame, {
      */
     next: null,
 
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
+    /**
+     * How many players are expected to be in an instance of this Game
+     *
+     * @type {number}
+     */
+    numberOfPlayers: 2,
 
     /**
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
@@ -161,7 +166,7 @@ var Game = Classe(BaseGame, {
         for(var x = 0; x < 8; x++) {
             this._tileSprites[x] = [];
             for(var y = 0; y < 8; y++) {
-                var tile = this.renderer.newSprite(((x+y)%2 ? "white" : "black") + "-tile", this._tileContainer);
+                var tile = this.renderer.newSprite("tile_" + ((x+y)%2 ? "white" : "black"), this._tileContainer);
 
                 (function(tile, x, y, self) {
                     var onClick = function() {
@@ -221,22 +226,19 @@ var Game = Classe(BaseGame, {
     },
 
     /**
-     * Gets the colors of the player, should be indexed by their place in the Game.players array
+     * Sets the default colors of the player, should be indexed by their place in the Game.players array
      *
-     * @returns {Array.<Color>} - the colors for those players, defaults to red and blue
+     * @param {Array.<Color>} colors - the colors for those players, defaults to red and blue
      */
-    getPlayersColors: function() {
-        var colors = BaseGame.getPlayersColors.apply(this, arguments);
-
-        //<<-- Creer-Merge: getPlayersColors -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+    _setDefaultPlayersColors: function(colors) {
+        //<<-- Creer-Merge: _setDefaultPlayersColors -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         colors[0] = Color("white");
         colors[1] = Color("black");
 
-        //<<-- /Creer-Merge: getPlayersColors -->>
-
-        return colors;
+        //<<-- /Creer-Merge: _setDefaultPlayersColors -->>
     },
+
 
     /**
      * Invoked when the state updates.

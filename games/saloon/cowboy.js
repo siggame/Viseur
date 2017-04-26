@@ -54,6 +54,7 @@ var Cowboy = Classe(GameObject, {
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
         this.job = initialState.job;
+        this.owner = this.game.gameObjects[initialState.owner.id];
 
         this._initContainer(this.game.layers.game);
 
@@ -70,9 +71,6 @@ var Cowboy = Classe(GameObject, {
             this.spriteTop.anchor.x += 1;
         }
 
-        // color the top of the sprite as the player's color
-        var ownerColor = owner.getColor();
-        this.spriteTop.filters = [ ownerColor.colorMatrixFilter() ];
         // color the bottom (skin) green when drunk
         this._drunkFilter = Color("white").colorMatrixFilter();
         this.spriteBottom.filters = [ this._drunkFilter ];
@@ -103,7 +101,6 @@ var Cowboy = Classe(GameObject, {
 
         this._initBar(this.container, {
             width: 0.9,
-            foregroundColor: ownerColor.clone().lighten(0.25),
             maxValue: initialState.health,
         });
 
@@ -130,8 +127,6 @@ var Cowboy = Classe(GameObject, {
      * @type {CowboyState|null})}
      */
     next: null,
-
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
     /**
      * Set this to `true` if this GameObject should be rendered.
@@ -266,6 +261,28 @@ var Cowboy = Classe(GameObject, {
         }
 
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+        GameObject.recolor.apply(this, arguments);
+
+        //<<-- Creer-Merge: recolor -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        // color the top of the sprite as the player's color
+        var ownerColor = this.owner.getColor();
+        this.spriteTop.filters = [ ownerColor.colorMatrixFilter() ];
+        this._recolorBar(ownerColor.clone().lighten(0.25));
+
+        if(this._allFocusSprites) {
+            for(var i = 0; i < this._allFocusSprites.length; i++) {
+                this._allFocusSprites[i].filters = this.spriteTop.filters;
+            }
+        }
+
+        //<<-- /Creer-Merge: recolor -->>
     },
 
     /**

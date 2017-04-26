@@ -70,8 +70,6 @@ var PoliceDepartment = Classe(Building, {
      */
     next: null,
 
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
-
     /**
      * Set this to `true` if this GameObject should be rendered.
      *
@@ -96,6 +94,17 @@ var PoliceDepartment = Classe(Building, {
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // render where the PoliceDepartment is
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+        Building.recolor.apply(this, arguments);
+
+        //<<-- Creer-Merge: recolor -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // replace with code to recolor sprites based on player color
+        //<<-- /Creer-Merge: recolor -->>
     },
 
     /**

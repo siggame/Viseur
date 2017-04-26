@@ -39,6 +39,8 @@ var YoungGun = Classe(GameObject, {
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
+        this.owner = this.game.gameObjects[initialState.owner.id];
+
         this._initContainer(this.game.layers.game);
         this.spriteBottom = this.renderer.newSprite("young-gun_bottom", this.container);
         this.spriteTop = this.renderer.newSprite("young-gun_top", this.container);
@@ -50,9 +52,6 @@ var YoungGun = Classe(GameObject, {
             this.spriteTop.scale.x *= -1;
             this.spriteTop.anchor.x += 1;
         }
-
-        // color the top of the sprite as the player's color
-        this.spriteTop.filters = [ owner.getColor().colorMatrixFilter() ];
 
         //<<-- /Creer-Merge: init -->>
     },
@@ -77,8 +76,6 @@ var YoungGun = Classe(GameObject, {
      * @type {YoungGunState|null})}
      */
     next: null,
-
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
     /**
      * Set this to `true` if this GameObject should be rendered.
@@ -107,6 +104,20 @@ var YoungGun = Classe(GameObject, {
         this.container.y = ease(current.tile.y, next.tile.y, dt, "cubicInOut");
 
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+        GameObject.recolor.apply(this, arguments);
+
+        //<<-- Creer-Merge: recolor -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+
+        // color the top of the sprite as the player's color
+        this.spriteTop.filters = [ this.owner.getColor().colorMatrixFilter() ];
+
+        //<<-- /Creer-Merge: recolor -->>
     },
 
     /**

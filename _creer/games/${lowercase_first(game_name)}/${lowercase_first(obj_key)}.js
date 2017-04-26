@@ -11,12 +11,15 @@ var ease = require("core/utils").ease;
 % for parent_class in parent_classes:
 var ${parent_class} = require("./${lowercase_first(parent_class)}");
 % endfor
-% else:
+% endif
+% if len(parent_classes) == 0 or obj_key == "Player":
 <% if obj_key == "Game":
     parent_classes = [ 'BaseGame' ]
+elif obj_key == "Player":
+    parent_classes.append('BasePlayer')
 else:
     parent_classes = [ 'BaseGameObject' ]
-%>var ${parent_classes[0]} = require("viseur/game/${lowercase_first(parent_classes[0])}");
+%>var ${parent_classes[-1]} = require("viseur/game/${lowercase_first(parent_classes[-1])}");
 % endif
 
 ${merge("//", "requires", "// any additional requires you want can be required here safely between Creer runs")}
@@ -45,7 +48,7 @@ var ${obj_key} = Classe(${", ".join(parent_classes)}, {
      * @param {Game} game - the game this ${obj_key} is in
      */
     init: function(initialState, game) {
-% for parent_class in reversed(parent_classes):
+% for parent_class in parent_classes:
         ${parent_class}.init.apply(this, arguments);
 % endfor
 
@@ -74,8 +77,13 @@ ${merge("        //", "init", "        // initialization logic goes here")}
      */
     next: null,
 
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 % if obj_key == "Game":
+    /**
+     * How many players are expected to be in an instance of this Game
+     *
+     * @type {number}
+     */
+    numberOfPlayers: ${obj['numberOfPlayers']},
 
     /**
      * Called when Viseur is ready and wants to start rendering the game. This is really where you should init stuff
@@ -118,20 +126,20 @@ ${merge("        //", "_renderBackground", "        // update and re-render what
     },
 
     /**
-     * Gets the colors of the player, should be indexed by their place in the Game.players array
+     * Sets the default colors of the player, should be indexed by their place in the Game.players array
      *
-     * @returns {Array.<Color>} - the colors for those players, defaults to red and blue
+     * @param {Array.<Color>} colors - the colors for those players, defaults to red and blue
      */
-    getPlayersColors: function() {
-        var colors = BaseGame.getPlayersColors.apply(this, arguments);
-
-${merge("        //", "getPlayersColors", "        // You can change the players' colors here, by default player 1 is red, player 2 is blue.")}
-
-        return colors;
+    _setDefaultPlayersColors: function(colors) {
+${merge("        //", "_setDefaultPlayersColors", "        // You can change the players' colors here, by default player 0 is red, player 1 is blue.")}
     },
-% else:
 
-    /**
+% else:
+<%
+if obj_key == "Player":
+    #// remove the BasePlayer class as it's been inherited properly now
+    parent_classes.pop(1)
+%>    /**
      * Set this to `true` if this GameObject should be rendered.
      *
      * @static
@@ -153,6 +161,17 @@ ${merge("    //", "shouldRender", "    shouldRender: false,")}
 % endfor
 
 ${merge("        //", "render", "        // render where the " + obj_key + " is")}
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+% for parent_class in reversed(parent_classes):
+        ${parent_class}.recolor.apply(this, arguments);
+% endfor
+
+${merge("        //", "recolor", "        // replace with code to recolor sprites based on player color")}
     },
 
     /**

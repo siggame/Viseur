@@ -57,9 +57,11 @@ var BaseInput = Classe(BaseElement, Observable, {
      * @param {*} newValue - the new value to set to
      */
     setValue: function(newValue) {
-        this._value = newValue;
+        if(this._value !== newValue) {
+            this._value = newValue;
 
-        this._updateElementValue();
+            this._updateElementValue();
+        }
     },
 
 

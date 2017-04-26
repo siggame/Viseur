@@ -37,24 +37,36 @@ var GameOverScreen = Classe(BaseElement, {
     _itemPartial: partial(require("./gameOverScreenItem.hbs")),
 
     show: function() {
+        if(!this._built) {
+            this._buildItems();
+        }
+
+        this.$element.removeClass("collapsed");
+    },
+
+    hide: function() {
+        this.$element.addClass("collapsed");
+    },
+
+    _buildItems: function() {
         this.$winners.html("");
         this.$losers.html("");
 
-        var players = (this.game.current || this.game.next).players;
-        var colors = this.game.getPlayersColors();
-        for(var i = 0; i < players.length; i++) {
-            var originalColor = colors[i];
-            var player = players[i];
-            var color = originalColor.clone().clearer(0.375);
+        this._$items = [];
+        var playerState;
+        for(var i = 0; i < this.game.players.length; i++) {
+            var player = this.game.players[i];
+            playerState = player.current || player.next;
+            var color = player.getColor();
 
-            var $list = (player.won ? this.$winners : this.$losers);
-            this._itemPartial({
-                name: utils.escapeHTML(player.name),
-                wonOrLost: player.won ? "Won" : "Lost",
-                reason: player.won ? player.reasonWon : player.reasonLost,
-                bgColor: color.rgbaString(),
-                textColor: originalColor.contrastingColor().rgbString(),
-            }, $list);
+            var $list = (playerState.won ? this.$winners : this.$losers);
+            this._$items.push(this._itemPartial({
+                name: utils.escapeHTML(playerState.name),
+                wonOrLost: playerState.won ? "Won" : "Lost",
+                reason: playerState.won ? playerState.reasonWon : playerState.reasonLost,
+                bgColor: color.clone().clearer(0.375).rgbaString(),
+                textColor: color.contrastingColor().rgbString(),
+            }, $list));
         }
 
         this.$losers.show(this.$losers.html() !== "");
@@ -63,15 +75,28 @@ var GameOverScreen = Classe(BaseElement, {
             this._itemPartial({
                 name: "Game Over -",
                 wonOrLost: "Tie",
-                reason: players[0].reasonLost, // for draws all players should have the same reasonLost
+                reason: playerState.reasonLost, // for draws all players should have the same reasonLost, so using the last one's reasonLost should be the same for any of them
             }, this.$winners);
         }
 
-        this.$element.removeClass("collapsed");
+        this.recolor();
+
+        this._built = true;
     },
 
-    hide: function() {
-        this.$element.addClass("collapsed");
+    recolor: function() {
+        if(!this._built) {
+            return; // nothing to recolor... yet
+        }
+
+        for(var i = 0; i < this.game.players.length; i++) {
+            var player = this.game.players[i];
+            var color = player.getColor();
+
+            this._$items[i].find(".bg-wrapper")
+                .css("background-color", color.clone().clearer(0.375).rgbaString())
+                .css("color", color.contrastingColor().rgbString());
+        }
     },
 });
 

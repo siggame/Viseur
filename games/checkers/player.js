@@ -5,6 +5,7 @@ var Color = require("color");
 var ease = require("core/utils").ease;
 
 var GameObject = require("./gameObject");
+var BasePlayer = require("viseur/game/basePlayer");
 
 //<<-- Creer-Merge: requires -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 // any additional requires you want can be required here safely between Creer runs
@@ -30,9 +31,10 @@ var GameObject = require("./gameObject");
 /**
  * @class
  * @classdesc A player in this game. Every AI controls one player.
+ * @extends BasePlayer
  * @extends GameObject
  */
-var Player = Classe(GameObject, {
+var Player = Classe(GameObject, BasePlayer, {
     /**
      * Initializes a Player with basic logic as provided by the Creer code generator. This is a good place to initialize sprites
      *
@@ -42,6 +44,7 @@ var Player = Classe(GameObject, {
      */
     init: function(initialState, game) {
         GameObject.init.apply(this, arguments);
+        BasePlayer.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // initialization logic goes here
@@ -69,8 +72,6 @@ var Player = Classe(GameObject, {
      */
     next: null,
 
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
-
     /**
      * Set this to `true` if this GameObject should be rendered.
      *
@@ -95,6 +96,17 @@ var Player = Classe(GameObject, {
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // render where the Player is
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+        GameObject.recolor.apply(this, arguments);
+
+        //<<-- Creer-Merge: recolor -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // replace with code to recolor sprites based on player color
+        //<<-- /Creer-Merge: recolor -->>
     },
 
     /**

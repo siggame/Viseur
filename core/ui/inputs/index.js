@@ -9,4 +9,5 @@ module.exports = {
     Slider: require("./slider"),
     File: require("./file"),
     DropDown: require("./dropDown"),
+    ColorPicker: require("./colorPicker"),
 };

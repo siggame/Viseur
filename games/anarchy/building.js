@@ -53,6 +53,9 @@ var Building = Classe(GameObject, {
         // initialize our container, after this call, `this.container` will be set to a PIXI.Container, which will be a child of our game's 'game' layer. Background objects should probably go in the 'background', e.g. `this.game.layers.background`
         this._initContainer(this.game.layers.game);
 
+        // our owner's Player instance, needed to recolor ourself
+        this.owner = this.game.gameObjects[initialState.owner.id];
+
         // the "alive" building will have a top and bottom sprite, which we can put in this container and threat them as one "object" for the purposes for hiding and showing
         this.aliveContainer = new PIXI.Container();
         this.aliveContainer.setParent(this.container);
@@ -66,17 +69,12 @@ var Building = Classe(GameObject, {
 
         // and the front is a white map we will re-color to the team's color
         this.buildingSpriteFront = this.renderer.newSprite(baseTextureName + "_front", this.aliveContainer);
-        // by adding their' owner's color's PIXI.ColorMatrixFilter, we recolor the sprite.
-        // e.g. if a pixel is [1, 1, 1] (white) * [1, 0, 0.1] (red with a hint of blue) = [1*1, 1*0, 1*0.1]
-        var color = this.game.getColorFor(initialState.owner);
-        this.buildingSpriteFront.filters = [ color.colorMatrixFilter() ];
 
         // when we die we need to look burnt up, so we want to initialize that sprite too
         this.deadSprite = this.renderer.newSprite("dead", this.container);
 
         this._initBar(this.container, {
             width: 0.9,
-            foregroundColor: color.clone().lighten(0.75),
             maxValue: initialState.health,
         });
 
@@ -139,8 +137,6 @@ var Building = Classe(GameObject, {
      * @type {BuildingState|null})}
      */
     next: null,
-
-    // The following values should get overridden when delta states are merged, but we set them here as a reference for you to see what variables this class has.
 
     /**
      * Set this to `true` if this GameObject should be rendered.
@@ -238,6 +234,23 @@ var Building = Classe(GameObject, {
         }
 
         //<<-- /Creer-Merge: render -->>
+    },
+
+    /**
+     * Invoked after init or when a player changes their color, so we have a chance to recolor this GameObject's sprites
+     */
+    recolor: function() {
+        GameObject.recolor.apply(this, arguments);
+
+        //<<-- Creer-Merge: recolor -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
+        // replace with code to recolor sprites based on player color
+
+        // by adding their' owner's color's PIXI.ColorMatrixFilter, we recolor the sprite.
+        // e.g. if a pixel is [1, 1, 1] (white) * [1, 0, 0.1] (red with a hint of blue) = [1*1, 1*0, 1*0.1]
+        var color = this.owner.getColor();
+        this.buildingSpriteFront.filters = [ color.colorMatrixFilter() ];
+        this._recolorBar(color.clone().lighten(0.75));
+        //<<-- /Creer-Merge: recolor -->>
     },
 
     /**

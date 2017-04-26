@@ -56,4 +56,11 @@ module.exports = [
         input: "CheckBox",
         default: true,
     },
+    {
+        id: "allow-playerset-colors",
+        label: "Show Logged Colors",
+        hint: "Allows Players in gamelogs to set their colors via log calls",
+        input: "CheckBox",
+        default: true,
+    },
 ];

@@ -23,23 +23,6 @@ var BaseGameObject = Classe(Observable, {
 
         this.game = game;
         this.renderer = game.renderer;
-
-        if(this.gameObjectName === "Player") { // then hookup our color
-            var colors = game.getPlayersColors();
-            var state = game.current || game.next;
-
-            for(var i = 0; i < state.players.length; i++) {
-                if(state.players[i].id === this.id) {
-                    (function(self, color) {
-                        self.getColor = function() {
-                            return color;
-                        };
-                    })(this, colors[i]);
-
-                    break; // we found our color
-                }
-            }
-        }
     },
 
     /**
@@ -278,6 +261,12 @@ var BaseGameObject = Classe(Observable, {
         this._uxGraphics.setParent(this.container);
     },
 
+    /**
+     * Initializes a bar, such as for a health bar, on this GameObject
+     *
+     * @param {PIXI.DisplayObject} container - container to put this bar into
+     * @param  {Object} [options] - dictionary of options for creating the bar
+     */
     _initBar: function(container, options) {
         options = options || {};
 
@@ -315,12 +304,36 @@ var BaseGameObject = Classe(Observable, {
         };
     },
 
+    /**
+     * Makes the bar and it's components visible or not
+     *
+     * @param {boolean} visible - true if they should be visible, false otherwise
+     */
     _setBarVisible: function(visible) {
         this._bar.container.visible = visible;
     },
 
+    /**
+     * Updates the bar to some new value, will be scaled via the given maxValue set during _initBar
+     * @param {number} value - new value to scale to, must be [0, maxValue]
+     */
     _updateBar: function(value) {
         this._bar.foreground.width = this._bar.width * (value / this._bar.maxValue);
+    },
+
+    /**
+     * Recolors the parts of the bar
+     * @param {Color} foregroundColor - the Color to recolor the foreground part of the bar to
+     * @param {Color} backgroundColor - the Color to recolor the background part of the bar to
+     */
+    _recolorBar: function(foregroundColor, backgroundColor) {
+        if(foregroundColor) {
+            this._bar.foreground.filters = [ foregroundColor.colorMatrixFilter() ];
+        }
+
+        if(backgroundColor) {
+            this._bar.background.filters = [ backgroundColor.colorMatrixFilter() ];
+        }
     },
 
     /**
@@ -332,6 +345,14 @@ var BaseGameObject = Classe(Observable, {
      */
     _runOnServer: function(run, args, callback) {
         this.game.runOnServer(this, run, args, callback);
+    },
+
+    /**
+     * Intended to be overridden by classes that have a player color so they can re-color themselves when a player color changes
+     * Also invoked after initialization
+     */
+    recolor: function() {
+        // do nothing, if a game object can be recolored, it should override this function
     },
 });
 

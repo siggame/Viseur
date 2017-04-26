@@ -24,7 +24,6 @@ var BasePane = Classe(BaseElement, {
         }
 
         this.game = game;
-        this.playersColors = game.getPlayersColors();
 
         this._ticking = {
             timer: new Timer(),
@@ -56,15 +55,15 @@ var BasePane = Classe(BaseElement, {
         for(i = 0; i < playerIDs.length; i++) {
             var playerID = playerIDs[i];
 
-            var color = this.playersColors[i];
             var classes = "player player-{} player-id-{}".format(i, playerID);
 
-            this._playerStatsList[playerID] = this._createStatList(playerStats, this._$players, classes, color);
+            this._playerStatsList[playerID] = this._createStatList(playerStats, this._$players, classes);
             this._$playerProgressBars[i] = $("<div>")
                 .addClass("player-{}-progress-bar".format(i))
-                .css("background-color", color.rgbString())
                 .appendTo($playerProgressBarsDiv);
         }
+
+        this.recolor();
     },
 
     _template: require("./basePane.hbs"),
@@ -145,21 +144,14 @@ var BasePane = Classe(BaseElement, {
      * @param {Array.<PaneStat>} stats - all the stats to list
      * @param {$} $parent -jQuery parent for this list
      * @param {string} [classes] - optional classes for the html element
-     * @param {Color} [bgColor] - background color for the list
      * @returns {Object} - container object containing all the parts of this list
      */
-    _createStatList: function(stats, $parent, classes, bgColor) {
+    _createStatList: function(stats, $parent, classes) {
         var list = {
             stats: stats,
             $element: this._statsPartial({classes: classes}, $parent),
             $stats: {},
         };
-
-        if(bgColor) {
-            list.$element
-                .css("background-color", bgColor.rgbString())
-                .css("color", bgColor.contrastingColor().rgbString());
-        }
 
         for(var i = 0; i < stats.length; i++) {
             var stat = stats[i];
@@ -197,6 +189,19 @@ var BasePane = Classe(BaseElement, {
 
         // update games
         this._updateStatsList(this._gameStatsList, state);
+    },
+
+    recolor: function() {
+        for(var i = 0; i < this.game.players.length; i++) {
+            var player = this.game.players[i];
+            var color = player.getColor();
+
+            this._$playerProgressBars[i].css("background-color", color.rgbString());
+
+            this._playerStatsList[player.id].$element
+                .css("background-color", color.rgbString())
+                .css("color", color.contrastingColor().rgbString());
+        }
     },
 
     _updateStatsList: function(statsList, obj) {

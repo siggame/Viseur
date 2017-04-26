@@ -24,6 +24,7 @@ var BaseGame = Classe(Observable, {
         this.renderer = Viseur.renderer;
         this.gameObjects = {};
         this.random = new Math.seedrandom(gamelog ? gamelog.randomSeed : undefined);
+        this.players = [];
 
         var self = this;
         Viseur.on("ready", function() {
@@ -43,6 +44,30 @@ var BaseGame = Classe(Observable, {
             $parent: Viseur.gui.$rendererWrapper,
             game: this,
         });
+
+        // allow sub classes to override player colors
+        this._defaultPlayerColors = [ Color("#C33"), Color("#33C") ]; // the default colors, red and blue
+        this._setDefaultPlayersColors(this._defaultPlayerColors);
+
+        // inject player color settings
+        var settings = this.namespace.settings;
+        for(var i = this.numberOfPlayers; i--;) { // iterate in reverse order
+            settings.unshift({
+                id: "player-color-" + i,
+                label: "Player " + i + " Color",
+                hint: "Overrides the color for Player " + i,
+                input: "ColorPicker",
+                default: this._defaultPlayerColors[i].hexString(),
+            });
+        }
+
+        settings.unshift({
+            id: "custom-player-colors",
+            label: "Custom Player Colors",
+            hint: "Use your custom player colors defined below.",
+            input: "CheckBox",
+            default: true,
+        });
     },
 
     /**
@@ -52,6 +77,7 @@ var BaseGame = Classe(Observable, {
      */
     _start: function() {
         this._started = true;
+        var self = this;
 
         var state = Viseur.getCurrentState();
 
@@ -65,6 +91,16 @@ var BaseGame = Classe(Observable, {
         if(this.humanPlayer) {
             this.humanPlayer.setPlayer(this.gameObjects[this._playerID]);
             this.pane.setHumanPlayer(this._playerID);
+        }
+
+        // attach callbacks to recolor whenever a color setting changes
+        var recolorCallback = function recolorCallback() {
+            self.recolor();
+        };
+
+        this.onSettingChanged("custom-player-colors", recolorCallback);
+        for(var i = this.numberOfPlayers; i--;) { // iterate in reverse order
+            self.onSettingChanged("player-color-" + i, recolorCallback);
         }
     },
 
@@ -95,6 +131,13 @@ var BaseGame = Classe(Observable, {
         "game",
         "ui",
     ],
+
+    /**
+     * Intended to be overwritten by sub classes
+     *
+     * @type {Number}
+     */
+    numberOfPlayers: 2,
 
     /**
      * Initializes layers based on _layerNames
@@ -177,9 +220,11 @@ var BaseGame = Classe(Observable, {
         }
 
         // initialize new game objects we have not seen yet
+        var newGameObjects = {};
         for(var id in stateGameObjects) {
             if(stateGameObjects.hasOwnProperty(id) && !this.gameObjects[id]) {
-                this._initGameObject(id, (state.game && state.game.gameObjects[id]) || (state.nextGame && state.nextGame.gameObjects[id]));
+                var newGameObject = this._initGameObject(id, (state.game && state.game.gameObjects[id]) || (state.nextGame && state.nextGame.gameObjects[id]));
+                newGameObjects[newGameObject.id] = true; // poor man's set
             }
         }
 
@@ -201,6 +246,10 @@ var BaseGame = Classe(Observable, {
                 var gameObject = this.gameObjects[id];
 
                 gameObject.updated(gameObject.current, gameObject.next, this._currentReason, this._nextReason);
+                if(newGameObjects[id]) {
+                    // it needs to be colored, now that all of it's references are hooked up
+                    gameObject.recolor();
+                }
             }
         }
 
@@ -265,11 +314,14 @@ var BaseGame = Classe(Observable, {
 
     /**
      * initializes a new game object with the given id
+     *
      * @param {string} id - the id of the game object to initialize
      * @param {Object} state - the initial state of the new game object
+     * @returns {BaseGameObject} the newly created game object
      */
     _initGameObject: function(id, state) {
-        var newGameObject = new this._gameObjectClasses[state.gameObjectName](state, this);
+        var className = state.gameObjectName;
+        var newGameObject = new this._gameObjectClasses[className](state, this);
 
         var self = this;
         newGameObject.on("inspect", function() {
@@ -277,6 +329,13 @@ var BaseGame = Classe(Observable, {
         });
 
         this.gameObjects[id] = newGameObject;
+
+        if(className === "Player") {
+            this.players[newGameObject.playersIndex] = newGameObject;
+            newGameObject.defaultColor = this._defaultPlayerColors[newGameObject.playersIndex];
+        }
+
+        return newGameObject;
     },
 
     /**
@@ -322,29 +381,26 @@ var BaseGame = Classe(Observable, {
     },
 
     /**
-     * Gets the colors of the player, should be indexed by their place in the Game.players array
+     * Sets the default colors of the player, should be indexed by their place in the Game.players array
      *
-     * @returns {Array.<Color>} - the colors for those players, defaults to red and blue
+     * @param {Array.<Color>} colors - the colors for those players, defaults to red and blue
      */
-    getPlayersColors: function() {
-        var colors = [ Color("#C33"), Color("#33C") ]; // the default colors
-
-        colors[0].contrastingColor = function() {
-            return Color("white");
-        };
-
-        return colors; // by default player 1 is red, player 2 is blue
+    _setDefaultPlayersColors: function(colors) {
+        // this is a virtual interface method
     },
 
     /**
-     * Gets the Color for a given PlayerState in this game
-     *
-     * @param {PlayerState} playerState - the player state to get the color for
-     * @returns {Color} the color for that player state
+     * Invoked when a player color changes, so all game objects have an opportunity to recolor themselves
      */
-    getColorFor: function(playerState) {
-        var playerClassInstance = this.gameObjects[playerState.id];
-        return playerClassInstance.getColor();
+    recolor: function() {
+        for(var id in this.gameObjects) {
+            if(this.gameObjects.hasOwnProperty(id)) {
+                this.gameObjects[id].recolor();
+            }
+        }
+
+        this.pane.recolor();
+        this.gameOverScreen.recolor();
     },
 
     /**
