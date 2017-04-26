@@ -24,7 +24,7 @@ var InfoPane = Classe(BaseElement, Observable, {
         this.$content = this.$element.find(".info-pane-content");
 
         this.snapTo(SettingsManager.get("viseur", "info-pane-side", "right"));
-        this.resize(SettingsManager.get("viseur", "info-pane-length", 400));
+        this.resize(SettingsManager.get("viseur", "info-pane-length", 420));
 
         var self = this;
         this.$resizer.on("mousedown", function(downEvent) {

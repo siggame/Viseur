@@ -10,7 +10,7 @@
     position: fixed;
     width: 100%;
     height: 100%;
-    @include transition(height 0s, width 0s !important);
+    @include transition(height 0s, width 0s !important); // make it so dragging to resize is instant and not delayed
 
 
     & > .info-pane-content, & > .info-pane-resizer {

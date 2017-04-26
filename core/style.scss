@@ -45,12 +45,12 @@ button {
     }
 }
 
-input, style, button {
+input, style, button, option {
     @extend .font-normal;
 }
 
 input[type=textbox] {
-    width: 11em;
+    width: 10em;
 }
 
 @import "./range";
