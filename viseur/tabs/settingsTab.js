@@ -38,21 +38,23 @@ var SettingsTab = Classe(BaseElement, {
     _template: require("./settingsTab.hbs"),
 
     /**
-     * Initalizes the settings for a game, invoked when Viseur is ready so it has a game created to load settings from
+     * Initializes the settings for a game, invoked when Viseur is ready so it has a game created to load settings from
      *
      * @private
      * @param {string} namespace - the namespace for the settings to init. Will be a game name or "viseur" for Viseur core settings
-     * @param {Object} settings - key value pairs of settings
+     * @param {Array} settings - list of settings from a settings.js file
      * @param {$} $parent - jQuery parent element
      */
     _initSettings: function(namespace, settings, $parent) {
+        var self = this;
+
         if(settings.length === 0) {
             $parent.append($("<span>")
                 .addClass("no-settings")
                 .html("None")
             );
 
-            return;
+            return; // no settings to add, we're done here
         }
 
         for(var i = 0; i < settings.length; i++) {
@@ -61,7 +63,6 @@ var SettingsTab = Classe(BaseElement, {
             }, settings[i]);
 
             var inputClass = inputs[setting.input];
-
             var input = new inputClass(setting);
 
             if(setting.onInputCreated) {
@@ -81,6 +82,15 @@ var SettingsTab = Classe(BaseElement, {
 
             this._setupInput(input, namespace, setting.id);
         }
+
+        // add a "reset to defaults" button for this new settings section
+        $("<button>")
+            .appendTo($parent)
+            .addClass("reset-to-defaults")
+            .html("Reset to Defaults")
+            .on("click", function() {
+                self._resetToDefaults(namespace, settings);
+            });
     },
 
     /**
@@ -102,6 +112,24 @@ var SettingsTab = Classe(BaseElement, {
 
         // finally store it for easy lookup
         this._settingInputs.push(input);
+    },
+
+    /**
+     * Resets a list of settings to the default values
+     *
+     * @private
+     * @param {string} namespace - the namespace for the settings to init. Will be a game name or "viseur" for Viseur core settings
+     * @param {Array} settings - list of settings from a settings.js file
+     */
+    _resetToDefaults: function(namespace, settings) {
+        for(var i = 0; i < settings.length; i++) {
+            var setting = settings[i];
+
+            // if the setting has the key "default" set, it has a default value to reset it to
+            if(Object.hasOwnProperty.call(setting, "default")) {
+                SettingsManager.set(namespace, setting.id, setting.default);
+            }
+        }
     },
 });
 

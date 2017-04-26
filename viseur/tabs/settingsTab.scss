@@ -1,4 +1,6 @@
 @import "core/colors";
+@import "core/fontAwesome";
+@import "core/mixins";
 
 .settings-tab {
     & #resolution-width-field, & #resolution-height-field {
@@ -12,5 +14,18 @@
 
     & #resolution-type-field {
         margin-top: 1em;
+    }
+
+    & .reset-to-defaults {
+        margin-bottom: 1em;
+
+        &:before {
+            @include icon('repeat');
+            margin-right: 0.75em;
+        }
+
+        &:hover:before {
+            @include rotate(360deg);
+        }
     }
 }

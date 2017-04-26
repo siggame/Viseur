@@ -23,11 +23,30 @@ code, pre {
 a, .link {
     color: $primary-dark;
     text-decoration: underline;
+
+    &:hover, &:focus {
+        color: $secondary-dark;
+        cursor: pointer;
+    }
 }
 
-a:hover, a:focus, .link:hover, .link:focus {
-    color: $secondary-dark;
-    cursor: pointer;
+button {
+    background-color: $primary;
+    color: $white;
+    padding: 0.5em 1em;
+    margin: 0.5em 0;
+    border: none;
+    font-size: 1em;
+
+    &:hover, &:focus {
+        background-color: $primary-dark;
+        color: $white;
+        cursor: pointer;
+    }
+}
+
+input, style, button {
+    @extend .font-normal;
 }
 
 @import "./range";

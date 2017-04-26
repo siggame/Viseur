@@ -34,6 +34,14 @@
     animation: #{$str};
 }
 
+@mixin rotate($str) {
+    -webkit-transform: rotate($str);
+    -moz-transform: rotate($str);
+    -o-transform: rotate($str);
+    -ms-transform: rotate($str);
+    transform: rotate($str);
+}
+
 @mixin opacity($opacity) {
     opacity: $opacity;
     $opacity-ie: $opacity * 100;

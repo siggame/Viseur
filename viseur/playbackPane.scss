@@ -39,13 +39,24 @@
 
     & button {
         border: none;
-        background: $primary-light;
+        background-color: $primary-light;
         display: inline-block;
         width: 2em;
         height: 2em;
+        padding: 0;
+        color: $black;
+        font-size: 0.875em;
+        margin: 0;
 
         &:disabled {
             background: $primary-lightest;
+            cursor: default;
+        }
+
+        &:hover, &:focus {
+            &:not(:disabled) {
+                background-color: $primary;
+            }
         }
     }
 
