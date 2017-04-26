@@ -5,6 +5,7 @@ var filesaver = require("file-saver");
 var Classe = require("classe");
 var BaseElement = require("core/ui/baseElement");
 var inputs = require("core/ui/inputs/");
+var config = require("config.json").connectTab || {};
 var Viseur = require("viseur/");
 
 /**
@@ -74,6 +75,8 @@ var FileTab = Classe(BaseElement, {
      * Initializes the "Remote Gamelog" section
      */
     _initRemoteGamelogSection: function() {
+        var self = this;
+
         this.$remoteGamelogWrapper = this.$element.find(".remote-gamelog");
 
         this.remoteGamelogInput = new inputs.TextBox({
@@ -83,9 +86,19 @@ var FileTab = Classe(BaseElement, {
             $parent: this.$remoteGamelogWrapper,
         });
 
-        var self = this;
         this.remoteGamelogInput.on("submitted", function(url) {
             self._remoteGamelogSubmitted(url);
+        });
+
+        this.remoteVisualizeButton = new inputs.Button({
+            id: "remote-gamelog-button",
+            text: "Visualize",
+            label: " ",
+            $parent: this.$remoteGamelogWrapper,
+        });
+
+        this.remoteVisualizeButton.on("clicked", function() {
+            self._remoteGamelogSubmitted(self.remoteGamelogInput.getValue());
         });
     },
 
@@ -123,6 +136,7 @@ var FileTab = Classe(BaseElement, {
         }
         this._humanPlayableGames.sortAscending();
 
+
         this.gameInput = new inputs.DropDown({
             id: "remote-game-name",
             label: "Game",
@@ -134,14 +148,14 @@ var FileTab = Classe(BaseElement, {
             id: "connect-session",
             label: "Session",
             $parent: this.$connectWrapper,
-            placeholder: "new",
+            placeholder: config.session || "new",
         });
 
         this.serverInput = new inputs.TextBox({
             id: "connect-server",
             label: "Server",
             $parent: this.$connectWrapper,
-            value: window.location.hostname,
+            value: config.server || window.location.hostname,
         });
 
         this.portInput = new inputs.Number({
@@ -156,7 +170,7 @@ var FileTab = Classe(BaseElement, {
             id: "connect-name",
             label: "Player Name",
             $parent: this.$connectWrapper,
-            placeholder: "Human",
+            placeholder: config.humanName || "Human",
         });
 
         this.presentationInput = new inputs.CheckBox({
@@ -167,7 +181,7 @@ var FileTab = Classe(BaseElement, {
         });
 
         this.connectButton = new inputs.Button({
-            id: "connect-connect",
+            id: "connect-connect-button",
             text: "Connect",
             label: " ",
             $parent: this.$connectWrapper,
@@ -179,6 +193,12 @@ var FileTab = Classe(BaseElement, {
 
         this.connectTypeInput.setValue("Spectate");
         this._onconnectTypeChange("Spectate");
+
+        // if in the config there is a default game
+        if(config.game) {
+            // set it here, if we did it in the gameInput DropDown constructor, it would have gotten overriden from the connect input type changed where it moves around options
+            this.gameInput.setValue(config.game);
+        }
     },
 
     /**

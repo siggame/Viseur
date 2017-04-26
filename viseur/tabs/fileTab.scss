@@ -24,4 +24,14 @@
             }
         }
     }
+
+    & #remote-gamelog-button:before {
+        @include icon(eye);
+        margin-right: 0.5em;
+    }
+
+    & #connect-connect-button:before {
+        @include icon(sign-in);
+        margin-right: 0.5em;
+    }
 }

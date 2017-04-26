@@ -13,7 +13,7 @@ var DropDown = Classe(BaseInput, {
         BaseInput.init.apply(this, arguments);
 
         if(args.options) {
-            this.setOptions(args.options);
+            this.setOptions(args.options, args.value);
         }
     },
 
@@ -40,9 +40,10 @@ var DropDown = Classe(BaseInput, {
     /**
      * Set the options for this Drop Down. Previous options are deleted.
      *
-     * @param {Array.<String>} options [description]
+     * @param {Array.<string>} options - list of options (in order) for the drop down
+     * @param {string} [defaultValue] - optional default value to select, defaults to the first item of options when not set
      */
-    setOptions: function(options) {
+    setOptions: function(options, defaultValue) {
         if(options === this._options) {
             return;
         }
@@ -60,7 +61,7 @@ var DropDown = Classe(BaseInput, {
             this._optionPartial(opt, this.$element);
         }
 
-        this.setValue(this._options[0].value);
+        this.setValue(defaultValue || this._options[0].value);
     },
 });
 
