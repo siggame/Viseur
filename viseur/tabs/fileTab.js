@@ -144,6 +144,12 @@ var FileTab = Classe(BaseElement, {
             options: this._allGames,
         });
 
+        this.gameSettingsInput = new inputs.TextBox({
+            id: "connect-game-settings",
+            label: "Game Settings",
+            $parent: this.$connectWrapper,
+        });
+
         this.sessionInput = new inputs.TextBox({
             id: "connect-session",
             label: "Session",
@@ -223,6 +229,7 @@ var FileTab = Classe(BaseElement, {
         var showGame = true;
         var showSession = false;
         var showPresentation = false;
+        var showGameSettings = false;
         var humanPlayable = false;
 
         switch(newType) {
@@ -236,6 +243,7 @@ var FileTab = Classe(BaseElement, {
                 showName = true;
                 humanPlayable = true;
                 showSession = true;
+                showGameSettings = true;
                 break;
             case "Spectate":
                 port = 3088;
@@ -257,6 +265,7 @@ var FileTab = Classe(BaseElement, {
         this.sessionInput.field.$element.toggleClass("collapsed", !showSession);
 
         this.gameInput.field.$element.toggleClass("collapsed", !showGame);
+        this.gameSettingsInput.field.$element.toggleClass("collapsed", !showGameSettings);
 
         this.presentationInput.field.$element.toggleClass("collapsed", !showPresentation);
     },
@@ -273,6 +282,7 @@ var FileTab = Classe(BaseElement, {
 
         var args = {
             gameName: this.gameInput.getValue(),
+            gameSettings: this.gameSettingsInput.getValue(),
             type: self.connectTypeInput.getValue(),
             server: self.serverInput.getValue(),
             port: self.portInput.getValue(),
@@ -282,6 +292,10 @@ var FileTab = Classe(BaseElement, {
         };
 
         this._log("Connecting to {server}:{port}.".format(args));
+
+        if(args.gameSettings && !args.gameSettings.trim()) { // it's whitespace value, so don't send it
+            delete args.gameSettings;
+        }
 
         Viseur.on("connection-connected", function() {
             self._log("Successfully connected to {server}:{port}.".format(args));
