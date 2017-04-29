@@ -166,8 +166,9 @@ var Piece = Classe(GameObject, {
 
         //<<-- Creer-Merge: _getContextMenu -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
 
-        if(this.game.humanPlayer && this.game.selectedPiece) {
-            var pos = this.current.file + this.current.rank;
+        var state = this.current || this.next;
+        if(this.game.humanPlayer && this.game.selectedPiece && state && state.file && state.rank) {
+            var pos = state.file + state.rank;
             menu.push({
                 text: "Move here (pos)".format(pos),
                 icon: "map-marker",
