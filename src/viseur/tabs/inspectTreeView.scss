@@ -1,0 +1,65 @@
+@import "src/core/mixins";
+@import "src/core/fonts";
+@import "src/core/colors";
+
+.inspect-tab {
+    & .inspect-tree-view:empty::after {
+        content: "None";
+        color: $dark-gray;
+        font-style: italic;
+    }
+
+
+    & li.tree-view-node {
+        & > header {
+            @include rem(font-size, 1rem);
+            color: $black;
+            @extend .font-monospace;
+
+            & .type-null {
+                font-style: italic;
+                color: $dark-gray;
+            }
+
+            & .type-string {
+                color: #006600;
+
+                &:before {
+                    content: "\"";
+                }
+                &:after {
+                    content: "\"";
+                }
+            }
+
+            & .type-boolean  {
+                color: #0033cc;
+            }
+
+            & .type-number {
+                color: #cc0000;
+            }
+
+            & .type-game-object-reference, & .type-game-object {
+                font-weight: bold;
+                color: $light-black;
+            }
+
+            & .type-game-object-reference {
+                text-decoration: underline;
+            }
+
+            & .type-list {
+                color: #997300;
+            }
+
+            & .type-dictionary {
+                color: #b30059;
+            }
+        }
+
+        &.highlighted {
+            background: $secondary-lightest;
+        }
+    }
+}

@@ -1,0 +1,29 @@
+@import "src/core/fontAwesome";
+@import "src/core/mixins";
+@import "src/core/colors";
+
+.loading-message {
+    text-align: center;
+
+    &.error {
+        color: $error;
+
+        & .loading-icon:before {
+            @include icon(exclamation-triangle);
+            @include animation(none);
+        }
+    }
+
+    & .loading-icon {
+        font-size: 5em;
+
+        &:before {
+            @include loader();
+        }
+    }
+
+    & .loading-content {
+        margin: 1em auto 0 auto;
+        text-align: center;
+    }
+}
