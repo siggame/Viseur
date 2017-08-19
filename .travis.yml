@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - "6.9.2"
+
+before_deploy:
+  # generate the build
+  - npm run bundle
+  # modify the gitignore so travis won't ignore the files past this line
+  - sed -n '/## REMOVE THESE TO DEPLOY/q;p' .gitignore > .gitignore.temp
+  - rm .gitignore
+  - mv .gitignore.temp .gitignore
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GH_TOKEN
+  on:
+    branch: master

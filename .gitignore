@@ -32,16 +32,6 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-# webpack bundle
-bundle/
-
-# web fonts used during build
-*.eot
-*.woff
-*.woff2
-*.svg
-*.ttf
-
 # other
 *.ai
 
@@ -51,3 +41,16 @@ bundle/
 
 # eslinter cache
 .eslintcache
+
+
+## REMOVE THESE TO DEPLOY
+
+# webpack bundle
+bundle/
+
+# web fonts used during build
+*.eot
+*.woff
+*.woff2
+*.svg
+*.ttf
