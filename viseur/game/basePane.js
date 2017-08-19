@@ -281,8 +281,9 @@ var BasePane = Classe(BaseElement, {
      * @returns {string} human reable string of the time remaining in the format min:sec:ms
      */
     _formatTimeRemaining: function(timeRemaining) {
-        var nsAsDate = new Date(Math.round(timeRemaining / 1000000)); // convert ns to ms, which is what Date() expects
-        return dateFormat(nsAsDate, "MM:ss:l");
+        var negative = timeRemaining < 0;
+        var nsAsDate = new Date(Math.round(Math.abs(timeRemaining / 1000000))); // convert ns to ms, which is what Date() expects
+        return (negative ? "-" : "") + dateFormat(nsAsDate, "MM:ss:l");
     },
 
     /**

@@ -11,12 +11,14 @@ var SettingsManager = require("./settingsManager");
 var KeyObserver = require("./keyObserver");
 
 var playbackInputs = [
-    { name: "playbackSlider", classe: inputs.Slider, location: "top", min: 0, step: "any" },
-    { name: "playPauseButton", classe: inputs.Button, location: "bottomLeft" },
-    { name: "backButton", classe: inputs.Button, location: "bottomLeft" },
-    { name: "nextButton", classe: inputs.Button, location: "bottomLeft" },
-    { name: "speedSlider", classe: inputs.Slider, location: "bottomRight", min: -10, max: -0.7, step: "any" },
-    { name: "fullscreenButton", classe: inputs.Button, location: "bottomRight" },
+    { name: "playbackSlider", classe: inputs.Slider, location: "top", min: 0, step: "any"},
+    { name: "playPauseButton", classe: inputs.Button, location: "bottomLeft", title: "Plays/Pauses game playback" },
+    { name: "backButton", classe: inputs.Button, location: "bottomLeft", title: "Moves playback back one step" },
+    { name: "nextButton", classe: inputs.Button, location: "bottomLeft", title: "Moves playback forward one step" },
+    { name: "deltasButton", classe: inputs.Button, location: "bottomRight", title: "Delta by Delta mode\nThe actual sequence of events is shown, but playback may take longer for turns with a large number of events" },
+    { name: "turnsButton", classe: inputs.Button, location: "bottomRight", title: "Turn by Turn mode\nThe sequence of events is compressed so each GameObject does everything at the same time, which is not actually what happened. Playback speed increases with this enabled"},
+    { name: "speedSlider", classe: inputs.Slider, location: "bottomRight", min: -10, max: -0.7, step: "any", title: "Playback speed\nLarger values to the right increase speed" },
+    { name: "fullscreenButton", classe: inputs.Button, location: "bottomRight", title: "Enter Fullscreen" },
 ];
 
 /**
@@ -81,6 +83,9 @@ var PlaybackPane = Classe(Observable, BaseElement, {
 
         // our events to emit
 
+
+        // speed
+
         this.playbackSlider.on("changed", function(value) {
             self._emit("playback-slide", value);
         });
@@ -95,6 +100,9 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self._changePlaybackSpeed(value);
         });
 
+
+        // play/pause
+
         this.playPauseButton.on("clicked", function() {
             self._emit("play-pause");
         });
@@ -102,6 +110,9 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         KeyObserver.on(" .up", function() { // space bar up, hence the ' '
             self.playPauseButton.click();
         });
+
+
+        // next
 
         this.nextButton.on("clicked", function() {
             self._emit("next");
@@ -111,6 +122,9 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self.nextButton.click();
         });
 
+
+        // back
+
         this.backButton.on("clicked", function() {
             self._emit("back");
         });
@@ -119,9 +133,33 @@ var PlaybackPane = Classe(Observable, BaseElement, {
             self.backButton.click();
         });
 
+
+        // fullscreen
+
         this.fullscreenButton.on("clicked", function() {
             self._emit("fullscreen-enabled");
         });
+
+
+        // deltas/turns
+
+        this.deltasButton.on("clicked", function() {
+            if(SettingsManager.get("viseur", "playback-mode") !== "deltas") {
+                SettingsManager.set("viseur", "playback-mode", "deltas");
+            }
+        });
+
+        this.turnsButton.on("clicked", function() {
+            if(SettingsManager.get("viseur", "playback-mode") !== "turns") {
+                SettingsManager.set("viseur", "playback-mode", "turns");
+            }
+        });
+
+        SettingsManager.onChanged("viseur", "playback-mode", function(value) {
+            self._updatePlaybackMode(value);
+        });
+
+        this._updatePlaybackMode(SettingsManager.get("viseur", "playback-mode"));
     },
 
     _template: require("./playbackPane.hbs"),
@@ -162,6 +200,12 @@ var PlaybackPane = Classe(Observable, BaseElement, {
         this.playbackSlider.setMax(gamelog.deltas.length - 1/1e10);
 
         this.$playbackTimeMax.html(gamelog.deltas.length - 1);
+    },
+
+    _updatePlaybackMode: function(mode) {
+        mode = mode.toLowerCase();
+        this.turnsButton.$element.toggleClass("active", mode === "turns");
+        this.deltasButton.$element.toggleClass("active", mode === "deltas");
     },
 
     /**

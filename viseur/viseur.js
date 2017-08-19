@@ -547,8 +547,8 @@ var Viseur = Classe(Observable, {
             self._emit("connection-errored");
         });
 
-        this._joueur.on("closed", function() {
-            self._emit("connection-closed");
+        this._joueur.on("closed", function(timedOut) {
+            self._emit("connection-closed", timedOut);
         });
 
         this._joueur.on("event-delta", function() {

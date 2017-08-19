@@ -305,7 +305,8 @@ var FileTab = Classe(BaseElement, {
             self._log("Unexpected error occured in connection.");
         });
 
-        Viseur.on("connection-closed", function() {
+        Viseur.on("connection-closed", function(timedOut) {
+            self._log("You timed out and were forcibly disconnected.");
             self._log("Connection closed.");
         });
 

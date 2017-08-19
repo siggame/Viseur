@@ -84,7 +84,7 @@ var Joueur = Classe(Observable, {
         };
 
         this._ws.onclose = function() {
-            self._emit("closed");
+            self._emit("closed", Boolean(self._timedOut));
         };
     },
 
@@ -225,7 +225,12 @@ var Joueur = Classe(Observable, {
      * @param {Object} data - a delta about what changed in the game
      */
     _autoHandleFatal: function(data) {
-        throw new Error("An unexpected fatal error occurred on the game server: '{}'.", data.message);
+        if(data.timedOut) {
+            this._timedOut = true;
+            return; // our human player's fault, so this error is expected and not really an error. Immediately following this we should get a delta saying they lost to display
+        }
+
+        throw new Error("An unexpected fatal error occurred on the game server: '{}'.".format(data.message));
     },
 });
 
