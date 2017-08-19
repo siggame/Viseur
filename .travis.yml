@@ -9,6 +9,8 @@ before_deploy:
   - sed -n '/## REMOVE THESE TO DEPLOY/q;p' .gitignore > .gitignore.temp
   - rm .gitignore
   - mv .gitignore.temp .gitignore
+  # re-create CNAME file
+  - echo 'vis.siggame.io' > ./CNAME
 
 deploy:
   provider: pages
