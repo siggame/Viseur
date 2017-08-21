@@ -116,7 +116,7 @@ var Renderer = Classe(Observable, BaseElement, {
 
         textures[""] = { // all games have access to the blank (white) square
             key: "",
-            path: "viseur/game/blank.png",
+            path: require("src/viseur/game/blank.png"),
         };
 
         var hasTextures = false;

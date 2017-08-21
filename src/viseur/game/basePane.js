@@ -7,6 +7,7 @@ var Classe = require("classe");
 var BaseElement = require("src/core/ui/baseElement");
 var Timer = require("src/core/timer");
 var utils = require("src/core/utils");
+var requireLanguageImage = require.context("./language-images/", true, /\.png$/);
 var Viseur = null;
 
 /**
@@ -182,9 +183,10 @@ var BasePane = Classe(BaseElement, {
 
             this._updateStatsList(playerStatsList, player);
 
+            var languageLey = player.clientType.replace("#", "s").toLowerCase();
             playerStatsList.$element
                 .toggleClass("current-player", state.currentPlayer.id === playerID)
-                .css("background-image", "url('viseur/images/{}.png')".format(player.clientType.replace("#", "s").toLowerCase())); // TODO: use webpack require() on image
+                .css("background-image", "url({})".format(requireLanguageImage("./" + languageLey + ".png")));
         }
 
         // update games

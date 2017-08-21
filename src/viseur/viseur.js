@@ -201,23 +201,9 @@ var Viseur = Classe(Observable, {
 
         this.game = new gameNamespace.Game(this._rawGamelog, playerID);
 
-        var textures = {};
-
-        for(var key in this.game.namespace.textures) {
-            if(this.game.namespace.textures.hasOwnProperty(key)) {
-                var val = this.game.namespace.textures[key];
-                if(typeof(val) === "string") {
-                    val = {path: val};
-                }
-
-                val.key = key;
-                val.path = "games/" + this.game.namespace.dir + "/textures/" + val.path;
-
-                textures[key] = val;
-            }
-        }
+        // preload all textures
         var self = this;
-        this.renderer.loadTextures(textures, function() {
+        this.renderer.loadTextures(this.game.namespace.textures, function() {
             self._loadedTextures = true;
             self._checkIfReady();
         });

@@ -1,5 +1,6 @@
 // Utils - utility functions used across classes
 var eases = require("eases");
+import { basename } from "path";
 
 var entityMap = {
     "&": "&amp;",
@@ -126,5 +127,13 @@ module.exports = {
         }
 
         return obj;
+    },
+
+    /**
+     * Requires all files matching a given regex to a path and returns the paths
+     * @param {string} path the string path to the file(s) to dynamically require
+     * @param {RegExp} regex the regex used to match files in the path
+     */
+    getFilesIn: function(path, regex) {
     },
 };
