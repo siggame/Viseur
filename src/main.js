@@ -12,7 +12,6 @@ window.onerror = function(message, source, lineno, colno, error) {
 
 //require("font-awesome-webpack");
 require("font-awesome-sass-loader");
-require("./extensions/");
 require("./core/");
 
 var $ = require("jquery");

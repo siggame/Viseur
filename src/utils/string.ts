@@ -75,31 +75,6 @@ export function escapeRegExp(str: string): string {
 }
 
 /**
- * Removes all sub strings in <tags> from the string (strips xml tags)
- * @param str the string to remove tags from
- * @param replacement str without tagged substrings
- * @returns a string with xml tags removed
- * @example 'some<p>thing</p>' -> 'something</p>'
- */
-export function removeTags(str: string, replacement: string = ""): string {
-    return str.replace(/(<([^>]+)>)/ig, replacement);
-}
-
-// spell-checker:ignore hiyoutherebye
-
-/**
- * Removes all tags from a string
- * @param str the string to remove all tags from
- * @returns the string without any tags or end tags
- * @example 'hi<p>you<b>there</b></p>bye' -> 'hiyoutherebye'
- */
-export function stripTagsFromString(str: string): string {
-    const div = document.createElement("div");
-    div.innerHTML = str;
-    return div.textContent || div.innerText || "";
-}
-
-/**
  * Replaces all instances of a search string in a target string with an optional
  * replacement string
  * @param target the target string to search for substrings to replace in
