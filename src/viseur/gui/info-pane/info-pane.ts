@@ -47,14 +47,14 @@ export class InfoPane extends BaseElement {
         this.resizerElement = this.element.find(".info-pane-resizer");
         this.contentElement = this.element.find(".info-pane-content");
 
-        this.snapTo(viseur.settingsManager.get("info-pane-side", "right"));
-        this.resize(viseur.settingsManager.get("info-pane-length", 420));
+        this.snapTo(viseur.settings.infoPaneSide.get());
+        this.resize(viseur.settings.infoPaneLength.get());
 
         this.resizerElement.on("mousedown", (downEvent) => {
             this.onResize(downEvent);
         });
 
-        viseur.settingsManager.onChanged("info-pane-side", (side: string) => {
+        viseur.settings.infoPaneSide.changed.on((side) => {
             this.snapTo(side);
         });
 
@@ -76,7 +76,7 @@ export class InfoPane extends BaseElement {
         this.element.addClass("resizing");
         if (newLength) {
             this.length = Math.max(newLength, this.minimumLength);
-            viseur.settingsManager.set("info-pane-length", this.length);
+            viseur.settings.infoPaneLength.set(this.length);
         }
 
         if (this.orientation === "horizontal") {

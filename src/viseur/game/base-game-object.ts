@@ -205,7 +205,7 @@ export class BaseGameObject extends StateObject {
      * @param event the pixi event from the right click
      */
     private rightClicked(event: PIXI.interaction.InteractionEvent): void {
-        const scale = viseur.settingsManager.get("resolution-scale", 2);
+        const scale = viseur.settings.resolutionScale.get();
         this.showContextMenu(event.data.global.x / scale, event.data.global.y / scale);
     }
 
@@ -261,7 +261,7 @@ export class BaseGameObject extends StateObject {
 
     private renderLogs(dt: number, current: IBaseGameObjectState, next: IBaseGameObjectState): void {
         if (this.container) {
-            if (next.logs.length > 0 && viseur.settingsManager.get("show-logged-text")) {
+            if (next.logs.length > 0 && viseur.settings.showLoggedText.get()) {
                 let alpha = 1;
                 if (current.logs.length < next.logs.length) {
                     alpha = ease(dt, "cubicInOut"); // fade it in

@@ -122,8 +122,8 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.deltasButton.on("clicked", () => {
-            if (viseur.settingsManager.get("playback-mode") !== "deltas") {
-                viseur.settingsManager.set("playback-mode", "deltas");
+            if (viseur.settings.playbackMode.get() !== "deltas") {
+                viseur.settings.playbackMode.set("deltas");
             }
         });
         this.turnsButton = new inputs.Button({
@@ -131,8 +131,8 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.turnsButton.on("clicked", () => {
-            if (viseur.settingsManager.get("playback-mode") !== "turns") {
-                viseur.settingsManager.set("playback-mode", "turns");
+            if (viseur.settings.playbackMode.get() !== "turns") {
+                viseur.settings.playbackMode.set("turns");
             }
         });
 
@@ -191,15 +191,15 @@ export class PlaybackPane extends BaseElement {
             this.timeUpdated(data.index, data.dt);
         });
 
-        viseur.settingsManager.onChanged("playback-speed", (value: number) => {
+        viseur.settings.playbackSpeed.changed.on((value) => {
             this.updateSpeedSlider(value);
         });
 
-        viseur.settingsManager.onChanged("playback-mode", (value: number) => {
+        viseur.settings.playbackMode.changed.on((value) => {
             this.updatePlaybackMode(String(value));
         });
 
-        this.updatePlaybackMode(viseur.settingsManager.get("playback-mode"));
+        this.updatePlaybackMode(viseur.settings.playbackMode.get());
     }
 
     protected getTemplate(): Handlebars {
@@ -308,7 +308,7 @@ export class PlaybackPane extends BaseElement {
     private changePlaybackSpeed(value: number): void {
         const newSpeed = this.speedFromSlider(-value); // yes, invert the value with -
 
-        viseur.settingsManager.set("playback-speed", newSpeed);
+        viseur.settings.playbackSpeed.set(newSpeed);
     }
 
     /**
@@ -317,7 +317,7 @@ export class PlaybackPane extends BaseElement {
      *                         we will update the speedSlider according to it
      */
     private updateSpeedSlider(value?: number): void {
-        const sliderValue = this.sliderFromSpeed(value || viseur.settingsManager.get("playback-speed"));
+        const sliderValue = this.sliderFromSpeed(value || viseur.settings.playbackSpeed.get());
         this.speedSlider.value = -sliderValue;
     }
 

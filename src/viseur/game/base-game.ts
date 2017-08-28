@@ -120,20 +120,20 @@ export class BaseGame extends StateObject {
         // inject player color settings
         const settings = this.namespace.settings;
         for (let i = this.numberOfPlayers; i >= 0; i--) { // iterate in reverse order
-            settings.unshift(new ColorSetting({
+            settings[`playerColor${i}`] = new ColorSetting({
                 id: `player-color-${i}`,
                 label: "Player " + i + " Color",
                 hint: "Overrides the color for Player " + i,
-                value: this.getPlayersColor(i),
-            }));
+                default: this.getPlayersColor(i).hex(),
+            });
         }
 
-        settings.unshift(new CheckBoxSetting({
+        settings.customPlayerColors = new CheckBoxSetting({
             id: "custom-player-colors",
             label: "Custom Player Colors",
             hint: "Use your custom player colors defined below.",
-            value: true,
-        }));
+            default: true,
+        });
     }
 
     /**

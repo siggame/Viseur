@@ -9,7 +9,7 @@
  */
 export function unstringify(value: string | number | boolean | null): string | number | boolean | null {
     if (typeof(value) === "string") {
-        switch (value.toUpperCase()) { // check for bools
+        switch (value.toUpperCase()) { // check for booleans
             case "TRUE":
                 return true;
             case "FALSE":

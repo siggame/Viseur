@@ -106,7 +106,7 @@ export class Joueur extends EventEmitter implements IJoueurEvents {
         };
 
         this.socket.onmessage = (message) => {
-            if (viseur.settingsManager.get("print-io")) {
+            if (viseur.settings.printIO.get()) {
                 // tslint:disable-next-line:no-console
                 console.log("FROM SERVER <-- ", message.data);
             }
@@ -256,7 +256,7 @@ export class Joueur extends EventEmitter implements IJoueurEvents {
             data,
         });
 
-        if (viseur.settingsManager.get("print-io")) {
+        if (viseur.settings.printIO.get()) {
             // tslint:disable-next-line:no-console
             console.log("TO SERVER --> ", str);
         }

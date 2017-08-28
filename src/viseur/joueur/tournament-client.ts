@@ -71,7 +71,7 @@ export class TournamentClient extends EventEmitter implements ITournamentClient 
         };
 
         this.socket.onmessage = (message) => {
-            if (viseur.settingsManager.get("print-io", false)) {
+            if (viseur.settings.printIO.get()) {
                 // tslint:disable-next-line:no-console
                 console.log("FROM TOURNAMENT <-- ", message.data);
             }
@@ -103,7 +103,7 @@ export class TournamentClient extends EventEmitter implements ITournamentClient 
             data,
         });
 
-        if (viseur.settingsManager.get("print-io")) {
+        if (viseur.settings.printIO.get()) {
             // tslint:disable-next-line:no-console
             console.log("TO TOURNAMENT --> ", str);
         }

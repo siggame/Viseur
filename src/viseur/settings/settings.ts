@@ -1,0 +1,22 @@
+import { BaseSetting } from "./setting";
+
+/**
+ * You MUST call this when creating settings, it's essentially a typed factory.
+ * This will take an object of created settings, and formats them.
+ * The returned object is a readonly ready to use settings object
+ * @param namespace the string used to store the settings in browser
+ * @param settings an object of string keys to BaseSetting values
+ * @returns settings now formatted for use
+ */
+export function createSettings<T extends {}>(namespace: string, settings: T): T {
+    for (const key of Object.keys(settings)) {
+        const setting = (settings as any)[key];
+
+        setting.namespace = namespace;
+        setting.set(setting.args.default);
+    }
+
+    BaseSetting.newIndex = 0; // reset to zero
+
+    return Object.freeze(settings);
+}

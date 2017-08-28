@@ -47,13 +47,13 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
     constructor() {
         super();
 
-        this.timer = new Timer(viseur.settingsManager.get("playback-speed", 1000));
+        this.timer = new Timer(viseur.settings.playbackSpeed.get(1000));
 
         this.timer.on("finished", () => {
             this.ticked();
         });
 
-        viseur.settingsManager.onChanged("playback-speed", (newSpeed: number) => {
+        viseur.settings.playbackSpeed.changed.on((newSpeed) => {
             this.timer.setSpeed(newSpeed);
         });
 

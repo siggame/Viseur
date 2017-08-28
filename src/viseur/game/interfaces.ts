@@ -22,7 +22,7 @@ export interface IGameNamespace {
     textures: ITextureData[];
 
     /** The list of settings for this game */
-    settings: BaseSetting[];
+    settings: {[key: string]: BaseSetting};
 
     /** The lookup object of class names to their class instance for reflection in this game */
     gameObjectClasses: {[className: string]: typeof BaseGameObject};

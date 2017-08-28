@@ -129,7 +129,7 @@ export class Renderer extends BaseElement implements IRendererEvents {
             || "Sans-Serif";
 
         // check only now for anti-aliasing, because them changing it requires a restart to see it inverted
-        const aa: boolean = viseur.settingsManager.get("anti-aliasing", true);
+        const aa: boolean = viseur.settings.antiAliasing.get(true);
 
                                             // will be resized, just placeholder dimensions
         this.pixiApp = new PIXI.Application(this.pxExternalWidth, this.pxExternalHeight, {
@@ -153,11 +153,11 @@ export class Renderer extends BaseElement implements IRendererEvents {
         this.pixiCanvas = this.element.find("canvas");
 
         // when resolution settings change, resize
-        viseur.settingsManager.onChanged("resolution-scale", () => {
+        viseur.settings.resolutionScale.changed.on(() => {
             this.resize();
         });
 
-        viseur.settingsManager.onChanged("show-grid", () => {
+        viseur.settings.showGrid.changed.on(() => {
             this.drawGrid();
         });
 
@@ -429,7 +429,7 @@ export class Renderer extends BaseElement implements IRendererEvents {
             this.pxExternalHeight = pxExternalHeight;
         }
 
-        const resolutionScale = Number(viseur.settingsManager.get("resolution-scale") || 2);
+        const resolutionScale = viseur.settings.resolutionScale.get();
 
         // Clamp between 1 to 4096 pixels, with 4096 being the smallest max a
         // that browser can do without screwing up our scaling math
@@ -516,7 +516,7 @@ export class Renderer extends BaseElement implements IRendererEvents {
     private drawGrid(): void {
         this.pxGraphics.clear();
 
-        if (!viseur.settingsManager.get("show-grid")) {
+        if (!viseur.settings.showGrid.get()) {
             // don't want to show the grid, let's bug out!
             return;
         }

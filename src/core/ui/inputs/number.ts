@@ -18,7 +18,7 @@ export interface INumberInputArgs extends IBaseInputArgs {
 export class NumberInput extends BaseInput {
     /**
      * Initializes the Number Input
-     * @param {object} args - initialization args, can have min, max, and step
+     * @param {object} args initialization args, can have min, max, and step
      */
     constructor(args: INumberInputArgs) {
         super(Object.assign({
@@ -37,7 +37,7 @@ export class NumberInput extends BaseInput {
 
     /**
      * Sets the min attribute of this input
-     * @param {number} min - the minimum value this number input can be
+     * @param {number} min the minimum value this number input can be
      */
     public setMin(min: number): void {
         // this.min = min;
@@ -50,7 +50,7 @@ export class NumberInput extends BaseInput {
 
     /**
      * Sets the max attribute of this input
-     * @param {number} max - the maximum value this number input can be
+     * @param {number} max the maximum value this number input can be
      */
     public setMax(max: number): void {
         // this.max = max;
@@ -63,7 +63,8 @@ export class NumberInput extends BaseInput {
 
     /**
      * Sets the step attribute of this input
-     * @param {number=} step - how much this number input increases/decreases by for each incremiment.
+     * @param {number=} step how much this number input increases/decreases
+     *                       by for each increment.
      */
     public setStep(step: number): void {
         // this.step = step;

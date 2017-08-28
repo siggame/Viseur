@@ -10,7 +10,7 @@ import { GUI } from "./gui";
 import { Joueur, TournamentClient } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
-import { SettingsManager } from "./settings";
+import { ViseurSettings } from "./settings";
 import { ICurrentTime, TimeManager } from "./time-manager";
 
 export interface IViseurGameState {
@@ -59,7 +59,7 @@ export class Viseur {
     public readonly renderer: Renderer;
 
     /** Manages all the global (viseur), non-game, related settings */
-    public readonly settingsManager: SettingsManager;
+    public readonly settings = ViseurSettings;
 
     /** The gamelog */
     public gamelog?: IGamelog;
@@ -154,8 +154,6 @@ export class Viseur {
         this.renderer = new Renderer({
             parent: this.gui.rendererWrapper,
         });
-
-        this.settingsManager = new SettingsManager("viseur");
 
         this.gui.on("resized", (width: number, height: number, rendererHeight: number) => {
             this.renderer.resize(width, rendererHeight);
@@ -331,8 +329,9 @@ export class Viseur {
 
         // set Settings via url parameters if they are valid
         for (const key of Object.keys(this.urlParameters)) {
-            if (this.settingsManager.has(key)) {
-                this.settingsManager.set(key, utils.unstringify(this.urlParameters[key]));
+            const setting = (this.settings as any)[key];
+            if (setting) {
+                setting.set(utils.unstringify(this.urlParameters[key]));
             }
         }
 

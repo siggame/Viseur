@@ -1,8 +1,9 @@
 // Settings for Viseur
 import * as Setting from "./setting";
+import { createSettings } from "./settings";
 
-export const ViseurSettings: Setting.BaseSetting[] = [
-    new Setting.DropDownSetting<string>({
+export const ViseurSettings = createSettings("viseur", {
+    infoPaneSide: new Setting.DropDownSetting<string>({
         id: "info-pane-side",
         label: "Docked Side",
         hint: "Which side this info pane will be snapped to.",
@@ -12,16 +13,24 @@ export const ViseurSettings: Setting.BaseSetting[] = [
             { text: "\u25BC Bottom", value: "bottom" },
             { text: "\u25C0 Left", value: "left" },
         ],
+        default: "right",
     }),
-    new Setting.NumberSetting({
+    infoPaneLength: new Setting.NumberSetting({
+        id: "info-pane-length",
+        label: "Info Pane Length",
+        hint: "The length (in pixels) of this info pane",
+        min: 200,
+        default: 420,
+    }),
+    playbackSpeed: new Setting.NumberSetting({
         id: "playback-speed",
         label: "Playback Speed",
         hint: "The time (in ms)  for each animation to be played. Smaller numbers mean faster playback.",
         min: 10,
         max: 999999,
-        value: 1000,
+        default: 1000,
     }),
-    new Setting.DropDownSetting<string>({
+    playbackMode: new Setting.DropDownSetting<string>({
         id: "playback-mode",
         label: "Playback Mode",
         hint: "The preferred playback mode.\nDeltas based means the actual sequence of events is shown, but playback "
@@ -32,9 +41,9 @@ export const ViseurSettings: Setting.BaseSetting[] = [
             { text: "Deltas", value: "deltas" },
             { text: "Turns", value: "turns" },
         ],
-        value: "deltas",
+        default: "deltas",
     }),
-    new Setting.NumberSetting({
+    resolutionScale: new Setting.NumberSetting({
         id: "resolution-scale",
         label: "Resolution Scale",
         hint: "Up or down samples the resolution.\nValues below 1 render at a lower internal resolution, and may "
@@ -42,30 +51,36 @@ export const ViseurSettings: Setting.BaseSetting[] = [
         min: 0.01,
         max: 2,
         step: 0.01,
-        value: 2,
+        default: 2,
     }),
-    new Setting.CheckBoxSetting({
+    antiAliasing: new Setting.CheckBoxSetting({
         id: "anti-aliasing",
         label: "Anti-Aliasing",
         hint: "Forces FXAA to be applied. Requires restart.",
-        value: true,
+        default: true,
     }),
-    new Setting.CheckBoxSetting({
+    showGrid: new Setting.CheckBoxSetting({
         id: "show-grid",
         label: "Show Grid",
         hint: "Displays a grid over the game.",
-        value: false,
+        default: false,
     }),
-    new Setting.CheckBoxSetting({
+    showLoggedText: new Setting.CheckBoxSetting({
         id: "show-logged-text",
         label: "Show Logs",
-        hint: "Displays logged text above GameObjects",
-        value: true,
+        hint: "Displays logged text above GameObjects.",
+        default: true,
     }),
-    new Setting.CheckBoxSetting({
+    allowPlayerSetColors: new Setting.CheckBoxSetting({
         id: "allow-player-set-colors",
         label: "Show Logged Colors",
-        hint: "Allows Players in gamelogs to set their colors via log calls",
-        value: true,
+        hint: "Allows Players in gamelogs to set their colors via log calls.",
+        default: true,
     }),
-];
+    printIO: new Setting.CheckBoxSetting({
+        id: "print-io",
+        label: "Print I/O to Console",
+        hint: "Print the input/output from the game server to the browser's console.",
+        default: true,
+    }),
+});
