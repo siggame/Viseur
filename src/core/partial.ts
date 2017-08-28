@@ -7,7 +7,7 @@ import * as $ from "jquery";
  * @param {$} parent optional parent element to attach the newly created partial view to
  * @returns {$} an html wrapped element of the handlebars template with args applied
  */
-export default function partial(hbsTemplate: Handlebars, args: {}, parent?: JQuery<HTMLElement>): JQuery<HTMLElement> {
+export default function partial(hbsTemplate: Handlebars, args?: {}, parent?: JQuery<HTMLElement>): JQuery<HTMLElement> {
     const html = hbsTemplate(args);
     const element = $($.parseHTML(html));
 

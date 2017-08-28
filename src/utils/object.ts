@@ -1,5 +1,10 @@
 /* object related utility functions */
 
+/** string key to any value pairs */
+export interface IAnyObject {
+    [key: string]: any;
+}
+
 /**
  * Checks if the given variable is a javascript object
  * @param obj the object to check, can be anything
@@ -31,4 +36,14 @@ export function traverse(obj: any, keys: string[]): any {
     }
 
     return obj;
+}
+
+export function isEmpty(obj: object): boolean {
+    return (Object.getOwnPropertyNames(obj).length === 0);
+}
+
+export function isEmptyExceptFor(obj: object, key: string): boolean {
+    return isObject(obj)
+        && Object.getOwnPropertyNames(obj).length === 1
+        && Object.hasOwnProperty.call(obj, key);
 }

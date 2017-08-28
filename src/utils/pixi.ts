@@ -30,3 +30,18 @@ export function setRelativePivot(
     obj.pivot.set(relativeX * obj.width / obj.scale.x, relativeY * obj.height / obj.scale.y);
     return obj;
 }
+
+/**
+ * adds a color matrix filter of the given color to a sprite, and optionally removes other filters
+ * @param obj the pixi display object to color
+ * @param color the color to use for the filter
+ * @param leaveExistingFilters set to true to not interfere with existing filters on the object
+ */
+export function colorPixiObject(obj: PIXI.DisplayObject, color: Color, leaveExistingFilters: boolean = false): void {
+    obj.filters = (leaveExistingFilters
+        ? obj.filters
+        : undefined)
+        || [];
+
+    obj.filters.push(getColorMatrixFilterFor(color));
+}

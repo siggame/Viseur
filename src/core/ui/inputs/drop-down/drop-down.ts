@@ -9,14 +9,16 @@ export interface IDropDownOption<T> {
     value: T;
 }
 
+export interface IDropDownArgs<T> extends IBaseInputArgs {
+    options: Array<string | IDropDownOption<T>>;
+}
+
 /** A select with options input */
 export class DropDown<T> extends BaseInput {
     /** The options available on this drop down menu */
     private options: Array<IDropDownOption<T>> = [];
 
-    constructor(args: IBaseInputArgs & {
-        options: Array<string | IDropDownOption<T>>,
-    }) {
+    constructor(args: IDropDownArgs<T>) {
         super(args);
 
         if (args.options) {

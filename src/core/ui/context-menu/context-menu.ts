@@ -7,8 +7,8 @@ export interface IMenuItem {
     /** hover over title */
     description: string;
 
-    /** the name of the item */
-    name: string;
+    /** the text name of the item */
+    text: string;
 
     /** the icon id from font awesome (without the "fa-" prefix) */
     icon: string;
@@ -16,6 +16,8 @@ export interface IMenuItem {
     /** Callback function to invoke whenever this menu item is clicked */
     callback: () => void;
 }
+
+export type MenuItems = Array<"---" | IMenuItem>;
 
 /** A custom right click menu */
 export class ContextMenu extends BaseElement {
@@ -53,7 +55,7 @@ export class ContextMenu extends BaseElement {
      *
      * @param {Array} structure - array of the structure, in order. Can be object for items, or "---" for seperators
      */
-    public setStructure(structure: Array<"---" | IMenuItem>): void {
+    public setStructure(structure: MenuItems): void {
         this.element.html(""); // clear out any structure we had
 
         for (const item of structure) {

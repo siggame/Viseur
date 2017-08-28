@@ -5,9 +5,9 @@ import partial from "src/core/partial";
 /** BaseElement constructor args */
 export interface IBaseElementArgs {
     /** id to assign to */
-    id: string;
+    id?: string;
     /** parent element to attach this newly constructed element to */
-    parent: HTMLElement | JQuery<HTMLElement>;
+    parent?: HTMLElement | JQuery<HTMLElement>;
 }
 
 /**
@@ -15,7 +15,7 @@ export interface IBaseElementArgs {
  */
 export class BaseElement extends EventEmitter {
     /** The ID of the element */
-    public readonly id: string;
+    public readonly id?: string;
 
     /** The parent element of this element */
     public parent: JQuery<HTMLElement>;
@@ -27,13 +27,24 @@ export class BaseElement extends EventEmitter {
      * Creates a new base element
      * @param args the arguments to set value(s) from
      */
-    constructor(args: IBaseElementArgs) {
+    constructor(args?: IBaseElementArgs) {
         super();
+        args = args || {};
 
         this.id = args.id;
-        this.parent = $(args.parent);
+        if (args.parent) {
+            this.parent = $(args.parent);
+        }
 
         this.element = partial(this.getTemplate(), args, this.parent);
+    }
+
+    /**
+     * Sets the parent of this element
+     * @param newParent the new parent to set this to
+     */
+    public setParent(newParent: JQuery<HTMLElement> | HTMLElement): void {
+        this.parent = $(newParent);
     }
 
     /**

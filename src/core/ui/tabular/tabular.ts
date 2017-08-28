@@ -27,7 +27,7 @@ export class Tabular extends BaseElement implements ITabularEvents {
     private fading: boolean;
 
     constructor(args: IBaseElementArgs & {
-        tabs: Tab[],
+        tabs?: Tab[],
     }) {
         super(args);
 
