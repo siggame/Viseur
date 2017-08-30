@@ -38,7 +38,13 @@ var Checker = Classe(GameObject, {
         GameObject.init.apply(this, arguments);
 
         //<<-- Creer-Merge: init -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialization logic goes here
+        this.owner = this.game.gameObjects[initialState.owner.id];
+        this._initContainer(this.game.boardContainer);
+
+        this.checkerSprite = this.renderer.newSprite("checker", this.container);
+        this.kingSprite = this.renderer.newSprite("king", this.container);
+
+        this.kingSprite.visible = false;
         //<<-- /Creer-Merge: init -->>
     },
 
@@ -69,7 +75,7 @@ var Checker = Classe(GameObject, {
      * @static
      */
     //<<-- Creer-Merge: shouldRender -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-    shouldRender: false,
+    shouldRender: true,
     //<<-- /Creer-Merge: shouldRender -->>
 
     /**
@@ -86,6 +92,17 @@ var Checker = Classe(GameObject, {
 
         //<<-- Creer-Merge: render -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // render where the Checker is
+
+        if(current.jumped) {
+            this.container.visible = false;
+            return;
+        }
+
+        this.container.visible = true;
+
+        this.container.x = ease(current.x, next.x, dt, "cubicInOut");
+        this.container.y = ease(current.y, next.y, dt, "cubicInOut");
+
         //<<-- /Creer-Merge: render -->>
     },
 

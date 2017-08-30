@@ -70,6 +70,8 @@ var Game = Classe(BaseGame, {
 
         //<<-- Creer-Merge: _start -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // create some sprites
+
+        this.renderer.setSize(state.boardWidth, state.boardHeight);
         //<<-- /Creer-Merge: _start -->>
     },
 
@@ -83,7 +85,47 @@ var Game = Classe(BaseGame, {
         BaseGame._initBackground.call(this);
 
         //<<-- Creer-Merge: _initBackground -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
-        // initialize a background bro
+        var self = this;
+
+        this._randomColor = Color().hsl(this.random() * 360, 60, 40).whiten(1.5);
+        this._backgroundColor = this._randomColor.clone().darken(0.75);
+
+        this._backgroundColor = this._randomColor.clone().darken(0.75);
+        this._whiteColor = this._randomColor;
+        this._whiteTopColor = this._randomColor.clone().lighten(0.15);
+        this._blackColor = this._randomColor.clone().darken(0.5);
+        this._blackTopColor = this._blackColor.clone().lighten(0.15);
+
+        var layer = this.layers.background;
+
+        var length = 8 + this._borderLength*2;
+        layer.addChild(new PIXI.Graphics())
+            .beginFill(this._backgroundColor.hexNumber(), 1)
+            .drawRect(0,0,length,length)
+            .endFill();
+
+        this.boardContainer = new PIXI.Container();
+        this.boardContainer.setParent(this.layers.game);
+        this.boardContainer.x = this._borderLength;
+        this.boardContainer.y = this._borderLength;
+
+        this._tileContainer = new PIXI.Container();
+        this._tileContainer.setParent(this.boardContainer);
+
+        this._tileSprites = [];
+        for(var x = 0; x < 8; x++) {
+            this._tileSprites[x] = [];
+            for(var y = 0; y < 8; y++) {
+                var tile = this.renderer.newSprite("tile_"+ ((x+y)%2 ? "white" : "black"), this._tileContainer);
+                this._tileSprites[x][y] = tile;
+            }
+        }
+
+        filter = new PIXI.filters.ColorMatrixFilter();
+        filter.matrix = this._randomColor.colorMatrix();
+
+        this._tileContainer.filters = [ filter ];
+
         //<<-- /Creer-Merge: _initBackground -->>
     },
 
@@ -113,6 +155,9 @@ var Game = Classe(BaseGame, {
     _setDefaultPlayersColors: function(colors) {
         //<<-- Creer-Merge: _setDefaultPlayersColors -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // You can change the players' colors here, by default player 0 is red, player 1 is blue.
+        colors[0] = Color("white");
+        colors[1] = Color("black");
+
         //<<-- /Creer-Merge: _setDefaultPlayersColors -->>
     },
 
@@ -132,11 +177,18 @@ var Game = Classe(BaseGame, {
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // update the Game based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
+        
     },
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
     // any additional functions you want to add to this class can be perserved here
+
+    _tileBorderLength: 0.9,
+    _borderLength: 0,
+
     //<<-- /Creer-Merge: functions -->>
+
+    
 
 });
 
