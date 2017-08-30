@@ -121,7 +121,7 @@ var Game = Classe(BaseGame, {
             }
         }
 
-        filter = new PIXI.filters.ColorMatrixFilter();
+        var filter = new PIXI.filters.ColorMatrixFilter();
         filter.matrix = this._randomColor.colorMatrix();
 
         this._tileContainer.filters = [ filter ];
@@ -177,7 +177,7 @@ var Game = Classe(BaseGame, {
         //<<-- Creer-Merge: _stateUpdated -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
         // update the Game based on its current and next states
         //<<-- /Creer-Merge: _stateUpdated -->>
-        
+
     },
 
     //<<-- Creer-Merge: functions -->> - Code you add between this comment and the end comment will be preserved between Creer re-runs.
@@ -188,7 +188,7 @@ var Game = Classe(BaseGame, {
 
     //<<-- /Creer-Merge: functions -->>
 
-    
+
 
 });
 
