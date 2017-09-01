@@ -288,23 +288,23 @@ export class Viseur {
 
         this.tournamentClient = new TournamentClient();
 
-        this.tournamentClient.on("error", (err: any) => {
-            this.gui.modalError(err);
+        this.tournamentClient.events.error.on((err) => {
+            this.gui.modalError(err.message);
         });
 
-        this.tournamentClient.on("connected", () => {
+        this.tournamentClient.events.connected.on(() => {
             this.doubleLog("Connected to tournament server, awaiting game.");
         });
 
-        this.tournamentClient.on("closed", () => {
+        this.tournamentClient.events.closed.on(() => {
             this.events.connectionMessage.emit("Connected to tournament server closed.");
         });
 
-        this.tournamentClient.on("playing", () => {
+        this.tournamentClient.events.playing.on(() => {
             this.events.connectionMessage.emit(`Now playing ${this.game.name}`);
         });
 
-        this.tournamentClient.on("message", (message: string) => {
+        this.tournamentClient.events.messaged.on((message) => {
             this.events.connectionMessage.emit(`Message from tournament server: '${message}'`);
         });
 
