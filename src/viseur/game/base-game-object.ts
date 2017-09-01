@@ -3,34 +3,11 @@ import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";
 import { ease } from "src/utils/";
 import { viseur } from "src/viseur";
-import { Renderer } from "../renderer";
+import { Renderer } from "src/viseur/renderer";
 import { BaseGame } from "./base-game";
 import { IDeltaReason } from "./gamelog";
-import { IState, StateObject } from "./state-object";
-
-/** A reference to a game object, which just holds the ID of the game object */
-export interface IGameObjectReference extends IState {
-    /**
-     * A unique id for each instance of a GameObject or a sub class.
-     * Used for client and server communication.
-     * Should never change value after being set.
-     */
-    id: string;
-}
-
-/** A state of a game object at a discrete point in time */
-export interface IBaseGameObjectState extends IGameObjectReference {
-    /**
-     * String representing the top level Class that this game object is an instance of.
-     * Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
-     */
-    gameObjectName: string;
-
-    /**
-     * Any strings logged will be stored here. Intended for debugging.
-     */
-    logs: string[];
-}
+import { IBaseGameObjectState } from "./interfaces";
+import { StateObject } from "./state-object";
 
 /** the base class all GameObjects inherit from */
 export class BaseGameObject extends StateObject {
@@ -259,6 +236,12 @@ export class BaseGameObject extends StateObject {
         ];
     }
 
+    /**
+     * Render the most recently logged text above this game object
+     * @param dt the delta time
+     * @param current the current most state
+     * @param next the next state
+     */
     private renderLogs(dt: number, current: IBaseGameObjectState, next: IBaseGameObjectState): void {
         if (this.container) {
             if (next.logs.length > 0 && viseur.settings.showLoggedText.get()) {

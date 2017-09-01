@@ -1,5 +1,4 @@
-import { IGameObjectReference } from "./base-game-object";
-import { IBaseGameState } from "./interfaces";
+import { IBaseGameState, IGameObjectReference } from "./interfaces";
 
 /** A shorthand object representing a player that won or lost in the game */
 export interface IGamelogWinnerLoser {
@@ -57,7 +56,9 @@ export interface IDeltaReason {
             functionName: string;
 
             /** arguments sent from the client to the run function. Will be key/value based on argument names */
-            args: object;
+            args: {
+                [key: string]: any;
+            };
         };
     };
 

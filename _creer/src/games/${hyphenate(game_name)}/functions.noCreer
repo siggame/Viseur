@@ -1,0 +1,89 @@
+<%
+from textwrap import TextWrapper
+import operator
+
+if not 'vis' in shared:
+    shared['vis'] = {}
+
+    def vis_type(type_obj):
+        base_type = type_obj['name']
+
+        if base_type == "dictionary":
+            return "{[id: " + vis_type(type_obj['keyType']) + "]: " + vis_type(type_obj['valueType']) + "}"
+        elif base_type == "list":
+            return vis_type(type_obj['valueType']) + "[]"
+        elif base_type == "int" or base_type == "float":
+            return "number"
+        elif type_obj['is_game_object']:
+            return "I" + base_type + "State"
+        else:
+            return base_type
+    shared['vis']['type'] = vis_type
+
+    def js_value(type_obj, default):
+        base_type = type_obj['name']
+        if base_type == "string":
+            return '"' + default + '"'
+        elif base_type == "boolean":
+            return str(default).lower()
+        elif base_type == "int" or base_type == "float":
+            return str(default)
+        else:
+            return "undefined"
+    shared['vis']['value'] = js_value
+
+    def vis_properties(obj):
+        attrs = dict(obj['attributes'], **obj['inheritedAttributes']) # merge the two attributes
+
+        properties = []
+        for attr_name in sort_dict_keys(attrs):
+            attr = attrs[attr_name]
+            properties.append({
+                'name': attr_name,
+                'type': vis_type(attr['type']),
+                'description': attr["description"]
+            })
+        return properties
+    shared['vis']['properties'] = vis_properties
+
+    def vis_block_comment(prefix, doc):
+        wrapper = TextWrapper(
+            initial_indent=prefix+' * ',
+            subsequent_indent=prefix+' * ',
+            width=80,
+        )
+        if isinstance(doc, str):
+            doc = {'description': doc}
+        description = doc['description']
+        lines = wrapper.wrap(doc['description'])
+
+        if 'arguments' in doc and doc['arguments']:
+            for arg in doc['arguments']:
+                lines += wrapper.wrap('@param ' + arg['name'] + ' ' + arg['description'])
+        if 'returns' in doc and doc['returns']:
+            lines += wrapper.wrap('@returns ' + doc['returns']['description'])
+
+        lines.insert(0, prefix+'/**')
+        lines.append(prefix+' */')
+        return '\n'.join(lines)
+    shared['vis']['block_comment'] = vis_block_comment
+
+    def vis_imports(imports):
+        pairs = sorted(imports.items(), key=operator.itemgetter(0))
+        index = -1
+        for i, item in enumerate(pairs):
+            if item[0][0] != '.':
+                index = i
+                break
+        if index > -1:
+            p = pairs[index:] + pairs[:index]
+            pairs = p
+
+        doc = ''
+        for pair in pairs:
+            doc += 'import { '+(', '.join(sorted(pair[1])))+' } from "'+pair[0]+'";\n'
+        return doc
+    shared['vis']['imports'] = vis_imports
+
+    shared['vis']['TextWrapper'] = TextWrapper
+%>

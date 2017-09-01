@@ -5,7 +5,7 @@ import { Games } from "src/games";
 import * as utils from "src/utils";
 import { BaseGame } from "./game/base-game";
 import { IDelta, IDeltaReason, IGamelog } from "./game/gamelog";
-import { IBaseGameState, IGameNamespace } from "./game/interfaces";
+import { IBaseGameNamespace, IBaseGameState } from "./game/interfaces";
 import { GUI } from "./gui";
 import { Joueur, TournamentClient } from "./joueur";
 import { Parser } from "./parser";
@@ -71,7 +71,7 @@ export class Viseur {
     public rawGamelog?: IGamelogWithReverses;
 
     /** All available game namespaces */
-    public games: {[gameName: string]: IGameNamespace} = Games;
+    public games: {[gameName: string]: IBaseGameNamespace} = Games;
 
     // Events \\
 
@@ -471,7 +471,7 @@ export class Viseur {
         this.game = new gameNamespace.Game(this.rawGamelog, playerID);
 
         // preload all textures
-        this.renderer.loadTextures(this.game.namespace.textures, () => {
+        this.renderer.loadTextures(() => {
             this.loadedTextures = true;
             this.checkIfReady();
         });

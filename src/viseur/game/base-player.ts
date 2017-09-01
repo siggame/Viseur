@@ -1,5 +1,5 @@
 import * as Color from "color";
-import { IBaseGameObjectState } from "./base-game-object";
+import { IBaseGameObjectState } from "./interfaces";
 
 /**
  * The base functions all Players in a game share

@@ -1,16 +1,17 @@
 import { Chance } from "chance";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
-import { Viseur } from "src/viseur";
-import { Renderer } from "src/viseur/renderer";
-import { CheckBoxSetting, ColorSetting, SettingsManager } from "src/viseur/settings";
-import { BaseGameObject, IBaseGameObjectState } from "./base-game-object";
+import { viseur } from "src/viseur";
+import { IRendererResources, Renderer } from "src/viseur/renderer";
+import { CheckBoxSetting, ColorSetting, createSettings } from "src/viseur/settings";
+import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
-import { IBasePlayer } from "./base-player";
+import { IBasePlayer, IBasePlayerState } from "./base-player";
 import { GameOverScreen } from "./game-over-screen";
 import { IDeltaReason, IGamelog } from "./gamelog";
-import { IBaseGameState, IGameLayers, IGameNamespace } from "./interfaces";
+import { IBaseGameNamespace, IBaseGameObjectState, IBaseGameSettings,
+         IBaseGameState, IGameLayers } from "./interfaces";
 import { IState, StateObject } from "./state-object";
 
 /** The base class all games in the games/ folder inherit from */
@@ -20,6 +21,9 @@ export class BaseGame extends StateObject {
 
     /** The number of players in this game. the players array should be this same size */
     public readonly numberOfPlayers: number = 2;
+
+    /** Mapping of the class names to their class for all sub game object classes */
+    public readonly gameObjectClasses: Readonly<{[className: string]: typeof BaseGameObject}>;
 
     /** The current state of the game (dt = 0) */
     public current: IBaseGameState;
@@ -43,33 +47,34 @@ export class BaseGame extends StateObject {
     public readonly humanPlayer: BaseHumanPlayer;
 
     /** The pane that displays information about this game */
-    public pane: BasePane;
+    public pane: BasePane<IBaseGameState, IBasePlayerState>;
 
     /** The renderer that provides utility rendering functions (as well as heavy lifting for screen changes) */
     public readonly renderer: Renderer;
 
     /** The settings for this game */
-    public readonly settingsManager: SettingsManager;
+    public readonly settings: Readonly<IBaseGameSettings>;
 
     /** The namespace this game is in */
-    public readonly namespace: IGameNamespace;
+    public namespace: IBaseGameNamespace;
 
     /** The random number generator we use */
     public readonly chance: Chance.Chance;
 
-    public layers: IGameLayers;
+    /** The layers in the game */
+    public readonly layers: IGameLayers;
 
-    /** the order in which to add layers, with 0 being the bottom and 1 being the top */
-    protected layerOrder = [ "background", "game", "ui" ];
+    /** The resource factories that can create sprites for this game */
+    public readonly resources: IRendererResources;
+
+    /** The default player colors, there must be one for each player */
+    protected defaultPlayerColors = [ Color("#C33"), Color("#33C") ];
 
     /** If this game has a human player interacting with it, then this is their player id */
     private readonly humanPlayerID?: string;
 
     /** The game over screen that displays over the game graphics at the end of rendering */
     private readonly gameOverScreen: GameOverScreen;
-
-    /** The default player colors, there must be one for each player */
-    private readonly defaultPlayerColors = [ Color("#C33"), Color("#33C") ];
 
     /** If the game has started or not (basically has everything async loaded) */
     private started: boolean = false;
@@ -81,6 +86,9 @@ export class BaseGame extends StateObject {
         return (this.constructor as any).gameName;
     }
 
+    /** The order of containers, with the last element being the top most layer */
+    private layerOrder: PIXI.Container[];
+
     /**
      * Initializes the BaseGame, should be invoked by a Game super class
      * @param {Object} gamelog the gamelog for this game, may be a streaming gamelog
@@ -89,23 +97,25 @@ export class BaseGame extends StateObject {
     constructor(gamelog?: IGamelog, playerID?: string) {
         super();
 
-        this.renderer = Viseur.instance.renderer;
-        this.settingsManager = new SettingsManager(this.name);
+        this.renderer = viseur.renderer;
 
         this.chance = new Chance(gamelog
             ? gamelog.randomSeed
             : "",
         );
 
-        Viseur.instance.events.ready.on(() => {
-            this.start();
+        viseur.events.ready.on(() => {
+            this.ready();
         });
 
-        Viseur.instance.events.stateChanged.on((state) => {
+        viseur.events.stateChanged.on((state) => {
             this.update(state.game, state.nextGame, state.reason, state.nextReason);
         });
 
-        this.createLayers();
+        // add the layers that were created in order of creation
+        for (const layer of this.layerOrder) {
+            layer.setParent(this.renderer.gameContainer);
+        }
 
         this.humanPlayerID = playerID;
         if (this.humanPlayerID) {
@@ -113,26 +123,8 @@ export class BaseGame extends StateObject {
         }
 
         this.gameOverScreen = new GameOverScreen({
-            parent: Viseur.instance.gui.rendererWrapper,
+            parent: viseur.gui.rendererWrapper,
             game: this,
-        });
-
-        // inject player color settings
-        const settings = this.namespace.settings;
-        for (let i = this.numberOfPlayers; i >= 0; i--) { // iterate in reverse order
-            settings[`playerColor${i}`] = new ColorSetting({
-                id: `player-color-${i}`,
-                label: "Player " + i + " Color",
-                hint: "Overrides the color for Player " + i,
-                default: this.getPlayersColor(i).hex(),
-            });
-        }
-
-        settings.customPlayerColors = new CheckBoxSetting({
-            id: "custom-player-colors",
-            label: "Custom Player Colors",
-            hint: "Use your custom player colors defined below.",
-            default: true,
         });
     }
 
@@ -162,10 +154,8 @@ export class BaseGame extends StateObject {
             index = ((playerInstance as any) as IBasePlayer).playersIndex;
         }
 
-        if (this.settingsManager.get("custom-player-colors")) {
-            return Color(
-                this.settingsManager.get(`player-color-${index}`),
-            );
+        if (this.settings.customPlayerColors.get()) {
+            return Color(this.settings.playerColors[index].get());
         }
 
         return this.defaultPlayerColors[index];
@@ -187,6 +177,7 @@ export class BaseGame extends StateObject {
         if (!this.started) {
             return;
         }
+        super.update(current, next, reason, nextReason);
 
         this.gameOverScreen.hide();
 
@@ -203,6 +194,8 @@ export class BaseGame extends StateObject {
         // save the reasons for the current and next deltas
         this.currentReason = this.hookupGameObjectReferences(reason);
         this.nextReason = this.hookupGameObjectReferences(nextReason);
+
+        this.stateUpdated(current || next as IState, next || current as IState, this.currentReason, this.nextReason);
 
         // update all the game objects now (including those we may have just created)
         for (const id of Object.keys(this.gameObjects)) {
@@ -255,7 +248,13 @@ export class BaseGame extends StateObject {
         const current = this.current || this.next;
         const next = this.next || this.current;
 
-        this.renderBackground(dt, current, next);
+        this.renderBackground(
+            dt,
+            current,
+            next,
+            this.currentReason || this.nextReason,
+            this.nextReason || this.currentReason,
+        );
 
         for (const id of Object.keys(this.gameObjects)) {
             const gameObject = this.gameObjects[id];
@@ -287,15 +286,14 @@ export class BaseGame extends StateObject {
 
     /**
      * Called once to initialize any PIXI objects needed to render the background
-     *
-     * @private
+     * @param state the initial state of the game
      */
-    protected createBackground(): void {
+    protected createBackground(state: IBaseGameState): void {
         // method exposed for inheriting classes
     }
 
     /**
-     * renders the static background
+     * renders the static background, called approx 1/60 sec
      * @param {Number} dt a floating point number [0, 1) which represents how
      *                    far into the next turn that current turn we are
      *                    rendering is at
@@ -303,23 +301,73 @@ export class BaseGame extends StateObject {
      *                         if this.current is null
      * @param {Object} next the next (most) game state, will be this.current if
      *                      this.next is null
+     * @param reason the current reason for the current delta
+     * @param nextReason the reason for the next delta (why we are transitioning dt)
      */
-    protected renderBackground(dt: number, current: IBaseGameState, next: IBaseGameState): void {
+    protected renderBackground(dt: number, current: IBaseGameState, next: IBaseGameState,
+                               reason: IDeltaReason, nextReason: IDeltaReason): void {
         // method exposed for inheriting classes
     }
 
     /**
      * Starts the game, basically like init, but after other stuff is ready
      * (like loading textures).
+     * @param state the initial state of the game
      */
-    private start(): void {
+    protected start(state: IBaseGameState): void {
+        // intended to be inherited
+    }
+
+    /**
+     * Creates settings for a game, given some base settings,
+     * this injects the player colors and returns them as ready to use settings.
+     * @param settings the game's specific settings to setup
+     * @returns the game's settings extended with things!
+     */
+    protected createSettings<T extends {}>(settings: T): Readonly<T & IBaseGameSettings> {
+        const combined: any = Object.assign({
+            customPlayerColors: new CheckBoxSetting({
+                id: "custom-player-colors",
+                label: "Custom Player Colors",
+                hint: "Use your custom player colors defined below.",
+                default: true,
+            }),
+            playerColors: [],
+        } as IBaseGameSettings, settings);
+
+        for (let i = 0; i < this.numberOfPlayers; i++) { // iterate in reverse order
+            combined.playerColors[i] = new ColorSetting({
+                id: `player-color-${i}`,
+                label: "Player " + i + " Color",
+                hint: "Overrides the color for Player " + i,
+                default: this.getPlayersColor(i).hex(),
+            });
+        }
+
+        return createSettings(this.name, combined);
+    }
+
+    /**
+     * Creates a layer for the game, the order this is called is the order they
+     * are layered, so call the top layer last.
+     * @returns the new layer
+     */
+    protected createLayer(): PIXI.Container {
+        const container = new PIXI.Container();
+        this.layerOrder.push(container);
+        return container;
+    }
+
+    /**
+     * Starts the game, basically like init, but after other stuff is ready
+     * (like loading textures).
+     */
+    private ready(): void {
         this.started = true;
 
-        const state = Viseur.instance.getCurrentState();
+        const state = viseur.getCurrentState();
 
         this.update(state.game, state.nextGame, state.reason, state.nextReason);
-
-        this.createBackground();
 
         this.pane = new this.namespace.Pane(this, this.next);
         this.pane.update(this.current || this.next);
@@ -329,29 +377,15 @@ export class BaseGame extends StateObject {
             this.pane.setHumanPlayer(this.humanPlayerID);
         }
 
+        // attach callbacks to recolor this game  whenever a color setting changes
         const recolor = () => this.recolor();
-        // attach callbacks to recolor whenever a color setting changes
-        this.settingsManager.onChanged("custom-player-colors", recolor);
-        for (let i = 0; i < this.numberOfPlayers; i++) { // iterate in reverse order
-            this.settingsManager.onChanged("player-color-" + i, recolor);
+        this.settings.customPlayerColors.changed.on(recolor);
+        for (const playerColorSetting of this.settings.playerColors) {
+            playerColorSetting.changed.on(recolor);
         }
-    }
 
-    /**
-     * Initializes layers based on _layerNames
-     *
-     * @private
-     * @param {Array.<string>} layerNames - list of layer names to initialize a layer for
-     */
-    private createLayers(): void {
-        for (const layerName of this.layerOrder) {
-            const container = new PIXI.Container();
-            container.name = layerName;
-            container.setParent(this.renderer.gameContainer);
-
-            // layers has no index method, but whatever
-            (this.layers as any)[layerName] = container;
-        }
+        this.start(this.current || this.next);
+        this.createBackground(this.current || this.next);
     }
 
     /**
@@ -383,7 +417,7 @@ export class BaseGame extends StateObject {
      * @returns {BaseGameObject} the newly created game object
      */
     private createGameObject(id: string, state: IBaseGameObjectState): BaseGameObject {
-        const classConstructor = this.namespace.gameObjectClasses[state.gameObjectName];
+        const classConstructor = this.gameObjectClasses[state.gameObjectName];
 
         if (!classConstructor) {
             throw new Error(`Could not create instance of ${state.gameObjectName}`);

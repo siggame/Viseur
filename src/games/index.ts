@@ -1,18 +1,17 @@
-import { IGameNamespace } from "src/viseur/game/interfaces";
+import { IBaseGameNamespace } from "src/viseur/game/interfaces";
 
-export const Games: {[gameName: string]: IGameNamespace} = {};
+// require all images in the build
+const reqImages = require.context("./anarchy/", true, /^(.*(\.(png|jpe?g)$))[^.]*$/igm);
+for (const key of reqImages.keys()) {
+    reqImages(key);
+}
 
-const req = require.context("./chess/", true, /^(.*(index.js$))[^.]*$/igm);
+/** All the game namespaces that can be loaded by this instance */
+export const Games: {[gameName: string]: IBaseGameNamespace} = {};
+
+const req = require.context("./anarchy/", true, /^(.*(index.js$))[^.]*$/igm);
 
 for (const key of req.keys()) {
-    const namespace: IGameNamespace = req(key);
-
-    if (namespace.Game) {
-        let dir = key.substr("./".length);
-        dir = dir.substr(0, dir.length - "/index.ts".length);
-
-        namespace.path = dir;
-
-        Games[namespace.Game.gameName] = namespace;
-    }
+    const namespace: IBaseGameNamespace = req(key);
+    Games[namespace.Game.gameName] = namespace;
 }

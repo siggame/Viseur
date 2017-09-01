@@ -45,7 +45,7 @@ export class StateObject extends EventEmitter {
      * @param {DeltaReason} reason the reason for the current delta
      * @param {DeltaReason} nextReason the reason for the next delta
      */
-    public stateUpdated(
+    protected stateUpdated(
         current: IState,
         next: IState,
         reason: IDeltaReason,

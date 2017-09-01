@@ -1,40 +1,16 @@
 import * as $ from "jquery";
 import * as PIXI from "pixi.js";
+import { Event } from "src/core/event";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { clamp, euclideanDistance, IPoint, setRelativePivot } from "src/utils";
 import { viseur } from "src/viseur";
+import { IRendererResourcesOptions, RendererResource } from "./renderer-resource";
+import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";
 import "./renderer.scss";
 
-interface ISheetData {
-    /** Major axis to start numbering from */
-    axis: "x" | "y";
-
-    /** The width of the sheet */
-    width: number;
-
-    /** The height of the sheet */
-    height: number;
-}
-
-export interface ITextureData {
-    /** The path to the texture to load */
-    path: string;
-
-    /** The key of the texture for accessing in pixi resources */
-    key: string;
-
-    /** If this texture represents a sprite sheet, this property must be present */
-    sheet?: ISheetData;
-}
-
-export interface IRendererEvents {
-    /** Triggered when a specific id key is changed */
-    on(event: "rendering", listener: () => void): this;
-}
-
 /** A singleton that handles rendering (visualizing) the game */
-export class Renderer extends BaseElement implements IRendererEvents {
+export class Renderer extends BaseElement {
     /** The in game width, e.g. for chess this would be 8 */
     public width: number = 1;
 
@@ -55,6 +31,15 @@ export class Renderer extends BaseElement implements IRendererEvents {
 
     /** The root of all PIXI game objects in the game */
     public readonly gameContainer = new PIXI.Container();
+
+    /** All the events this emits */
+    public readonly events = Object.freeze({
+        /** Emitted once the textures are loaded for the game */
+        texturesLoaded: new Event<PIXI.loaders.ResourceDictionary>(),
+
+        /** Triggered when a specific id key is changed */
+        rendering: new Event<undefined>(),
+    });
 
     /** The scene (root) of all PIXI objects we will render */
     private readonly scene = new PIXI.Container();
@@ -99,13 +84,7 @@ export class Renderer extends BaseElement implements IRendererEvents {
     private readonly contextMenu: ContextMenu;
 
     /** loaded texture data */
-    private textureData = new Map<string, ITextureData>();
-
-    /** actual loaded textures (including split up sheet textures) */
-    private textures = new Map<string, PIXI.Texture>();
-
-    /** actual loaded textures (including split up sheet textures) */
-    private textureToKey = new Map<PIXI.Texture, string>();
+    private readonly resources: RendererResource[] = [];
 
     /**
      * Initializes the Renderer, should be called by Viseur
@@ -174,104 +153,53 @@ export class Renderer extends BaseElement implements IRendererEvents {
     }
 
     /**
+     * Loads a resource for a game given the name of the file and some options
+     * @param texture the name of the file to load
+     * @param options optional object of options about the texture
+     * @returns a renderer resource which is a PIXI.Sprite factory for that resource
+     */
+    public load(texture: string, options?: IRendererResourcesOptions): RendererResource {
+        const resource = new RendererResource(texture, options);
+        this.resources.push(resource);
+        return resource;
+    }
+
+    /**
+     * Loads a resource for a game given the name of the file and some options
+     * @param texture the name of the file to load
+     * @param options the object of options about the texture
+     * @param sheet the details about this sheet
+     * @returns a renderer resource which is a PIXI.Sprite factory for that resource
+     */
+    public loadSheet(texture: string, options: IRendererResourcesOptions, sheet: ISheetData): RendererSheetResource {
+        const resource = new RendererSheetResource(texture, sheet, options);
+        this.resources.push(resource);
+        return resource;
+    }
+
+    /**
      * loads textures into PIXI
-     * @param textures key object pairs with the key being the id of
-     *                          the texture and the value being the texture's path
      * @param {function} callback an optional callback function to invoke once all functions are loaded
      */
-    public loadTextures(textures: ITextureData[], callback?: () => void): void {
+    public loadTextures(callback?: () => void): void {
         const loader = PIXI.loader;
 
-        textures.push({ // all games have access to the blank (white) square
-            key: "",
-            path: require("src/viseur/images/blank.png"),
-        });
+        for (const resource of this.resources) {
 
-        const sheets = new Map<string, ISheetData>();
-        for (const texture of textures) {
-
-            // it is a sprite sheet, so extract the path and build frames after loaded
-            loader.add(texture.key, texture.path);
-            this.textureData.set(texture.key, texture);
-
-            // then this is a sheet of frames we need to generate
-            if (texture.sheet) {
-                sheets.set(texture.key, texture.sheet);
+            if (!resource.absolutePath) {
+                resource.absolutePath = `src/games/${viseur.game.name.toLowerCase()}/textures/${resource.path}`;
             }
+
+            loader.add(resource.path, resource.absolutePath);
         }
 
         loader.load((sameLoader: PIXI.loaders.Loader, resources: PIXI.loaders.ResourceDictionary) => {
-            for (const texture of textures) {
-                this.textures.set(texture.key, PIXI.loader.resources[texture.key].texture);
-            }
-
-            // now build frames for the sprite sheets
-            for (const pair of sheets) {
-                const key = pair[0];
-                const sheet = pair[1];
-
-                const texture = resources[key].texture;
-
-                const width = texture.width / sheet.width;
-                const height = texture.height / sheet.height;
-
-                // assume x first for the major axis, but they can manually override with the axis: "y" sheet setting
-                const yFirst = (sheet.axis === "y");
-                const size = sheet.width * sheet.height;
-
-                // build a separate texture for each part of the sprite sheet
-                for (let i = 0; i < size; i++) {
-                    let x = 0;
-                    let y = 0;
-
-                    if (yFirst) {
-                        x = Math.floor(i / sheet.height);
-                        y = i % sheet.height;
-                    }
-                    else {
-                        x = i % sheet.width;
-                        y = Math.floor(i / sheet.width);
-                    }
-
-                    this.textures.set(`${key}@${i}`, new PIXI.Texture(
-                        texture.baseTexture,
-                        new PIXI.Rectangle(x * width, y * height, width, height),
-                    ));
-                }
-            }
-
-            // now reverse the textures map so map -> key
-            for (const pair of this.textures) {
-                this.textureToKey.set(pair[1], pair[0]);
-            }
+            this.events.texturesLoaded.emit(resources);
 
             if (callback) {
                 callback();
             }
         });
-    }
-
-    /**
-     * Gets the texture for a given key
-     * @param {string} key the key of the texture
-     * @param {number} [index] optional index if the sprite is a sub set of a sheet
-     * @returns {PIXI.Texture} the texture for that key
-     */
-    public getTexture(key: string, index?: number): PIXI.Texture | undefined {
-        if (index !== undefined) {
-            key = `${key}@${index}`;
-        }
-
-        if (this.textures.has(key)) {
-            return this.textures.get(key);
-        }
-
-        const resource = PIXI.loader.resources[key];
-        if (resource) {
-            return resource.texture;
-        }
-
-        // if we got here no texture could be found :(
     }
 
     /**
@@ -303,47 +231,6 @@ export class Renderer extends BaseElement implements IRendererEvents {
         this.rightOffset = rightOffset;
 
         this.resize();
-    }
-
-    /**
-     * Creates and initializes a sprite for a texture with given options
-     *
-     * @param {string} textureKey - the key for the texture to load on this sprite
-     * @param {PIXI.Container} parentContainer - the parent container for the sprite
-     * @returns {PIXI.Sprite} a sprite with the given texture key, added to the parentContainer
-     */
-    public newSprite(textureKey: string | [string, number], parentContainer: PIXI.Container): PIXI.Sprite {
-        let key: string[];
-        if (!Array.isArray(textureKey)) {
-            key = [ textureKey ];
-        }
-        else {
-            key = [ textureKey[0], String(textureKey[1]) ];
-        }
-
-        const textureData = this.textureData.get(key[0]);
-        const texture = this.getTexture(key.join("@"));
-
-        if (!texture || !textureData) {
-            throw new Error(`Cannot load texture '${textureKey}' for a new sprite.`);
-        }
-
-        const sprite = new PIXI.Sprite(texture);
-        sprite.setParent(parentContainer);
-
-        // now scale the sprite, as it defaults to the dimensions of it's texture's pixel size
-        this.unScaleSprite(sprite);
-
-        return sprite;
-    }
-
-    /**
-     * Un-scales a sprite back to 1x1
-     * @param {PIXI.Sprite} sprite the sprite to un-scale back to 1x1
-     * @throws {Error} an error if the sprite's texture is not one this renderer loaded
-     */
-    public unScaleSprite(sprite: PIXI.Sprite): void {
-        sprite.scale.set(1 / sprite.texture.width, 1 / sprite.texture.height);
     }
 
     /**
@@ -550,7 +437,7 @@ export class Renderer extends BaseElement implements IRendererEvents {
      */
     private render(): void {
         // tell everything that is observing us that they need to update their PIXI objects
-        this.emit("rendering");
+        this.events.rendering.emit(undefined);
         // and now have PIXI render it
         this.pixiApp.renderer.render(this.scene);
     }

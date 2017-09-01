@@ -1,14 +1,43 @@
-import { ITextureData } from "../renderer";
-import { BaseSetting } from "../settings";
+import { BaseSetting, CheckBoxSetting, ColorSetting } from "../settings";
 import { BaseGame } from "./base-game";
-import { BaseGameObject, IBaseGameObjectState } from "./base-game-object";
+import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
 import { IBasePlayerState } from "./base-player";
 import { IState } from "./state-object";
 
+/** A reference to a game object, which just holds the ID of the game object */
+export interface IGameObjectReference extends IState {
+    /**
+     * A unique id for each instance of a GameObject or a sub class.
+     * Used for client and server communication.
+     * Should never change value after being set.
+     */
+    id: string;
+}
+
+/** A state of a game object at a discrete point in time */
+export interface IBaseGameObjectState extends IGameObjectReference {
+    /**
+     * String representing the top level Class that this game object is an instance of.
+     * Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
+     */
+    gameObjectName: string;
+
+    /**
+     * Any strings logged will be stored here. Intended for debugging.
+     */
+    logs: string[];
+}
+
+/** dictionary of all the game object classes in a game */
+export interface IBaseGameObjectClasses {
+    /** index to get a game object class from their name */
+    [className: string]: typeof BaseGameObject;
+}
+
 /** The namespace for a specific game so we can initialize it */
-export interface IGameNamespace {
+export interface IBaseGameNamespace {
     /** The class constructor of the game for this namespace */
     Game: typeof BaseGame;
 
@@ -18,17 +47,14 @@ export interface IGameNamespace {
     /** The class constructor of the human player for this game */
     HumanPlayer: typeof BaseHumanPlayer;
 
-    /** The list of textures to load before the game can be rendered/initialized */
-    textures: ITextureData[];
-
-    /** The list of settings for this game */
-    settings: {[key: string]: BaseSetting};
+    /* * The list of settings for this game */
+    // settings: {[key: string]: BaseSetting};
 
     /** The lookup object of class names to their class instance for reflection in this game */
-    gameObjectClasses: {[className: string]: typeof BaseGameObject};
+    // gameObjectClasses: IBaseGameObjectClasses;
 
-    /** The path to the directory this game's namespace files exist in */
-    path: string;
+    /* * The path to the directory this game's namespace files exist in */
+    // path: string;
 }
 
 /** A collection of all known game objects in the game, indexed by their IDs */
@@ -63,4 +89,13 @@ export interface IGameLayers {
     game: PIXI.Container;
     /** Top layer, for UI elements above the game */
     ui: PIXI.Container;
+}
+
+/** The base settings all games have */
+export interface IBaseGameSettings {
+    /** If custom player colors are enabled */
+    customPlayerColors: CheckBoxSetting;
+
+    /** An array of settings for each player's custom color */
+    playerColors: ColorSetting[];
 }

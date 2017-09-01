@@ -8,12 +8,12 @@ import { BaseSetting } from "./setting";
  * @param settings an object of string keys to BaseSetting values
  * @returns settings now formatted for use
  */
-export function createSettings<T extends {}>(namespace: string, settings: T): T {
+export function createSettings<T extends {}>(namespace: string, settings: T): Readonly<T> {
     for (const key of Object.keys(settings)) {
         const setting = (settings as any)[key];
 
         setting.namespace = namespace;
-        setting.set(setting.args.default);
+        setting.get(setting.args.default);
     }
 
     BaseSetting.newIndex = 0; // reset to zero
