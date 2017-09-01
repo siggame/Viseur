@@ -3,7 +3,7 @@ import * as inputs from "src/core/ui/inputs";
 import { viseur } from "src/viseur";
 import { IGamelog } from "src/viseur/game/gamelog";
 import { KEYS } from "../keys";
-import "./playbackPane.scss";
+import "./playback-pane.scss";
 
 /**
  * handles all the playback controls and logic for the GUI
@@ -203,7 +203,7 @@ export class PlaybackPane extends BaseElement {
     }
 
     protected getTemplate(): Handlebars {
-        return require("./playbackPane.hbs");
+        return require("./playback-pane.hbs");
     }
 
     /**

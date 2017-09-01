@@ -1,5 +1,6 @@
 import { Event } from "src/core/event";
 import { BaseInput, IBaseInputArgs } from "src/core/ui/inputs/base-input";
+import * as store from "store";
 
 /** Additional arguments required for the base setting */
 export interface IBaseSettingArgs {

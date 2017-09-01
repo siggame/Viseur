@@ -13,7 +13,7 @@ function isNodeModule(module) {
 module.exports = {
     entry: [
         "font-awesome/scss/font-awesome.scss",
-        "src/main.js",
+        "src/index.ts",
     ],
     resolve: {
         extensions: [".tsx", ".ts", ".js"],

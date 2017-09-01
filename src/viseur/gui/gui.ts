@@ -7,7 +7,7 @@ import { viseur } from "src/viseur";
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
 import { KEYS } from "./keys";
-import "./loadingMessage/loadingMessage.scss";
+import "./loading-message/loading-message.scss";
 import { PlaybackPane } from "./playback-pane";
 
 /** all the GUI (DOM) elements in the Viseur */
@@ -117,7 +117,7 @@ export class GUI extends BaseElement {
      */
     public modalMessage(message: string, callback?: () => void): void {
         this.modal.show(
-            partial(require("./loadingMessage.hbs"), { message }),
+            partial(require("./loading-message/loading-message.hbs"), { message }),
             callback,
         );
     }
@@ -130,7 +130,7 @@ export class GUI extends BaseElement {
      */
     public modalError(message: string, callback?: () => void): void {
         this.modal.show(
-            partial(require("./loadingMessage.hbs"), { message }).addClass("error"),
+            partial(require("./loading-message/loading-message.hbs"), { message }).addClass("error"),
             callback,
         );
     }

@@ -57,13 +57,13 @@ export class DropDown<T> extends BaseInput {
             }
 
             this.options.push(option);
-            partial(require("./dropDownOption.hbs"), option, this.element);
+            partial(require("./drop-down-option.hbs"), option, this.element);
         }
 
         this.value = defaultValue || this.options[0] && this.options[0].value;
     }
 
     protected getTemplate(): Handlebars {
-        return require("./dropDown.hbs");
+        return require("./drop-down.hbs");
     }
 }

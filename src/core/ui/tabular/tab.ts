@@ -24,9 +24,9 @@ export class Tab extends BaseElement {
 
         this.tabular = args.tabular;
 
-        this.content = partial(require("tab-contents.hbs"), this, this.parent);
+        this.content = partial(require("./tab-content.hbs"), this, this.parent);
         this.content.append(this.element);
 
-        this.tab = partial(require("tab.hbs"), this);
+        this.tab = partial(require("./tab.hbs"), this);
     }
 }

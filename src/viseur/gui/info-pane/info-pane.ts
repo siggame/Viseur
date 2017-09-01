@@ -3,7 +3,7 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Tab, Tabular } from "src/core/ui/tabular";
 import { viseur } from "src/viseur";
 import { GUI } from "../gui";
-import "./infoPane.scss";
+import "./info-pane.scss";
 import { TABS } from "./tabs";
 
 const $document = $(document); // cache it
@@ -119,7 +119,7 @@ export class InfoPane extends BaseElement {
     }
 
     protected getTemplate(): Handlebars {
-        return require("./infoPane.hbs");
+        return require("./info-pane.hbs");
     }
 
     /**

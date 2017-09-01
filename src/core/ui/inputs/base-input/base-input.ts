@@ -1,5 +1,5 @@
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
-import Field from "../field";
+import { Field } from "../field";
 
 export interface IBaseInputArgs extends IBaseElementArgs {
     /** the input type */
@@ -100,6 +100,6 @@ export class BaseInput extends BaseElement {
     }
 
     protected getTemplate(): Handlebars {
-        return require("./baseInput.hbs");
+        return require("./base-input.hbs");
     }
 }

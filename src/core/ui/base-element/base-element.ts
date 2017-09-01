@@ -52,6 +52,6 @@ export class BaseElement extends EventEmitter {
      * @returns the handlebars template required
      */
     protected getTemplate(): Handlebars {
-        return require("./baseElement.hbs");
+        return require("./base-element.hbs");
     }
 }

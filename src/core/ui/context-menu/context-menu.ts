@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "../base-element";
-import "./contextMenu.scss";
+import "./context-menu.scss";
 
 export interface IMenuItem {
     /** hover over title */
@@ -97,6 +97,6 @@ export class ContextMenu extends BaseElement {
     }
 
     protected getTemplate(): Handlebars {
-        return require("./contextMenu.hbs");
+        return require("./context-menu.hbs");
     }
 }
