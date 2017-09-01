@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { Event, events } from "src/core/event";
 import { viseur } from "src/viseur";
 
 /** Data sent from the Tournament server detailing how to connect to play */
@@ -13,27 +13,25 @@ export interface ITournamentPlayData {
     playerName: string;
 }
 
-/* tslint:disable:unified-signatures */
-export interface ITournamentClient {
-    /** Emitted whenever the underlying web socket connection errors */
-    on(event: "error", listener: (error: any) => void): this;
-
-    /** Emitted once this initially connects to the tournament server */
-    on(event: "connected", listener: () => void): this;
-
-    /** Emitted once the connection is closed */
-    on(event: "closed", listener: () => void): this;
-
-    /** Emitted any time the tournament server sends a message */
-    on(event: "messaged", listener: (message: string) => void): this;
-
-    /** Emitted once we are told that we are playing a game, includes details on how to play that game */
-    on(event: "playing", listener: (data: ITournamentPlayData) => void): this;
-}
-/* tslint:enable:unified-signatures */
-
 /** A WS connection to a tournament server */
-export class TournamentClient extends EventEmitter implements ITournamentClient {
+export class TournamentClient {
+    public readonly events = events({
+        /** Emitted when an error is encountered by the socket */
+        error: new Event<Error>(),
+
+        /** Emitted once this initially connects to the tournament server */
+        connected: new Event(),
+
+        /** Emitted once the connection is closed */
+        closed: new Event(),
+
+        /** Emitted any time the tournament server sends a message */
+        messaged: new Event<string>(),
+
+        /** Emitted once we are told that we are playing a game, includes details on how to play that game */
+        playing: new Event<ITournamentPlayData>(),
+    });
+
     /** True when connected to the tournament server, false otherwise */
     public connected: boolean = false;
 
@@ -52,12 +50,12 @@ export class TournamentClient extends EventEmitter implements ITournamentClient 
             this.socket = new WebSocket(`ws://${server}:${port}`);
         }
         catch (err) {
-            this.emit("error", err);
+            this.events.error.emit(err);
         }
 
         this.socket.onopen = () => {
             this.connected = true;
-            this.emit("connected");
+            this.events.connected.emit(undefined);
 
             this.send("register", {
                 type: "Viseur",
@@ -67,7 +65,7 @@ export class TournamentClient extends EventEmitter implements ITournamentClient 
         };
 
         this.socket.onerror = (err) => {
-            this.emit("error", err);
+            this.events.error.emit(new Error(err.type));
         };
 
         this.socket.onmessage = (message) => {
@@ -80,7 +78,7 @@ export class TournamentClient extends EventEmitter implements ITournamentClient 
         };
 
         this.socket.onclose = () => {
-            this.emit("closed");
+            this.events.closed.emit(undefined);
         };
     }
 
@@ -140,7 +138,7 @@ export class TournamentClient extends EventEmitter implements ITournamentClient 
      * @param {string} data the message sent from the server
      */
     private onMessage(data: string): void {
-        this.emit("messaged", data);
+        this.events.messaged.emit(data);
     }
 
     /**
@@ -148,7 +146,7 @@ export class TournamentClient extends EventEmitter implements ITournamentClient 
      * @param {Object} data the data on what game server to connect to for bridging the human playable connection
      */
     private onPlay(data: ITournamentPlayData): void {
-        this.emit("playing", data);
+        this.events.playing.emit(data);
 
         viseur.playAsHuman(data.server, data.port, data.game, data.playerName);
     }

@@ -1,4 +1,3 @@
-import { EventEmitter } from "events";
 import { BaseGame } from "./base-game";
 import { BaseGameObject } from "./base-game-object";
 
@@ -14,7 +13,7 @@ export interface IOrder {
 }
 
 /** the base class all HumanPlayers inherit from in each game */
-export class BaseHumanPlayer extends EventEmitter {
+export class BaseHumanPlayer {
     /** The game this human player is a part of */
     protected readonly game: BaseGame;
 
@@ -29,8 +28,6 @@ export class BaseHumanPlayer extends EventEmitter {
      * @param game the game
      */
     constructor(game: BaseGame) {
-        super();
-
         this.game = game;
     }
 

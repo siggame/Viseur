@@ -1,5 +1,6 @@
 import * as dateFormat from "dateformat";
 import * as screenfull from "screenfull";
+import { Event } from "src/core/event";
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
@@ -13,16 +14,27 @@ import { PlaybackPane } from "./playback-pane";
 /** all the GUI (DOM) elements in the Viseur */
 export class GUI extends BaseElement {
     /** The wrapper for the renderer */
-    public readonly rendererWrapper: JQuery<HTMLElement>;
+    public readonly rendererWrapper = this.element.find(".renderer-wrapper");
 
     /** The wrapper element for the game's pane */
-    public readonly gamePaneWrapper: JQuery<HTMLElement>;
+    public readonly gamePaneWrapper = this.element.find(".game-pane-wrapper");
+
+    /** The wrapper for the playback pane */
+    private readonly playbackWrapper = this.element.find(".playback-pane-wrapper");
+
+    /** The wrapper for the visualizer wrapper */
+    private readonly visualizerWrapper = this.element.find(".visualizer-wrapper");
+
+    /** The wrapper for the visualizer's pane */
+    private readonly visualizerPaneWrapper = this.element.find(".visualizer-pane-wrapper");
 
     /** The info pane part of the gui */
     private readonly infoPane: InfoPane;
 
     /** The playback pane with controls to manipulate playback */
-    private readonly playbackPane: PlaybackPane;
+    private readonly playbackPane: PlaybackPane = new PlaybackPane({
+        parent: this.playbackWrapper,
+    });
 
     /** The modal [re]used to display loading and error messages */
     private readonly modal: Modal;
@@ -30,14 +42,12 @@ export class GUI extends BaseElement {
     /** The callback function that exits fullscreen */
     private exitFullscreenCall: () => void;
 
-    /** The wrapper for the playback pane */
-    private readonly playbackWrapper: JQuery<HTMLElement>;
-
-    /** The wrapper for the visualizer wrapper */
-    private readonly visualizerWrapper: JQuery<HTMLElement>;
-
-    /** The wrapper for the visualizer's pane */
-    private readonly visualizerPaneWrapper: JQuery<HTMLElement>;
+    /** All the events this GUI emits */
+    // tslint:disable-next-line:member-ordering (because we need the private stuff above initialized first)
+    public readonly events = Event.proxy({
+        /** Emitted when the GUI resizes */
+        resized: new Event<{width: number, height: number, remainingHeight: number}>(),
+    }, this.playbackPane.events);
 
     constructor(args: IBaseElementArgs) {
         super(args);
@@ -47,27 +57,13 @@ export class GUI extends BaseElement {
             gui: this,
         });
 
-        this.gamePaneWrapper = this.element.find(".game-pane-wrapper");
-        this.playbackWrapper = this.element.find(".playback-pane-wrapper");
-
-        this.playbackPane = new PlaybackPane({
-            parent: this.playbackWrapper,
-        });
-
-        this.playbackPane.on("fullscreen-enabled", () => {
+        this.playbackPane.events.toggleFullscreen.on(() => {
             this.goFullscreen();
         });
-
-        this.rendererWrapper = this.element.find(".renderer-wrapper");
-        this.visualizerWrapper = this.element.find(".visualizer-wrapper");
-        this.visualizerPaneWrapper = this.element.find(".visualizer-pane-wrapper");
 
         this.exitFullscreenCall = () => {
             screenfull.exit();
         };
-
-        // TODO: this logic is impossible?
-        // this.proxy(this.playbackPane);
 
         this.modal = new Modal({
             id: "main-modal",
@@ -90,15 +86,15 @@ export class GUI extends BaseElement {
             }, 350); // after all transitions end
         });
 
-        this.infoPane.on("resized", (width: number, height: number) => {
-            this.resizeVisualizer(width, height);
+        this.infoPane.events.resized.on((resized) => {
+            this.resizeVisualizer(resized.width, resized.height);
         });
 
-        this.infoPane.on("resize-start", () => {
+        this.infoPane.events.resizeStart.on(() => {
             this.element.addClass("resizing");
         });
 
-        this.infoPane.on("resize-end", () => {
+        this.infoPane.events.resizeEnd.on(() => {
             this.element.removeClass("resizing");
         });
 
@@ -246,6 +242,10 @@ export class GUI extends BaseElement {
             .width(remainingWidth)
             .height(remainingHeight);
 
-        this.emit("resized", newWidth, newHeight, remainingHeight);
+        this.events.resized.emit({
+            width: newWidth,
+            height: newHeight,
+            remainingHeight,
+        });
     }
 }

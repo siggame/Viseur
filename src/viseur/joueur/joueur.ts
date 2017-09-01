@@ -1,30 +1,42 @@
-import { EventEmitter } from "events";
+import { Event, events } from "src/core/event";
 import { IAnyObject } from "src/utils";
 import { viseur } from "src/viseur";
-import { IGamelog } from "src/viseur/game/gamelog";
+import { IDelta, IGamelog, IGameServerConstants } from "src/viseur/game/gamelog";
 import * as serializer from "./serializer";
-
-/* tslint:disable:unified-signatures */
-export interface IJoueurEvents {
-    /** Emitted whenever the underlying web socket connection errors */
-    on(event: "error", listener: (error: any) => void): this;
-
-    /** Emitted once this initially connects to the tournament server */
-    on(event: "connected", listener: () => void): this;
-
-    /** Emitted once the connection is closed */
-    on(event: "closed", listener: (timedOut: boolean) => void): this;
-
-    /** Emitted any any event occurs */
-    on(event: "event", listener: (event: string, data: any) => void): this;
-}
-/* tslint:enable:unified-signatures */
 
 /**
  * The websocket client to a game server.
  * Handles i/o with the game server, and mostly merges delta states from it.
  */
-export class Joueur extends EventEmitter implements IJoueurEvents {
+export class Joueur {
+    public readonly events = events({
+        error: new Event<Error>(),
+
+        /** Emitted once this initially connects to the tournament server */
+        connected: new Event(),
+
+        /** Emitted once the connection is closed */
+        closed: new Event<{timedOut: boolean}>(),
+
+        /** Emitted when we are lobbied by the game server */
+        lobbied: new Event<{gameSession: string, gameName: string, constants: IGameServerConstants}>(),
+
+        /** Emitted when the game on the game server starts */
+        start: new Event<{playerID: string}>(),
+
+        /** Emitted when a change in game state (delta) is sent from the game server */
+        delta: new Event<IDelta>(),
+
+        /** Emitted by the game server after it runs something for us */
+        ran: new Event<any>(),
+
+        /** Emitted when the game is over */
+        over: new Event<{gamelogURL: string, visualizerURL: string, message: string}>(),
+
+        /** Emitted when a fatal event is sent from the server */
+        fatal: new Event<{message: string}>(),
+    });
+
     /**
      * Our "gamelog" we are creating on the fly (streaming)
      * All values are junk values until we get more information from the
@@ -85,11 +97,11 @@ export class Joueur extends EventEmitter implements IJoueurEvents {
             this.socket = new WebSocket("ws://" + server + ":" + port);
         }
         catch (err) {
-            this.emit("error", err);
+            this.events.error.emit(err);
         }
 
         this.socket.onopen = () => {
-            this.emit("connected");
+            this.events.connected.emit(undefined);
 
             this.send("play", {
                 gameName,
@@ -102,7 +114,7 @@ export class Joueur extends EventEmitter implements IJoueurEvents {
         };
 
         this.socket.onerror = (err) => {
-            this.emit("error", err);
+            this.events.error.emit(new Error(err.type));
         };
 
         this.socket.onmessage = (message) => {
@@ -115,7 +127,7 @@ export class Joueur extends EventEmitter implements IJoueurEvents {
         };
 
         this.socket.onclose = () => {
-            this.emit("closed", Boolean(this.timedOut));
+            this.events.closed.emit({timedOut: this.timedOut});
         };
     }
 
@@ -180,7 +192,10 @@ export class Joueur extends EventEmitter implements IJoueurEvents {
                 throw new Error(`Could not find an auto handler for event ${data.event}`);
         }
 
-        this.emit("event", eventName, data.data);
+        const event: Event<any> = (this.events as any)[eventName];
+        if (event) {
+            event.emit(data.data);
+        }
     }
 
     /**

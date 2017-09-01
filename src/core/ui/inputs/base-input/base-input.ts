@@ -1,7 +1,8 @@
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { Event, events } from "src/core/event";
+import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
 import { Field } from "../field";
 
-export interface IBaseInputArgs extends IBaseElementArgs {
+export interface IBaseInputArgs extends IDisableableElementArgs {
     /** the input type */
     type?: string;
 
@@ -19,7 +20,13 @@ export interface IBaseInputArgs extends IBaseElementArgs {
 }
 
 /** The base class all input elements inherit from */
-export class BaseInput extends BaseElement {
+export class BaseInput extends DisableableElement {
+    /** Events this class emits */
+    public readonly events = events({
+        /** Emitted when this input's value changes */
+        changed: new Event<any>(),
+    });
+
     /** the label field, if set */
     public readonly field: Field;
 
@@ -39,13 +46,9 @@ export class BaseInput extends BaseElement {
             });
         }
 
-        if (args.disabled) {
-            this.disable();
-        }
-
         this.element.on("change input", () => {
             this.value = this.getElementValue();
-            this.emit("changed", this.value);
+            this.events.changed.emit(this.value);
         });
 
         this.value = args.value;
@@ -67,20 +70,6 @@ export class BaseInput extends BaseElement {
      */
     public get value(): any {
         return this.actualValue;
-    }
-
-    /**
-     * Disables this input
-     */
-    public disable(): void {
-        this.element.prop("disabled", true);
-    }
-
-    /**
-     * Enables this input
-     */
-    public enable(): void {
-        this.element.prop("disabled", false);
     }
 
     /**

@@ -8,7 +8,11 @@ interface IListener<T> {
 }
 
 /** A typed event, given a type will emit values of that type to listeners */
-export class Event<T extends any> {
+export class Event<T extends any = undefined> {
+
+    public static proxy<T extends Events, S extends Events>(eventsA: T, eventsB: S): T & S {
+        return Object.freeze(Object.assign({}, eventsA, eventsB)) as any;
+    }
     /** All the current listeners for this event */
     private listeners: Array<IListener<T>> = [];
 
@@ -61,4 +65,12 @@ export class Event<T extends any> {
         // remove all listeners that only wanted to listen once
         this.listeners = this.listeners.filter((l) => !l.once);
     }
+}
+
+export type Events = Readonly<{
+    // [eventName: string]: Event<any>;
+}>;
+
+export function events<T>(lookup: T): Readonly<T> {
+    return Object.freeze(lookup);
 }

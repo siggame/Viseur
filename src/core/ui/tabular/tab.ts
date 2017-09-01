@@ -1,9 +1,15 @@
-// import * as $ from "jquery";
+import { Event, events } from "src/core/event";
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tabular } from "./tabular";
 
 export class Tab extends BaseElement {
+    /** The events this class emits */
+    public readonly events = events({
+        /** Emitted when this tab's tab is selected */
+        selected: new Event<undefined>(),
+    });
+
     /** the clickable tab that shows the content in the tabular */
     public readonly tab: JQuery<HTMLElement>;
 
@@ -28,5 +34,8 @@ export class Tab extends BaseElement {
         this.content.append(this.element);
 
         this.tab = partial(require("./tab.hbs"), this);
+        this.tab.on("click", () => {
+            this.events.selected.emit(undefined);
+        });
     }
 }

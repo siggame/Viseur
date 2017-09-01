@@ -1,4 +1,3 @@
-import { EventEmitter } from "events";
 import { IDeltaReason } from "./gamelog";
 
 /* tslint:disable:no-empty-interface */
@@ -8,16 +7,12 @@ export interface IState {}
 
 /* tslint:enable:no-empty-interface */
 
-export class StateObject extends EventEmitter {
+export class StateObject {
     /** The current state (e.g. at delta time = 0) */
     public current?: IState;
 
     /** The next state (e.g. at delta time = 1) */
     public next?: IState;
-
-    constructor() {
-        super();
-    }
 
     /**
      * Update this state object's current and next state, should call prior to

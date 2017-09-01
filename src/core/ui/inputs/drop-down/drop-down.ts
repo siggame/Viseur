@@ -1,3 +1,4 @@
+import { Event, events } from "src/core/event";
 import partial from "src/core/partial";
 import { BaseInput, IBaseInputArgs } from "../base-input";
 
@@ -15,6 +16,12 @@ export interface IDropDownArgs<T> extends IBaseInputArgs {
 
 /** A select with options input */
 export class DropDown<T> extends BaseInput {
+    /** Events this class emits */
+    public readonly events = events({
+        /** Emitted when this input's value changes */
+        changed: new Event<T>(),
+    });
+
     /** The options available on this drop down menu */
     private options: Array<IDropDownOption<T>> = [];
 

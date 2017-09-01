@@ -1,7 +1,18 @@
+import { Event, events } from "src/core/event";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 /** a checkbox for booleans */
 export class CheckBox extends BaseInput {
+    /** Events this class emits */
+    public readonly events = events({
+        /** Emitted when this input's value changes */
+        changed: new Event<string>(),
+    });
+
+    /**
+     * Creates a checkbox for boolean values
+     * @param args the args to initialize, value must be boolean
+     */
     constructor(args: IBaseInputArgs) {
         super(Object.assign({
             value: Boolean(args.value),

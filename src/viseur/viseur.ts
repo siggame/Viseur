@@ -147,7 +147,7 @@ export class Viseur {
         });
 
         this.timeManager = new TimeManager();
-        this.timeManager.on("new-index", (index: number) => {
+        this.timeManager.events.newIndex.on((index: number) => {
             this.updateCurrentStateAsync(index);
         });
 
@@ -155,12 +155,12 @@ export class Viseur {
             parent: this.gui.rendererWrapper,
         });
 
-        this.gui.on("resized", (width: number, height: number, rendererHeight: number) => {
-            this.renderer.resize(width, rendererHeight);
+        this.gui.events.resized.on((resized) => {
+            this.renderer.resize(resized.width, resized.remainingHeight);
         });
         this.gui.resize();
 
-        this.renderer.on("rendering", () => {
+        this.renderer.events.rendering.on(() => {
             if (this.game) {
                 const time = this.timeManager.getCurrentTime();
                 this.events.timeUpdated.emit(time);
@@ -273,7 +273,7 @@ export class Viseur {
         this.joueur.run(callerID, functionName, args);
 
         if (callback) {
-            this.joueur.once("event-ran", callback);
+            this.joueur.events.ran.once(callback);
         }
     }
 
@@ -370,7 +370,7 @@ export class Viseur {
 
             // When we finish playback (the timer reaches its end), wait 5 seconds
             //  then reload the window (which will grab a new gamelog and do all this again)
-            this.timeManager.on("ended", () => {
+            this.timeManager.events.ended.on(() => {
                 setTimeout(() => {
                     location.reload();
                 }, 5000);
@@ -635,7 +635,7 @@ export class Viseur {
 
         this.rawGamelog = this.joueur.getGamelog();
 
-        this.joueur.on("connected", () => {
+        this.joueur.events.connected.on(() => {
             this.gui.modalMessage("Awaiting game to start...");
 
             this.events.connectionConnected.emit(undefined);
@@ -643,12 +643,12 @@ export class Viseur {
 
         // TODO: ILobbiedData Interface
         let lobbiedData: any;
-        this.joueur.on("event-lobbied", (data: any) => {
+        this.joueur.events.lobbied.on((data) => {
             lobbiedData = data;
             this.gui.modalMessage(`In lobby '${data.gameSession}' for '${data.gameName}'. Waiting for game to start.`);
         });
 
-        this.joueur.on("event-start", () => {
+        this.joueur.events.start.on(() => {
             if (!this.joueur) {
                 throw new Error("Joueur client destroyed before game started");
             }
@@ -657,16 +657,16 @@ export class Viseur {
             this.checkIfReady();
         });
 
-        this.joueur.on("error", (err: Error) => {
+        this.joueur.events.error.on((err) => {
             this.gui.modalError("Connection error");
             this.events.connectionError.emit(err);
         });
 
-        this.joueur.on("closed", (timedOut: boolean) => {
-            this.events.connectionClosed.emit({timedOut});
+        this.joueur.events.closed.on((data) => {
+            this.events.connectionClosed.emit(data);
         });
 
-        this.joueur.on("event-delta", () => {
+        this.joueur.events.delta.on(() => {
             if (this.rawGamelog && this.rawGamelog.deltas.length === 1) {
                 this.gamelogLoaded(this.rawGamelog);
             }
@@ -675,15 +675,15 @@ export class Viseur {
         });
 
         // TODO: IOverData
-        this.joueur.on("event-over", (data: any) => {
+        this.joueur.events.over.on((data) => {
             this.events.gamelogFinalized.emit({
-                gamelog: this.rawGamelog as any,
+                gamelog: this.rawGamelog as IGamelog,
                 url: data.gamelogURL,
             });
         });
 
         // TODO: IFatalData
-        this.joueur.on("fatal", (data: any) => {
+        this.joueur.events.fatal.on((data) => {
             this.gui.modalError("Fatal game server event: " + data.message);
         });
     }

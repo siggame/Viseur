@@ -1,4 +1,5 @@
 import * as $ from "jquery";
+import { Event, events } from "src/core/event";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Tab, Tabular } from "src/core/ui/tabular";
 import { viseur } from "src/viseur";
@@ -10,6 +11,18 @@ const $document = $(document); // cache it
 
 /** The dock-able pane that has tabs and info about the Visualizer */
 export class InfoPane extends BaseElement {
+    /** Events this class emits */
+    public readonly events = events({
+        /** Emitted when this is resized (may still be resizing) */
+        resized: new Event<{width: number, height: number}>(),
+
+        /** Emitted when this starts resizing */
+        resizeStart: new Event<undefined>(),
+
+        /** Emitted when this stops resizing */
+        resizeEnd: new Event<undefined>(),
+    });
+
     /** The GUI this InfoPane is a part of */
     private gui: GUI;
 
@@ -90,15 +103,15 @@ export class InfoPane extends BaseElement {
                 .css("height", "");
         }
 
-        let width = this.element.width();
-        let height = this.element.height();
+        let width = this.element.width() || 0;
+        let height = this.element.height() || 0;
 
         if (this.gui.isFullscreen()) {
             width = 0;
             height = 0;
         }
 
-        this.emit("resized", width, height);
+        this.events.resized.emit({width, height});
         this.element.removeClass("resizing");
     }
 
@@ -133,7 +146,7 @@ export class InfoPane extends BaseElement {
         });
 
         if (newTab.title === "Inspect") {
-            newTab.on("highlighted", () => {
+            newTab.events.selected.on(() => {
                 this.tabular.setTab(newTab);
             });
         }
@@ -184,7 +197,7 @@ export class InfoPane extends BaseElement {
 
         $document // cached at the top of this file
             .on("mousemove", (moveEvent) => {
-                this.emit("resize-start");
+                this.events.resizeStart.emit(undefined);
 
                 const oldX = x;
                 const oldY = y;
@@ -218,7 +231,7 @@ export class InfoPane extends BaseElement {
             })
             .on("mouseup", () => {
                 this.element.removeClass("resizing");
-                this.emit("resize-end");
+                this.events.resizeEnd.emit(undefined);
                 $document.off("mousemove mouseup");
             });
     }

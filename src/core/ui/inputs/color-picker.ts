@@ -1,8 +1,15 @@
 import * as Color from "color";
+import { Event, events } from "src/core/event";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 /** An input for colors */
 export class ColorPicker extends BaseInput {
+    /** Events this class emits */
+    public readonly events = events({
+        /** Emitted when this input's value changes */
+        changed: new Event<string>(),
+    });
+
     /**
      * Initializes the Number Input
      * @param {object} args - initialization args

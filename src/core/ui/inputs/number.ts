@@ -1,3 +1,4 @@
+import { Event, events } from "src/core/event";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 export interface INumberInputArgs extends IBaseInputArgs {
@@ -16,6 +17,12 @@ export interface INumberInputArgs extends IBaseInputArgs {
 
 /** a text input for numbers */
 export class NumberInput extends BaseInput {
+    /** Events this class emits */
+    public readonly events = events({
+        /** Emitted when this input's value changes */
+        changed: new Event<number>(),
+    });
+
     /**
      * Initializes the Number Input
      * @param {object} args initialization args, can have min, max, and step

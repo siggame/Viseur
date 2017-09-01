@@ -1,15 +1,20 @@
+import { Event, events } from "src/core/event";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
-export interface IFileInputEvents {
-    /** Triggered when the button is clicked */
-    on(event: "loading", listener: () => void): this;
-
-    /** Triggered once a file has been loaded */
-    on(event: "loaded", listener: (result: any) => void): this;
-}
-
 /** An input for files */
-export class FileInput extends BaseInput implements IFileInputEvents {
+export class FileInput extends BaseInput {
+    /** Events this class emits */
+    public readonly events = events({
+        /** Emitted when this input's value changes */
+        changed: new Event<undefined>(),
+
+        /** Triggered when the button is clicked */
+        loading: new Event<undefined>(),
+
+        /** Triggered once a file has been loaded */
+        loaded: new Event<string>(),
+    });
+
     /**
      * Initializes the File Input
      * @param {object} args - initialization args
@@ -28,11 +33,11 @@ export class FileInput extends BaseInput implements IFileInputEvents {
      * loads the contents of the chosen file
      */
     private loadFile(): void {
-        this.emit("loading");
+        this.events.loading.emit(undefined);
 
         const reader = new FileReader();
         reader.onload = () => {
-            this.emit("loaded", reader.result);
+            this.events.loaded.emit(reader.result);
         };
 
         const file = (this.element.get(0) as any).files[0];
@@ -46,5 +51,3 @@ export class FileInput extends BaseInput implements IFileInputEvents {
         // do nothing, disallow public set
     }
 }
-
-module.exports = File;

@@ -1,4 +1,3 @@
-import { EventEmitter } from "events";
 import * as $ from "jquery";
 import partial from "src/core/partial";
 
@@ -13,7 +12,7 @@ export interface IBaseElementArgs {
 /**
  * A wrapper for some HTML element(s) that are instantiated via a handlebars template
  */
-export class BaseElement extends EventEmitter {
+export class BaseElement {
     /** The ID of the element */
     public readonly id?: string;
 
@@ -28,7 +27,6 @@ export class BaseElement extends EventEmitter {
      * @param args the arguments to set value(s) from
      */
     constructor(args?: IBaseElementArgs) {
-        super();
         args = args || {};
 
         this.id = args.id;

@@ -1,13 +1,14 @@
-import { EventEmitter } from "events";
+import { Event } from "src/core/event";
 import { clamp } from "src/utils/math";
 
-export interface ITimerEvents {
-    /** Triggered when the button is clicked */
-    on(event: "finished", listener: () => void): this;
-}
-
 /** ticks at a custom rate to a number of steps */
-export class Timer extends EventEmitter implements ITimerEvents {
+export class Timer {
+    /** Events this class emits */
+    public readonly events = Object.freeze({
+        /** Emitted when this timer finishes ticking */
+        finished: new Event<undefined>(),
+    });
+
     /** Last timer progress before being paused */
     private lastProgress: number = 0;
 
@@ -25,8 +26,6 @@ export class Timer extends EventEmitter implements ITimerEvents {
      * @param {number} speed the initial speed to set to, can be changed later
      */
     constructor(speed?: number) {
-        super();
-
         this.setSpeed(Number(speed) || 1000);
     }
 
@@ -86,7 +85,7 @@ export class Timer extends EventEmitter implements ITimerEvents {
         this.lastTime = new Date().getTime();
         this.timeout = setTimeout(() => {
             this.pause();
-            this.emit("finished");
+            this.events.finished.emit(undefined);
         }, (1 - this.getProgress()) * this.speed);
 
         return true;

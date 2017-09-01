@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import { Event } from "src/core/event";
 import { Timer } from "src/core/timer";
 import { viseur } from "src/viseur";
 import { BaseGame } from "./game/base-game";
@@ -13,24 +13,25 @@ export interface ICurrentTime {
     dt: number;
 }
 
-/* tslint:disable:unified-signatures */
-export interface ITimeManagerEvents {
-    /** Triggered when the current index changes */
-    on(event: "new-index", listener: (newIndex: number) => void): this;
-
-    /** Triggered when we starting ticking (playing) */
-    on(event: "playing", listener: () => void): this;
-
-    /** Triggered when we stop ticking (pause) */
-    on(event: "paused", listener: () => void): this;
-
-    /** Triggered when we reach the end of the indexes we can iterate through */
-    on(event: "ended", listener: () => void): this;
-}
 /* tslint:enable:unified-signatures */
 
 /** Manages playback time and what the game state to show should look like */
-export class TimeManager extends EventEmitter implements ITimeManagerEvents {
+export class TimeManager {
+    /** Events this class emits */
+    public readonly events = Object.freeze({
+        /** Triggered when the current index changes */
+        newIndex: new Event<number>(),
+
+        /** Triggered when we starting ticking (playing) */
+        playing: new Event(),
+
+        /** Triggered when we stop ticking (pause) */
+        paused: new Event(),
+
+        /** Triggered when we reach the end of the indexes we can iterate through */
+        ended: new Event(),
+    });
+
     /** The current index  to render */
     private currentIndex: number = -1;
 
@@ -45,11 +46,9 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
 
     /** Creates the time manager  */
     constructor() {
-        super();
-
         this.timer = new Timer(viseur.settings.playbackSpeed.get(1000));
 
-        this.timer.on("finished", () => {
+        this.timer.events.finished.on(() => {
             this.ticked();
         });
 
@@ -84,7 +83,7 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
         this.timer.setProgress(dt || 0);
 
         if (oldIndex !== index) {
-            this.emit("new-index", index);
+            this.events.newIndex.emit(index);
         }
     }
 
@@ -115,20 +114,19 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
 
         this.ticked(true);
 
-        // TODO: these cannot work, as the playback pane emits them, not the gui
-        viseur.gui.on("play-pause", () => {
+        viseur.gui.events.playPause.on(() => {
             this.playPause();
         });
 
-        viseur.gui.on("next", () => {
+        viseur.gui.events.next.on(() => {
             this.next();
         });
 
-        viseur.gui.on("back", () => {
+        viseur.gui.events.back.on(() => {
             this.back();
         });
 
-        viseur.gui.on("playback-slide", (value: number) => {
+        viseur.gui.events.playbackSlide.on((value) => {
             const index = Math.floor(value);
             const dt = value - index;
             this.pause(index, dt);
@@ -152,8 +150,11 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
             this.setTime(0, 0);
         }
 
-        const paused = this.timer.invertTicking() ? "paused" : "playing";
-        this.emit(paused);
+        const paused = this.timer.invertTicking();
+        (paused
+            ? this.events.paused
+            : this.events.playing
+        ).emit(undefined);
     }
 
     /**
@@ -167,7 +168,7 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
         const backPause = (this.gamelog.streaming && this.currentIndex === this.gamelog.deltas.length - 1);
 
         if (!backPause) {
-            this.emit("new-index", this.currentIndex);
+            this.events.newIndex.emit(this.currentIndex);
         }
         else {
             // stop, we hit the end
@@ -181,7 +182,7 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
             }
             else {
                 this.pause(this.currentIndex, 0);
-                this.emit("ended");
+                this.events.ended.emit(undefined);
             }
         }
     }
@@ -226,6 +227,6 @@ export class TimeManager extends EventEmitter implements ITimeManagerEvents {
             this.setTime(index, dt);
         }
 
-        this.emit("paused");
+        this.events.paused.emit(undefined);
     }
 }

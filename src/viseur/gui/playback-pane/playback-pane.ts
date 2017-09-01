@@ -1,4 +1,6 @@
+import { Event, events } from "src/core/event";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
 import { viseur } from "src/viseur";
 import { IGamelog } from "src/viseur/game/gamelog";
@@ -9,6 +11,24 @@ import "./playback-pane.scss";
  * handles all the playback controls and logic for the GUI
  */
 export class PlaybackPane extends BaseElement {
+    /** All the events this class emits */
+    public readonly events = events({
+        /** Emitted when the playback slider is slid */
+        playbackSlide: new Event<number>(),
+
+        /** Emitted when fullscreen is toggled */
+        toggleFullscreen: new Event(),
+
+        /** Emitted when we want to go to the next state */
+        next: new Event(),
+
+        /** Emitted when we want to go to the previous state */
+        back: new Event(),
+
+        /** Emitted when we want play or pause (toggled) */
+        playPause: new Event(),
+    });
+
     /** The number of deltas in the gamelog */
     private numberOfDeltas: number;
 
@@ -31,7 +51,7 @@ export class PlaybackPane extends BaseElement {
     private readonly bottomRightContainerElement: JQuery<HTMLElement>;
 
     /** Handy collection of all our inputs */
-    private readonly inputs: inputs.BaseInput[];
+    private readonly inputs: DisableableElement[];
 
     // Our Inputs \\
 
@@ -75,8 +95,8 @@ export class PlaybackPane extends BaseElement {
             id: "playback-slider",
             parent: this.topContainerElement,
         });
-        this.playbackSlider.on("changed", (value: number) => {
-            this.emit("playback-slide", value);
+        this.playbackSlider.events.changed.on((value) => {
+            this.events.playbackSlide.emit(value);
         });
 
         // play or pause \\
@@ -84,8 +104,8 @@ export class PlaybackPane extends BaseElement {
             id: "play-pause-button",
             parent: this.bottomLeftContainerElement,
         });
-        this.playPauseButton.on("clicked", () => {
-            this.emit("play-pause");
+        this.playPauseButton.events.clicked.on(() => {
+            this.events.playPause.emit(undefined);
         });
 
         KEYS.space.up.on(() => { // space bar up, hence the ' => '
@@ -97,8 +117,8 @@ export class PlaybackPane extends BaseElement {
             id: "back-button",
             parent: this.bottomLeftContainerElement,
         });
-        this.backButton.on("clicked", () => {
-            this.emit("back");
+        this.backButton.events.clicked.on(() => {
+            this.events.back.emit(undefined);
         });
         KEYS.leftArrow.up.on(() => {
             this.backButton.click();
@@ -109,8 +129,8 @@ export class PlaybackPane extends BaseElement {
             id: "next-button",
             parent: this.bottomLeftContainerElement,
         });
-        this.nextButton.on("clicked", () => {
-            this.emit("next");
+        this.nextButton.events.clicked.on(() => {
+            this.events.next.emit(undefined);
         });
         KEYS.rightArrow.up.on(() => {
             this.nextButton.click();
@@ -121,7 +141,7 @@ export class PlaybackPane extends BaseElement {
             id: "deltas-button",
             parent: this.bottomRightContainerElement,
         });
-        this.deltasButton.on("clicked", () => {
+        this.deltasButton.events.clicked.on(() => {
             if (viseur.settings.playbackMode.get() !== "deltas") {
                 viseur.settings.playbackMode.set("deltas");
             }
@@ -130,7 +150,7 @@ export class PlaybackPane extends BaseElement {
             id: "turns-button",
             parent: this.bottomRightContainerElement,
         });
-        this.turnsButton.on("clicked", () => {
+        this.turnsButton.events.clicked.on(() => {
             if (viseur.settings.playbackMode.get() !== "turns") {
                 viseur.settings.playbackMode.set("turns");
             }
@@ -142,7 +162,7 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.updateSpeedSlider();
-        this.speedSlider.on("changed", (value: number) => {
+        this.speedSlider.events.changed.on((value) => {
             this.changePlaybackSpeed(value);
         });
 
@@ -150,8 +170,8 @@ export class PlaybackPane extends BaseElement {
             id: "fullscreen-button",
             parent: this.bottomRightContainerElement,
         });
-        this.fullscreenButton.on("clicked", () => {
-            this.emit("fullscreen-enabled");
+        this.fullscreenButton.events.clicked.on(() => {
+            this.events.toggleFullscreen.emit(undefined);
         });
 
         this.inputs = [
@@ -179,11 +199,11 @@ export class PlaybackPane extends BaseElement {
             this.enable();
         });
 
-        viseur.timeManager.on("playing", () => {
+        viseur.timeManager.events.playing.on(() => {
             this.element.addClass("playing");
         });
 
-        viseur.timeManager.on("paused", () => {
+        viseur.timeManager.events.paused.on(() => {
             this.element.removeClass("playing");
         });
 
