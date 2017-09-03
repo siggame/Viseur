@@ -22,6 +22,7 @@ export class RendererSheetResource extends RendererResource {
 
     constructor(path: string, sheet: ISheetData, options?: IRendererResourcesOptions) {
         super(path, options);
+        this.sheet = sheet;
     }
 
     /**
@@ -45,6 +46,8 @@ export class RendererSheetResource extends RendererResource {
      * @param resources all the resources loaded, to pull our texture out of
      */
     protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): void {
+        super.onTextureLoaded(resources);
+
         const sheet = this.sheet;
         if (!sheet) {
             throw new Error(`Resource ${this.path} lost its sheet somehow`);

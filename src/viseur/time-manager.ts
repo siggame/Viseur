@@ -1,6 +1,6 @@
 import { Event } from "src/core/event";
 import { Timer } from "src/core/timer";
-import { viseur } from "src/viseur";
+import { viseur } from "src/viseur/";
 import { BaseGame } from "./game/base-game";
 import { IGamelog } from "./game/gamelog";
 

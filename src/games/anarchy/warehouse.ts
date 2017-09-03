@@ -25,7 +25,9 @@ export class Warehouse extends Building {
     public next: IWarehouseState;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    protected get beamColorName(): number {
+        return 0xFF8C00;
+    }
     // <<-- /Creer-Merge: variables -->>
 
     /**

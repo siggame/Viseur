@@ -1,17 +1,134 @@
 import * as Color from "color";
 import * as PIXI from "pixi.js";
-import { colorAsMatrix } from "./color";
+import { euclideanDistance, IPoint } from "./math";
+
+export type ColorTint = Color | number | string;
+
+export interface IPixiSpriteOptions {
+    /** The width to set the sprite to */
+    width?: number;
+
+    /** The height to set the sprite to */
+    height?: number;
+
+    /** The rotation to set the sprite to (in radians) */
+    rotation?: number;
+
+    /** The position of the sprite */
+    position?: IPoint;
+
+    /** The skew of the sprite */
+    skew?: IPoint;
+
+    /** The pivot position for the sprite */
+    pivot?: number | IPoint;
+
+    /** The color to tint the sprite */
+    tint?: ColorTint;
+
+    /** The relative pivot as either a single number used for the x and y, or the tuple */
+    relativePivot?: number | IPoint;
+
+    /** The alpha value (opacity) of the sprite */
+    alpha?: number;
+}
 
 /**
- * Gets a PIXI ColorMatrixFilter set to this color
- * @param {Color} color the color to generate the color matrix filter for
- * @returns {PIXI.ColorMatrixFilter} this as a PIXI ColorMatrixFilter
+ * Gets a tint number from a color like variable
+ * @param color a color like variable, can be the number (passed through), string color name, or the Color instance
+ * @returns a number that represents a color tint, such as 0xFF000 for red
  */
-export function getColorMatrixFilterFor(color: Color): PIXI.filters.ColorMatrixFilter {
-    const filter = new PIXI.filters.ColorMatrixFilter();
-    filter.matrix = colorAsMatrix(color);
+export function getTintFromColor(color: ColorTint): number {
+    if (typeof(color) === "number") {
+        return color;
+    }
+    else if (typeof(color) === "string") {
+        return Color(color).rgbNumber();
+    }
+    else {
+        return color.rgbNumber();
+    }
+}
 
-    return filter;
+/**
+ * Sets the properties of a pixi sprite from an options interface
+ * @param sprite the sprite to set properties on
+ * @param options the options to set the properties from
+ */
+export function setPixiOptions(sprite: PIXI.Sprite, options: IPixiSpriteOptions): void {
+    let x: number;
+    let y: number;
+    if (options.width !== undefined) {
+        sprite.width = options.width;
+    }
+
+    if (options.height !== undefined) {
+        sprite.height = options.height;
+    }
+
+    if (options.rotation !== undefined) {
+        sprite.rotation = options.rotation;
+    }
+
+    if (options.position !== undefined) {
+        if (typeof(options.position) === "number") {
+            x = options.position;
+            y = options.position;
+        }
+        else {
+            x = options.position.x;
+            y = options.position.y;
+        }
+        sprite.position.set(x, y);
+    }
+
+    if (options.skew !== undefined) {
+        if (typeof(options.skew) === "number") {
+            x = options.skew;
+            y = options.skew;
+        }
+        else {
+            x = options.skew.x;
+            y = options.skew.y;
+        }
+        sprite.skew.set(x, y);
+    }
+
+    if (options.pivot !== undefined) {
+        if (typeof(options.pivot) === "number") {
+            x = options.pivot;
+            y = options.pivot;
+        }
+        else {
+            x = options.pivot.x;
+            y = options.pivot.y;
+        }
+        sprite.pivot.set(x, y);
+    }
+
+    if (options.alpha !== undefined) {
+        sprite.alpha = options.alpha;
+    }
+
+    if (options.tint !== undefined) {
+        sprite.tint = getTintFromColor(options.tint);
+    }
+
+    if (options.relativePivot !== undefined) {
+        if (typeof(options.relativePivot) === "number") {
+            x = options.relativePivot;
+            y = options.relativePivot;
+        }
+        else {
+            x = options.relativePivot.x;
+            y = options.relativePivot.y;
+        }
+        setRelativePivot(sprite, x, y);
+    }
+
+    if (options.alpha !== undefined) {
+        sprite.alpha = options.alpha;
+    }
 }
 
 /**
@@ -32,16 +149,21 @@ export function setRelativePivot(
 }
 
 /**
- * adds a color matrix filter of the given color to a sprite, and optionally removes other filters
- * @param obj the pixi display object to color
- * @param color the color to use for the filter
- * @param leaveExistingFilters set to true to not interfere with existing filters on the object
+ * Takes a sprite a "stretches" it between two points along it's width, useful for beam type effects
+ * @param {PIXI.Sprite} sprite the sprite to use. Assumed to be 1x1 units by default.
+ *                             It's width and pivot will be scaled for the stretching
+ * @param {IPoint} pointA the first point, an object with an {x, y} to derive coordinates from
+ * @param {IPoint} pointB the second point, an object with an {x, y} to derive coordinates from
  */
-export function colorPixiObject(obj: PIXI.DisplayObject, color: Color, leaveExistingFilters: boolean = false): void {
-    obj.filters = (leaveExistingFilters
-        ? obj.filters
-        : undefined)
-        || [];
+export function renderSpriteBetween(sprite: PIXI.Sprite, pointA: IPoint, pointB: IPoint): void {
+    const distance = euclideanDistance(pointA, pointB);
+    sprite.width = distance;
+    setRelativePivot(sprite, 0.5, 0.5);
 
-    obj.filters.push(getColorMatrixFilterFor(color));
+    const angleRadians = Math.atan2(pointB.y - pointA.y, pointB.x - pointA.x);
+    sprite.rotation = angleRadians;
+
+    const midX = (pointA.x + pointB.x) / 2;
+    const midY = (pointA.y + pointB.y) / 2;
+    sprite.position.set(midX + 0.5, midY + 0.5);
 }

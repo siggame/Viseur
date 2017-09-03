@@ -1,6 +1,4 @@
 // This is a simple function to be used in games
-
-import { viseur } from "src/viseur";
 import { IRendererResourcesOptions, RendererResource } from "./renderer-resource";
 import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";
 
@@ -39,10 +37,10 @@ export function load(texture: string, options?: IRendererResourcesOptions & {
     sheet: ISheetData;
 }): RendererResource | RendererSheetResource {
     if (options && options.sheet) {
-        return viseur.renderer.loadSheet(texture, options, options.sheet);
+        return new RendererSheetResource(texture, options.sheet, options);
     }
     else {
-        return viseur.renderer.load(texture, options);
+        return new RendererResource(texture, options);
     }
 }
 
@@ -53,7 +51,7 @@ export function load(texture: string, options?: IRendererResourcesOptions & {
  */
 export function createResources<T extends {}>(resources: T): Readonly<T & IRendererResources> {
     return Object.freeze(Object.assign({
-        blank: viseur.renderer.load(require("src/viseur/images/blank.png"), {
+        blank: new RendererResource(require("src/viseur/images/blank.png"), {
             absolute: true,
         }),
     }, resources));

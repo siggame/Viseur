@@ -46,19 +46,19 @@ export interface IDeltaReason {
     player?: IGameObjectReference;
 
     /** data about the event */
-    data: {
-        /** Present when `ran`. */
-        run: {
-            /** The game object invoking this run */
-            caller: IGameObjectReference;
+    data?: any;
 
-            /** the string name of the member function of the caller to run server-side */
-            functionName: string;
+    /** Present when `ran`. */
+    run: {
+        /** The game object invoking this run */
+        caller: IGameObjectReference;
 
-            /** arguments sent from the client to the run function. Will be key/value based on argument names */
-            args: {
-                [key: string]: any;
-            };
+        /** the string name of the member function of the caller to run server-side */
+        functionName: string;
+
+        /** arguments sent from the client to the run function. Will be key/value based on argument names */
+        args: {
+            [key: string]: any;
         };
     };
 

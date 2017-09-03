@@ -1,5 +1,7 @@
 import * as PIXI from "pixi.js";
+import { IPixiSpriteOptions, setPixiOptions } from "src/utils";
 import { viseur } from "src/viseur";
+import { viseurStarted } from "src/viseur/started";
 
 /** non standard options for resources */
 export interface IRendererResourcesOptions {
@@ -35,28 +37,35 @@ export class RendererResource {
      * @param path The path to the resource in the game's textures directory
      * @param options optional details about the resource, such as defaults and sheet details
      */
-    constructor(path: string, options?: IRendererResourcesOptions) {
-        if (!options) {
-            return;
-        }
-
+    constructor(path: string, options: IRendererResourcesOptions = {}) {
+        this.path = path;
         this.defaultWidth = Math.max(1, options.width || 0);
         this.defaultHeight = Math.max(1, options.height || 0);
+        this.absolutePath = options.absolute
+            ? this.path
+            : "";
 
-        viseur.renderer.events.texturesLoaded.on((resources) => this.onTextureLoaded(resources));
+        viseurStarted.on(() => {
+            viseur.renderer.events.texturesLoaded.on((resources) => this.onTextureLoaded(resources));
+        });
     }
 
     /**
      * Creates and initializes a sprite for this resource
      * @param {PIXI.Container} parentContainer the parent container for the sprite
+     * @param options thi
      * @returns {PIXI.Sprite} a sprite with the given texture key, added to the parentContainer
      */
-    public newSprite(parentContainer: PIXI.Container): PIXI.Sprite {
+    public newSprite(parentContainer: PIXI.Container, options?: IPixiSpriteOptions): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.texture);
         sprite.setParent(parentContainer);
 
         // now scale the sprite, as it defaults to the dimensions of it's texture's pixel size
         this.resetScale(sprite);
+
+        if (options) {
+            setPixiOptions(sprite, options);
+        }
 
         return sprite;
     }

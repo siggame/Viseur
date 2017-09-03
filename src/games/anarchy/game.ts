@@ -35,7 +35,7 @@ export class Game extends BaseGame {
     public readonly settings = this.createSettings(GameSettings);
 
     /** The layers in the game */
-    public layers = Object.freeze({
+    public layers = this.createLayers({
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),

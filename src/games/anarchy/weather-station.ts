@@ -8,7 +8,7 @@ import { IWeatherStationState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
-import { setRelativePivot } from "src/utils";
+import { ease, setRelativePivot } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -127,14 +127,14 @@ export class WeatherStation extends Building {
         this.intensitySprite.visible = false;
         this.intensitySprite.rotation = 0;
 
-        if (nextReason && nextReason.data.run && nextReason.data.run.caller === this && nextReason.returned === true) {
-            if (nextReason.data.run.functionName === "rotate") {
+        if (nextReason && nextReason.run && nextReason.run.caller === this && nextReason.returned === true) {
+            if (nextReason.run.functionName === "rotate") {
                 this.rotationSprite.visible = true;
-                this.rotationSprite.scale.x *= nextReason.data.run.args.counterclockwise ? -1 : 1;
+                this.rotationSprite.scale.x *= nextReason.run.args.counterclockwise ? -1 : 1;
             }
             else { // "intensify"
                 this.intensitySprite.visible = true;
-                const negative = nextReason.data.run.args.negative;
+                const negative = nextReason.run.args.negative;
                 // rotate the arrow 180 degrees, so flip is basically
                 this.intensitySprite.rotation = negative ? Math.PI : 0;
             }

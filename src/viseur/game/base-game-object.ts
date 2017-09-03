@@ -243,7 +243,7 @@ export class BaseGameObject extends StateObject {
      * @param next the next state
      */
     private renderLogs(dt: number, current: IBaseGameObjectState, next: IBaseGameObjectState): void {
-        if (this.container) {
+        if (this.container && next && next.logs) {
             if (next.logs.length > 0 && viseur.settings.showLoggedText.get()) {
                 let alpha = 1;
                 if (current.logs.length < next.logs.length) {

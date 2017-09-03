@@ -68,7 +68,7 @@ export class BaseGame extends StateObject {
     public readonly resources: IRendererResources;
 
     /** The default player colors, there must be one for each player */
-    protected defaultPlayerColors = [ Color("#C33"), Color("#33C") ];
+    protected defaultPlayerColors = [ Color("#C33"), Color("#33C"), Color("#3C3"), Color("#CC3"), Color("#3CC") ];
 
     /** If this game has a human player interacting with it, then this is their player id */
     private readonly humanPlayerID?: string;
@@ -87,7 +87,7 @@ export class BaseGame extends StateObject {
     }
 
     /** The order of containers, with the last element being the top most layer */
-    private layerOrder: PIXI.Container[];
+    private layerOrder: PIXI.Container[] = [];
 
     /**
      * Initializes the BaseGame, should be invoked by a Game super class
@@ -111,11 +111,6 @@ export class BaseGame extends StateObject {
         viseur.events.stateChanged.on((state) => {
             this.update(state.game, state.nextGame, state.reason, state.nextReason);
         });
-
-        // add the layers that were created in order of creation
-        for (const layer of this.layerOrder) {
-            layer.setParent(this.renderer.gameContainer);
-        }
 
         this.humanPlayerID = playerID;
         if (this.humanPlayerID) {
@@ -151,7 +146,18 @@ export class BaseGame extends StateObject {
             }
 
             // we can safely assume now this is a player, so it's safe to assume it has this member
-            index = ((playerInstance as any) as IBasePlayer).playersIndex;
+            // index = ((playerInstance as any) as IBasePlayer).playersIndex;
+
+            for (let i = 0; i < this.players.length; i++) {
+                if (this.players[i].id === id) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+
+        if (index < 0) {
+            throw new Error(`Could not find a player at index ${index}`);
         }
 
         if (this.settings.customPlayerColors.get()) {
@@ -185,7 +191,7 @@ export class BaseGame extends StateObject {
 
         // initialize new game objects we have not seen yet
         const newGameObjects = new Set<BaseGameObject>();
-        for (const id of Object.keys(gameObjects)) {
+        for (const id of Object.keys(gameObjects).sort()) {
             if (!this.gameObjects[id]) {
                 newGameObjects.add(this.createGameObject(id, gameObjects[id]));
             }
@@ -340,7 +346,7 @@ export class BaseGame extends StateObject {
                 id: `player-color-${i}`,
                 label: "Player " + i + " Color",
                 hint: "Overrides the color for Player " + i,
-                default: this.getPlayersColor(i).hex(),
+                default: this.defaultPlayerColors[i].hex(),
             });
         }
 
@@ -356,6 +362,19 @@ export class BaseGame extends StateObject {
         const container = new PIXI.Container();
         this.layerOrder.push(container);
         return container;
+    }
+
+    /**
+     * Creates layers for a game and adds them to the renderer
+     * @param layers the layers in the game
+     * @returns the layers, now frozen
+     */
+    protected createLayers<T extends IGameLayers>(layers: T): Readonly<T> {
+        for (const layer of this.layerOrder) {
+            this.renderer.gameContainer.addChild(layer);
+        }
+
+        return Object.freeze(layers);
     }
 
     /**
@@ -425,16 +444,20 @@ export class BaseGame extends StateObject {
 
         const newGameObject = new classConstructor(state, this);
 
+        /*
+        TODO: Fix
         newGameObject.on("inspect", () => {
             this.emit("inspect", newGameObject);
         });
+        */
 
         this.gameObjects[id] = newGameObject;
 
         if (state.gameObjectName === "Player") {
             // it's a player instance, no easy way to cast that here as there is
             // no BasePlayer class, only the compile time interface
-            this.players[(newGameObject as any).playersIndex] = newGameObject;
+            ((newGameObject as any) as IBasePlayer).playersIndex = this.players.length;
+            this.players.push(newGameObject);
         }
 
         return newGameObject;

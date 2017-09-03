@@ -57,6 +57,13 @@ export class GUI extends BaseElement {
             gui: this,
         });
 
+        // add the favicon
+        const faviconLink = document.createElement("link");
+        faviconLink.href = require("../images/favicon.ico");
+        faviconLink.rel = "icon";
+        faviconLink.type = "image/x-icon";
+        document.head.appendChild(faviconLink);
+
         this.playbackPane.events.toggleFullscreen.on(() => {
             this.goFullscreen();
         });
@@ -223,7 +230,7 @@ export class GUI extends BaseElement {
             .css("top", newTop)
             .css("left", newLeft);
 
-        const playbackHeight = Number(this.playbackWrapper.css("height")) || 0;
+        const playbackHeight = Number(this.playbackWrapper.height()) || 0;
         const remainingWidth = newWidth;
         let remainingHeight = newHeight - playbackHeight;
 

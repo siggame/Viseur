@@ -15,7 +15,6 @@ import { IPoliceDepartmentState, IWarehouseState } from "./state-interfaces";
  * inherit from automatically.
  */
 export class PoliceDepartment extends Building {
-
     /** The instance of the game this game object is a part of */
     public readonly game: Game;
 
@@ -26,8 +25,10 @@ export class PoliceDepartment extends Building {
     public next: IPoliceDepartmentState;
 
     // <<-- Creer-Merge: variables -->>
-    /** beam color name override to change the beam's color */
-    protected beamColorName = "#222222";
+    /** the beam color name to use for beams */
+    protected get beamColorName(): number {
+        return 0x222222;
+    }
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -51,7 +52,7 @@ export class PoliceDepartment extends Building {
      */
     public shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return false; // change this to true to render all instances of this class
+        return super.shouldRender(); // change this to true to render all instances of this class
         // <<-- /Creer-Merge: should-render -->>
     }
 

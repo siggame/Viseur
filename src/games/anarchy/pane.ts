@@ -3,7 +3,7 @@ import { Game } from "./game";
 import { IBuildingState, IGameState, IPlayerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// If you need to add additional imports, do so here
+import { clamp } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -93,11 +93,12 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
                 get: (player) => player.headquarters.health,
             },
             {
+                title: "number of buildings alive",
                 icon: "building-o",
                 get: (player) => {
                     return player.buildings.reduce((count: number, building: IBuildingState) => {
                         // add one if the building is alive, otherwise 0
-                        return count + Math.max(building.health, 1);
+                        return count + clamp(building.health, 0, 1);
                     }, 0);
                 },
             },

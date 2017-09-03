@@ -6,9 +6,9 @@ import { BaseElement } from "src/core/ui/base-element";
 import { escapeHTML, getContrastingColor, sum } from "src/utils";
 import { viseur } from "src/viseur";
 import { BaseGame, IBaseGameObjectState, IBaseGameState, IBasePlayerState } from "src/viseur/game";
-import "./basePane.scss";
+import "./base-pane.scss";
 
-const requireLanguageImage = require.context("./language-images/", true, /\.png$/);
+const requireLanguageImage = require.context("../language-images/", true, /\.png$/);
 const timeRemainingTitle = "Player's time remaining (in min:sec:ms format)";
 
 export interface IPaneStat<T> {
@@ -83,7 +83,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
             this.humansTimer = new Timer();
             this.humansTimeRemaining = 0;
 
-            this.humansTimer.on("finished", () => {
+            this.humansTimer.events.finished.on(() => {
                 this.ticked();
             });
         }
@@ -219,7 +219,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
         return [
             {
                 title: "Name",
-                get: (player) => player.name,
+                get: (player) => escapeHTML(player.name),
             },
             {
                 title: timeRemainingTitle,
@@ -364,8 +364,6 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
 
                 value = `${icon} ${value}`;
             }
-
-            value = escapeHTML(value);
 
             const li = statsList.statsToListElement[i];
             if (li) {

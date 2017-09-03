@@ -1,8 +1,8 @@
 import * as $ from "jquery";
 import * as queryString from "query-string";
-import { Event } from "src/core/event";
 import { Games } from "src/games";
 import * as utils from "src/utils";
+import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
 import { IDelta, IDeltaReason, IGamelog } from "./game/gamelog";
 import { IBaseGameNamespace, IBaseGameState } from "./game/interfaces";
@@ -11,8 +11,10 @@ import { Joueur, TournamentClient } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
 import { ViseurSettings } from "./settings";
-import { ICurrentTime, TimeManager } from "./time-manager";
+import { viseurStarted } from "./started";
+import { TimeManager } from "./time-manager";
 
+/** A game state that is used to transition a dt between the two states/reasons */
 export interface IViseurGameState {
     game?: IBaseGameState;
     nextGame?: IBaseGameState;
@@ -20,11 +22,13 @@ export interface IViseurGameState {
     nextReason?: IDeltaReason;
 }
 
+/** Extends to add a reverse delta to the delta */
 export interface IReverseDelta extends IDelta {
     /** A delta that goes BACKWARDs in state when merged */
     reversed?: IBaseGameState;
 }
 
+/** A gamelog with reverse deltas */
 export interface IGamelogWithReverses extends IGamelog {
     /** List of deltas with their reverses as options */
     deltas: IReverseDelta[];
@@ -40,6 +44,7 @@ export interface IMergedDelta {
     nextState?: IBaseGameState;
 }
 
+/** The class that handles all the interconnected-ness of the application */
 export class Viseur {
     /** The singleton instance of this class */
     private static singleton: Viseur;
@@ -50,13 +55,13 @@ export class Viseur {
     public game: BaseGame;
 
     /** The graphics user interface handler */
-    public readonly gui: GUI;
+    public gui: GUI;
 
     /** Manages the time for the current index and dt during playback */
-    public readonly timeManager: TimeManager;
+    public timeManager: TimeManager;
 
     /** The renderer that handles textures and base rendering for the visualizer */
-    public readonly renderer: Renderer;
+    public renderer: Renderer;
 
     /** Manages all the global (viseur), non-game, related settings */
     public readonly settings = ViseurSettings;
@@ -71,52 +76,10 @@ export class Viseur {
     public rawGamelog?: IGamelogWithReverses;
 
     /** All available game namespaces */
-    public games: {[gameName: string]: IBaseGameNamespace} = Games;
+    public games: {[gameName: string]: IBaseGameNamespace};
 
-    // Events \\
-
-    public readonly events = Object.freeze({
-        /** Triggers when the game's state changes and sends the new state */
-        stateChanged: new Event<IViseurGameState>(),
-
-        /** Triggers when the timer ticks */
-        timeUpdated: new Event<ICurrentTime>(),
-
-        /** Triggers literally 1 second after the ready event */
-        delayedReady: new Event<undefined>(),
-
-        /** Triggers when all async events are done and we are ready to being normal operations */
-        ready: new Event<{game: BaseGame, gamelog: IGamelog}>(),
-
-        /** Triggered during loading of the gamelog if the gamelog is found at a remote url */
-        gamelogIsRemote: new Event<{url?: string}>(),
-
-        /** Triggered when the gamelog has been loaded */
-        gamelogLoaded: new Event<IGamelog>(),
-
-        /** Triggers when a steaming gamelog is updated in some way, probably a new delta */
-        gamelogUpdated: new Event<IGamelog>(),
-
-        /**
-         * Triggers when a streaming gamelog is finished streaming and will no longer change.
-         * In addition a url to the finalized gamelog (with other player's non obfuscated data) will be emitted
-         */
-        gamelogFinalized: new Event<{ gamelog: IGamelog, url: string }>(),
-
-        // -- connection events -- \\
-
-        /** Triggers when a connection event occurs and we have some message to send */
-        connectionConnected: new Event<undefined>(),
-
-        /** Triggers when a connection event occurs and we have some message to send */
-        connectionMessage: new Event<string>(),
-
-        /** Triggers when a connection that was opened is closed, including data if it closed due to a timeout */
-        connectionClosed: new Event<{timedOut: boolean}>(),
-
-        /** Triggers when a connection encounters and error, and emits that error */
-        connectionError: new Event<Error>(),
-    });
+    /** All the events Viseur emits */
+    public readonly events = ViseurEvents;
 
     //// ---- private ---- \\\\
 
@@ -141,14 +104,17 @@ export class Viseur {
     /** Indicates the textures loaded */
     private loadedTextures: boolean = false;
 
-    constructor() {
-        this.gui = new GUI({
-            parent: $(document.body),
-        });
+    /** Creates the singleton viseur instance */
+    public start(): void {
+        this.games = Games;
 
         this.timeManager = new TimeManager();
         this.timeManager.events.newIndex.on((index: number) => {
             this.updateCurrentStateAsync(index);
+        });
+
+        this.gui = new GUI({
+            parent: $(document.body),
         });
 
         this.renderer = new Renderer({
@@ -167,6 +133,8 @@ export class Viseur {
                 this.game.render(time.index, time.dt);
             }
         });
+
+        viseurStarted.emit(this);
 
         this.parseURL();
     }
@@ -641,7 +609,6 @@ export class Viseur {
             this.events.connectionConnected.emit(undefined);
         });
 
-        // TODO: ILobbiedData Interface
         let lobbiedData: any;
         this.joueur.events.lobbied.on((data) => {
             lobbiedData = data;
@@ -674,7 +641,6 @@ export class Viseur {
             this.events.gamelogUpdated.emit(this.rawGamelog as any);
         });
 
-        // TODO: IOverData
         this.joueur.events.over.on((data) => {
             this.events.gamelogFinalized.emit({
                 gamelog: this.rawGamelog as IGamelog,
@@ -682,7 +648,6 @@ export class Viseur {
             });
         });
 
-        // TODO: IFatalData
         this.joueur.events.fatal.on((data) => {
             this.gui.modalError("Fatal game server event: " + data.message);
         });

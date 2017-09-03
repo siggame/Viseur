@@ -3,11 +3,13 @@ import * as PIXI from "pixi.js";
 import { Event } from "src/core/event";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
-import { clamp, euclideanDistance, IPoint, setRelativePivot } from "src/utils";
+import { clamp } from "src/utils";
 import { viseur } from "src/viseur";
-import { IRendererResourcesOptions, RendererResource } from "./renderer-resource";
-import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";
 import "./renderer.scss";
+
+// Skips the hello message being printed to the console.
+// This should be the first instance of pixi being imported in viseur.
+PIXI.utils.skipHello();
 
 /** A singleton that handles rendering (visualizing) the game */
 export class Renderer extends BaseElement {
@@ -83,9 +85,6 @@ export class Renderer extends BaseElement {
     /** Our custom context menu */
     private readonly contextMenu: ContextMenu;
 
-    /** loaded texture data */
-    private readonly resources: RendererResource[] = [];
-
     /**
      * Initializes the Renderer, should be called by Viseur
      * @param {Object} args initialization args
@@ -108,7 +107,7 @@ export class Renderer extends BaseElement {
             || "Sans-Serif";
 
         // check only now for anti-aliasing, because them changing it requires a restart to see it inverted
-        const aa: boolean = viseur.settings.antiAliasing.get(true);
+        const aa = viseur.settings.antiAliasing.get(true);
 
                                             // will be resized, just placeholder dimensions
         this.pixiApp = new PIXI.Application(this.pxExternalWidth, this.pxExternalHeight, {
@@ -120,7 +119,7 @@ export class Renderer extends BaseElement {
 
         // add the renderer view element to the DOM
         this.element
-            .append(this.pixiApp.renderer.view)
+            .append(this.pixiApp.view)
             .on("resize", () => {
                 this.resize(this.element.width(), this.element.height());
             })
@@ -145,36 +144,17 @@ export class Renderer extends BaseElement {
             parent: this.element,
         });
 
+        this.pixiApp.stage.addChild(this.scene);
+        const graphics = new PIXI.Graphics();
+        graphics.lineStyle(2, 0x0000FF, 1);
+        graphics.beginFill(0xFF700B, 1);
+        graphics.drawRect(0, 0, 200, 200);
+
         this.pixiApp.ticker.stop();
         this.pixiApp.ticker.add(() => {
             this.render();
         });
         this.pixiApp.ticker.start();
-    }
-
-    /**
-     * Loads a resource for a game given the name of the file and some options
-     * @param texture the name of the file to load
-     * @param options optional object of options about the texture
-     * @returns a renderer resource which is a PIXI.Sprite factory for that resource
-     */
-    public load(texture: string, options?: IRendererResourcesOptions): RendererResource {
-        const resource = new RendererResource(texture, options);
-        this.resources.push(resource);
-        return resource;
-    }
-
-    /**
-     * Loads a resource for a game given the name of the file and some options
-     * @param texture the name of the file to load
-     * @param options the object of options about the texture
-     * @param sheet the details about this sheet
-     * @returns a renderer resource which is a PIXI.Sprite factory for that resource
-     */
-    public loadSheet(texture: string, options: IRendererResourcesOptions, sheet: ISheetData): RendererSheetResource {
-        const resource = new RendererSheetResource(texture, sheet, options);
-        this.resources.push(resource);
-        return resource;
     }
 
     /**
@@ -184,10 +164,14 @@ export class Renderer extends BaseElement {
     public loadTextures(callback?: () => void): void {
         const loader = PIXI.loader;
 
-        for (const resource of this.resources) {
+        // add the game's resources to our own
+        for (const key of Object.keys(viseur.game.resources)) {
+            const resource = viseur.game.resources[key];
 
             if (!resource.absolutePath) {
-                resource.absolutePath = `src/games/${viseur.game.name.toLowerCase()}/textures/${resource.path}`;
+                resource.absolutePath = require(
+                    `src/games/${viseur.game.name.toLowerCase()}/resources/${resource.path}`,
+                );
             }
 
             loader.add(resource.path, resource.absolutePath);
@@ -272,26 +256,6 @@ export class Renderer extends BaseElement {
     public showContextMenu(menus: MenuItems, x: number, y: number): void {
         this.contextMenu.setStructure(menus);
         this.contextMenu.show(x, y);
-    }
-
-    /**
-     * Takes a sprite a "stretches" it between two points along it's width, useful for beam type effects
-     * @param {PIXI.Sprite} sprite the sprite to use. Assumed to be 1x1 units by default.
-     *                             It's width and pivot will be scaled for the stretching
-     * @param {IPoint} pointA the first point, an object with an {x, y} to derive coordinates from
-     * @param {IPoint} pointB the second point, an object with an {x, y} to derive coordinates from
-     */
-    public renderSpriteBetween(sprite: PIXI.Sprite, pointA: IPoint, pointB: IPoint): void {
-        const distance = euclideanDistance(pointA, pointB);
-        sprite.width = distance;
-        setRelativePivot(sprite, 0.5, 0.5);
-
-        const angleRadians = Math.atan2(pointB.y - pointA.y, pointB.x - pointA.x);
-        sprite.rotation = angleRadians;
-
-        const midX = (pointA.x + pointB.x) / 2;
-        const midY = (pointA.y + pointB.y) / 2;
-        sprite.position.set(midX + 0.5, midY + 0.5);
     }
 
     /**
@@ -439,6 +403,7 @@ export class Renderer extends BaseElement {
         // tell everything that is observing us that they need to update their PIXI objects
         this.events.rendering.emit(undefined);
         // and now have PIXI render it
-        this.pixiApp.renderer.render(this.scene);
+        // this.pixiApp.renderer.render(this.scene);
+        // this.pixiApp.renderer.render(this.pixiApp.stage);
     }
 }

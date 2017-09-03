@@ -9,7 +9,7 @@ import { IBuildingState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
 import * as PIXI from "pixi.js";
-import { colorPixiObject, ease, unCapitalizeFirstLetter, updown } from "src/utils";
+import { ease, renderSpriteBetween, unCapitalizeFirstLetter, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 import { Player } from "./player";
 
@@ -30,9 +30,10 @@ export class Building extends GameObject {
     public next: IBuildingState;
 
     // <<-- Creer-Merge: variables -->>
-
-    /** The color of our beam */
-    protected beamColorName: string = "";
+    /** the beam color name to use for beams */
+    protected get beamColorName(): number {
+        return 0xFFFFFF;
+    }
 
     /**
      * The "alive" building will have a top and bottom sprite, which we can
@@ -133,15 +134,17 @@ export class Building extends GameObject {
         }
 
         // when we are the target on an attack, we'll highlight ourself so it's clear we are under attack
-        this.targetedSprite = this.game.resources.beam.newSprite(this.container);
-        this.targetedSprite.alpha = 0.666; // make it partially opaque so people can still tell what building we are
-        colorPixiObject(this.targetedSprite, Color("read"));
+        this.targetedSprite = this.game.resources.beam.newSprite(this.container, {
+            alpha: 0.666, // make it partially opaque so people can still tell what building we are
+            tint: "red",
+        });
 
         if (state.gameObjectName !== "WeatherStation") {
             // all the building classes shoot beams for animations,
             // except WeatherStations, we we'll just aggregate the logic here
-            this.beamSprite = this.game.resources.beam.newSprite(this.game.layers.beams);
-            colorPixiObject(this.beamSprite, Color(this.beamColorName));
+            this.beamSprite = this.game.resources.beam.newSprite(this.game.layers.beams, {
+                tint: Color(this.beamColorName).opaquer(0.5),
+            });
         }
 
         // Also buildings never move, so let's move them right now
@@ -189,7 +192,7 @@ export class Building extends GameObject {
         this.aliveContainer.visible = true;
 
         // if we are being targeted, then display out targetedSprite
-        const run = nextReason && nextReason.data.run;
+        const run = nextReason && nextReason.run;
         const beingTargeted = run && (run.args.building === this || run.args.warehouse === this);
         this.targetedSprite.visible = beingTargeted;
         // and fade it out
@@ -273,8 +276,8 @@ export class Building extends GameObject {
         // by adding their' owner's color's PIXI.ColorMatrixFilter, we recolor the sprite.
         // e.g. if a pixel is [1, 1, 1] (white) * [1, 0, 0.1] (red with a hint of blue) = [1*1, 1*0, 1*0.1]
         const color = this.game.getPlayersColor(this.owner);
-        colorPixiObject(this.buildingSpriteFront, color.lighten(0.75));
-        this.healthBar.recolor(color);
+        this.buildingSpriteFront.tint = color.lighten(0.15).rgbNumber();
+        this.healthBar.recolor(color.lighten(0.5));
 
         // <<-- /Creer-Merge: recolor -->>
     }
@@ -298,12 +301,12 @@ export class Building extends GameObject {
             // assume it's not shooting a beam for this state
             this.beamSprite.visible = false;
             // but check if it is
-            if (nextReason && nextReason.data.run && nextReason.data.run.caller === this && nextReason.returned > -1) {
+            if (nextReason && nextReason.run && nextReason.run.caller === this && nextReason.returned > -1) {
                 // and if it is the Building running a verb, show the beam shooting towards a target building
                 this.beamSprite.visible = true;
-                const args = nextReason.data.run.args;
+                const args = nextReason.run.args;
                 const building = args.building || args.warehouse;
-                this.renderer.renderSpriteBetween(this.beamSprite, current, building.current);
+                renderSpriteBetween(this.beamSprite, current, building.current);
             }
         }
         // <<-- /Creer-Merge: stateUpdated -->>
@@ -333,6 +336,6 @@ export class Building extends GameObject {
     }
 
     // <<-- Creer-Merge: protected-private-functions -->>
-    // You can add additional protected/private functions here
+    // add back
     // <<-- /Creer-Merge: protected-private-functions -->>
 }

@@ -83,6 +83,9 @@ export interface IBaseGameState extends IState {
 
 /** Represents the default layers in a game, extend to add your own to a game */
 export interface IGameLayers {
+    /** name lookup */
+    [name: string]: PIXI.Container;
+
     /** Bottom most layer, for background elements */
     background: PIXI.Container;
     /** Middle layer, for moving game objects */

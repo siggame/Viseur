@@ -18,6 +18,8 @@ import * as $ from "jquery";
 import "./core/";
 
 $(document).on("ready", () => {
-    anyWindow.viseur = require("./viseur");
-    anyWindow.viseur.start();
+    const viseur = require("./viseur");
+    anyWindow.viseur = viseur;
+
+    viseur.start();
 });

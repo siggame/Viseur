@@ -1,8 +1,10 @@
 import * as Color from "color";
 import * as PIXI from "pixi.js";
-import { clamp, colorPixiObject } from "src/utils";
+import { clamp, ColorTint, getTintFromColor } from "src/utils";
+import { BaseSetting } from "src/viseur/settings";
 import { BaseGame } from "./base-game";
 
+/** The optional args for a game bar */
 export interface IGameBarOptions {
     /** The width of the bar */
     width?: number;
@@ -20,10 +22,10 @@ export interface IGameBarOptions {
     backgroundColor?: Color;
 
     /** The setting to subscribe to to show/hide */
-    settingKey?: string;
+    visibilitySetting?: BaseSetting;
 
     /** Invert the setting value subscribed to */
-    settingInvert?: boolean;
+    invertSetting?: boolean;
 }
 
 /** A bar for a number such as health on top of a BaseGameObject */
@@ -52,33 +54,26 @@ export class GameBar {
      * @param game the game reference this bar is in
      * @param options options to initialize the bar
      */
-    constructor(parent: PIXI.Container, game: BaseGame, options?: IGameBarOptions) {
-        options = options || {};
-        options.width = options.width || 0.9;
+    constructor(parent: PIXI.Container, game: BaseGame, options: IGameBarOptions = {}) {
         options.height = options.height || 0.06667;
-        options.max = options.max || 1;
-        options.foregroundColor = options.foregroundColor || Color("#44F444");
-        options.backgroundColor = options.backgroundColor || Color("black");
 
+        this.width = options.width || 0.9;
         this.container.setParent(parent);
         this.game = game;
+        this.max = options.max || 1;
 
-        this.background = this.game.renderer.newSprite("", this.container);
-        this.background.height = options.height;
-        this.background.width = options.width;
-        colorPixiObject(this.background, options.backgroundColor);
+        this.background = this.game.resources.blank.newSprite(this.container, options);
+        this.foreground = this.game.resources.blank.newSprite(this.container, options);
 
-        this.foreground = this.game.renderer.newSprite("", this.container);
-        this.foreground.height = options.height;
-        this.foreground.width = options.width;
-        colorPixiObject(this.foreground, options.foregroundColor);
+        this.recolor(options.foregroundColor || 0x044F444, options.backgroundColor || 0x00000);
 
-        const widthDiff = this.container.width - options.width;
+        const widthDiff = this.container.width - this.width;
         this.container.position.set(widthDiff / 2, 0);
 
-        if (options.settingKey) {
-            this.game.settingsManager.onChanged(options.settingKey, (newValue: boolean) => {
-                if (options && options.settingInvert) {
+        if (options.visibilitySetting) {
+            options.visibilitySetting.changed.on((newValue: any) => {
+                newValue = Boolean(newValue);
+                if (options && options.invertSetting) {
                     newValue = !newValue;
                 }
 
@@ -109,13 +104,13 @@ export class GameBar {
      * @param {Color} foregroundColor the Color to recolor the foreground part of the bar to
      * @param {Color} backgroundColor the Color to recolor the background part of the bar to
      */
-    public recolor(foregroundColor?: Color, backgroundColor?: Color): void {
-        if (foregroundColor) {
-            colorPixiObject(this.foreground, foregroundColor);
+    public recolor(foregroundColor?: ColorTint, backgroundColor?: ColorTint): void {
+        if (foregroundColor !== undefined) {
+            this.foreground.tint = getTintFromColor(foregroundColor);
         }
 
-        if (backgroundColor) {
-            colorPixiObject(this.background, backgroundColor);
+        if (backgroundColor !== undefined) {
+            this.background.tint = getTintFromColor(backgroundColor);
         }
     }
 }

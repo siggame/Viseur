@@ -10,10 +10,16 @@ import { BaseSetting } from "./setting";
  */
 export function createSettings<T extends {}>(namespace: string, settings: T): Readonly<T> {
     for (const key of Object.keys(settings)) {
-        const setting = (settings as any)[key];
+        const obj = (settings as any)[key];
+        let someSettings = [ obj ];
+        if (Array.isArray(obj)) {
+            someSettings = obj;
+        }
 
-        setting.namespace = namespace;
-        setting.get(setting.args.default);
+        for (const setting of someSettings) {
+            setting.namespace = namespace;
+            setting.get(setting.args.default);
+        }
     }
 
     BaseSetting.newIndex = 0; // reset to zero

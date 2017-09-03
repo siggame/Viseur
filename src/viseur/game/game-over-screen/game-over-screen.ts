@@ -3,8 +3,8 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import * as utils from "src/utils";
 import { viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
-import "./gameOverScreen.scss";
-import itemHbs from "./gameOverScreenItem.hbs";
+import itemHbs from "./game-over-screen-item.hbs";
+import "./game-over-screen.scss";
 
 /** A screen that overlays the renderer when the game is over */
 export class GameOverScreen extends BaseElement {
@@ -12,10 +12,10 @@ export class GameOverScreen extends BaseElement {
     public readonly game: BaseGame;
 
     /** The container to display winners in */
-    private readonly winnersElement: JQuery<HTMLElement>;
+    private readonly winnersElement = this.element.find(".game-over-winners");
 
     /** The container to display losers in */
-    private readonly losersElement: JQuery<HTMLElement>;
+    private readonly losersElement = this.element.find(".game-over-losers");
 
     /** If this has been built (filled with the game over information) */
     private built: boolean = false;
@@ -34,12 +34,10 @@ export class GameOverScreen extends BaseElement {
         super(args);
 
         this.game = args.game;
-        this.winnersElement = this.element.find(".game-over-winners");
-        this.losersElement = this.element.find(".game-over-losers");
 
         this.hide();
 
-        viseur.timeManager.on("ended", () => {
+        viseur.timeManager.events.ended.on(() => {
             this.show();
         });
     }
@@ -81,7 +79,7 @@ export class GameOverScreen extends BaseElement {
     }
 
     protected getTemplate(): Handlebars {
-        return require("./gameOverScreen.hbs");
+        return require("./game-over-screen.hbs");
     }
 
     /**
