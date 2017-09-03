@@ -16,7 +16,7 @@ export interface INumberInputArgs extends IBaseInputArgs {
 }
 
 /** a text input for numbers */
-export class NumberInput extends BaseInput {
+export class NumberInput extends BaseInput<number> {
     /** Events this class emits */
     public readonly events = events({
         /** Emitted when this input's value changes */
@@ -31,9 +31,10 @@ export class NumberInput extends BaseInput {
         super(Object.assign({
             min: 0,
             max: 1,
-            step: 1,
-            value: "any",
-        } as INumberInputArgs, args));
+            step: "any",
+            value: 0,
+            type: "number",
+        }, args));
 
         this.setMin(args.min || 0);
         this.setMax(args.max || 1);

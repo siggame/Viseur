@@ -8,7 +8,16 @@ declare type Handlebars = (args?: {}) => string;
 
 declare module "*.hbs" {
     const _: Handlebars;
-    export default _;
+    export = _;
+}
+
+declare module "*.json" {
+    const _: {
+        [key: number]: any;
+        [key: string]: any;
+    };
+
+    export = _;
 }
 
 interface Eases {
@@ -329,7 +338,7 @@ declare module "chess.js" {
         move(move: string | ShortMove, options: {
             /** An optional sloppy flag can be used to parse a variety of non-standard move notations */
             sloppy?: boolean;
-        }): null | Move,
+        }): null | Move;
 
         /**
          * Take back the last half-move, returning a move object if successful, otherwise null.

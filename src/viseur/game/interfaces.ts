@@ -1,4 +1,4 @@
-import { BaseSetting, CheckBoxSetting, ColorSetting } from "../settings";
+import { CheckBoxSetting, ColorSetting, IBaseSettings } from "../settings";
 import { BaseGame } from "./base-game";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
@@ -95,7 +95,7 @@ export interface IGameLayers {
 }
 
 /** The base settings all games have */
-export interface IBaseGameSettings {
+export interface IBaseGameSettings extends IBaseSettings {
     /** If custom player colors are enabled */
     customPlayerColors: CheckBoxSetting;
 

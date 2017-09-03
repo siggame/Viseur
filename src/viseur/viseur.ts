@@ -164,11 +164,12 @@ export class Viseur {
      * @param {string} server - the server is running on (without port)
      * @param {number} port - the port the server is running on
      * @param {string} gameName - name of the game to spectate
+     * @param session the session to spectate
      */
-    public spectate(server: string, port: number, gameName: string): void {
+    public spectate(server: string, port: number, gameName: string, session: string): void {
         this.gui.modalMessage("Spectating game...");
 
-        this.createJoueur(server, port, gameName, true);
+        this.createJoueur(server, port, gameName, session);
     }
 
     /**
@@ -204,12 +205,17 @@ export class Viseur {
      * @param {number} port the port the server is running on
      * @param {string} gameName the name of the game to spectate
      * @param {string} playerName the name of the [human] player
+     * @param session the game session to play in
+     * @param gameSettings optional game settings to use to make the game
      */
-    public playAsHuman(server: string, port: number, gameName: string, playerName: string): void {
+    public playAsHuman(
+        server: string, port: number, gameName: string, playerName: string, session: string, gameSettings?: string,
+    ): void {
         this.gui.modalMessage("Connecting to game server...");
 
-        this.createJoueur(server, port, gameName, {
+        this.createJoueur(server, port, gameName, session, {
             playerName,
+            gameSettings,
         });
     }
 
@@ -290,6 +296,47 @@ export class Viseur {
     }
 
     /**
+     * Does an ajax call to load a remote gamelog at some url
+     * @param {string} url a url that will respond with the gamelog to load
+     */
+    public loadRemoteGamelog(url: string): void {
+        this.gui.modalMessage("Loading remote gamelog");
+        this.events.gamelogIsRemote.emit({url});
+
+        $.ajax({
+            url,
+            dataType: "text",
+            crossDomain: true,
+            success: (jsonGamelog: string) => {
+                this.gui.modalMessage("Initializing Visualizer.");
+                this.parseGamelog(jsonGamelog);
+            },
+            error: () => {
+                this.gui.modalError("Error loading remote gamelog.");
+            },
+        });
+    }
+
+    /**
+     * Parses a json string to a gamelog
+     * @param {string} jsonGamelog the json formatted string that is the gamelog
+     */
+    public parseGamelog(jsonGamelog: string): void {
+        this.unparsedGamelog = jsonGamelog;
+
+        let parsed: IGamelog;
+        try {
+            parsed = JSON.parse(jsonGamelog);
+        }
+        catch (err) {
+            this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
+            return;
+        }
+
+        this.gamelogLoaded(parsed);
+    }
+
+    /**
      * parses URL parameters and does whatever they do, ignores unknown url parameters.
      */
     private parseURL(): void {
@@ -344,47 +391,6 @@ export class Viseur {
                 }, 5000);
             });
         }
-    }
-
-    /**
-     * Does an ajax call to load a remote gamelog at some url
-     * @param {string} url a url that will respond with the gamelog to load
-     */
-    private loadRemoteGamelog(url: string): void {
-        this.gui.modalMessage("Loading remote gamelog");
-        this.events.gamelogIsRemote.emit({url});
-
-        $.ajax({
-            url,
-            dataType: "text",
-            crossDomain: true,
-            success: (jsonGamelog: string) => {
-                this.gui.modalMessage("Initializing Visualizer.");
-                this.parseGamelog(jsonGamelog);
-            },
-            error: () => {
-                this.gui.modalError("Error loading remote gamelog.");
-            },
-        });
-    }
-
-    /**
-     * Parses a json string to a gamelog
-     * @param {string} jsonGamelog the json formatted string that is the gamelog
-     */
-    private parseGamelog(jsonGamelog: string): void {
-        this.unparsedGamelog = jsonGamelog;
-
-        let parsed: IGamelog;
-        try {
-            parsed = JSON.parse(jsonGamelog);
-        }
-        catch (err) {
-            this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
-            return;
-        }
-
-        this.gamelogLoaded(parsed);
     }
 
     /**
@@ -596,9 +602,10 @@ export class Viseur {
      * @param {String} server the game server address
      * @param {Number} port the port for server
      * @param {String} gameName the name of the game to connect to (id)
+     * @param session the game session to request
      * @param {Object} options any optional parameters for the game session
      */
-    private createJoueur(server: string, port: number, gameName: string, options: {}): void {
+    private createJoueur(server: string, port: number, gameName: string, session: string, options: {} = {}): void {
         this.joueur = new Joueur();
 
         this.rawGamelog = this.joueur.getGamelog();

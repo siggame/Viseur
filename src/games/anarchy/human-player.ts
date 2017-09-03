@@ -16,9 +16,12 @@ export class HumanPlayer extends BaseHumanPlayer {
      * Set this static flag to true to mark this game as able to be played by
      * human players. Leave as false to ignore that functionality
      */
-    //  <<-- Creer-Merge: implemented -->>
-    public static readonly implemented: boolean = false;
-    //  <<-- /Creer-Merge: implemented -->>
+    /** Checks if this human player's logic is implemented, so humans can play this game */
+    public static get implemented(): boolean {
+        //  <<-- Creer-Merge: implemented -->>
+        return false;
+        //  <<-- /Creer-Merge: implemented -->>
+    }
 
     //  <<-- Creer-Merge: variables -->>
     // any additional variables you want to add for the HumanPlayer

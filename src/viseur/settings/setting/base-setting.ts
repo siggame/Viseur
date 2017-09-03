@@ -24,19 +24,54 @@ export abstract class BaseSetting {
     public readonly index: number;
 
     /** The namespace this setting is a part of */
-    private readonly namespace: string; // Note, although this is private in the settings
+    public readonly namespace: string; // Note, although this is private in the settings
                                         // generator function we will change this
+
+    /** The default value of this setting */
+    public readonly default: any;
 
     protected constructor(
         /** Arguments used for this setting to create a base input */
-        public readonly args: IBaseInputArgs & IBaseSettingArgs,
+        private readonly args: IBaseInputArgs & IBaseSettingArgs,
         /** The class constructor for this setting's input */
-        public readonly inputClass: typeof BaseInput,
+        private readonly inputClass: typeof BaseInput,
     ) {
         this.namespace = "";
         this.index = BaseSetting.newIndex;
+        this.default = args.default;
 
         BaseSetting.newIndex += 1;
+    }
+
+    /**
+     * Creates an input that listens for changes for this event
+     * @param parent the parent element for this new input
+     * @returns the input for this setting
+     */
+    public createInput(parent: JQuery<HTMLElement>): BaseInput<any> {
+        const input = new this.inputClass(Object.assign({
+            parent,
+        }, this.args));
+
+        let changing = false;
+        this.changed.on((value) => {
+            if (changing) {
+                return; // don't start an endless cycle between these two listeners
+            }
+            changing = true;
+            input.value = value;
+            changing = false;
+        });
+        input.events.changed.on((value) => {
+            if (changing) {
+                return; // don't start an endless cycle between these two listeners
+            }
+            changing = true;
+            this.set(value);
+            changing = false;
+        });
+
+        return input;
     }
 
     /**

@@ -34,4 +34,8 @@
         @include icon(sign-in);
         margin-right: 0.5em;
     }
+
+    & button {
+        margin-left: 12.25em;
+    }
 }

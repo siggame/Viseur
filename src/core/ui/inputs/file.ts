@@ -1,13 +1,10 @@
-import { Event, events } from "src/core/event";
+import { Event } from "src/core/event";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 /** An input for files */
-export class FileInput extends BaseInput {
+export class FileInput extends BaseInput<undefined> {
     /** Events this class emits */
-    public readonly events = events({
-        /** Emitted when this input's value changes */
-        changed: new Event<undefined>(),
-
+    public readonly events = Event.proxy(super.events, {
         /** Triggered when the button is clicked */
         loading: new Event<undefined>(),
 

@@ -145,12 +145,6 @@ export class InfoPane extends BaseElement {
             tabular: this.tabular,
         });
 
-        if (newTab.title === "Inspect") {
-            newTab.events.selected.on(() => {
-                this.tabular.setTab(newTab);
-            });
-        }
-
         return newTab;
     }
 

@@ -1,4 +1,3 @@
-import { Event, events } from "src/core/event";
 import partial from "src/core/partial";
 import { BaseInput, IBaseInputArgs } from "../base-input";
 
@@ -15,13 +14,7 @@ export interface IDropDownArgs<T> extends IBaseInputArgs {
 }
 
 /** A select with options input */
-export class DropDown<T> extends BaseInput {
-    /** Events this class emits */
-    public readonly events = events({
-        /** Emitted when this input's value changes */
-        changed: new Event<T>(),
-    });
-
+export class DropDown<T> extends BaseInput<T> {
     /** The options available on this drop down menu */
     private options: Array<IDropDownOption<T>> = [];
 
@@ -38,9 +31,12 @@ export class DropDown<T> extends BaseInput {
      * @param newValue the new value to set the drop down to
      */
     public set value(newValue: T) {
+        if (!this.options) {
+            return; // can't set, still in base constructor
+        }
         const oldValue = this.value;
         const newOption = this.options.find((opt) => opt.value === newValue);
-        this.actualValue = newOption
+        super.value = newOption
             ? newOption.value
             : oldValue;
     }
@@ -50,11 +46,7 @@ export class DropDown<T> extends BaseInput {
      * @param options - list of options (in order) for the drop down
      * @param defaultValue optional default value to select, defaults to the first item of options when not set
      */
-    public setOptions(options: Array<string | IDropDownOption<T>>, defaultValue: T): void {
-        if (options === this.options) {
-            return;
-        }
-
+    public setOptions(options: Array<string | IDropDownOption<T>>, defaultValue?: T): void {
         this.options.length = 0;
         this.element.html("");
 

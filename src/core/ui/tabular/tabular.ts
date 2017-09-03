@@ -1,16 +1,16 @@
-import * as $ from "jquery";
+import { Event, events } from "src/core/event";
 import { onceTransitionEnds } from "src/utils/jquery";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
 import "./tabular.scss";
 
-interface ITabularEvents {
-    /** Triggered when the active tab changes from one to another */
-    on(event: "tab-changed", listener: (activeTab: Tab, previousActiveTab: Tab) => void): this;
-}
-
 /** a block of content accessed via Tabs */
-export class Tabular extends BaseElement implements ITabularEvents {
+export class Tabular extends BaseElement {
+    public readonly events = events({
+        /** Triggered when the active tab changes from one to another */
+        tabChanged: new Event<{activeTab: Tab, previousActiveTab: Tab}>(),
+    });
+
     /** all the tabs in this tabular */
     private tabs: Tab[] = [];
 
@@ -18,10 +18,10 @@ export class Tabular extends BaseElement implements ITabularEvents {
     private activeTab: Tab;
 
     /** parent container to store tab's tab item in */
-    private tabsElement: JQuery<HTMLElement>;
+    private tabsElement= this.element.find(".tabular-tabs");
 
     /** parent container to store tab's contents in */
-    private contentsElement: JQuery<HTMLElement>;
+    private contentsElement = this.element.find(".tabular-content");
 
     /** if this is fading in or out a tab */
     private fading: boolean;
@@ -30,9 +30,6 @@ export class Tabular extends BaseElement implements ITabularEvents {
         tabs?: Tab[],
     }) {
         super(args);
-
-        this.tabsElement = $(".tabular-tabs", this.element);
-        this.contentsElement = $(".tabular-content", this.element);
 
         if (args.tabs) {
             this.attachTabs(args.tabs);
@@ -44,7 +41,7 @@ export class Tabular extends BaseElement implements ITabularEvents {
      * @param tabs list of tabs to attach, only call once
      */
     public attachTabs(tabs: Tab[]): void {
-        for (const tab of this.tabs) {
+        for (const tab of tabs) {
             this.tabsElement.append(tab.tab);
             this.contentsElement.append(tab.content);
 
@@ -103,7 +100,7 @@ export class Tabular extends BaseElement implements ITabularEvents {
         }
 
         if (activeTab !== previousActiveTab) {
-            this.emit("tab-changed", activeTab, previousActiveTab);
+            this.events.tabChanged.emit({activeTab, previousActiveTab});
         }
     }
 

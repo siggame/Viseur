@@ -1,14 +1,7 @@
-import { Event, events } from "src/core/event";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 /** a checkbox for booleans */
-export class CheckBox extends BaseInput {
-    /** Events this class emits */
-    public readonly events = events({
-        /** Emitted when this input's value changes */
-        changed: new Event<string>(),
-    });
-
+export class CheckBox extends BaseInput<boolean> {
     /**
      * Creates a checkbox for boolean values
      * @param args the args to initialize, value must be boolean
@@ -29,8 +22,6 @@ export class CheckBox extends BaseInput {
 
     /**
      * Enforced that when clicked is a boolean
-     *
-     * @override
      */
     protected updateElementValue(): void {
         this.element.prop("checked", this.value);
@@ -38,8 +29,7 @@ export class CheckBox extends BaseInput {
 
     /**
      * Gets if it is checked or not
-     *
-     * @override
+     * @returns true if checked, false otherwise
      */
     protected getElementValue(): boolean {
         return Boolean(this.element.prop("checked"));

@@ -1,5 +1,11 @@
 import { BaseSetting } from "./setting";
 
+/** The base settings interface for viseur/game */
+export interface IBaseSettings {
+    /** Name lookup for a setting */
+    [settingName: string]: BaseSetting | BaseSetting[];
+}
+
 /**
  * You MUST call this when creating settings, it's essentially a typed factory.
  * This will take an object of created settings, and formats them.

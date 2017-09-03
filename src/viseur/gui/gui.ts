@@ -49,6 +49,10 @@ export class GUI extends BaseElement {
         resized: new Event<{width: number, height: number, remainingHeight: number}>(),
     }, this.playbackPane.events);
 
+    /**
+     * Creates a GUI to handle the user interaction(s) with html part of viseur
+     * @param args the initialization args
+     */
     constructor(args: IBaseElementArgs) {
         super(args);
 

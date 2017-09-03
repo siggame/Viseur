@@ -3,6 +3,11 @@ import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tabular } from "./tabular";
 
+export interface ITabArgs extends IBaseElementArgs {
+    /** The tabular this tab is to be a part of */
+    tabular: Tabular;
+}
+
 export class Tab extends BaseElement {
     /** The events this class emits */
     public readonly events = events({
@@ -10,22 +15,21 @@ export class Tab extends BaseElement {
         selected: new Event<undefined>(),
     });
 
-    /** the clickable tab that shows the content in the tabular */
+    /** The clickable tab that shows the content in the tabular */
     public readonly tab: JQuery<HTMLElement>;
 
-    /** the content wrapper around the element */
+    /** The content wrapper around the element */
     public readonly content: JQuery<HTMLElement>;
-
-    /** the title of the tab */
-    public readonly title: string;
 
     /** The tabular this is a part of */
     public readonly tabular: Tabular;
 
-    constructor(args: IBaseElementArgs & {
-        /** The tabular this tab is to be a part of */
-        tabular: Tabular;
-    }) {
+    /** The title of the tab */
+    public get title(): string {
+        return "TAB_TITLE";
+    }
+
+    constructor(args: ITabArgs) {
         super(args);
 
         this.tabular = args.tabular;

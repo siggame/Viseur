@@ -20,20 +20,23 @@ export interface IBaseInputArgs extends IDisableableElementArgs {
 }
 
 /** The base class all input elements inherit from */
-export class BaseInput extends DisableableElement {
+export class BaseInput<T> extends DisableableElement {
     /** Events this class emits */
     public readonly events = events({
         /** Emitted when this input's value changes */
-        changed: new Event<any>(),
+        changed: new Event<T>(),
     });
 
     /** the label field, if set */
     public readonly field: Field;
 
     /** the actual value of the input */
-    protected actualValue: any;
+    protected actualValue: T;
 
-    constructor(args: IBaseInputArgs) {
+    constructor(args: IBaseInputArgs & {
+        /** starting value */
+        value?: T;
+    }) {
         super(args);
 
         if (args.label) {
@@ -46,9 +49,8 @@ export class BaseInput extends DisableableElement {
             });
         }
 
-        this.element.on("change input", () => {
+        this.element.on("change", () => {
             this.value = this.getElementValue();
-            this.events.changed.emit(this.value);
         });
 
         this.value = args.value;
@@ -59,8 +61,9 @@ export class BaseInput extends DisableableElement {
      *
      * @param newValue the new value to set to
      */
-    public set value(newValue: any) {
+    public set value(newValue: T) {
         this.actualValue = newValue;
+        this.events.changed.emit(newValue);
     }
 
     /**
@@ -68,7 +71,7 @@ export class BaseInput extends DisableableElement {
      *
      * @returns {*} The value of the input, depends on subclass
      */
-    public get value(): any {
+    public get value(): T {
         return this.actualValue;
     }
 
@@ -85,7 +88,7 @@ export class BaseInput extends DisableableElement {
      * updates the value of the DOM element
      */
     protected updateElementValue(): void {
-        this.element.val(this.value);
+        this.element.val(String(this.value));
     }
 
     protected getTemplate(): Handlebars {

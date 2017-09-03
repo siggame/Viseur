@@ -14,6 +14,11 @@ export interface IOrder {
 
 /** the base class all HumanPlayers inherit from in each game */
 export class BaseHumanPlayer {
+    /** Checks if this human player's logic is implemented, so humans can play this game */
+    public static get implemented(): boolean {
+        return false;
+    }
+
     /** The game this human player is a part of */
     protected readonly game: BaseGame;
 
