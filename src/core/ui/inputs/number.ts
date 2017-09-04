@@ -9,10 +9,10 @@ export interface INumberInputArgs extends IBaseInputArgs {
     max?: number;
 
     /** the number that values can change by */
-    step?: number;
+    step?: number | "any";
 
     /** the numeric value */
-    value?: number | "any";
+    value?: number;
 }
 
 /** a text input for numbers */
@@ -29,16 +29,14 @@ export class NumberInput extends BaseInput<number> {
      */
     constructor(args: INumberInputArgs) {
         super(Object.assign({
-            min: 0,
-            max: 1,
             step: "any",
             value: 0,
             type: "number",
         }, args));
 
-        this.setMin(args.min || 0);
-        this.setMax(args.max || 1);
-        this.setStep(args.step || 1);
+        this.setStep(args.step);
+        this.setMin(args.min);
+        this.setMax(args.max);
     }
 
     // TODO: override set value and clamp numeric input
@@ -47,12 +45,16 @@ export class NumberInput extends BaseInput<number> {
      * Sets the min attribute of this input
      * @param {number} min the minimum value this number input can be
      */
-    public setMin(min: number): void {
-        // this.min = min;
-        this.element.attr("min", min);
+    public setMin(min?: number): void {
+        if (min !== undefined) {
+            this.element.attr("min", min);
 
-        if (this.actualValue < min) {
-            this.value = min;
+            if (this.value < min) {
+                this.value = min;
+            }
+        }
+        else {
+            this.element.removeAttr("min");
         }
     }
 
@@ -60,12 +62,16 @@ export class NumberInput extends BaseInput<number> {
      * Sets the max attribute of this input
      * @param {number} max the maximum value this number input can be
      */
-    public setMax(max: number): void {
-        // this.max = max;
-        this.element.attr("max", max);
+    public setMax(max?: number): void {
+        if (max !== undefined) {
+            this.element.attr("max", max);
 
-        if (this.actualValue > max) {
-            this.value = max;
+            if (this.value > max) {
+                this.value = max;
+            }
+        }
+        else {
+            this.element.removeAttr("min");
         }
     }
 
@@ -74,8 +80,10 @@ export class NumberInput extends BaseInput<number> {
      * @param {number=} step how much this number input increases/decreases
      *                       by for each increment.
      */
-    public setStep(step: number): void {
-        // this.step = step;
+    public setStep(step?: number | "any"): void {
+        if (step === undefined) {
+            step = "any";
+        }
         this.element.attr("step", step);
     }
 }

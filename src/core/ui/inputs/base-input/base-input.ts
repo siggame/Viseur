@@ -33,6 +33,10 @@ export class BaseInput<T> extends DisableableElement {
     /** the actual value of the input */
     protected actualValue: T;
 
+    /**
+     * Initializes the base input settings, should be called as super
+     * @param args the initial args
+     */
     constructor(args: IBaseInputArgs & {
         /** starting value */
         value?: T;
@@ -49,7 +53,7 @@ export class BaseInput<T> extends DisableableElement {
             });
         }
 
-        this.element.on("change", () => {
+        this.element.on(this.getElementOnEventString(), () => {
             this.value = this.getElementValue();
         });
 
@@ -62,13 +66,18 @@ export class BaseInput<T> extends DisableableElement {
      * @param newValue the new value to set to
      */
     public set value(newValue: T) {
-        this.actualValue = newValue;
-        this.events.changed.emit(newValue);
+        if (this.actualValue !== newValue) {
+            this.actualValue = newValue;
+            this.events.changed.emit(newValue);
+        }
+
+        if (this.getElementValue() !== this.actualValue) {
+            this.updateElementValue();
+        }
     }
 
     /**
      * Gets the value of this BaseInput
-     *
      * @returns {*} The value of the input, depends on subclass
      */
     public get value(): T {
@@ -76,9 +85,16 @@ export class BaseInput<T> extends DisableableElement {
     }
 
     /**
+     * Gets the string used to listen to the element for events
+     * @returns the string for jquery to use
+     */
+    protected getElementOnEventString(): string {
+        return "change";
+    }
+
+    /**
      * Gets the value of the DOM element
-     *
-     * @returns {*} - the DOM element's current value
+     * @returns {*} the DOM element's current value
      */
     protected getElementValue(): any {
         return this.element.val();
@@ -88,7 +104,7 @@ export class BaseInput<T> extends DisableableElement {
      * updates the value of the DOM element
      */
     protected updateElementValue(): void {
-        this.element.val(String(this.value));
+        this.element.val(this.actualValue as any);
     }
 
     protected getTemplate(): Handlebars {

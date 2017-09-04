@@ -34,11 +34,12 @@ export class DropDown<T> extends BaseInput<T> {
         if (!this.options) {
             return; // can't set, still in base constructor
         }
-        const oldValue = this.value;
+
         const newOption = this.options.find((opt) => opt.value === newValue);
-        super.value = newOption
-            ? newOption.value
-            : oldValue;
+        if (!newOption) {
+            throw new Error(`Cannot find ${newValue} to set for drop down.`);
+        }
+        super.value = newOption.value;
     }
 
     /**
@@ -59,7 +60,9 @@ export class DropDown<T> extends BaseInput<T> {
             partial(require("./drop-down-option.hbs"), option, this.element);
         }
 
-        this.value = defaultValue || this.options[0] && this.options[0].value;
+        this.value = defaultValue !== undefined
+            ? defaultValue
+            : this.options[0].value;
     }
 
     protected getTemplate(): Handlebars {

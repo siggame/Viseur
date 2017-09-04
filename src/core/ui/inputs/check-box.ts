@@ -21,17 +21,17 @@ export class CheckBox extends BaseInput<boolean> {
     }
 
     /**
-     * Enforced that when clicked is a boolean
-     */
-    protected updateElementValue(): void {
-        this.element.prop("checked", this.value);
-    }
-
-    /**
      * Gets if it is checked or not
      * @returns true if checked, false otherwise
      */
     protected getElementValue(): boolean {
         return Boolean(this.element.prop("checked"));
+    }
+
+    /**
+     * Enforced that when clicked is a boolean
+     */
+    protected updateElementValue(): void {
+        this.element.prop("checked", this.actualValue);
     }
 }

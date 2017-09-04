@@ -51,6 +51,7 @@ export abstract class BaseSetting {
     public createInput(parent: JQuery<HTMLElement>): BaseInput<any> {
         const input = new this.inputClass(Object.assign({
             parent,
+            value: this.get(),
         }, this.args));
 
         let changing = false;

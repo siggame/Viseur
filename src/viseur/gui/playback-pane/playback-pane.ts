@@ -160,10 +160,17 @@ export class PlaybackPane extends BaseElement {
         this.speedSlider = new inputs.Slider({
             id: "speed-slider",
             parent: this.bottomRightContainerElement,
+            min: 0,
+            max: 0.98,
+            value: this.getSliderFromSpeed(),
         });
+
         this.updateSpeedSlider();
         this.speedSlider.events.changed.on((value) => {
-            this.changePlaybackSpeed(value);
+            this.updateSpeedSetting();
+        });
+        viseur.settings.playbackSpeed.changed.on((value) => {
+            this.updateSpeedSlider();
         });
 
         this.fullscreenButton = new inputs.Button({
@@ -209,10 +216,6 @@ export class PlaybackPane extends BaseElement {
 
         viseur.events.timeUpdated.on((data) => {
             this.timeUpdated(data.index, data.dt);
-        });
-
-        viseur.settings.playbackSpeed.changed.on((value) => {
-            this.updateSpeedSlider(value);
         });
 
         viseur.settings.playbackMode.changed.on((value) => {
@@ -297,38 +300,27 @@ export class PlaybackPane extends BaseElement {
         }
     }
 
-    // NOTE: the speed slider does not slide linearly.
-    // Instead we follow y = 100x^2, with x being the slider's value,
-    // and y being the actual speed
-
     /**
      * Converts from the speed slider's value to the actual speed for the TimeManager
-     * @param {number} x - the sliders current value
-     * @returns {number} y - the TimeMangers speed based on the slider value x
+     * @returns {number}  the TimeMangers speed based on the slider value x
      */
-    private speedFromSlider(x: number): number {
-        const y = 100 * Math.pow(x, 2);
-        return y;
+    private getSpeedFromSlider(): number {
+        return Math.round(1000 * (1 - this.speedSlider.value));
     }
 
     /**
      * Converts from the speed of the TimeManager to the slider's value (reverse of y)
-     * @param {number} y - the speed of the TimeManager
-     * @returns {number} x - the speedSlider's value to represent y
+     * @returns the speedSlider's value to represent y
      */
-    private sliderFromSpeed(y: number): number {
-        const x = Math.sqrt(y / 100);
-        return x;
+    private getSliderFromSpeed(): number {
+        return 1 - (viseur.settings.playbackSpeed.get() / 1000);
     }
 
     /**
      * Invoked when the speedSlider is dragged/changed.
-     * @param {number} value - the new value of the playback slider, so we can set the speed based on that
      */
-    private changePlaybackSpeed(value: number): void {
-        const newSpeed = this.speedFromSlider(-value); // yes, invert the value with -
-
-        viseur.settings.playbackSpeed.set(newSpeed);
+    private updateSpeedSetting(): void {
+        viseur.settings.playbackSpeed.set(this.getSpeedFromSlider());
     }
 
     /**
@@ -336,9 +328,8 @@ export class PlaybackPane extends BaseElement {
      * @param {number} value - the new speed value set to the SettingManager,
      *                         we will update the speedSlider according to it
      */
-    private updateSpeedSlider(value?: number): void {
-        const sliderValue = this.sliderFromSpeed(value || viseur.settings.playbackSpeed.get());
-        this.speedSlider.value = -sliderValue;
+    private updateSpeedSlider(): void {
+        this.speedSlider.value = this.getSliderFromSpeed();
     }
 
     /**

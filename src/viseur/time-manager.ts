@@ -129,7 +129,11 @@ export class TimeManager {
         viseur.gui.events.playbackSlide.on((value) => {
             const index = Math.floor(value);
             const dt = value - index;
-            this.pause(index, dt);
+            const current = this.getCurrentTime();
+            if (this.timer.isTicking() && Math.abs(value - current.index - current.dt) > 0.10) {
+                // the change in time was too great, they probably clicked far away
+                this.pause(index, dt);
+            }
         });
 
         viseur.events.gamelogUpdated.on(() => {

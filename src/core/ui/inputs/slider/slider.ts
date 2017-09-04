@@ -12,4 +12,12 @@ export class Slider extends NumberInput {
             step: "any",
         }, args));
     }
+
+    /**
+     * Gets the string used to listen to the element for events
+     * @returns the string for jquery to use
+     */
+    protected getElementOnEventString(): string {
+        return "input";
+    }
 }
