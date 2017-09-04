@@ -27,8 +27,8 @@ export const ViseurSettings = createSettings("viseur", {
         label: "Playback Speed",
         hint: "The time (in ms)  for each animation to be played. Smaller numbers mean faster playback.",
         min: 10,
-        max: 999999,
-        default: 1000,
+        max: 1000,
+        default: 200,
     }),
     playbackMode: new Setting.DropDownSetting<string>({
         id: "playback-mode",
@@ -81,6 +81,6 @@ export const ViseurSettings = createSettings("viseur", {
         id: "print-io",
         label: "Print I/O to Console",
         hint: "Print the input/output from the game server to the browser's console.",
-        default: true,
+        default: false,
     }),
 });

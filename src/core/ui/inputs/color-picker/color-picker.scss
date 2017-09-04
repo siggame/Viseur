@@ -1,0 +1,17 @@
+@import "src/core/mixins";
+
+input[type=color] {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    width: 6em;
+
+    @include browser('Chrome') {
+        height: 1.5em;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}

@@ -130,7 +130,7 @@ export class TimeManager {
             const index = Math.floor(value);
             const dt = value - index;
             const current = this.getCurrentTime();
-            if (this.timer.isTicking() && Math.abs(value - current.index - current.dt) > 0.10) {
+            if (Math.abs(value - current.index - current.dt) > 0.10) {
                 // the change in time was too great, they probably clicked far away
                 this.pause(index, dt);
             }
@@ -205,8 +205,6 @@ export class TimeManager {
 
     /**
      * Advances to the next index, and pauses the timer.
-     *
-     * @private
      */
     private next(): void {
         let index = this.currentIndex;
@@ -219,10 +217,8 @@ export class TimeManager {
 
     /**
      * Pauses the timer. Doe not call to pause as in a play/pause
-     *
-     * @private
-     * @param {number} [index] - the index to pause the time to
-     * @param {number} [dt] - the dt to pause the time to
+     * @param {number} [index] the index to pause the time to
+     * @param {number} [dt] the dt to pause the time to
      */
     private pause(index?: number, dt?: number): void {
         this.timer.pause();

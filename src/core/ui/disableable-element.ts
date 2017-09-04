@@ -31,4 +31,17 @@ export class DisableableElement extends BaseElement {
     public enable(): void {
         this.element.prop("disabled", false);
     }
+
+    /**
+     * Sets if this element should be enabled or disabled via a boolean value
+     * @param enabled true if enabled, false otherwise
+     */
+    public setEnabled(enabled: boolean): void {
+        if (enabled) {
+            this.enable();
+        }
+        else {
+            this.disable();
+        }
+    }
 }

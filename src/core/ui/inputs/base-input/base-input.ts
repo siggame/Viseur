@@ -85,6 +85,26 @@ export class BaseInput<T> extends DisableableElement {
     }
 
     /**
+     * Disables this input
+     */
+    public disable(): void {
+        super.disable();
+        if (this.field) {
+            this.field.disable();
+        }
+    }
+
+    /**
+     * Enables this input
+     */
+    public enable(): void {
+        super.enable();
+        if (this.field) {
+            this.field.enable();
+        }
+    }
+
+    /**
      * Gets the string used to listen to the element for events
      * @returns the string for jquery to use
      */

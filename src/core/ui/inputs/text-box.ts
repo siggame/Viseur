@@ -4,11 +4,15 @@ import { BaseInput, IBaseInputArgs } from "./base-input";
 /** a text input for strings */
 export class TextBox extends BaseInput<string> {
     /** Events this class emits */
-    public readonly events = Event.proxy(super.events, {
+    public readonly events = Event.proxy(super.events || (this as any).events, {
         /** Emitted when this text-box is submitted (enter pressed) */
         submitted: new Event<string>(),
     });
 
+    /**
+     * Creates a text box for text input
+     * @param args has an optional placeholder text added to base input args
+     */
     constructor(args: IBaseInputArgs & {
         /** the placeholder text */
         placeholder?: string,

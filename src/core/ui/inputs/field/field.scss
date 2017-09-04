@@ -1,26 +1,32 @@
 @import "src/core/fontAwesome";
 @import "src/core/colors";
 
-.field > label {
-    width: 12em;
-    display: inline-block;
-    line-height: 1.5em;
+.field {
+    &.disabled {
+        opacity: 0.5 !important;
+    }
 
-    & .hint {
-        &:before {
-            color: $primary-light;
-            margin-left: 0.5em;
-            @include icon("question-circle");
-        }
+    & > label {
+        width: 12em;
+        display: inline-block;
+        line-height: 1.5em;
 
-        &:hover:before {
-            color: $primary-dark;
-            transform: scale(1.5);
-            cursor: help;
-        }
+        & .hint {
+            &:before {
+                color: $primary-light;
+                margin-left: 0.5em;
+                @include icon("question-circle");
+            }
 
-        &[title=""] {
-            display: none;
+            &:hover:before {
+                color: $primary-dark;
+                transform: scale(1.5);
+                cursor: help;
+            }
+
+            &[title=""] {
+                display: none;
+            }
         }
     }
 }

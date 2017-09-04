@@ -31,6 +31,12 @@ export class Game extends BaseGame {
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
 
+    /** The default player colors for this game, there must be */
+    public readonly defaultPlayerColors: [Color, Color] = [
+        Color("#008080"), // Player 0
+        Color("#DAA520"), // Player 1
+    ];
+
     /** The custom settings for this game */
     public readonly settings = this.createSettings(GameSettings);
 
@@ -79,10 +85,6 @@ export class Game extends BaseGame {
 
         this.maxFire = state.maxFire; // needed by buildings for calculations when they are rendering
         this.renderer.setSize(state.mapWidth, state.mapHeight);
-
-        // default player colors
-        this.defaultPlayerColors[0] = Color("#008080");
-        this.defaultPlayerColors[1] = Color("#DAA520");
 
         // <<-- /Creer-Merge: start -->>
     }

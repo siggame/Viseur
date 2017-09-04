@@ -68,7 +68,9 @@ export class BaseGame extends StateObject {
     public readonly resources: IRendererResources;
 
     /** The default player colors, there must be one for each player */
-    protected defaultPlayerColors = [ Color("#C33"), Color("#33C"), Color("#3C3"), Color("#CC3"), Color("#3CC") ];
+    public readonly defaultPlayerColors = [
+        Color("#C33"), Color("#33C"), Color("#3C3"), Color("#CC3"), Color("#3CC"), Color("#C3C"),
+    ];
 
     /** If this game has a human player interacting with it, then this is their player id */
     private readonly humanPlayerID?: string;

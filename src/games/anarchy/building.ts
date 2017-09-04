@@ -112,8 +112,8 @@ export class Building extends GameObject {
         this.deadSprite = this.game.resources.dead.newSprite(this.container);
 
         this.healthBar = new GameBar(this.container, this.game, {
-            width: 0.9,
             max: state.health,
+            visibilitySetting: this.game.settings.displayHealthBars,
         });
 
         // now we need some nice fire sprites, notice they are a sprite sheet,
@@ -126,11 +126,9 @@ export class Building extends GameObject {
         // the headquarters has no unique sprite, but instead a graffiti marking to easily make it stand out
         if (state.isHeadquarters) {
             // we have two players with id "0" and "1", so we use that to quickly get their graffiti sprite
-            this.graffitiSprite = this.game.resources[
-                `graffiti${state.owner.id}`
-            ].newSprite(this.aliveContainer);
-            // make it partially transparent because it looks nicer
-            this.graffitiSprite.alpha = 0.9;
+            this.game.resources[`graffiti${state.owner.id}`].newSprite(this.aliveContainer, {
+                alpha: 0.9, // make it partially transparent because it looks nicer
+            });
         }
 
         // when we are the target on an attack, we'll highlight ourself so it's clear we are under attack
@@ -227,12 +225,7 @@ export class Building extends GameObject {
         }
 
         // update their health bar, if they want it to be displayed
-        const displayHealthBar = this.game.settings.displayHealthBars.get();
-        this.healthBar.setVisible(displayHealthBar);
-        if (displayHealthBar) {
-            // then update the health
-            this.healthBar.update(ease(current.health, next.health, dt, "cubicInOut"));
-        }
+        this.healthBar.update(ease(current.health, next.health, dt, "cubicInOut"));
 
         // now the correct building sprite is displayed
         // so let's look at the fire!

@@ -1,5 +1,6 @@
 import * as Color from "color";
-import { BaseInput, IBaseInputArgs } from "./base-input";
+import { BaseInput, IBaseInputArgs } from "../base-input";
+import "./color-picker.scss";
 
 /** An input for colors */
 export class ColorPicker extends BaseInput<string> {
@@ -27,6 +28,8 @@ export class ColorPicker extends BaseInput<string> {
         }
 
         // for some reason the ts bindings for color lack a lot of the actual methods
-        super.value = parsedColor.hex();
+        const value = parsedColor.hex();
+        super.value = value;
+        this.element.attr("title", value);
     }
 }
