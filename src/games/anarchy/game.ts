@@ -1,5 +1,6 @@
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
+import * as Color from "color";
 import { BaseGame, IDeltaReason } from "src/viseur/game";
 import { GameObjectClasses } from "./game-object-classes";
 import { GameResources } from "./resources";
@@ -7,7 +8,6 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import * as Color from "color";
 import * as PIXI from "pixi.js";
 // <<-- /Creer-Merge: imports -->>
 
@@ -16,6 +16,10 @@ import * as PIXI from "pixi.js";
  * inherit from automatically.
  */
 export class Game extends BaseGame {
+    // <<-- Creer-Merge: static-functions -->>
+    // you can add static functions here
+    // <<-- /Creer-Merge: static-functions -->>
+
     /** The static name of this game. */
     public static readonly gameName: string = "Anarchy";
 
@@ -31,17 +35,19 @@ export class Game extends BaseGame {
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
 
-    /** The default player colors for this game, there must be */
+    /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
+        // <<-- Creer-Merge: default-player-colors -->>
         Color("#008080"), // Player 0
         Color("#DAA520"), // Player 1
+        // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
     /** The custom settings for this game */
     public readonly settings = this.createSettings(GameSettings);
 
     /** The layers in the game */
-    public layers = this.createLayers({
+    public readonly layers = this.createLayers({
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),
@@ -75,17 +81,29 @@ export class Game extends BaseGame {
     // <<-- /Creer-Merge: public-functions -->>
 
     /**
+     * Invoked when the first game state is ready to setup the size of the renderer
+     * @param state the initialize state of the game
+     * @returns the {height, width} you for the game's size.
+     */
+    protected getSize(state: IGameState): {width: number, height: number} {
+        return {
+            // <<-- Creer-Merge: get-size -->>
+            width: state.mapWidth,
+            height: state.mapHeight,
+            // <<-- /Creer-Merge: get-size -->>
+        };
+    }
+
+    /**
      * Called when Viseur is ready and wants to start rendering the game.
      * This is where you should initialize stuff.
+     * @param state the initialize state of the game
      */
     protected start(state: IGameState): void {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
-
         this.maxFire = state.maxFire; // needed by buildings for calculations when they are rendering
-        this.renderer.setSize(state.mapWidth, state.mapHeight);
-
         // <<-- /Creer-Merge: start -->>
     }
 
@@ -96,17 +114,17 @@ export class Game extends BaseGame {
     protected createBackground(state: IGameState): void {
         super.createBackground(state);
 
-        // <<-- Creer-Merge: createBackground -->>
+        // <<-- Creer-Merge: create-background -->>
         for (let x = 0; x < state.mapWidth; x++) {
             for (let y = 0; y < state.mapHeight; y++) {
-                const tile = this.resources.tile.newSprite(this.layers.background);
-                tile.x = x;
-                tile.y = y;
+                const tile = this.resources.tile.newSprite(this.layers.background, {
+                    position: {x, y},
+                });
 
                 this.tileSprites.push(tile);
             }
         }
-        // <<-- /Creer-Merge: createBackground -->>
+        // <<-- /Creer-Merge: create-background -->>
     }
 
     /**
@@ -125,9 +143,9 @@ export class Game extends BaseGame {
                                reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.renderBackground(dt, current, next, reason, nextReason);
 
-        // <<-- Creer-Merge: renderBackground -->>
+        // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
-        // <<-- /Creer-Merge: renderBackground -->>
+        // <<-- /Creer-Merge: render-background -->>
     }
 
     /**
@@ -143,9 +161,9 @@ export class Game extends BaseGame {
                            reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.stateUpdated(current, next, reason, nextReason);
 
-        // <<-- Creer-Merge: stateUpdated -->>
+        // <<-- Creer-Merge: state-updated -->>
         // update the Game based on its current and next states
-        // <<-- /Creer-Merge: stateUpdated -->>
+        // <<-- /Creer-Merge: state-updated -->>
     }
 
     // <<-- Creer-Merge: protected-private-functions -->>

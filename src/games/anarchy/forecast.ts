@@ -15,6 +15,21 @@ import { IForecastState } from "./state-interfaces";
  * inherit from automatically.
  */
 export class Forecast extends GameObject {
+    // <<-- Creer-Merge: static-functions -->>
+    // you can add static functions here
+    // <<-- /Creer-Merge: static-functions -->>
+
+    /**
+     * Change this to return true to actually render instances of super classes
+     * @returns true if we should render game object classes of this instance,
+     *          false otherwise which optimizes playback speed
+     */
+    public get shouldRender(): boolean {
+        // <<-- Creer-Merge: should-render -->>
+        return super.shouldRender; // change this to true to render all instances of this class
+        // <<-- /Creer-Merge: should-render -->>
+    }
+
     /** The instance of the game this game object is a part of */
     public readonly game: Game;
 
@@ -40,17 +55,6 @@ export class Forecast extends GameObject {
         // <<-- Creer-Merge: constructor -->>
         // initialization logic goes here
         // <<-- /Creer-Merge: constructor -->>
-    }
-
-    /**
-     * change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender(); // change this to true to render all instances of this class
-        // <<-- /Creer-Merge: should-render -->>
     }
 
     /**
@@ -99,18 +103,18 @@ export class Forecast extends GameObject {
                         reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.stateUpdated(current, next, reason, nextReason);
 
-        // <<-- Creer-Merge: stateUpdated -->>
+        // <<-- Creer-Merge: state-updated -->>
         // update the Forecast based on its current and next states
-        // <<-- /Creer-Merge: stateUpdated -->>
+        // <<-- /Creer-Merge: state-updated -->>
     }
-
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
 
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
+
+    // NOTE: past this block are functions only used 99% of the time if
+    //       the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore everything past here.
 
     /**
      * Invoked when the right click menu needs to be shown.
@@ -120,9 +124,9 @@ export class Forecast extends GameObject {
     protected getContextMenu(): MenuItems {
         const menu = super.getContextMenu();
 
-        // <<-- Creer-Merge: getContextMenu -->>
+        // <<-- Creer-Merge: get-context-menu -->>
         // add context items to the menu here
-        // <<-- /Creer-Merge: getContextMenu -->>
+        // <<-- /Creer-Merge: get-context-menu -->>
 
         return menu;
     }

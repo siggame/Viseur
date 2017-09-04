@@ -23,6 +23,24 @@ const RANDOM_MAX = 0.03;
  * inherit from automatically.
  */
 export class Building extends GameObject {
+    // <<-- Creer-Merge: static-functions -->>
+    // you can add static functions here
+    // <<-- /Creer-Merge: static-functions -->>
+
+    /**
+     * Change this to return true to actually render instances of super classes
+     * @returns true if we should render game object classes of this instance,
+     *          false otherwise which optimizes playback speed
+     */
+    public get shouldRender(): boolean {
+        // <<-- Creer-Merge: should-render -->>
+        return true;
+        // <<-- /Creer-Merge: should-render -->>
+    }
+
+    /** The instance of the game this game object is a part of */
+    public readonly game: Game;
+
     /** The current state of the Building (dt = 0) */
     public current: IBuildingState;
 
@@ -87,7 +105,6 @@ export class Building extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-
         this.container.setParent(this.game.layers.game);
         this.aliveContainer.setParent(this.container);
 
@@ -126,7 +143,7 @@ export class Building extends GameObject {
         // the headquarters has no unique sprite, but instead a graffiti marking to easily make it stand out
         if (state.isHeadquarters) {
             // we have two players with id "0" and "1", so we use that to quickly get their graffiti sprite
-            this.game.resources[`graffiti${state.owner.id}`].newSprite(this.aliveContainer, {
+            this.graffitiSprite = this.game.resources[`graffiti${state.owner.id}`].newSprite(this.aliveContainer, {
                 alpha: 0.9, // make it partially transparent because it looks nicer
             });
         }
@@ -152,19 +169,7 @@ export class Building extends GameObject {
         // move 1 object and all the child nodes move too!
         this.container.x = state.x;
         this.container.y = state.y;
-
         // <<-- /Creer-Merge: constructor -->>
-    }
-
-    /**
-     * change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
     }
 
     /**
@@ -265,13 +270,11 @@ export class Building extends GameObject {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-
         // by adding their' owner's color's PIXI.ColorMatrixFilter, we recolor the sprite.
         // e.g. if a pixel is [1, 1, 1] (white) * [1, 0, 0.1] (red with a hint of blue) = [1*1, 1*0, 1*0.1]
         const color = this.game.getPlayersColor(this.owner);
         this.buildingSpriteFront.tint = color.lighten(0.15).rgbNumber();
         this.healthBar.recolor(color.lighten(0.5));
-
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -288,7 +291,7 @@ export class Building extends GameObject {
                         reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.stateUpdated(current, next, reason, nextReason);
 
-        // <<-- Creer-Merge: stateUpdated -->>
+        // <<-- Creer-Merge: state-updated -->>
         // if this building shoots beams (is not a WeatherStation)
         if (this.beamSprite) {
             // assume it's not shooting a beam for this state
@@ -302,16 +305,16 @@ export class Building extends GameObject {
                 renderSpriteBetween(this.beamSprite, current, building.current);
             }
         }
-        // <<-- /Creer-Merge: stateUpdated -->>
+        // <<-- /Creer-Merge: state-updated -->>
     }
-
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
 
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
+
+    // NOTE: past this block are functions only used 99% of the time if
+    //       the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore everything past here.
 
     /**
      * Invoked when the right click menu needs to be shown.
@@ -321,14 +324,14 @@ export class Building extends GameObject {
     protected getContextMenu(): MenuItems {
         const menu = super.getContextMenu();
 
-        // <<-- Creer-Merge: getContextMenu -->>
+        // <<-- Creer-Merge: get-context-menu -->>
         // add context items to the menu here
-        // <<-- /Creer-Merge: getContextMenu -->>
+        // <<-- /Creer-Merge: get-context-menu -->>
 
         return menu;
     }
 
     // <<-- Creer-Merge: protected-private-functions -->>
-    // add back
+    // You can add additional protected/private functions here
     // <<-- /Creer-Merge: protected-private-functions -->>
 }

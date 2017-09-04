@@ -1,5 +1,6 @@
 // Do not modify this file
 // This is a simple lookup object for each GameObject class
+import { IBaseGameObjectClasses } from "src/viseur/game/interfaces";
 import { Building } from "./building";
 import { FireDepartment } from "./fire-department";
 import { Forecast } from "./forecast";
@@ -10,13 +11,13 @@ import { Warehouse } from "./warehouse";
 import { WeatherStation } from "./weather-station";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses = Object.freeze({
+export const GameObjectClasses: Readonly<IBaseGameObjectClasses> = Object.freeze({
+    PoliceDepartment,
+    Player,
+    Warehouse,
+    Forecast,
     Building,
     GameObject,
-    Player,
-    WeatherStation,
     FireDepartment,
-    Warehouse,
-    PoliceDepartment,
-    Forecast,
-});
+    WeatherStation,
+}) as any;

@@ -197,7 +197,7 @@ export class FileTab extends Tab {
                 // otherwise it is being streamed so the gamelog in memory is incomplete
                 this.gamelogDownloadLink.on("click", () => {
                     const blob = new Blob([viseur.unparsedGamelog], {type: "application/json;charset=utf-8"});
-                    fileSaver.saveAs(blob, `{data.gamelog.gameName}-{data.gamelog.gameSession}.json`);
+                    fileSaver.saveAs(blob, `${data.gamelog.gameName}-${data.gamelog.gameSession}.json`);
                 });
 
                 this.log("Gamelog successfully loaded.");

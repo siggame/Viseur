@@ -49,7 +49,7 @@ export class BaseGameObject extends StateObject {
         this.game = game;
         this.renderer = game.renderer;
 
-        if (this.shouldRender()) {
+        if (this.shouldRender) {
             // initialize the container that will be rendered!
             this.container = new PIXI.Container();
 
@@ -79,7 +79,7 @@ export class BaseGameObject extends StateObject {
      * @returns true if Viseur should render game object classes of this instance,
      *          false otherwise which optimizes playback speed
      */
-    public shouldRender(): boolean {
+    public get shouldRender(): boolean {
         return false;
     }
 
@@ -230,7 +230,8 @@ export class BaseGameObject extends StateObject {
                 text: "Inspect",
                 description: "Reveals this GameObject in the Inspector so you can examine variable values.",
                 callback: () => {
-                    this.emit("inspect");
+                    // TODO: implement
+                    // this.emit("inspect");
                 },
             },
         ];

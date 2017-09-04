@@ -16,15 +16,14 @@ export class HumanPlayer extends BaseHumanPlayer {
      * Set this static flag to true to mark this game as able to be played by
      * human players. Leave as false to ignore that functionality
      */
-    /** Checks if this human player's logic is implemented, so humans can play this game */
-    public static get implemented(): boolean {
-        //  <<-- Creer-Merge: implemented -->>
+    public get implemented(): boolean {
+    //  <<-- Creer-Merge: implemented -->>
         return false;
-        //  <<-- /Creer-Merge: implemented -->>
+    //  <<-- /Creer-Merge: implemented -->>
     }
 
     //  <<-- Creer-Merge: variables -->>
-    // any additional variables you want to add for the HumanPlayer
+        // construct this human player
     //  <<-- /Creer-Merge: variables -->>
 
     /**
@@ -35,9 +34,9 @@ export class HumanPlayer extends BaseHumanPlayer {
     constructor(game: Game) {
         super(game);
 
-        //  <<-- Creer-Merge: variables -->>
+        //  <<-- Creer-Merge: constructor -->>
         // construct this human player
-        //  <<-- /Creer-Merge: variables -->>
+        //  <<-- /Creer-Merge: constructor -->>
     }
 
     // -- Orders: things the game server tells this human player to do -- \\

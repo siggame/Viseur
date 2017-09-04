@@ -31,7 +31,9 @@ export class HumanPlayer extends BaseHumanPlayer {
      * Set this static flag to true to mark this game as able to be played by
      * human players. Leave as false to ignore that functionality
      */
-${merge("    //  ", "implemented", "    public static readonly implemented: boolean = false;", help=False)}
+    public get implemented(): boolean {
+${merge("    //  ", "implemented", "        return false; // set this to true if humans can play this game", help=False)}
+    }
 
 ${merge("    //  ", "variables", "    // any additional variables you want to add for the HumanPlayer", help=False)}
 
@@ -43,7 +45,7 @@ ${merge("    //  ", "variables", "    // any additional variables you want to ad
     constructor(game: Game) {
         super(game);
 
-${merge("        //  ", "variables", "        // construct this human player", help=False)}
+${merge("        //  ", "constructor", "        // construct this human player", help=False)}
     }
 
     // -- Orders: things the game server tells this human player to do -- \\\

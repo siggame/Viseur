@@ -1,7 +1,7 @@
 import { createResources, load } from "src/viseur/renderer";
 
 export const GameResources = createResources({
-    // <<-- Creer-Merge: settings -->>
+    // <<-- Creer-Merge: resources -->>
     tile: load("tile.jpg"),
 
     building: load("building_building.png"),
@@ -27,5 +27,5 @@ export const GameResources = createResources({
 
     // we want 1,0 to be 1, then 2,0 to be 2, ..., then 1,0 to be 4
     fire: load("fire.png", {sheet: {width: 4, height: 2, axis: "x"}}),
-    // <<-- /Creer-Merge: settings -->>
+    // <<-- /Creer-Merge: resources -->>
 });

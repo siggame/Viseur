@@ -18,19 +18,19 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
     /**
      * Creates the pane
      * @param game the game this pane is displaying stats for
-     * @param initialState the initial state of the game
+     * @param state the initial state of the game
      */
-    constructor(game: Game, initialState: IGameState) {
-        super(game, initialState);
+    constructor(game: Game, state: IGameState) {
+        super(game, state);
 
         // <<-- Creer-Merge: constructor -->>
-        // If you need to init additional things, do so here
+        // constructor your pane here
         // <<-- /Creer-Merge: constructor -->>
     }
 
-    // <<-- Creer-Merge: public_functions -->>
-    // if you need to add public functions, do so here
-    // <<-- /Creer-Merge: public_functions -->>
+    // <<-- Creer-Merge: public-functions -->>
+    // If you want to add more public functions, do so here
+    // <<-- /Creer-Merge: public-functions -->>
 
     /**
      * Gets the stats for the players score bars
@@ -43,9 +43,9 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
     protected getPlayerScores(state: IGameState): number[] | undefined {
         super.getPlayersScores(state);
 
-        // <<-- Creer-Merge: getPlayerScores -->>
+        // <<-- Creer-Merge: get-player-scores -->>
         return state.players.map((player) => player.headquarters.health);
-        // <<-- /Creer-Merge: getPlayerScores -->>
+        // <<-- /Creer-Merge: get-player-scores -->>
     }
 
     /**
@@ -59,9 +59,6 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         const stats: Array<IPaneStat<G>> = super.getGameStats(state);
 
         // <<-- Creer-Merge: game-stats -->>
-        // push PaneStats onto the stats array here
-        // if you want to show additional values
-
         stats.push(
             {
                 get: (gameState) => gameState.currentForecast.intensity,

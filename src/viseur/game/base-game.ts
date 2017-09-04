@@ -10,8 +10,8 @@ import { BasePane } from "./base-pane";
 import { IBasePlayer, IBasePlayerState } from "./base-player";
 import { GameOverScreen } from "./game-over-screen";
 import { IDeltaReason, IGamelog } from "./gamelog";
-import { IBaseGameNamespace, IBaseGameObjectState, IBaseGameSettings,
-         IBaseGameState, IGameLayers } from "./interfaces";
+import { IBaseGameNamespace, IBaseGameObjectClasses, IBaseGameObjectState,
+         IBaseGameSettings, IBaseGameState, IGameLayers } from "./interfaces";
 import { IState, StateObject } from "./state-object";
 
 /** The base class all games in the games/ folder inherit from */
@@ -23,7 +23,7 @@ export class BaseGame extends StateObject {
     public readonly numberOfPlayers: number = 2;
 
     /** Mapping of the class names to their class for all sub game object classes */
-    public readonly gameObjectClasses: Readonly<{[className: string]: typeof BaseGameObject}>;
+    public readonly gameObjectClasses: Readonly<IBaseGameObjectClasses>;
 
     /** The current state of the game (dt = 0) */
     public current: IBaseGameState;
@@ -280,7 +280,7 @@ export class BaseGame extends StateObject {
             // game objects by default do not render, as many are invisible
             // so check to make sure it exists and we should render it before
             // waste resources rendering that game object
-            if (exists && gameObject.shouldRender()) {
+            if (exists && gameObject.shouldRender) {
                 gameObject.render(
                     dt,
                     gameObject.current || gameObject.next,
@@ -315,6 +315,16 @@ export class BaseGame extends StateObject {
     protected renderBackground(dt: number, current: IBaseGameState, next: IBaseGameState,
                                reason: IDeltaReason, nextReason: IDeltaReason): void {
         // method exposed for inheriting classes
+    }
+
+    /**
+     * Invoked when the first game state is ready to setup the dimensions of the renderer
+     * @param state the initialize state of the game
+     * @returns the {height, width} you for the game's size.
+     */
+    protected getSize(state: IBaseGameState): {width: number, height: number} {
+        // intended to be inherited and returned with useful numbers
+        return {width: 10, height: 10};
     }
 
     /**
@@ -405,6 +415,8 @@ export class BaseGame extends StateObject {
             playerColorSetting.changed.on(recolor);
         }
 
+        const size = this.getSize(this.current || this.next);
+        this.renderer.setSize(size.width, size.height);
         this.start(this.current || this.next);
         this.createBackground(this.current || this.next);
     }

@@ -35,6 +35,9 @@ if obj['functions']:
                     imports['./state-interfaces'].append(arg_type)
 
 %>
+% if obj_key == 'Game':
+import * as Color from "color";
+% endif
 ${shared['vis']['imports'](imports)}
 ${merge("// ", "imports", "// any additional imports you want can be added here safely between Creer runs", help=False)}
 
@@ -43,6 +46,8 @@ ${merge("// ", "imports", "// any additional imports you want can be added here 
  * inherit from automatically.
  */
 export class ${obj_key} extends ${parent_classes[0]} {
+${merge("    // ", "static-functions", "    // you can add static functions here", help=False)}
+
 % if obj_key == 'Game':
     /** The static name of this game. */
     public static readonly gameName: string = "${obj['name']}";
@@ -50,10 +55,20 @@ export class ${obj_key} extends ${parent_classes[0]} {
     /** The number of players in this game. the players array should be this same size */
     public readonly numberOfPlayers: number = ${obj['numberOfPlayers']};
 
-% endif
+% else:
+    /**
+     * Change this to return true to actually render instances of super classes
+     * @returns true if we should render game object classes of this instance,
+     *          false otherwise which optimizes playback speed
+     */
+    public get shouldRender(): boolean {
+${merge("        // ", "should-render", "        return super.shouldRender; // change this to true to render all instances of this class", help=False)}
+    }
+
     /** The instance of the game this game object is a part of */
     public readonly game: Game;
 
+% endif
     /** The current state of the ${obj_key} (dt = 0) */
     public current: I${obj_key}State;
 
@@ -64,11 +79,20 @@ export class ${obj_key} extends ${parent_classes[0]} {
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
 
+    /** The default player colors for this game, there must be one for each player */<%
+    lines = []
+    for i in range(game['numberOfPlayers']):
+        lines.append("        this.defaultPlayerColors[{0}], // Player {0}".format(i))
+%>
+    public readonly defaultPlayerColors: [${", ".join("Color" for i in range(game['numberOfPlayers']))}] = [
+${merge("        // ", "default-player-colors", "\n".join(lines), help=False)}
+    ];
+
     /** The custom settings for this game */
     public readonly settings = this.createSettings(GameSettings);
 
     /** The layers in the game */
-    public layers = this.createLayers({
+    public readonly layers = this.createLayers({
 ${merge("        // ", "layers",
 """        /** Bottom most layer, for background elements */
         background: this.createLayer(),
@@ -88,8 +112,21 @@ ${merge("    // ", "variables", "    // You can add additional member variables 
 ${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
 
     /**
+     * Invoked when the first game state is ready to setup the size of the renderer
+     * @param state the initialize state of the game
+     * @returns the {height, width} you for the game's size.
+     */
+    protected getSize(state: IGameState): {width: number, height: number} {
+        return {
+${merge("            // ", "get-size", """            width: 10, // Change these. Probably read in the map's width
+            height: 10, // and height from the initial state here.""", help=False)}
+        };
+    }
+
+    /**
      * Called when Viseur is ready and wants to start rendering the game.
      * This is where you should initialize stuff.
+     * @param state the initialize state of the game
      */
     protected start(state: IGameState): void {
         super.start(state);
@@ -104,7 +141,7 @@ ${merge("        // ", "start", "        // Initialize your variables here", hel
     protected createBackground(state: IGameState): void {
         super.createBackground(state);
 
-${merge("        // ", "createBackground", "        // Initialize your background here if need be", help=False)}
+${merge("        // ", "create-background", "        // Initialize your background here if need be", help=False)}
     }
 
     /**
@@ -123,7 +160,7 @@ ${merge("        // ", "createBackground", "        // Initialize your backgroun
                                reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.renderBackground(dt, current, next, reason, nextReason);
 
-${merge("        // ", "renderBackground", "        // update and re-render whatever you initialize in renderBackground", help=False)}
+${merge("        // ", "render-background", "        // update and re-render whatever you initialize in renderBackground", help=False)}
     }
 
     /**
@@ -139,7 +176,7 @@ ${merge("        // ", "renderBackground", "        // update and re-render what
                            reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.stateUpdated(current, next, reason, nextReason);
 
-${merge("        // ", "stateUpdated", "        // update the Game based on its current and next states", help=False)}
+${merge("        // ", "state-updated", "        // update the Game based on its current and next states", help=False)}
     }
 % else:
     /**
@@ -151,18 +188,7 @@ ${merge("        // ", "stateUpdated", "        // update the Game based on its 
     constructor(state: I${obj_key}State, game: Game) {
         super(state, game);
 
-        // <<-- Creer-Merge: constructor -->>
-        // initialization logic goes here
-        // <<-- /Creer-Merge: constructor -->>
-    }
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public shouldRender(): boolean {
-${merge("        // ", "should-render", "        return super.shouldRender(); // change this to true to render all instances of this class", help=False)}
+${merge("        // ", "constructor", "        // You can initialize your new {} here.".format(obj_key), help=False)}
     }
 
     /**
@@ -207,10 +233,10 @@ ${merge("        // ", "recolor", "        // replace with code to recolor sprit
                         reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.stateUpdated(current, next, reason, nextReason);
 
-        // <<-- Creer-Merge: stateUpdated -->>
-        // update the ${obj_key} based on its current and next states
-        // <<-- /Creer-Merge: stateUpdated -->>
+${merge("        // ", "state-updated", "        // update the {} based off its states".format(obj_key), help=False)}
     }
+
+${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
 
     // NOTE: past this block are functions only used 99% of the time if
     //       the game supports human playable clients (like Chess).
@@ -264,8 +290,6 @@ ${formatted_name}${formatted_args}): void {
     // </Joueur functions>
 
 % endif
-${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
-
     /**
      * Invoked when the right click menu needs to be shown.
      * @returns an array of context menu items, which can be
@@ -274,9 +298,7 @@ ${merge("    // ", "public-functions", "    // You can add additional public fun
     protected getContextMenu(): MenuItems {
         const menu = super.getContextMenu();
 
-        // <<-- Creer-Merge: getContextMenu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: getContextMenu -->>
+${merge("        // ", "get-context-menu", "        // add context items to the menu here", help=False)}
 
         return menu;
     }

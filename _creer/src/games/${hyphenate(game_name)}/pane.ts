@@ -19,7 +19,7 @@ ${merge("    // ", "variables", "    // if you need add more member class variab
     constructor(game: Game, state: IGameState) {
         super(game, state);
 
-${merge("        // ", "variables", "        // if you need add more member class variables, do so here", help=False)}
+${merge("        // ", "constructor", "        // constructor your pane here", help=False)}
     }
 
 ${merge("    // ", "public-functions", "    // If you want to add more public functions, do so here", help=False)}

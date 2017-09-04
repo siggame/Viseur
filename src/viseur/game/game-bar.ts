@@ -79,6 +79,7 @@ export class GameBar {
 
                 this.setVisible(newValue);
             });
+            this.setVisible(options.visibilitySetting.get());
         }
     }
 
