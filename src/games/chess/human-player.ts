@@ -3,7 +3,6 @@ import { BaseHumanPlayer } from "src/viseur/game";
 import { Game } from "./game";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -21,12 +20,12 @@ export class HumanPlayer extends BaseHumanPlayer {
      */
     public static get implemented(): boolean {
     //  <<-- Creer-Merge: implemented -->>
-        return false;
+        return true; // set this to true if humans can play this game
     //  <<-- /Creer-Merge: implemented -->>
     }
 
     //  <<-- Creer-Merge: variables -->>
-        // construct this human player
+    private endTurnCallback?: (returned: boolean) => void;
     //  <<-- /Creer-Merge: variables -->>
 
     /**
@@ -49,11 +48,31 @@ export class HumanPlayer extends BaseHumanPlayer {
      */
     public runTurn(callback: (returned: boolean) => void): void {
         // <<-- Creer-Merge: runTurn -->>
-        // Put your game logic here for runTurn
+        this.endTurnCallback = callback;
         // <<-- /Creer-Merge: runTurn -->>
     }
 
     // <<-- Creer-Merge: functions -->>
-    // any additional functions you want to add for the HumanPlayer
+    public handleTileClicked(pos: string): boolean {
+        const piece = this.game.selectedPiece;
+
+        // if nothing is selected, or it's not my turn
+        if (!piece || !this.endTurnCallback) {
+            return false;
+        }
+
+        const state = piece.current || piece.next;
+
+        for (const move of this.game.validMoves) {
+            if (piece && move.to === pos && move.from === (state.file + state.rank)) {
+                piece.move(move.to[0], Number(move.to[1]), this.game.settings.pawnPromotion.get());
+                this.endTurnCallback(true);
+                this.endTurnCallback = undefined;
+                return true;
+            }
+        }
+
+        return false;
+    }
     // <<-- /Creer-Merge: functions -->>
 }

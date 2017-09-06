@@ -2,14 +2,18 @@ import { BasePane, IPaneStat } from "src/viseur/game";
 import { Game } from "./game";
 import { IGameState, IPlayerState } from "./state-interfaces";
 
-${merge("// ", "imports", "// Add additional imports you need here", help=False)}
+// <<-- Creer-Merge: imports -->>
+// Add additional imports you need here
+// <<-- /Creer-Merge: imports -->>
 
 /**
  * The visual pane that is displayed below the game and has text elements for
  * each player
  */
 export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane<G, P> {
-${merge("    // ", "variables", "    // if you need add more member class variables, do so here", help=False)}
+    // <<-- Creer-Merge: variables -->>
+    // if you need add more member class variables, do so here
+    // <<-- /Creer-Merge: variables -->>
 
     /**
      * Creates the pane
@@ -19,10 +23,14 @@ ${merge("    // ", "variables", "    // if you need add more member class variab
     constructor(game: Game, state: IGameState) {
         super(game, state);
 
-${merge("        // ", "constructor", "        // constructor your pane here", help=False)}
+        // <<-- Creer-Merge: constructor -->>
+        // constructor your pane here
+        // <<-- /Creer-Merge: constructor -->>
     }
 
-${merge("    // ", "public-functions", "    // If you want to add more public functions, do so here", help=False)}
+    // <<-- Creer-Merge: public-functions -->>
+    // If you want to add more public functions, do so here
+    // <<-- /Creer-Merge: public-functions -->>
 
     /**
      * Gets the stats for the players score bars
@@ -35,7 +43,9 @@ ${merge("    // ", "public-functions", "    // If you want to add more public fu
     protected getPlayerScores(state: IGameState): number[] | undefined {
         super.getPlayersScores(state);
 
-${merge("        // ", "get-player-scores", "        return undefined; // change to return the states scores for each player", help=False)}
+        // <<-- Creer-Merge: get-player-scores -->>
+        return undefined; // change to return the states scores for each player
+        // <<-- /Creer-Merge: get-player-scores -->>
     }
 
     /**
@@ -48,7 +58,9 @@ ${merge("        // ", "get-player-scores", "        return undefined; // change
     protected getGameStats(state: IGameState): Array<IPaneStat<G>> {
         const stats: Array<IPaneStat<G>> = super.getGameStats(state);
 
-${merge("        // ", "game-stats", "        // add stats for games to show up here", help=False)}
+        // <<-- Creer-Merge: game-stats -->>
+        // add stats for games to show up here
+        // <<-- /Creer-Merge: game-stats -->>
 
         return stats;
     }
@@ -61,10 +73,14 @@ ${merge("        // ", "game-stats", "        // add stats for games to show up 
     protected getPlayerStats(state: IGameState): Array<IPaneStat<P>> {
         const stats: Array<IPaneStat<P>> = super.getPlayerStats(state);
 
-${merge("        // ", "player-stats", "        // add stats for players to show up here", help=False)}
+        // <<-- Creer-Merge: player-stats -->>
+        // add stats for players to show up here
+        // <<-- /Creer-Merge: player-stats -->>
 
         return stats;
     }
 
-${merge("    // ", "functions", "    // add more functions for your pane here", help=False)}
+    // <<-- Creer-Merge: functions -->>
+    // add more functions for your pane here
+    // <<-- /Creer-Merge: functions -->>
 }

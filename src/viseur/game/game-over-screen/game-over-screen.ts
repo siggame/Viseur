@@ -3,7 +3,6 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import * as utils from "src/utils";
 import { viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
-import itemHbs from "./game-over-screen-item.hbs";
 import "./game-over-screen.scss";
 
 /** A screen that overlays the renderer when the game is over */
@@ -107,7 +106,7 @@ export class GameOverScreen extends BaseElement {
                 ? this.winnersElement
                 : this.losersElement;
 
-            this.items.push(partial(itemHbs, item, list));
+            this.items.push(partial(require("./game-over-screen-item.hbs"), item, list));
         }
 
         this.losersElement.css("display", this.losersElement.html() === ""
@@ -116,7 +115,7 @@ export class GameOverScreen extends BaseElement {
         );
 
         if (this.winnersElement.html() === "") { // then there are no winners, it's a tie
-            partial(itemHbs, {
+            partial(require("./game-over-screen-item.hbs"), {
                 name: "Game Over -",
                 wonOrLost: "Tie",
                 reason: gameState.players[0].reasonLost,

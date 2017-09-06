@@ -49,10 +49,17 @@ export function load(texture: string, options?: IRendererResourcesOptions & {
  * @param resources this must be a key/value list, key must be a string, value must be a RendererResource
  * @returns that same object frozen and extended with the index interface for TS
  */
-export function createResources<T extends {}>(resources: T): Readonly<T & IRendererResources> {
-    return Object.freeze(Object.assign({
+export function createResources<T extends {}>(gameName: string, resources: T): Readonly<T & IRendererResources> {
+    const frozen = Object.freeze(Object.assign({
         blank: new RendererResource(require("src/viseur/images/blank.png"), {
             absolute: true,
         }),
     }, resources));
+
+    for (const key of Object.keys(frozen)) {
+        const resource: any = (frozen as any)[key];
+        resource.gameName = gameName;
+    }
+
+    return frozen;
 }

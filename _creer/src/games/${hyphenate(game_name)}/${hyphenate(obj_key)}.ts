@@ -19,6 +19,8 @@ if obj_key == 'Game':
     imports['./settings'] = ['GameSettings']
     imports['./resources'] = ['GameResources']
     imports['./game-object-classes'] = ['GameObjectClasses']
+    imports['src/viseur/renderer'] = ['IRendererSize']
+    imports["./human-player"] = ['HumanPlayer']
 else:
     imports['./game'] = ['Game']
     imports['src/core/ui/context-menu'] = ['MenuItems']
@@ -33,6 +35,11 @@ if obj['functions']:
             if arg_type[0] == 'I': #// then it's an interface
                 if arg_type not in imports['./state-interfaces']:
                     imports['./state-interfaces'].append(arg_type)
+        if function_parms['returns']:
+            return_type = shared['vis']['type'](function_parms['returns']['type'])
+            if return_type[0] == 'I': #// then it's an interface
+                if return_type not in imports['./state-interfaces']:
+                    imports['./state-interfaces'].append(return_type)
 
 %>
 % if obj_key == 'Game':
@@ -79,6 +86,9 @@ ${merge("        // ", "should-render", "        return super.shouldRender; // c
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
 
+    /** The human player playing this game */
+    public readonly humanPlayer: HumanPlayer;
+
     /** The default player colors for this game, there must be one for each player */<%
     lines = []
     for i in range(game['numberOfPlayers']):
@@ -116,7 +126,7 @@ ${merge("    // ", "public-functions", "    // You can add additional public fun
      * @param state the initialize state of the game
      * @returns the {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): {width: number, height: number} {
+    protected getSize(state: IGameState): IRendererSize {
         return {
 ${merge("            // ", "get-size", """            width: 10, // Change these. Probably read in the map's width
             height: 10, // and height from the initial state here.""", help=False)}
@@ -258,7 +268,7 @@ if function_parms['returns']:
     returnless.pop('returns', None)
 
 function_parms['arguments'].append({
-    'name': 'callback',
+    'name': 'callback?',
     'type': {
         'name': '(returned: ' + return_type + ') => void',
         'is_game_object': False,
@@ -272,6 +282,7 @@ formatted_name = '    public '+function_name+'('
 formatted_args = ', '.join([(a['name']+': '+shared['vis']['type'](a['type'])) for a in function_parms['arguments']])
 
 wrapper = shared['vis']['TextWrapper'](
+    initial_indent=formatted_name,
     subsequent_indent=' ' * len(formatted_name),
     width=80,
 )
@@ -279,10 +290,10 @@ wrapper = shared['vis']['TextWrapper'](
 formatted_args = '\n'.join(wrapper.wrap(formatted_args))
 
 if '\n' in formatted_args:
-    formatted_args += '\n    '
+    formatted_args += ',\n    '
 
 %>${docstring}
-${formatted_name}${formatted_args}): void {
+${formatted_args}): void {
         this.runOnServer("${function_name}", {${', '.join(a['name'] for a in function_parms['arguments'][:-1])}}, callback);
     }
 

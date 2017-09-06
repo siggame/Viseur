@@ -60,76 +60,76 @@ declare module "eases" {
     export = Eases;
 }
 
-interface ShortMove {
-    /**
-     * The location the piece is moving from.
-     * Must be in san format, e.g "h8"
-     */
-    from: string;
-
-    /**
-     * The location the piece is moving to.
-     * Must be in san format, e.g "a1"
-     */
-    to: string;
-
-    /**
-     * If this move results in a promotion, this will have the unit promotion.
-     * - "n" for Knight
-     * - "b" for Bishop
-     * - "r" for Rook
-     * - "q" for Queen
-     */
-    promotion?: "n" | "b" | "r" | "q";
-}
-
-interface Move extends ShortMove {
-    /**
-     * The color of the piece that moved
-     * - "b" for Black
-     * - "w" for White
-     */
-    color: "b" | "w";
-
-    /** Flags indicating what occurred, combined into one string */
-    flags: string;
-
-    /** The Standard Algebraic Notation (SAN) representation of the move */
-    san: string;
-
-    /**
-     * If an enemy piece was captured this is their type.
-     * - "p" for Pawn
-     * - "n" for Knight
-     * - "b" for Bishop
-     * - "r" for Rook
-     * - "q" for Queen
-     */
-    captured?: "p" | "n" | "b" | "r" | "q";
-}
-
-interface Piece {
-    /**
-     * The type of the piece to place
-     * - "p" for Pawn
-     * - "n" for Knight
-     * - "b" for Bishop
-     * - "r" for Rook
-     * - "q" for Queen
-     * - "k" for King
-     */
-    type: "p" | "n" | "b" | "r" | "q" | "k";
-
-    /**
-     * The color of the piece
-    * - "b" for Black
-    * - "w" for White
-        */
-    color: "b" | "w";
-}
-
 declare module "chess.js" {
-    export = { Chess: class Chess {
+    export interface ShortMove {
+        /**
+         * The location the piece is moving from.
+         * Must be in san format, e.g "h8"
+         */
+        from: string;
+
+        /**
+         * The location the piece is moving to.
+         * Must be in san format, e.g "a1"
+         */
+        to: string;
+
+        /**
+         * If this move results in a promotion, this will have the unit promotion.
+         * - "n" for Knight
+         * - "b" for Bishop
+         * - "r" for Rook
+         * - "q" for Queen
+         */
+        promotion?: "n" | "b" | "r" | "q";
+    }
+
+    export interface Move extends ShortMove {
+        /**
+         * The color of the piece that moved
+         * - "b" for Black
+         * - "w" for White
+         */
+        color: "b" | "w";
+
+        /** Flags indicating what occurred, combined into one string */
+        flags: string;
+
+        /** The Standard Algebraic Notation (SAN) representation of the move */
+        san: string;
+
+        /**
+         * If an enemy piece was captured this is their type.
+         * - "p" for Pawn
+         * - "n" for Knight
+         * - "b" for Bishop
+         * - "r" for Rook
+         * - "q" for Queen
+         */
+        captured?: "p" | "n" | "b" | "r" | "q";
+    }
+
+    export interface Piece {
+        /**
+         * The type of the piece to place
+         * - "p" for Pawn
+         * - "n" for Knight
+         * - "b" for Bishop
+         * - "r" for Rook
+         * - "q" for Queen
+         * - "k" for King
+         */
+        type: "p" | "n" | "b" | "r" | "q" | "k";
+
+        /**
+         * The color of the piece
+        * - "b" for Black
+        * - "w" for White
+            */
+        color: "b" | "w";
+    }
+
+    export class Chess {
         /**
          * The Chess() constructor takes an optional parameter which specifies the board configuration in Forsyth-Edwards Notation.
          * @param fen specifies the board configuration in Forsyth-Edwards Notation.
@@ -200,9 +200,9 @@ declare module "chess.js" {
          */
         moves(options?: {
             /** Set to true to return verbose move objects instead of strings */
-            verbose: boolean;
+            verbose?: boolean;
             /** The string to test if it is a valid move, if it is not then an empty array is returned */
-            square: string;
+            square?: string;
         }): string[] | Move[];
 
         /**
@@ -394,5 +394,5 @@ declare module "chess.js" {
             /** Pass true if you want this function to output verbose obejcts instead of strings */
             verbose?: boolean;
         }): string[] | Move[];
-    }};
+    }
 }

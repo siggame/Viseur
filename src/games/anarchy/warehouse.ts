@@ -125,11 +125,13 @@ export class Warehouse extends Building {
      * building's fireAdded to their fire, and then this building's exposure is
      * increased based on the Manhatten distance between the two buildings.
      * @param building The Building you want to light on fire.
-     * @param callback The callback that eventually returns the return value
+     * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is The exposure added to this
      * Building's exposure. -1 is returned if there was an error.
      */
-    public ignite(building: IBuildingState, callback: (returned: number) => void): void {
+    public ignite(building: IBuildingState, callback?: (returned: number) =>
+                  void,
+    ): void {
         this.runOnServer("ignite", {building}, callback);
     }
 

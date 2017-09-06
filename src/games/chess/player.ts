@@ -1,19 +1,20 @@
-// This is a class to represent the GameObject object in the game.
+// This is a class to represent the Player object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
-import { BaseGameObject, IDeltaReason } from "src/viseur/game";
+import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
-import { IGameObjectState } from "./state-interfaces";
+import { GameObject } from "./game-object";
+import { IPlayerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import * as Color from "color";
 // <<-- /Creer-Merge: imports -->>
 
 /**
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class GameObject extends BaseGameObject {
+export class Player extends GameObject {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
@@ -32,32 +33,32 @@ export class GameObject extends BaseGameObject {
     /** The instance of the game this game object is a part of */
     public readonly game: Game;
 
-    /** The current state of the GameObject (dt = 0) */
-    public current: IGameObjectState;
+    /** The current state of the Player (dt = 0) */
+    public current: IPlayerState;
 
-    /** The next state of the GameObject (dt = 1) */
-    public next: IGameObjectState;
+    /** The next state of the Player (dt = 1) */
+    public next: IPlayerState;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    public color: Color;
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the GameObject with basic logic as provided by the Creer
+     * Constructor for the Player with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this GameObject
-     * @param game the game this GameObject is in
+     * @param state the initial state of this Player
+     * @param game the game this Player is in
      */
-    constructor(state: IGameObjectState, game: Game) {
+    constructor(state: IPlayerState, game: Game) {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-        // initialization logic goes here
+        this.color = Color(state.color.toLowerCase());
         // <<-- /Creer-Merge: constructor -->>
     }
 
     /**
-     * Called approx 60 times a second to update and render GameObject
+     * Called approx 60 times a second to update and render Player
      * instances. Leave empty if it is not being rendered.
      * @param dt a floating point number [0, 1) which represents how
      * far into the next turn that current turn we are rendering is at
@@ -68,18 +69,18 @@ export class GameObject extends BaseGameObject {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public render(dt: number, current: IGameObjectState, next: IGameObjectState,
+    public render(dt: number, current: IPlayerState, next: IPlayerState,
                   reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the GameObject is
+        // render where the Player is
         // <<-- /Creer-Merge: render -->>
     }
 
     /**
      * Invoked after when a player changes their color, so we have a
-     * chance to recolor this GameObject's sprites.
+     * chance to recolor this Player's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -98,12 +99,12 @@ export class GameObject extends BaseGameObject {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public stateUpdated(current: IGameObjectState, next: IGameObjectState,
+    public stateUpdated(current: IPlayerState, next: IPlayerState,
                         reason: IDeltaReason, nextReason: IDeltaReason): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the GameObject based on its current and next states
+        // update the Player based off its states
         // <<-- /Creer-Merge: state-updated -->>
     }
 
@@ -114,21 +115,6 @@ export class GameObject extends BaseGameObject {
     // NOTE: past this block are functions only used 99% of the time if
     //       the game supports human playable clients (like Chess).
     //       If it does not, feel free to ignore everything past here.
-
-    // <Joueur functions> --- functions invoked for human playable client
-
-    /**
-     * Adds a message to this GameObject's logs. Intended for your own debugging
-     * purposes, as strings stored here are saved in the gamelog.
-     * @param message A string to add to this GameObject's log. Intended for
-     * debugging.
-     * @param callback?
-     */
-    public log(message: string, callback?: (returned: void) => void): void {
-        this.runOnServer("log", {message}, callback);
-    }
-
-    // </Joueur functions>
 
     /**
      * Invoked when the right click menu needs to be shown.

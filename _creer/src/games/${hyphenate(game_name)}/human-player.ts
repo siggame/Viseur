@@ -27,11 +27,14 @@ ${merge("// ", "imports", "// any additional imports you want can be added here 
  * for things and then use callback actions to send values to the game server.
  */
 export class HumanPlayer extends BaseHumanPlayer {
+    /** The game this human player is playing */
+    public game: Game;
+
     /**
      * Set this static flag to true to mark this game as able to be played by
      * human players. Leave as false to ignore that functionality
      */
-    public get implemented(): boolean {
+    public static get implemented(): boolean {
 ${merge("    //  ", "implemented", "        return false; // set this to true if humans can play this game", help=False)}
     }
 

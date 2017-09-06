@@ -7,7 +7,7 @@ import { BaseGame } from "./game/base-game";
 import { IDelta, IDeltaReason, IGamelog } from "./game/gamelog";
 import { IBaseGameNamespace, IBaseGameState } from "./game/interfaces";
 import { GUI } from "./gui";
-import { Joueur, TournamentClient } from "./joueur";
+import { IJoueurConnectionArgs, Joueur, TournamentClient } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
 import { ViseurSettings } from "./settings";
@@ -169,7 +169,7 @@ export class Viseur {
     public spectate(server: string, port: number, gameName: string, session: string): void {
         this.gui.modalMessage("Spectating game...");
 
-        this.createJoueur(server, port, gameName, session);
+        this.createJoueur({server, port, gameName, session});
     }
 
     /**
@@ -201,22 +201,19 @@ export class Viseur {
 
     /**
      * Connects to a game server to play a game for the human controlling this Viseur
-     * @param {string} server the server is running on (without port)
-     * @param {number} port the port the server is running on
-     * @param {string} gameName the name of the game to spectate
-     * @param {string} playerName the name of the [human] player
+     * @param gameName the name of the game to spectate
+     * @param server the server is running on (without port)
+     * @param port the port the server is running on
      * @param session the game session to play in
+     * @param playerName the name of the [human] player
      * @param gameSettings optional game settings to use to make the game
      */
     public playAsHuman(
-        server: string, port: number, gameName: string, playerName: string, session: string, gameSettings?: string,
+        gameName: string, server: string, port: number, session: string, playerName: string, gameSettings?: string,
     ): void {
         this.gui.modalMessage("Connecting to game server...");
 
-        this.createJoueur(server, port, gameName, session, {
-            playerName,
-            gameSettings,
-        });
+        this.createJoueur({server, port, gameName, session, playerName, gameSettings});
     }
 
     /**
@@ -238,7 +235,7 @@ export class Viseur {
         callerID: string,
         functionName: string,
         args: utils.IAnyObject,
-        callback: (returned: any) => void,
+        callback?: (returned: any) => void,
     ): void {
         if (!this.joueur) {
             throw new Error("No game client to run game logic for.");
@@ -599,13 +596,9 @@ export class Viseur {
 
     /**
      * Initializes the Joueur (game client)
-     * @param {String} server the game server address
-     * @param {Number} port the port for server
-     * @param {String} gameName the name of the game to connect to (id)
-     * @param session the game session to request
-     * @param {Object} options any optional parameters for the game session
+     * @param args argus to connect with
      */
-    private createJoueur(server: string, port: number, gameName: string, session: string, options: {} = {}): void {
+    private createJoueur(args: IJoueurConnectionArgs): void {
         this.joueur = new Joueur();
 
         this.rawGamelog = this.joueur.getGamelog();
@@ -658,6 +651,8 @@ export class Viseur {
         this.joueur.events.fatal.on((data) => {
             this.gui.modalError("Fatal game server event: " + data.message);
         });
+
+        this.joueur.connect(args);
     }
 }
 

@@ -89,7 +89,7 @@ export class BaseGameObject extends StateObject {
      * @param {Object} args - key value pairs for the function to run
      * @param {Function} callback - callback to invoke once run, is passed the return value
      */
-    public runOnServer(run: string, args: object, callback: (returned: any) => void): void {
+    public runOnServer(run: string, args: object, callback?: (returned: any) => void): void {
         viseur.runOnServer(this.id, run, args, callback);
     }
 

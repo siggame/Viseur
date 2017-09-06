@@ -125,11 +125,13 @@ export class FireDepartment extends Building {
      * Bribes this FireDepartment to extinguish the some of the fire in a
      * building.
      * @param building The Building you want to extinguish.
-     * @param callback The callback that eventually returns the return value
+     * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if the bribe worked, false
      * otherwise.
      */
-    public extinguish(building: IBuildingState, callback: (returned: boolean) => void): void {
+    public extinguish(building: IBuildingState, callback?: (returned: boolean)
+                      => void,
+    ): void {
         this.runOnServer("extinguish", {building}, callback);
     }
 

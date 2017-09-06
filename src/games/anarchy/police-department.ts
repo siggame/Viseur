@@ -125,11 +125,13 @@ export class PoliceDepartment extends Building {
      * Bribe the police to raid a Warehouse, dealing damage equal based on the
      * Warehouse's current exposure, and then resetting it to 0.
      * @param warehouse The warehouse you want to raid.
-     * @param callback The callback that eventually returns the return value
+     * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is The amount of damage dealt to
      * the warehouse, or -1 if there was an error.
      */
-    public raid(warehouse: IWarehouseState, callback: (returned: number) => void): void {
+    public raid(warehouse: IWarehouseState, callback?: (returned: number) =>
+                void,
+    ): void {
         this.runOnServer("raid", {warehouse}, callback);
     }
 

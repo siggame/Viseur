@@ -31,6 +31,15 @@ export interface IPixiSpriteOptions {
 
     /** The alpha value (opacity) of the sprite */
     alpha?: number;
+
+    /** A name to attach to the new sprite */
+    name?: string;
+
+    /** A callback for if this sprite is clicked */
+    onClick?: () => void;
+
+    /** if set toggles visibility */
+    visible?: boolean;
 }
 
 /**
@@ -128,6 +137,24 @@ export function setPixiOptions(sprite: PIXI.Sprite, options: IPixiSpriteOptions)
 
     if (options.alpha !== undefined) {
         sprite.alpha = options.alpha;
+    }
+
+    if (options.name !== undefined) {
+        sprite.name = options.name;
+    }
+
+    if (options.onClick !== undefined) {
+        sprite.interactive = true;
+        sprite.on("mouseupoutside", options.onClick);
+        sprite.on("mouseup", options.onClick);
+        sprite.on("touchend", options.onClick);
+        sprite.on("touchendoutside", options.onClick);
+        sprite.on("rightup", options.onClick);
+        sprite.on("rightupoutside", options.onClick);
+    }
+
+    if (options.visible !== undefined) {
+        sprite.visible = options.visible;
     }
 }
 

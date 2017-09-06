@@ -52,7 +52,7 @@ export class GameObject extends BaseGameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-        // initialization logic goes here
+        // You can initialize your new GameObject here.
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -103,7 +103,7 @@ export class GameObject extends BaseGameObject {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the GameObject based on its current and next states
+        // update the GameObject based off its states
         // <<-- /Creer-Merge: state-updated -->>
     }
 

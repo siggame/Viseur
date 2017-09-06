@@ -301,20 +301,23 @@ export class FileTab extends Tab {
             this.log(`Connection closed.`);
         });
 
-        switch (this.connectTypeInput.value) {
+        const type = this.connectTypeInput.value;
+        switch (type) {
             case "Tournament":
                 viseur.connectToTournament(server, port, playerName);
-                break;
+                return;
             case "Arena":
                 viseur.startArenaMode(server, this.presentationInput.value);
-                break;
+                return;
             case "Human":
-                viseur.playAsHuman(server, port, gameName, session, playerName, this.gameSettingsInput.value.trim());
-                break;
+                viseur.playAsHuman(gameName, server, port, session, playerName, this.gameSettingsInput.value.trim());
+                return;
             case "Spectate":
                 viseur.spectate(server, port, gameName, session);
-                break;
+                return;
         }
+
+        throw new Error(`Connection type ${type} unexpected`);
     }
 
     /**

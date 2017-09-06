@@ -19,6 +19,7 @@ export class TextBox extends BaseInput<string> {
     }) {
         super(Object.assign({
             type: "text",
+            value: "",
         }, args));
 
         this.element.on("keypress", (e) => {

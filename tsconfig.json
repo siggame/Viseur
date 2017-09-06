@@ -8,6 +8,7 @@
         "removeComments": true,
         "sourceMap": true,
         "noUnusedLocals": true,
+        "allowSyntheticDefaultImports": true,
 
         "outDir": "js",
         "baseUrl": "./",

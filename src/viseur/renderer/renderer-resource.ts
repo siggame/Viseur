@@ -32,6 +32,9 @@ export class RendererResource {
     /** The texture for this sprite */
     protected texture: PIXI.Texture;
 
+    /** the name of the game this resource is for */
+    private readonly gameName: string = ""; // will be set from the load function
+
     /**
      * Creates and registers a new resource that can make sprites of it
      * @param path The path to the resource in the game's textures directory
@@ -84,9 +87,23 @@ export class RendererResource {
     /**
      * Invoked when this texture is loaded
      * @param resources all the resources loaded, to pull our texture out of
+     * @returns a boolean indicating if this resource's texture was loaded
      */
-    protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): void {
-        const texture = resources[this.path].texture;
+    protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
+        if (viseur.game.name !== this.gameName) {
+            // this resource is for a different game, and will never be used
+            // so we don't care if it loaded or not
+            return false;
+        }
+
+        const resource = resources[this.path];
+        if (!resource) {
+            throw new Error(`Could not find loaded resource for ${this.path}`);
+        }
+
+        const texture = resource.texture;
         this.texture = texture;
+
+        return true;
     }
 }

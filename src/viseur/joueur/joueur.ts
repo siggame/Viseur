@@ -4,6 +4,29 @@ import { viseur } from "src/viseur";
 import { IDelta, IGamelog, IGameServerConstants } from "src/viseur/game/gamelog";
 import * as serializer from "./serializer";
 
+export interface IJoueurConnectionArgs {
+    /** The name of the game to connect to */
+    gameName: string;
+
+    /** The server address */
+    server: string;
+
+    /** The port to connect through */
+    port: number;
+
+    /** The session to connect to */
+    session: string;
+
+    /** If we are spectating or now */
+    spectating?: boolean;
+
+    /** The name of our player */
+    playerName?: string;
+
+    /** Server-side game settings */
+    gameSettings?: string;
+}
+
 /**
  * The websocket client to a game server.
  * Handles i/o with the game server, and mostly merges delta states from it.
@@ -76,40 +99,30 @@ export class Joueur {
 
     /**
      * Connects to some game server
-     * @param {string} gameName the game to connect to and play
-     * @param {string} [server=localhost] the location of the server
-     * @param {number} [port=3088] the port at which the server is listening for websocket clients
-     * @param {Object} [spectating] the optional arguments to send to the game server
-     * @param {string} [session] the name of the session to play in
-     * @param {string} [playerName] the name of our player
+     * @param args the connection arguments
      */
-    public connect(
-        gameName: string,
-        server: string = "localhost",
-        port: number = 3088,
-        spectating: boolean = false,
-        session: string = "new",
-        playerName: string = "Human",
-    ): void {
-        this.gamelog.gameName = gameName;
+    public connect(args: IJoueurConnectionArgs): void {
+        this.gamelog.gameName = args.gameName;
 
         try {
-            this.socket = new WebSocket("ws://" + server + ":" + port);
+            this.socket = new WebSocket(`ws://${args.server}:${args.port}`);
         }
         catch (err) {
             this.events.error.emit(err);
+            return;
         }
 
         this.socket.onopen = () => {
             this.events.connected.emit(undefined);
 
             this.send("play", {
-                gameName,
-                spectating,
-                playerName,
+                gameName: args.gameName,
+                spectating: args.spectating || false,
+                playerName: args.playerName || "Human Player",
                 clientType: "Human",
                 metaDeltas: true,
-                requestedSession: session,
+                requestedSession: args.session,
+                gameSettings: args.gameSettings,
             });
         };
 
@@ -169,32 +182,31 @@ export class Joueur {
     private received(data: any): void {
         const eventName = (data.event as string).toLowerCase();
 
+        const orderData = data.data;
         switch (eventName) {
             case "over":
-                this.autoHandleOver();
+                this.autoHandleOver(orderData);
                 break;
             case "start":
-                this.autoHandleStart(data);
+                this.autoHandleStart(orderData);
                 break;
             case "lobbied":
-                this.autoHandleLobbied(data);
+                this.autoHandleLobbied(orderData);
                 break;
             case "delta":
-                this.autoHandleDelta(data);
+                this.autoHandleDelta(orderData);
                 break;
             case "order":
-                this.autoHandleOrder(data);
+                this.autoHandleOrder(orderData);
+                break;
+            case "ran":
+                this.events.ran.emit(orderData);
                 break;
             case "fatal":
-                this.autoHandleFatal(data);
+                this.autoHandleFatal(orderData);
                 break;
             default:
                 throw new Error(`Could not find an auto handler for event ${data.event}`);
-        }
-
-        const event: Event<any> = (this.events as any)[eventName];
-        if (event) {
-            event.emit(data.data);
         }
     }
 
@@ -202,9 +214,10 @@ export class Joueur {
      * Invoked automatically to handle the 'over' events
      * @param {Object} data the game over data
      */
-    private autoHandleOver(): void {
+    private autoHandleOver(data: any): void {
         this.gamelog.streaming = false;
         this.playerID = undefined;
+        this.events.over.emit(data);
         this.socket.close();
     }
 
@@ -215,6 +228,7 @@ export class Joueur {
     private autoHandleStart(data: any): void {
         this.playerID = data.playerID;
         this.started = true;
+        this.events.start.emit(data.playerID);
     }
 
     /**
@@ -225,6 +239,7 @@ export class Joueur {
         this.gamelog.gameName = data.gameName;
         this.gamelog.gameSession = data.gameSession;
         this.gamelog.constants = data.constants;
+        this.events.lobbied.emit(data);
     }
 
     /**
@@ -234,6 +249,7 @@ export class Joueur {
      */
     private autoHandleDelta(data: any): void {
         this.gamelog.deltas.push(data);
+        this.events.delta.emit(data);
     }
 
     /**
@@ -258,6 +274,23 @@ export class Joueur {
     }
 
     /**
+     * Invoked automatically to handle the 'fatal' events
+     * @param {Object} data the fatal information as to what happened
+     */
+    private autoHandleFatal(data: any): void {
+        if (data.timedOut) {
+            this.timedOut = true;
+            return; // our human player's fault, so this error is expected
+                    // and not really an error. Immediately following this we
+                    // should get a delta saying they lost to display
+        }
+
+        const err = new Error(`An unexpected fatal error occurred on the game server: '${data.message}'`);
+        this.events.error.emit(err);
+        throw err;
+    }
+
+    /**
      * Sends some event to the game server game server connected to
      * @param {string} eventName the name of the event, should be something game server expects
      * @param {*} [data] the additional data about the event
@@ -277,20 +310,5 @@ export class Joueur {
         }
 
         this.socket.send(str);
-    }
-
-    /**
-     * Invoked automatically to handle the 'fatal' events
-     * @param {Object} data the fatal information as to what happened
-     */
-    private autoHandleFatal(data: any): void {
-        if (data.timedOut) {
-            this.timedOut = true;
-            return; // our human player's fault, so this error is expected
-                    // and not really an error. Immediately following this we
-                    // should get a delta saying they lost to display
-        }
-
-        throw new Error(`An unexpected fatal error occurred on the game server: '${data.message}'`);
     }
 }

@@ -28,7 +28,5 @@ export function createSettings<T extends {}>(namespace: string, settings: T): Re
         }
     }
 
-    BaseSetting.newIndex = 0; // reset to zero
-
     return Object.freeze(settings);
 }

@@ -12,12 +12,12 @@ import { WeatherStation } from "./weather-station";
 
 /** All the non Game classes in this game */
 export const GameObjectClasses: Readonly<IBaseGameObjectClasses> = Object.freeze({
-    PoliceDepartment,
-    Player,
-    Warehouse,
-    Forecast,
-    Building,
     GameObject,
-    FireDepartment,
+    PoliceDepartment,
     WeatherStation,
+    Player,
+    Forecast,
+    Warehouse,
+    FireDepartment,
+    Building,
 }) as any;

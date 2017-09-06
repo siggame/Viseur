@@ -43,6 +43,14 @@ export class DropDown<T> extends BaseInput<T> {
     }
 
     /**
+     * Gets the value of this BaseInput
+     * @returns {*} The value of the input, depends on subclass
+     */
+    public get value(): T {
+        return super.value;
+    }
+
+    /**
      * Set the options for this Drop Down. Previous options are deleted.
      * @param options - list of options (in order) for the drop down
      * @param defaultValue optional default value to select, defaults to the first item of options when not set

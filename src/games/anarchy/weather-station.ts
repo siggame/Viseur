@@ -162,11 +162,11 @@ export class WeatherStation extends Building {
      * Bribe the weathermen to intensity the next Forecast by 1 or -1
      * @param negative By default the intensity will be increased by 1, setting
      * this to true decreases the intensity by 1.
-     * @param callback The callback that eventually returns the return value
+     * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if the intensity was
      * changed, false otherwise.
      */
-    public intensify(negative: boolean, callback: (returned: boolean) => void): void {
+    public intensify(negative: boolean, callback?: (returned: boolean) => void): void {
         this.runOnServer("intensify", {negative}, callback);
     }
 
@@ -176,11 +176,13 @@ export class WeatherStation extends Building {
      * @param counterclockwise By default the direction will be rotated
      * clockwise. If you set this to true we will rotate the forecast
      * counterclockwise instead.
-     * @param callback The callback that eventually returns the return value
+     * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if the rotation worked,
      * false otherwise.
      */
-    public rotate(counterclockwise: boolean, callback: (returned: boolean) => void): void {
+    public rotate(counterclockwise: boolean, callback?: (returned: boolean) =>
+                  void,
+    ): void {
         this.runOnServer("rotate", {counterclockwise}, callback);
     }
 

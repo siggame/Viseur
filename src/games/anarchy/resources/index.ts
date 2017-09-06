@@ -1,6 +1,6 @@
 import { createResources, load } from "src/viseur/renderer";
 
-export const GameResources = createResources({
+export const GameResources = createResources("Anarchy", {
     // <<-- Creer-Merge: resources -->>
     tile: load("tile.jpg"),
 

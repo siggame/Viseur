@@ -45,7 +45,7 @@ export class BaseHumanPlayer {
         this.player = player;
 
         while (this.backOrders.length > 0) {
-            this.order.apply(this, this.backOrders.shift());
+            this.order.call(this, this.backOrders.shift());
         }
     }
 

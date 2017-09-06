@@ -2,7 +2,7 @@ import { Chance } from "chance";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { viseur } from "src/viseur";
-import { IRendererResources, Renderer } from "src/viseur/renderer";
+import { IRendererResources, IRendererSize, Renderer } from "src/viseur/renderer";
 import { CheckBoxSetting, ColorSetting, createSettings } from "src/viseur/settings";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
@@ -322,7 +322,7 @@ export class BaseGame extends StateObject {
      * @param state the initialize state of the game
      * @returns the {height, width} you for the game's size.
      */
-    protected getSize(state: IBaseGameState): {width: number, height: number} {
+    protected getSize(state: IBaseGameState): IRendererSize {
         // intended to be inherited and returned with useful numbers
         return {width: 10, height: 10};
     }
@@ -416,7 +416,7 @@ export class BaseGame extends StateObject {
         }
 
         const size = this.getSize(this.current || this.next);
-        this.renderer.setSize(size.width, size.height);
+        this.renderer.setSize(size);
         this.start(this.current || this.next);
         this.createBackground(this.current || this.next);
     }

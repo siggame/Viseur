@@ -7,6 +7,27 @@ import { clamp } from "src/utils";
 import { viseur } from "src/viseur";
 import "./renderer.scss";
 
+export interface IRendererSize {
+    /**  the width of the renderer */
+    width: number;
+
+    /** the height of the renderer */
+    height: number;
+
+    /** the top y offset for the grid */
+    topOffset?: number;
+
+    /** the left x offset for the grid */
+    leftOffset?: number;
+
+    /** the bottom y offset for the grid */
+    bottomOffset?: number;
+
+    /** the right x offset for the grid */
+    rightOffset?: number;
+
+}
+
 // Skips the hello message being printed to the console.
 // This should be the first instance of pixi being imported in viseur.
 PIXI.utils.skipHello();
@@ -115,7 +136,7 @@ export class Renderer extends BaseElement {
             forceFXAA: aa,
         });
 
-        this.setSize(1, 1);
+        this.setSize({width: 10, height: 10});
 
         // add the renderer view element to the DOM
         this.element
@@ -190,29 +211,16 @@ export class Renderer extends BaseElement {
      * Sets the size of the Renderer, not in pixels but some abstract size.
      * Basically the size of the map. So for example in chess it would be 8x8,
      * and the actual size in pixels will be calculated by the Renderer, regardless of screen size
-     * @param {number} width the width of the renderer
-     * @param {number} height the height of the renderer
-     * @param {number} [topOffset=0] the top y offset for the grid
-     * @param {number} [leftOffset=0] the left x offset for the grid
-     * @param {number} [bottomOffset=0] the bottom y offset for the grid
-     * @param {number} [rightOffset=0] the right x offset for the grid
+     * @param size the size, must contain a with and height, and can have optional offsets
      */
-    public setSize(
-        width: number,
-        height: number,
-        // offsets are in case you want game dimensions with a border around it while preserving correct numbers
-        topOffset: number = 0,
-        leftOffset: number = 0,
-        bottomOffset: number = 0,
-        rightOffset: number = 0,
-    ): void {
-        this.width = Math.abs(width || 1);
-        this.height = Math.abs(height || 1);
+    public setSize(size: IRendererSize): void {
+        this.width = Math.abs(size.width);
+        this.height = Math.abs(size.height);
 
-        this.topOffset = topOffset;
-        this.leftOffset = leftOffset;
-        this.bottomOffset = bottomOffset;
-        this.rightOffset = rightOffset;
+        this.topOffset = size.topOffset || 0;
+        this.leftOffset = size.leftOffset || 0;
+        this.bottomOffset = size.bottomOffset || 0;
+        this.rightOffset = size.rightOffset || 0;
 
         this.resize();
     }

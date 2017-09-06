@@ -1,6 +1,6 @@
 import { BasePane, IPaneStat } from "src/viseur/game";
 import { Game } from "./game";
-import { IBuildingState, IGameState, IPlayerState } from "./state-interfaces";
+import { IGameState, IPlayerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { clamp } from "src/utils";
@@ -61,11 +61,11 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         // <<-- Creer-Merge: game-stats -->>
         stats.push(
             {
-                get: (gameState) => gameState.currentForecast.intensity,
+                get: (gameState) => gameState.currentForecast ? gameState.currentForecast.intensity : "None",
                 icon: "fire",
             },
             {
-                get: (gameState) => gameState.currentForecast.direction,
+                get: (gameState) => gameState.currentForecast ? gameState.currentForecast.direction : "None",
                 icon: "cloud",
             },
         );

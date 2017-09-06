@@ -2,7 +2,9 @@
 // If you want to render it in the game do so here.
 import * as Color from "color";
 import { BaseGame, IDeltaReason } from "src/viseur/game";
+import { IRendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
+import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
@@ -34,6 +36,9 @@ export class Game extends BaseGame {
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
+
+    /** The human player playing this game */
+    public readonly humanPlayer: HumanPlayer;
 
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
@@ -85,7 +90,7 @@ export class Game extends BaseGame {
      * @param state the initialize state of the game
      * @returns the {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): {width: number, height: number} {
+    protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
             width: state.mapWidth,
