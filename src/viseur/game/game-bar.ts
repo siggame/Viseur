@@ -57,7 +57,8 @@ export class GameBar {
     constructor(parent: PIXI.Container, game: BaseGame, options: IGameBarOptions = {}) {
         options.height = options.height || 0.06667;
 
-        this.width = options.width || 0.9;
+        options.width = options.width || 0.9;
+        this.width = options.width;
         this.container.setParent(parent);
         this.game = game;
         this.max = options.max || 1;

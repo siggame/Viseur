@@ -272,12 +272,12 @@ export class Piece extends GameObject {
         const container = new PIXI.Container();
         container.setParent(this.container);
 
-        this.game.resources.piecesBottom.newSpriteAt(container, index, {
+        this.game.resources.piecesBottom.newSprite(container, index, {
             tint: this.owner.color.rgbNumber(),
             name: "back",
         });
 
-        this.game.resources.piecesTop.newSpriteAt(container, index, {
+        this.game.resources.piecesTop.newSprite(container, index, {
             tint: this.game.getPlayersColor(this.owner),
             name: "front",
         });

@@ -12,6 +12,7 @@ import { IGameState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 import * as Chess from "chess.js";
 import { IPoint } from "src/utils";
+import { RendererResource } from "src/viseur/renderer";
 import { Piece } from "./piece";
 import { IPieceState } from "./state-interfaces";
 // <<-- /Creer-Merge: imports -->>
@@ -258,7 +259,7 @@ export class Game extends BaseGame {
                     ? "White"
                     : "Black";
 
-                this.tileSprites[x][y] = this.resources[`tile${color}`].newSprite(tileContainer, {
+                this.tileSprites[x][y] = (this.resources[`tile${color}`] as RendererResource).newSprite(tileContainer, {
                     onClick: () => this.tileClicked(x, y),
                     tint: this.randomColor,
                 });

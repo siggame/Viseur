@@ -11,6 +11,7 @@ import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { ease, renderSpriteBetween, unCapitalizeFirstLetter, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
+import { RendererResource } from "src/viseur/renderer";
 import { Player } from "./player";
 
 const FIRE_FRAMES = 5;
@@ -121,9 +122,11 @@ export class Building extends GameObject {
         const base = unCapitalizeFirstLetter(state.gameObjectName);
 
         // the back sprite are neutral colors
-        this.buildingSpriteBack = this.game.resources[`${base}Back`].newSprite(this.aliveContainer);
+        this.buildingSpriteBack = (this.game.resources[`${base}Back`] as RendererResource)
+             .newSprite(this.aliveContainer);
         // and the front is a white map we will re-color to the team's color
-        this.buildingSpriteFront = this.game.resources[`${base}Front`].newSprite(this.aliveContainer);
+        this.buildingSpriteFront = (this.game.resources[`${base}Front`] as RendererResource)
+            .newSprite(this.aliveContainer);
 
         // when we die we need to look burnt up, so we want to initialize that sprite too
         this.deadSprite = this.game.resources.dead.newSprite(this.container);
@@ -137,15 +140,17 @@ export class Building extends GameObject {
         // so we want a sprite for each part of the sheet
         this.fireSprites = [];
         for (let i = 0; i < FIRE_FRAMES; i++) {
-            this.fireSprites.push(this.game.resources.fire.newSpriteAt(this.container, i));
+            this.fireSprites.push(this.game.resources.fire.newSprite(this.container, i));
         }
 
         // the headquarters has no unique sprite, but instead a graffiti marking to easily make it stand out
         if (state.isHeadquarters) {
             // we have two players with id "0" and "1", so we use that to quickly get their graffiti sprite
-            this.graffitiSprite = this.game.resources[`graffiti${state.owner.id}`].newSprite(this.aliveContainer, {
-                alpha: 0.9, // make it partially transparent because it looks nicer
-            });
+            this.graffitiSprite = (this.game.resources[`graffiti${state.owner.id}`] as RendererResource).newSprite(
+                this.aliveContainer, {
+                    alpha: 0.9, // make it partially transparent because it looks nicer
+                },
+            );
         }
 
         // when we are the target on an attack, we'll highlight ourself so it's clear we are under attack

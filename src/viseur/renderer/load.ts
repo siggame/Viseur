@@ -1,10 +1,16 @@
 // This is a simple function to be used in games
-import { IRendererResourcesOptions, RendererResource } from "./renderer-resource";
+import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
+import { RendererResource } from "./renderer-resource";
 import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";
 
 export interface IRendererResources {
-    [key: string]: RendererResource;
+    [key: string]: BaseRendererResource;
     blank: RendererResource;
+}
+
+export interface IResourceLoadOptions extends IBaseRendererResourceOptions {
+    /** The sheet data, if present this loads a sprite sheet */
+    sheet?: ISheetData;
 }
 
 /**
@@ -13,7 +19,7 @@ export interface IRendererResources {
  * @param options optional object of options about the texture,
  * @returns a renderer resource which is a PIXI.Sprite factory for that resource
  */
-export function load(texture: string, options?: IRendererResourcesOptions): RendererResource;
+export function load(texture: string, options?: IBaseRendererResourceOptions): RendererResource;
 
 /**
  * Loads a resource for a game given the name of the file and some options
@@ -22,9 +28,7 @@ export function load(texture: string, options?: IRendererResourcesOptions): Rend
  *                if a sheet is present the sheet version will be returned
  * @returns a renderer resource which is a PIXI.Sprite factory for that resource
  */
-export function load(texture: string, options: IRendererResourcesOptions & {
-    sheet: ISheetData;
-}): RendererSheetResource;
+export function load(texture: string, options?: IResourceLoadOptions): RendererSheetResource;
 
 /**
  * Loads a resource for a game given the name of the file and some options
@@ -33,15 +37,15 @@ export function load(texture: string, options: IRendererResourcesOptions & {
  *                if a sheet is present the sheet version will be returned
  * @returns a renderer resource which is a PIXI.Sprite factory for that resource
  */
-export function load(texture: string, options?: IRendererResourcesOptions & {
-    sheet: ISheetData;
-}): RendererResource | RendererSheetResource {
+export function load(texture: string, options?: IResourceLoadOptions,
+): RendererResource | RendererSheetResource {
     if (options && options.sheet) {
-        return new RendererSheetResource(texture, options.sheet, options);
+        const sheet = options.sheet;
+        delete options.sheet;
+        return new RendererSheetResource(texture, sheet, options);
     }
-    else {
-        return new RendererResource(texture, options);
-    }
+
+    return new RendererResource(texture, options);
 }
 
 /**

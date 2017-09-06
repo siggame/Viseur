@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { IPixiSpriteOptions, setPixiOptions } from "src/utils";
-import { IRendererResourcesOptions, RendererResource } from "./renderer-resource";
+import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
 
 /** optional details about the sprite sheet */
 export interface ISheetData {
@@ -14,14 +14,15 @@ export interface ISheetData {
     height: number;
 }
 
-export class RendererSheetResource extends RendererResource {
+/** A resource that is a sprite sheet */
+export class RendererSheetResource extends BaseRendererResource {
     /** If present this resource is a sprite sheet */
     private readonly sheet: ISheetData;
 
     /** The mapped textures for each image in the sheet, if this resource is a sheet */
     private readonly sheetTextures: PIXI.Texture[] = [];
 
-    constructor(path: string, sheet: ISheetData, options?: IRendererResourcesOptions) {
+    constructor(path: string, sheet: ISheetData, options?: IBaseRendererResourceOptions) {
         super(path, options);
         this.sheet = sheet;
     }
@@ -33,7 +34,7 @@ export class RendererSheetResource extends RendererResource {
      * @param options the optional options to set at init
      * @returns {PIXI.Sprite} a sprite with the given texture key, added to the parentContainer
      */
-    public newSpriteAt(parentContainer: PIXI.Container, index: number, options?: IPixiSpriteOptions): PIXI.Sprite {
+    public newSprite(parentContainer: PIXI.Container, index: number, options?: IPixiSpriteOptions): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.sheetTextures[index]);
         sprite.setParent(parentContainer);
 
