@@ -50,8 +50,8 @@ export class SettingsTab extends Tab {
      * @param {$} parent the jQuery parent element
      */
     private manageSettings(baseSettings: IBaseSettings, parent: JQuery<HTMLElement>): void {
-        const settings: BaseSetting[] = [];
-        const playerColorSettings = new Set<BaseSetting>();
+        const settings: Array<BaseSetting<any>> = [];
+        const playerColorSettings = new Set<BaseSetting<any>>();
         for (const key of Object.keys(baseSettings)) {
             let subSettings = baseSettings[key];
             if (!Array.isArray(subSettings)) {
@@ -100,7 +100,7 @@ export class SettingsTab extends Tab {
      * Will be a game name or "viseur" for Viseur core settings
      * @param {Array} settings the list of settings from a settings.js file
      */
-    private resetToDefaults(namespace: string, settings: BaseSetting[]): void {
+    private resetToDefaults(namespace: string, settings: Array<BaseSetting<any>>): void {
         for (const setting of settings) {
             setting.set(setting.default);
         }

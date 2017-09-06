@@ -93,7 +93,7 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
                 title: "number of buildings alive",
                 icon: "building-o",
                 get: (player) => {
-                    return player.buildings.reduce((count: number, building: IBuildingState) => {
+                    return player.buildings.reduce((count, building) => {
                         // add one if the building is alive, otherwise 0
                         return count + clamp(building.health, 0, 1);
                     }, 0);

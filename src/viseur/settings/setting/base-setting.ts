@@ -3,9 +3,9 @@ import { BaseInput, IBaseInputArgs } from "src/core/ui/inputs/base-input";
 import * as store from "store";
 
 /** Additional arguments required for the base setting */
-export interface IBaseSettingArgs {
+export interface IBaseSettingArgs<T> {
     /** The default value (synonymous with the value key) */
-    default: any;
+    default: T;
 }
 
 /**
@@ -13,12 +13,12 @@ export interface IBaseSettingArgs {
  * This is basically a wrapper around the input's interface args so that
  * we can re-use them to make settings files with compile time type checking
  */
-export abstract class BaseSetting {
+export abstract class BaseSetting<T> {
     /** The index of the next new setting */
     public static newIndex: number = 0;
 
     /** Event emitted when this setting's value changes */
-    public readonly changed = new Event<any>();
+    public readonly changed = new Event<T>();
 
     /** The index this setting is when displaying in order, starting at 0 */
     public readonly index: number;
@@ -28,13 +28,13 @@ export abstract class BaseSetting {
                                         // generator function we will change this
 
     /** The default value of this setting */
-    public readonly default: any;
+    public readonly default: T;
 
     protected constructor(
         /** Arguments used for this setting to create a base input */
-        private readonly args: IBaseInputArgs & IBaseSettingArgs,
+        private readonly args: IBaseSettingArgs<T> & IBaseInputArgs,
         /** The class constructor for this setting's input */
-        private readonly inputClass: typeof BaseInput,
+        private readonly inputClass: { new(args: any): BaseInput<T> },
     ) {
         this.namespace = "";
         this.index = BaseSetting.newIndex;
@@ -78,16 +78,10 @@ export abstract class BaseSetting {
     /**
      * Get the setting at key
      * both are basically the id so that multiple games (namespaces) can have the same settings key.
-     * @param {*} [defaultValue=null] the default value, if there is not setting
-     *                                for namespace.key then it is set to def, and returned
      * @returns {*} whatever was stored at namespace.key
      */
-    public get(defaultValue: any = null): any {
+    public get(): T {
         const id = this.getID();
-        if (store.get(id) === undefined) {
-            this.set(defaultValue);
-            return defaultValue;
-        }
 
         return store.get(id);
     }
@@ -97,7 +91,7 @@ export abstract class BaseSetting {
      * multiple games (namespaces) can have the same settings key.
      * @param {*} value - the new value to store for namespace.key
      */
-    public set(value: any): void {
+    public set(value: T): void {
         const id = this.getID();
 
         if (value === undefined) {
@@ -106,7 +100,7 @@ export abstract class BaseSetting {
 
         store.set(id, value);
 
-        this.changed.emit(value as any);
+        this.changed.emit(value);
     }
 
     /**

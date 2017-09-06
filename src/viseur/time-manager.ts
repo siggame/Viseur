@@ -46,7 +46,7 @@ export class TimeManager {
 
     /** Creates the time manager  */
     constructor() {
-        this.timer = new Timer(viseur.settings.playbackSpeed.get(1000));
+        this.timer = new Timer(viseur.settings.playbackSpeed.get());
 
         this.timer.events.finished.on(() => {
             this.ticked();

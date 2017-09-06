@@ -22,7 +22,7 @@ export interface IGameBarOptions {
     backgroundColor?: Color;
 
     /** The setting to subscribe to to show/hide */
-    visibilitySetting?: BaseSetting;
+    visibilitySetting?: BaseSetting<boolean>;
 
     /** Invert the setting value subscribed to */
     invertSetting?: boolean;

@@ -50,12 +50,13 @@ export class RendererSheetResource extends RendererResource {
     /**
      * Invoked when this texture is loaded
      * @param resources all the resources loaded, to pull our texture out of
+     * @returns true if it loaded, false otherwise
      */
-    protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): void {
+    protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
         const loaded = super.onTextureLoaded(resources);
 
         if (!loaded) {
-            return;
+            return false;
         }
 
         const sheet = this.sheet;
@@ -89,5 +90,7 @@ export class RendererSheetResource extends RendererResource {
                 new PIXI.Rectangle(x * width, y * height, width, height),
             ));
         }
+
+        return true;
     }
 }

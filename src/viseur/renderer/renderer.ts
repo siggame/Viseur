@@ -128,7 +128,7 @@ export class Renderer extends BaseElement {
             || "Sans-Serif";
 
         // check only now for anti-aliasing, because them changing it requires a restart to see it inverted
-        const aa = viseur.settings.antiAliasing.get(true);
+        const aa = viseur.settings.antiAliasing.get();
 
                                             // will be resized, just placeholder dimensions
         this.pixiApp = new PIXI.Application(this.pxExternalWidth, this.pxExternalHeight, {

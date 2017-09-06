@@ -11,6 +11,8 @@ export interface ITournamentPlayData {
     game: string;
     /** The name of the player */
     playerName: string;
+    /** The session to play in */
+    session: string;
 }
 
 /** A WS connection to a tournament server */
@@ -148,6 +150,6 @@ export class TournamentClient {
     private onPlay(data: ITournamentPlayData): void {
         this.events.playing.emit(data);
 
-        viseur.playAsHuman(data.server, data.port, data.game, data.playerName);
+        viseur.playAsHuman(data.game, data.server, data.port, data.session, data.playerName);
     }
 }

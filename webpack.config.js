@@ -42,7 +42,9 @@ module.exports = {
                     {
                         loader: "ts-loader",
                         options: {
-                            transpileOnly: true // IMPORTANT! use transpileOnly mode to speed-up compilation
+                            //transpileOnly: true, // IMPORTANT! use transpileOnly mode to speed-up compilation
+                            logLevel: "error",
+                            visualStudioErrorFormat: true,
                         }
                     }
                 ]
@@ -127,6 +129,20 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: "Viseur",
         }),
+
+       function() {
+            this.plugin("done", function(stats) {
+                //Since webpack dependent Stats.js
+                //Just see the API of Stats.js
+                //You can do anything with the stats output
+                if (stats && stats.hasErrors()) {
+                    stats.toJson().errors.forEach((err) => {
+                        console.error(err);
+                    });
+                    //process.exit(1);
+                }
+            });
+        },
 
         // provides a great speedup in both module use and development debugging
         // https://webpack.js.org/plugins/commons-chunk-plugin/

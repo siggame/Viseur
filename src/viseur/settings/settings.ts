@@ -3,7 +3,7 @@ import { BaseSetting } from "./setting";
 /** The base settings interface for viseur/game */
 export interface IBaseSettings {
     /** Name lookup for a setting */
-    [settingName: string]: BaseSetting | BaseSetting[];
+    [settingName: string]: BaseSetting<any> | Array<BaseSetting<any>>;
 }
 
 /**
