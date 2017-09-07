@@ -75,7 +75,7 @@ export class Game extends BaseGame {
     public selectedPiece?: Piece;
 
     /** The valid moves for the current most game state */
-    public validMoves: Chess.Move[];
+    public validMoves: Chess.IMove[];
 
     /** The container for pieces on the board */
     public readonly piecesContainer = new PIXI.Container();
@@ -380,7 +380,7 @@ export class Game extends BaseGame {
 
             this.chess.load((this.current || this.next).fen);
 
-            this.validMoves = this.chess.moves({ verbose: true }) as Chess.Move[];
+            this.validMoves = this.chess.moves({ verbose: true }) as Chess.IMove[];
         }
     }
 

@@ -8,12 +8,6 @@
     "type": "git",
     "url": "git://github.com/siggame/Viseur"
   },
-  "scripts": {
-    "dev": "webpack-dev-server --progress --colors --host 0.0.0.0 --port 8080 --content-base built/",
-    "build": "webpack --progress --colors",
-    "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "fix": "tslint -c tslint.json 'src/**/*.ts' --fix --force"
-  },
   "dependencies": {
     "@types/chance": "^0.7.35",
     "@types/color": "^2.0.0",
@@ -36,7 +30,6 @@
     "babel-loader": "^6.3.2",
     "babel-preset-es2015-native-modules": "^6.9.4",
     "brfs": "^1.4.3 ",
-    "cadre-js-extensions": "siggame/Cadre-js-extensions",
     "chance": "^1.0.10",
     "chess.js": "0.10.2",
     "color": "^2.0.0",
@@ -77,9 +70,15 @@
     "tslint-eslint-rules": "^4.1.1",
     "webpack-dev-server": "^2.4.5"
   },
+  "scripts": {
+    "dev": "webpack-dev-server --progress --colors --host 0.0.0.0 --port 8080 --content-base built/",
+    "build": "webpack --progress --colors",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "fix": "tslint -c tslint.json 'src/**/*.ts' --fix --force"
+  },
   "config": {
     "ghooks": {
-      "pre-commit": "tslint -c tslint.json 'src/**/*.ts'",
+      "pre-commit": "npm run lint",
       "post-merge": "npm install",
       "post-rewrite": "npm install"
     }
