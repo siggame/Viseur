@@ -16,7 +16,7 @@ export class Timer {
     private lastTime: number = 0;
 
     /** The last tick callback */
-    private timeout?: NodeJS.Timer;
+    private timeout?: number;
 
     /** The speed at which we tick (in ms) */
     private speed: number = 1;
@@ -86,7 +86,7 @@ export class Timer {
         this.timeout = setTimeout(() => {
             this.pause();
             this.events.finished.emit(undefined);
-        }, (1 - this.getProgress()) * this.speed);
+        }, (1 - this.getProgress()) * this.speed) as any;
 
         return true;
     }
