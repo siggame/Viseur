@@ -83,10 +83,10 @@ export class Timer {
         }
 
         this.lastTime = new Date().getTime();
-        this.timeout = setTimeout(() => {
+        this.timeout = window.setTimeout(() => {
             this.pause();
             this.events.finished.emit(undefined);
-        }, (1 - this.getProgress()) * this.speed) as any;
+        }, (1 - this.getProgress()) * this.speed);
 
         return true;
     }

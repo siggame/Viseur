@@ -24,7 +24,7 @@ export function createSettings<T extends {}>(namespace: string, settings: T): Re
 
         for (const setting of someSettings) {
             setting.namespace = namespace;
-            setting.get(setting.args.default);
+            setting.set(setting.args.default);
         }
     }
 
