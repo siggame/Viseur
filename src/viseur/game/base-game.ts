@@ -177,8 +177,8 @@ export class BaseGame extends StateObject {
      * @param {DeltaReason} nextReason the reason for the next delta
      */
     public update(
-        current?: IState,
-        next?: IState,
+        current?: IBaseGameState,
+        next?: IBaseGameState,
         reason?: IDeltaReason,
         nextReason?: IDeltaReason,
     ): void {
@@ -218,12 +218,15 @@ export class BaseGame extends StateObject {
         // now they are all updated, so tell them that they are all updated
         for (const id of Object.keys(this.gameObjects)) {
             const gameObject = this.gameObjects[id];
-            gameObject.stateUpdated(
-                gameObject.current || gameObject.next,
-                gameObject.next || gameObject.current,
-                this.currentReason,
-                this.nextReason,
-            );
+
+            if ((current && current.gameObjects.hasOwnProperty(id)) || (next && next.gameObjects.hasOwnProperty(id))) {
+                gameObject.stateUpdated(
+                    gameObject.current || gameObject.next,
+                    gameObject.next || gameObject.current,
+                    this.currentReason,
+                    this.nextReason,
+                );
+            }
 
             if (newGameObjects.has(gameObject)) {
                 gameObject.recolor();

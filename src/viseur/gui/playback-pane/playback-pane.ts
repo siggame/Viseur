@@ -281,7 +281,9 @@ export class PlaybackPane extends BaseElement {
      */
     private timeUpdated(index: number, dt: number): void {
         this.playbackTimeCurrentElement.html(String(index));
-        this.playbackSlider.value = index + dt;
+        if (this.playbackSlider.value !== index + dt) {
+            this.playbackSlider.value = index + dt;
+        }
 
         if (this.isEnabled()) {
             if (index === 0 && dt === 0) {

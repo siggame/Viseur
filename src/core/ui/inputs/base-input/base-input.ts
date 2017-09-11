@@ -71,7 +71,13 @@ export class BaseInput<T> extends DisableableElement {
             this.events.changed.emit(newValue);
         }
 
-        if (this.getElementValue() !== this.actualValue) {
+        const elemValue = this.getElementValue();
+        let checkValue: any = this.actualValue;
+        if (typeof(elemValue) === "string") {
+            checkValue = String(checkValue);
+        }
+
+        if (elemValue !== checkValue) {
             this.updateElementValue();
         }
     }

@@ -102,3 +102,15 @@ export interface IBaseGameSettings extends IBaseSettings {
     /** An array of settings for each player's custom color */
     playerColors: ColorSetting[];
 }
+
+/** Represents an order that the game server sends game clients */
+export interface IOrder {
+    /** the name of the order (function name on the player class) */
+    name: string;
+
+    /** args to apply to that function name */
+    args: any[];
+
+    /** callback that will send back the returned value as the first parameter */
+    callback: (returned: any) => void;
+}

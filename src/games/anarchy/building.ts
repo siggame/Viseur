@@ -131,7 +131,7 @@ export class Building extends GameObject {
         // when we die we need to look burnt up, so we want to initialize that sprite too
         this.deadSprite = this.game.resources.dead.newSprite(this.container);
 
-        this.healthBar = new GameBar(this.container, this.game, {
+        this.healthBar = new GameBar(this.container, {
             max: state.health,
             visibilitySetting: this.game.settings.displayHealthBars,
         });

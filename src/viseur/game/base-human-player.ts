@@ -1,16 +1,6 @@
 import { BaseGame } from "./base-game";
 import { BaseGameObject } from "./base-game-object";
-
-export interface IOrder {
-    /** the name of the order (function name on the player class) */
-    name: string;
-
-    /** args to apply to that function name */
-    args: any[];
-
-    /** callback that will send back the returned value as the first parameter */
-    callback: (returned: any) => void;
-}
+import { IOrder } from "./interfaces";
 
 /** the base class all HumanPlayers inherit from in each game */
 export class BaseHumanPlayer {

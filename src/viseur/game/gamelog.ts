@@ -48,6 +48,9 @@ export interface IDeltaReason {
     /** data about the event */
     data?: any;
 
+    /** If this was the result of an order, this is the order's name */
+    order?: string;
+
     /** Present when `ran`. */
     run: {
         /** The game object invoking this run */

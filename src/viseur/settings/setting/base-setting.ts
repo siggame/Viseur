@@ -83,7 +83,7 @@ export abstract class BaseSetting<T> {
     public get(): T {
         const id = this.getID();
 
-        return store.get(id);
+        return this.transformValue(store.get(id));
     }
 
     /**
@@ -98,9 +98,20 @@ export abstract class BaseSetting<T> {
             throw new Error(`undefined is not a valid value for ${id}`);
         }
 
+        value = this.transformValue(value);
+
         store.set(id, value);
 
         this.changed.emit(value);
+    }
+
+    /**
+     * Optional override to transform the value
+     * @param value the value to transform
+     * @returns the value transformed
+     */
+    protected transformValue(value: T): T {
+        return value;
     }
 
     /**

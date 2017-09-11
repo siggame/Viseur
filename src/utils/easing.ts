@@ -1,7 +1,8 @@
 import * as eases from "eases";
 
 /** Useful map to look up valid easing names for the ease function */
-export type ValidEases =
+export type ValidEases = ValidEaseNames | ((t: number) => number);
+export type ValidEaseNames =
     "backInOut" |
     "backIn" |
     "backOut" |
@@ -34,7 +35,7 @@ export type ValidEases =
     "sineIn" |
     "sineOut";
 
-export function getEasingByName(name: ValidEases): (num: number) => number {
+export function getEasingByName(name: ValidEaseNames): (num: number) => number {
     return eases[name];
 }
 
@@ -44,7 +45,7 @@ export function getEasingByName(name: ValidEases): (num: number) => number {
  * @param easing the name of the easing function to use
  * @returns t eased via the easing function
  */
-export function ease(t: number, easing: ValidEases): number;
+export function ease(t: number, easing?: ValidEases): number;
 
 /**
  * Eases a set of numbers, first and second, along some time t, with an easing function
@@ -54,20 +55,27 @@ export function ease(t: number, easing: ValidEases): number;
  * @param easing the name of the easing function to use, or your own custom easing functions
  * @returns a number (probably) between [first, second] that has been eased to time t
  */
-export function ease(first: number, second: number, t: number, easing: ValidEases | ((t: number) => number)): number;
+export function ease(
+    first: number,
+    second: number,
+    t: number,
+    easing?: ValidEases,
+): number;
 
 /**
  * Ease implementation
  */
 export function ease(
     first: number,
-    second: number | ValidEases,
+    second?: number | ValidEases,
     t?: number,
-    easing?: ValidEases | ((t: number) => number),
+    easing?: ValidEases,
 ): number {
-    if (typeof(second) === "string" && arguments.length === 2) {
+    if (arguments.length <= 2) {
         // two arguments, so this is a t easing
-        easing = second;
+        easing = typeof(second) === "number"
+            ? undefined
+            : second;
         t = first;
         first = 0;
         second = 1;
@@ -75,7 +83,7 @@ export function ease(
     second = Number(second);
     t = Number(t);
 
-    easing = easing || "backIn";
+    easing = easing || "cubicInOut";
 
     if (typeof(easing) === "string") {
         // we need to look up the easing function by name
@@ -84,7 +92,9 @@ export function ease(
 
     t = easing(t);
 
-    return first * (1 - t) + second * t;
+    return arguments.length <= 2
+        ? t
+        : first * (1 - t) + second * t;
 }
 
 /**

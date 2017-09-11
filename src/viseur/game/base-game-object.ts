@@ -52,6 +52,9 @@ export class BaseGameObject extends StateObject {
         if (this.shouldRender) {
             // initialize the container that will be rendered!
             this.container = new PIXI.Container();
+            // add containers to the game layer by default
+            // sub classes can move it if they please
+            this.container.setParent(this.game.layers.game);
 
             // else make the container work for clicking
             this.container.interactive = true;

@@ -1,10 +1,10 @@
-import { INumberInputArgs, NumberInput } from "src/core/ui/inputs/number";
+import { INumberInputArgs, Slider } from "src/core/ui/inputs";
 import { BaseSetting, IBaseSettingArgs } from "./base-setting";
 
-/** Represents a setting that is a number */
-export class NumberSetting extends BaseSetting<number> {
+/** Represents a setting that is a number controlled via a slider */
+export class SliderSetting extends BaseSetting<number> {
     constructor(args: INumberInputArgs & IBaseSettingArgs<number>) {
-        super(args, NumberInput);
+        super(args, Slider);
     }
 
     /**

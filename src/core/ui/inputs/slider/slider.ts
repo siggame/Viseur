@@ -11,6 +11,11 @@ export class Slider extends NumberInput {
             type: "range",
             step: "any",
         }, args));
+
+        // this is goody but it re-sets the value
+        // when done in the base constructor above the slider resets when the
+        // step value is changed, so we need to reset it after those are set
+        this.value = this.value;
     }
 
     /**

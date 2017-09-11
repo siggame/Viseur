@@ -15,7 +15,7 @@ export interface IPixiSpriteOptions {
     rotation?: number;
 
     /** The position of the sprite */
-    position?: IPoint;
+    position?: number | IPoint;
 
     /** The skew of the sprite */
     skew?: IPoint;
@@ -40,6 +40,12 @@ export interface IPixiSpriteOptions {
 
     /** if set toggles visibility */
     visible?: boolean;
+
+    /** The anchor for this sprite */
+    anchor?: number | IPoint;
+
+    /** The scale, multiplied byt he current scale instead of static */
+    relativeScale?: number | IPoint;
 }
 
 /**
@@ -155,6 +161,33 @@ export function setPixiOptions(sprite: PIXI.Sprite, options: IPixiSpriteOptions)
 
     if (options.visible !== undefined) {
         sprite.visible = options.visible;
+    }
+
+    if (options.relativeScale) {
+        if (typeof(options.relativeScale) === "number") {
+            x = options.relativeScale;
+            y = options.relativeScale;
+        }
+        else {
+            x = options.relativeScale.x;
+            y = options.relativeScale.y;
+        }
+
+        sprite.scale.x *= x;
+        sprite.scale.y *= y;
+    }
+
+    if (options.anchor) {
+        if (typeof(options.anchor) === "number") {
+            x = options.anchor;
+            y = options.anchor;
+        }
+        else {
+            x = options.anchor.x;
+            y = options.anchor.y;
+        }
+
+        sprite.anchor.set(x, y);
     }
 }
 

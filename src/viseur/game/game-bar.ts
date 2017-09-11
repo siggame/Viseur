@@ -1,8 +1,7 @@
-import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { clamp, ColorTint, getTintFromColor } from "src/utils";
+import { viseur } from "src/viseur";
 import { BaseSetting } from "src/viseur/settings";
-import { BaseGame } from "./base-game";
 
 /** The optional args for a game bar */
 export interface IGameBarOptions {
@@ -16,10 +15,10 @@ export interface IGameBarOptions {
     max?: number;
 
     /** The foreground color of the bar */
-    foregroundColor?: Color;
+    foregroundColor?: ColorTint;
 
     /** The background color of the bar */
-    backgroundColor?: Color;
+    backgroundColor?: ColorTint;
 
     /** The setting to subscribe to to show/hide */
     visibilitySetting?: BaseSetting<boolean>;
@@ -32,9 +31,6 @@ export interface IGameBarOptions {
 export class GameBar {
     /** The root container for all elements of this bar */
     private readonly container = new PIXI.Container();
-
-    /** The game reference */
-    private readonly game: BaseGame;
 
     /** The background sprite */
     private readonly foreground: PIXI.Sprite;
@@ -51,20 +47,18 @@ export class GameBar {
     /**
      * Creates a bar to represent some game number
      * @param parent the parent pixi object
-     * @param game the game reference this bar is in
      * @param options options to initialize the bar
      */
-    constructor(parent: PIXI.Container, game: BaseGame, options: IGameBarOptions = {}) {
+    constructor(parent: PIXI.Container, options: IGameBarOptions = {}) {
         options.height = options.height || 0.06667;
 
         options.width = options.width || 0.9;
         this.width = options.width;
         this.container.setParent(parent);
-        this.game = game;
         this.max = options.max || 1;
 
-        this.background = this.game.resources.blank.newSprite(this.container, options);
-        this.foreground = this.game.resources.blank.newSprite(this.container, options);
+        this.background = viseur.game.resources.blank.newSprite(this.container, options);
+        this.foreground = viseur.game.resources.blank.newSprite(this.container, options);
 
         this.recolor(options.foregroundColor || 0x044F444, options.backgroundColor || 0x00000);
 

@@ -24,7 +24,10 @@ export function createSettings<T extends {}>(namespace: string, settings: T): Re
 
         for (const setting of someSettings) {
             setting.namespace = namespace;
-            setting.set(setting.args.default);
+            if (setting.get() === undefined) {
+                // it's never been set, so set a default value now
+                setting.set(setting.args.default);
+            }
         }
     }
 
