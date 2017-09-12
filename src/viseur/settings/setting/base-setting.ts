@@ -23,12 +23,11 @@ export abstract class BaseSetting<T> {
     /** The index this setting is when displaying in order, starting at 0 */
     public readonly index: number;
 
-    /** The namespace this setting is a part of */
-    public readonly namespace: string; // Note, although this is private in the settings
-                                        // generator function we will change this
-
     /** The default value of this setting */
     public readonly default: T;
+
+    /** The namespace this setting is a part of */
+    private namespace: string; // Note, although this is private in the settings
 
     protected constructor(
         /** Arguments used for this setting to create a base input */
@@ -41,6 +40,20 @@ export abstract class BaseSetting<T> {
         this.default = args.default;
 
         BaseSetting.newIndex += 1;
+    }
+
+    /**
+     * Sets the namespace for this setting (after initialization)
+     * @param namespace the new namespace to set us to
+     */
+    public setNamespace(namespace: string): void {
+        this.namespace = namespace;
+        const id = this.getID();
+
+        if (store.get(id) === undefined) {
+            // we've never been set! Use our default value
+            this.set(this.default);
+        }
     }
 
     /**

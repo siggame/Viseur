@@ -90,17 +90,15 @@ export class SettingsTab extends Tab {
             .addClass("reset-to-defaults")
             .html("Reset to Defaults")
             .on("click", () => {
-                this.resetToDefaults(settings[0].namespace, settings);
+                this.resetToDefaults(settings);
             });
     }
 
     /**
      * Resets a list of settings to the default values
-     * @param {string} namespace the namespace for the settings to init.
-     * Will be a game name or "viseur" for Viseur core settings
      * @param {Array} settings the list of settings from a settings.js file
      */
-    private resetToDefaults(namespace: string, settings: Array<BaseSetting<any>>): void {
+    private resetToDefaults(settings: Array<BaseSetting<any>>): void {
         for (const setting of settings) {
             setting.set(setting.default);
         }

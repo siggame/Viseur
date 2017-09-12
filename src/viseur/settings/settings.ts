@@ -22,12 +22,9 @@ export function createSettings<T extends {}>(namespace: string, settings: T): Re
             someSettings = obj;
         }
 
-        for (const setting of someSettings) {
-            setting.namespace = namespace;
-            if (setting.get() === undefined) {
-                // it's never been set, so set a default value now
-                setting.set(setting.args.default);
-            }
+        for (const s of someSettings) {
+            const setting: BaseSetting<any> = s;
+            setting.setNamespace(namespace);
         }
     }
 
