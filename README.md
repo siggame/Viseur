@@ -33,7 +33,7 @@ Before building, you must have [Node/NPM](https://nodejs.org/en/) installed. Tha
 1. Install Node.js: download and install [Node.js](https://nodejs.org/en/). Node comes with NPM (Node Package Manager) so that covers all the software you need to install normally, everything else from this point on is done via Node stuff.
 2. Clone this repo using git: In whatever directory you want to work out of do `git clone https://github.com/siggame/Viseur.git`
 3. Install Viseur dependencies: navigate to the `Viseur` directory you just cloned and then run `npm install`. This reads the package.json file and downloads all the modules it requires. If that file is ever changed, just re-run `npm install`.
-4. Statup the development server using `npm run dev`
+4. Statup the development server using `npm start`
 5. In browser, go to `http://localhost:8080`.
 
 ### Committing
@@ -47,7 +47,7 @@ Before building, you must have [Node/NPM](https://nodejs.org/en/) installed. Tha
 
 The travis file is setup to automatically build and deploy the visualizer assets to the `gh-docs` branch so they can be served to http://vis.siggame.io/. _Generally_ this is the only way you should
 
-Never deploy Viseur using `npm run dev`, as that starts up a webpack-dev-server, which listens for file changes and rebuilds webpack.
+Never deploy Viseur using `npm start`, as that starts up a webpack-dev-server, which listens for file changes and rebuilds webpack.
 
 Instead, the whole point of webpack is to build all our sources into a few files so browsers do not need to make >100 HTTP Requests for all our files.
 

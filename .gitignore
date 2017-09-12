@@ -45,15 +45,5 @@ node_modules
 # npm package lock
 package-lock.json
 
-
-## REMOVE THESE TO DEPLOY
-
 # webpack bundle
-bundle/
-
-# web fonts used during build
-*.eot
-*.woff
-*.woff2
-*.svg
-*.ttf
+built/
