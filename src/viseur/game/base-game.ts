@@ -3,7 +3,7 @@ import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { viseur } from "src/viseur";
 import { IRendererResources, IRendererSize, Renderer } from "src/viseur/renderer";
-import { CheckBoxSetting, ColorSetting, createSettings } from "src/viseur/settings";
+import * as Settings from "src/viseur/settings";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
@@ -346,8 +346,16 @@ export class BaseGame extends StateObject {
      * @returns the game's settings extended with things!
      */
     protected createSettings<T extends {}>(settings: T): Readonly<T & IBaseGameSettings> {
+        // Because other game's settings may have changed the BaseSetting.index, we need to reset it here
+        // So, find the greatest index of the settings we were passed, then add 1 to it because that is the next
+        //     new index to use below when we add color settings
+        Settings.BaseSetting.newIndex = Object.keys(settings).reduce(
+            (max, key) => Math.max(max, (settings as any)[key].index),
+            -1,
+        ) + 1;
+
         const combined: any = Object.assign({
-            customPlayerColors: new CheckBoxSetting({
+            customPlayerColors: new Settings.CheckBoxSetting({
                 id: "custom-player-colors",
                 label: "Custom Player Colors",
                 hint: "Use your custom player colors defined below.",
@@ -357,7 +365,7 @@ export class BaseGame extends StateObject {
         } as IBaseGameSettings, settings);
 
         for (let i = 0; i < this.numberOfPlayers; i++) { // iterate in reverse order
-            combined.playerColors[i] = new ColorSetting({
+            combined.playerColors[i] = new Settings.ColorSetting({
                 id: `player-color-${i}`,
                 label: "Player " + i + " Color",
                 hint: "Overrides the color for Player " + i,
@@ -365,7 +373,7 @@ export class BaseGame extends StateObject {
             });
         }
 
-        return createSettings(this.name, combined);
+        return Settings.createSettings(this.name, combined);
     }
 
     /**
