@@ -7,7 +7,7 @@
     "url": "git://github.com/siggame/Viseur"
   },
   "scripts": {
-    "start": "simple-server ./ 8080"
+    "start": "simple-server ./ 8080",
     "visualizer": "webpack-dev-server --progress --colors --host 0.0.0.0",
     "bundle": "webpack ./main.js",
     "lint": "eslint --cache ./",
