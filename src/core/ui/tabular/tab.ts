@@ -1,5 +1,5 @@
-import { Event, events } from "src/core/event";
 import partial from "src/core/partial";
+import { Event, events } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tabular } from "./tabular";
 

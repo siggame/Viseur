@@ -1,7 +1,7 @@
-import { Event, events } from "src/core/event";
 import { IAnyObject } from "src/utils";
 import { viseur } from "src/viseur";
 import { IDelta, IGamelog, IGameServerConstants } from "src/viseur/game/gamelog";
+import { Event, events } from "ts-typed-events";
 import * as serializer from "./serializer";
 
 export interface IJoueurConnectionArgs {

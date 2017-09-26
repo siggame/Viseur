@@ -1,10 +1,10 @@
 import * as dateFormat from "dateformat";
 import * as screenfull from "screenfull";
-import { Event } from "src/core/event";
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
 import { viseur } from "src/viseur";
+import { Event, events } from "ts-typed-events";
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
 import { KEYS } from "./keys";
@@ -44,10 +44,10 @@ export class GUI extends BaseElement {
 
     /** All the events this GUI emits */
     // tslint:disable-next-line:member-ordering (because we need the private stuff above initialized first)
-    public readonly events = Event.proxy({
+    public readonly events = events.concat(this.playbackPane.events, {
         /** Emitted when the GUI resizes */
         resized: new Event<{width: number, height: number, remainingHeight: number}>(),
-    }, this.playbackPane.events);
+    });
 
     /**
      * Creates a GUI to handle the user interaction(s) with html part of viseur

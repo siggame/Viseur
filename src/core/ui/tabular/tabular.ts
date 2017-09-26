@@ -1,5 +1,5 @@
-import { Event, events } from "src/core/event";
 import { onceTransitionEnds } from "src/utils/jquery";
+import { Event, events } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
 import "./tabular.scss";

@@ -1,5 +1,5 @@
-import { Event, events } from "src/core/event";
 import { viseur } from "src/viseur";
+import { Event, events } from "ts-typed-events";
 
 /** Data sent from the Tournament server detailing how to connect to play */
 export interface ITournamentPlayData {

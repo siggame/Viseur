@@ -16,9 +16,13 @@ import { TimeManager } from "./time-manager";
 
 /** A game state that is used to transition a dt between the two states/reasons */
 export interface IViseurGameState {
+    /** The current game state */
     game?: IBaseGameState;
+    /** The next game state */
     nextGame?: IBaseGameState;
+    /** The current delta reason */
     reason?: IDeltaReason;
+    /** The next delta reason */
     nextReason?: IDeltaReason;
 }
 

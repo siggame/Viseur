@@ -1,4 +1,4 @@
-import { Event, events } from "src/core/event";
+import { Event, events } from "ts-typed-events";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 export interface INumberInputArgs extends IBaseInputArgs {

@@ -63,7 +63,12 @@ export function ease(
 ): number;
 
 /**
- * Ease implementation
+ * Eases a number or numbers
+ * @param first the number to ease
+ * @param second optional number to ease, or a way to ease first
+ * @param t optional time to ease first to second from
+ * @param easing optional way to ease first to second along time t
+ * @returns a new number, now eased
  */
 export function ease(
     first: number,
@@ -100,7 +105,7 @@ export function ease(
 /**
  * Eases a number between 0 to 1 from 0, to 1, and back to 0
  * @param {number} x number to ease, must range from [0, 1]
- * @return {number} the easing up then down, will range from [0, 1]
+ * @returns {number} the easing up then down, will range from [0, 1]
  */
 export function updown(x: number): number {
     return -4 * (-1 + x) * x;

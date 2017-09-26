@@ -1,8 +1,8 @@
 import * as $ from "jquery";
-import { Event, events } from "src/core/event";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Tab, Tabular } from "src/core/ui/tabular";
 import { viseur } from "src/viseur";
+import { Event, events } from "ts-typed-events";
 import { GUI } from "../gui";
 import "./info-pane.scss";
 import { TABS } from "./tabs";

@@ -1,10 +1,10 @@
-import { Event } from "src/core/event";
+import { Event, events } from "ts-typed-events";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 /** a text input for strings */
 export class TextBox extends BaseInput<string> {
     /** Events this class emits */
-    public readonly events = Event.proxy(super.events || (this as any).events, {
+    public readonly events = events.concat(super.events || (this as any).events, {
         /** Emitted when this text-box is submitted (enter pressed) */
         submitted: new Event<string>(),
     });

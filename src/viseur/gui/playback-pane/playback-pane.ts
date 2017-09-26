@@ -1,9 +1,9 @@
-import { Event, events } from "src/core/event";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
 import { viseur } from "src/viseur";
 import { IGamelog } from "src/viseur/game/gamelog";
+import { Event, events } from "ts-typed-events";
 import { KEYS } from "../keys";
 import "./playback-pane.scss";
 

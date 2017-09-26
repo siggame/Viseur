@@ -1,4 +1,4 @@
-import { Event, events } from "src/core/event";
+import { Event, events } from "ts-typed-events";
 import { DisableableElement, IDisableableElementArgs } from "../../disableable-element";
 
 /** A range input for numbers */

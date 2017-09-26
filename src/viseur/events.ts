@@ -1,4 +1,4 @@
-import { Event, events } from "src/core/event";
+import { Event, events } from "ts-typed-events";
 import { BaseGame } from "./game/base-game";
 import { IGamelog } from "./game/gamelog";
 import { ICurrentTime } from "./time-manager";

@@ -2,6 +2,10 @@ language: node_js
 node_js:
   - "8.5.0"
 
+script:
+  # run units tests
+  - npm test
+
 before_deploy:
   # run webpack to build the static pages to deploy
   - npm run build

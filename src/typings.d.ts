@@ -175,7 +175,7 @@ declare module "chess.js" {
          * the board configuration in Forsyth-Edwards Notation.
          * @param fen specifies the board configuration in Forsyth-Edwards Notation.
          */
-        constructor(fen?: string);
+        public constructor(fen?: string);
 
         /**
          * The board is cleared, and the FEN string is loaded.
@@ -258,6 +258,7 @@ declare module "chess.js" {
 
         /**
          * Returns a validation object specifying validity or the errors found within the FEN string.
+         * @param fen the fen formatted string to validate
          */
         public validate_fen(fen: string): {
             /** Indicates if the fen is valid or not. */

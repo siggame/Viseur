@@ -1,10 +1,10 @@
 import * as $ from "jquery";
 import * as PIXI from "pixi.js";
-import { Event } from "src/core/event";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { clamp } from "src/utils";
 import { viseur } from "src/viseur";
+import { Event } from "ts-typed-events";
 import "./renderer.scss";
 
 export interface IRendererSize {

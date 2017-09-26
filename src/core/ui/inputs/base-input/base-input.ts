@@ -1,5 +1,5 @@
-import { Event, events } from "src/core/event";
 import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
+import { Event, events } from "ts-typed-events";
 import { Field } from "../field";
 
 export interface IBaseInputArgs extends IDisableableElementArgs {

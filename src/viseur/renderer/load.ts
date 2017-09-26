@@ -50,6 +50,7 @@ export function load(texture: string, options?: IResourceLoadOptions,
 
 /**
  * Creates an object interface of resources for games
+ * @param gameName the name of the game to create resources for
  * @param resources this must be a key/value list, key must be a string, value must be a RendererResource
  * @returns that same object frozen and extended with the index interface for TS
  */

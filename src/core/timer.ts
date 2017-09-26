@@ -1,5 +1,5 @@
-import { Event } from "src/core/event";
 import { clamp } from "src/utils/math";
+import { Event } from "ts-typed-events";
 
 /** ticks at a custom rate to a number of steps */
 export class Timer {

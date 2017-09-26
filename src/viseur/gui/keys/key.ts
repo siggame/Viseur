@@ -1,4 +1,4 @@
-import { Event } from "src/core/event";
+import { Event } from "ts-typed-events";
 
 /** Represents a key on the keyboard */
 export class Key {
