@@ -58,6 +58,7 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * This is called every time it is this AI.player's turn.
+     * @param callback function to be called
      */
     public runTurn(callback: (returned: boolean) => void): void {
         // <<-- Creer-Merge: runTurn -->>

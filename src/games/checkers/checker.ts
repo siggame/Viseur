@@ -10,8 +10,8 @@ import { ICheckerState } from "./state-interfaces";
 // any additional imports you want can be added here safely between Creer runs
 
 import { ease } from "src/utils";
-import { Player } from "./player";
 import { RendererResource } from "src/viseur/renderer";
+import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -51,7 +51,7 @@ export class Checker extends GameObject {
 
     private readonly king: PIXI.Sprite;
     private readonly checker: PIXI.Sprite;
-    
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -73,6 +73,7 @@ export class Checker extends GameObject {
             .newSprite(this.container);
 
         this.king.visible = false;
+        this.recolor();
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -93,7 +94,7 @@ export class Checker extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        if(current.kinged) {
+        if (current.kinged) {
             this.king.visible = true;
         }
         else {
@@ -125,7 +126,8 @@ export class Checker extends GameObject {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
+        const ownerColor = this.game.getPlayersColor(this.owner);
+        this.checker.tint = ownerColor.rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 

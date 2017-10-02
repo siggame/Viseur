@@ -75,10 +75,10 @@ export class Game extends BaseGame {
 
     /** The random color used to make the board look different per game */
     public readonly randomColor = Color().hsl(this.chance.floating({min: 0, max: 360}), 60, 40).whiten(1.5);
-       
+
     /** The compliment of the random color, used for UI on top of the background */
     // private readonly randomColorCompliment = this.randomColor.rotate(180).opaquer(0.333);
-    
+
     /** The border length around the board to render rank/file numbers */
     private borderLength = 0.5;
 
@@ -156,9 +156,9 @@ export class Game extends BaseGame {
                 this.tileSprites[x][y] = (this.resources[`tile${color}`] as RendererResource).newSprite(tileContainer, {
                     tint: this.randomColor,
                     position: {
-                        x: x,
-                        y: y
-                    } /**/
+                        x,
+                        y,
+                    }, /**/
                 });
             }
         }
