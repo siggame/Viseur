@@ -1,0 +1,32 @@
+@import "src/core/fontAwesome";
+@import "src/core/colors";
+
+.field {
+    &.disabled {
+        opacity: 0.5 !important;
+    }
+
+    & > label {
+        width: 12em;
+        display: inline-block;
+        line-height: 1.5em;
+
+        & .hint {
+            &:before {
+                color: $primary-light;
+                margin-left: 0.5em;
+                @include icon("question-circle");
+            }
+
+            &:hover:before {
+                color: $primary-dark;
+                transform: scale(1.5);
+                cursor: help;
+            }
+
+            &[title=""] {
+                display: none;
+            }
+        }
+    }
+}

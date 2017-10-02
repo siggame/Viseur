@@ -1,0 +1,64 @@
+@import "src/core/mixins";
+@import "src/core/colors";
+@import "src/core/fontAwesome";
+@import "src/core/style";
+
+.gui {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #000;
+
+    &.resizing {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        & *, .resizing {
+            @include transition(height 0s, width 0s !important);
+        }
+    }
+
+    & .loader {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    & .visualizer-pane-wrapper {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+
+        background-image: url('../images/background.png');
+        background-position: center;
+        background-size: 50%;
+        background-repeat: no-repeat;
+    }
+
+    & .visualizer-wrapper {
+        position: absolute;
+    }
+
+    & .playback-pane-wrapper, & .game-pane-wrapper {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+    }
+
+    & .renderer-wrapper {
+        position: absolute;
+    }
+
+    &.gamelog-loaded {
+        & .visualizer-pane-wrapper {
+            background-size: 0%;
+        }
+    }
+}

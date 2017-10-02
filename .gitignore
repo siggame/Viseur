@@ -42,15 +42,8 @@ node_modules
 # eslinter cache
 .eslintcache
 
-
-## REMOVE THESE TO DEPLOY
+# npm package lock
+package-lock.json
 
 # webpack bundle
-bundle/
-
-# web fonts used during build
-*.eot
-*.woff
-*.woff2
-*.svg
-*.ttf
+built/

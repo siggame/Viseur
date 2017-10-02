@@ -1,0 +1,44 @@
+@import "src/core/mixins";
+@import "src/core/colors";
+
+.game-over-screen {
+    @include collapsable();
+
+    background-color: rgba(0, 0, 0, 0.5);
+    color: $gray;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: table;
+    text-align: center;
+
+    & > .game-over-screen-container {
+        display: table-cell;
+        text-align: center;
+        vertical-align: middle;
+        padding: 0 25%;
+
+        & .name {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        & .game-over-winners {
+            font-size: 1.5em;
+            margin-bottom: 1em;
+        }
+    }
+
+    & .game-over-screen-item .bg-wrapper {
+        display: inline-block;
+        padding: 1em;
+    }
+
+    & ul > li {
+        margin-bottom: 1em;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}

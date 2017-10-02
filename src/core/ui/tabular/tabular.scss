@@ -1,0 +1,57 @@
+@import "src/core/colors";
+@import "src/core/mixins";
+
+.tabular ul.tabular-tabs {
+    list-style-type: none;
+    background: $light-gray;
+    padding: 0.5em;
+    border-bottom: $gray solid;
+}
+
+ul.tabular-tabs > li {
+    display: inline;
+}
+
+.tabular-tab {
+    border-bottom: transparent 0.125em solid;
+    margin: 0 0.5em;
+    padding: 0.5em 0;
+    cursor: pointer;
+    color: $light-black;
+
+    &.active {
+        border-bottom-color: $primary;
+        color: $black;
+    }
+
+    &:first-child {
+        margin-left: 0;
+    }
+
+    &:last-child {
+        margin-right: 0;
+    }
+}
+
+.tabular-content {
+    position: absolute;
+    overflow: scroll;
+    top: 2.25em;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    & .tabular-tab-content {
+        margin: 1em;
+        display: block;
+        opacity: 0;
+        @include transition(opacity 0.1667s ease-in-out);
+
+        &.active {
+            opacity: 1;
+        }
+        &.hidden {
+            display: none;
+        }
+    }
+}

@@ -1,1 +1,0 @@
-Never push files bundled in this directory. This exists as a place for webpack to generate bundled files.

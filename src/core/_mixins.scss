@@ -1,0 +1,135 @@
+// mixins: helpful mixins for any application
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    -o-transition: $args;
+    transition: $args;
+}
+
+@mixin keyframes($animation-name) {
+    @-webkit-keyframes #{$animation-name} {
+        @content;
+    }
+    @-moz-keyframes #{$animation-name} {
+        @content;
+    }
+    @-ms-keyframes #{$animation-name} {
+        @content;
+    }
+    @-o-keyframes #{$animation-name} {
+        @content;
+    }
+    @keyframes #{$animation-name} {
+        @content;
+    }
+}
+
+@mixin animation($str) {
+    -webkit-animation: #{$str};
+    -moz-animation: #{$str};
+    -ms-animation: #{$str};
+    -o-animation: #{$str};
+    animation: #{$str};
+}
+
+@mixin rotate($str) {
+    -webkit-transform: rotate($str);
+    -moz-transform: rotate($str);
+    -o-transform: rotate($str);
+    -ms-transform: rotate($str);
+    transform: rotate($str);
+}
+
+@mixin opacity($opacity) {
+    opacity: $opacity;
+    $opacity-ie: $opacity * 100;
+    filter: alpha(opacity=$opacity-ie); //IE8
+}
+
+@mixin collapsable() {
+    max-height: 5000px;
+    opacity: 1;
+    //position: relative;
+    //overflow: hidden;
+    //@include transition(all 0.35s ease-in-out);
+
+    &.collapsed {
+        max-height: 0px;
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+@function parseInt($n) { /* 2 */
+    @return $n / ($n * 0 + 1);
+}
+
+// usage: (http://hugogiraudel.com/2013/03/18/ultimate-rem-mixin/)
+//    @include rem(font-size, 1.6rem);
+//    @include rem(padding, 20px 10px);
+@mixin rem($property, $values) {
+    $px : (); /* 3 */
+    $rem: (); /* 3 */
+
+    @each $value in $values { /* 4 */
+
+        @if $value == 0 or $value == auto { /* 5 */
+            $px : append($px , $value);
+            $rem: append($rem, $value);
+        }
+
+        @else {
+            $unit: unit($value);        /* 6 */
+            $val: parseInt($value); /* 6 */
+
+            @if $unit == "px" {    /* 7 */
+                $px : append($px,    $value);
+                $rem: append($rem, ($val / 16 + rem));
+            }
+
+            @if $unit == "rem" { /* 7 */
+                $px : append($px,    ($val * 16 + px));
+                $rem: append($rem, $value);
+            }
+        }
+    }
+
+    @if $px == $rem {         /* 8 */
+        #{$property}: $px;    /* 9 */
+    } @else {
+        #{$property}: $px;    /* 9 */
+        #{$property}: $rem; /* 9 */
+    }
+}
+
+@mixin browser($browsers: Mozilla) {
+    @each $browser in $browsers {
+        html[data-browser*="#{$browser}"] & {
+            @content;
+        }
+    }
+}
+
+@mixin notBrowser($browsers: Mozilla) {
+    @each $browser in $browsers {
+        html:not([data-browser*="#{$browser}"]) & {
+            @content;
+        }
+    }
+}
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    -o-transition: $args;
+    transition: $args;
+}
+
+@mixin vendor-prefix($name, $value) {
+    @each $vendor in ('-webkit-', '-moz-', '-ms-', '-o-', '') {
+        #{$vendor}#{$name}: #{$value};
+    }
+}

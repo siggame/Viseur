@@ -1,0 +1,44 @@
+@import "src/core/mixins";
+@import "src/core/colors";
+
+ul.context-menu {
+    @include collapsable();
+    @include transition(top 0s, left 0s !important);
+
+    border: 0.125em solid $dark-gray;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 12em;
+
+    background-color: $light-gray;
+    padding: 0.25em;
+
+    & hr {
+        border: none;
+        height: 0.125em;
+        background-color: $dark-gray;
+        margin: 0.5em;
+    }
+
+    & .context-menu-item {
+        @include collapsable();
+
+        padding: 0.25em;
+        overflow: hidden;
+        cursor: pointer;
+
+        & > i {
+            display: inline-block;
+        }
+
+        & > header {
+            display: inline;
+            margin-left: 0.25em;
+        }
+
+        &:hover, &:focus {
+            background-color: $primary-light;
+        }
+    }
+}
