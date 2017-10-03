@@ -9,8 +9,7 @@ script:
 before_deploy:
   # run webpack to build the static pages to deploy
   - npm run build
-  - mkdir built/
-  - echo vis.siggame.io >> built/CNAME
+  - echo vis.siggame.io >> CNAME
 
 deploy:
   provider: pages
