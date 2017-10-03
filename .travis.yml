@@ -4,7 +4,7 @@ node_js:
 
 script:
   # run units tests
-  - npm test
+  # - npm test
 
 before_deploy:
   # run webpack to build the static pages to deploy
