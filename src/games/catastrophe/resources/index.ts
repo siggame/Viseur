@@ -7,6 +7,7 @@ export const GameResources = createResources("Catastrophe", {
     friendlyHuman: load("FriendlyHuman.png"),
     soldierUnit: load("soldier.png"),
     converterUnit: load("converter.png"),
+    gathererUnit: load("gatherer.png"),
     catOverlord: load("overlord.png"),
 
     groundTile: load("groundTile.png"),
