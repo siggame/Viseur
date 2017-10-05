@@ -8,9 +8,7 @@ import { ICheckerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
-
 import { ease } from "src/utils";
-import { RendererResource } from "src/viseur/renderer";
 import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
@@ -67,10 +65,8 @@ export class Checker extends GameObject {
         // You can initialize your new Checker here.
         this.container.setParent(this.game.piecesContainer);
         this.owner = this.game.gameObjects[state.owner.id] as Player;
-        this.checker = (this.game.resources[`checker`] as RendererResource)
-            .newSprite(this.container);
-        this.king = (this.game.resources[`king`] as RendererResource)
-            .newSprite(this.container);
+        this.checker = this.game.resources.checker.newSprite(this.container);
+        this.king = this.game.resources.king.newSprite(this.container);
 
         this.king.visible = false;
         this.recolor();
@@ -111,8 +107,8 @@ export class Checker extends GameObject {
         };
 
         this.container.position.set(
-            ease(currentPosition.x, nextPosition.x, dt, "cubicInOut"),
-            ease(currentPosition.y, nextPosition.y, dt, "cubicInOut"),
+            ease(currentPosition.x, nextPosition.x, dt),
+            ease(currentPosition.y, nextPosition.y, dt),
         );
 
         // <<-- /Creer-Merge: render -->>

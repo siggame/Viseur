@@ -10,9 +10,7 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
-import { RendererResource } from "src/viseur/renderer";
-
+// any additional imports you want can be added here safely between Creer runsW
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -149,16 +147,16 @@ export class Game extends BaseGame {
         for (let x = 0; x < 8; x++) {
             this.tileSprites[x] = [];
             for (let y = 0; y < 8; y++) {
-                const color = (x + y) % 2
-                    ? "White"
-                    : "Black";
+                const resource = (x + y) % 2
+                    ? this.resources.tileWhite
+                    : this.resources.tileBlack;
 
-                this.tileSprites[x][y] = (this.resources[`tile${color}`] as RendererResource).newSprite(tileContainer, {
+                this.tileSprites[x][y] = resource.newSprite(tileContainer, {
                     tint: this.randomColor,
                     position: {
                         x,
                         y,
-                    }, /**/
+                    },
                 });
             }
         }
