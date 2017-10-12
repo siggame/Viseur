@@ -51,22 +51,14 @@ export class Tile extends GameObject {
      */
     constructor(state: ITileState, game: Game) {
         super(state, game);
-        const mapHeight = 10;
-        const mapWidth = 10;
         // <<-- Creer-Merge: constructor -->>
         // render the board
+        // Set the parent of the tile container as the background layer
         this.container.setParent(this.game.layers.background);
-        for (let x = 0; x < mapHeight; x++) {
-            // this.groundTile;
-            for (let y = 0; y < mapWidth; y++) {
-                this.game.resources.groundTile.newSprite(this.container, {
-                    position: {
-                        x,
-                        y,
-                    },
-                });
-            }
-        }
+        // Set the container's sprite as the ground tile Sprite
+        this.game.resources.groundTile.newSprite(this.container);
+        // Set the position of the container to the current position
+        this.container.position.set(state.x, state.y);
         // <<-- /Creer-Merge: constructor -->>
     }
     /**
