@@ -26,7 +26,7 @@ export class Tile extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true; // change this to true to render all instances of this class
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -40,7 +40,7 @@ export class Tile extends GameObject {
     public next: ITileState;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    // private groundTile: PIXI.Sprite;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -51,12 +51,24 @@ export class Tile extends GameObject {
      */
     constructor(state: ITileState, game: Game) {
         super(state, game);
-
+        const mapHeight = 10;
+        const mapWidth = 10;
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Tile here.
+        // render the board
+        this.container.setParent(this.game.layers.background);
+        for (let x = 0; x < mapHeight; x++) {
+            // this.groundTile;
+            for (let y = 0; y < mapWidth; y++) {
+                this.game.resources.groundTile.newSprite(this.container, {
+                    position: {
+                        x,
+                        y,
+                    },
+                });
+            }
+        }
         // <<-- /Creer-Merge: constructor -->>
     }
-
     /**
      * Called approx 60 times a second to update and render Tile
      * instances. Leave empty if it is not being rendered.
