@@ -12,7 +12,7 @@ import { IBaseGameObjectState, IBaseGameState, IBasePlayerState } from "src/vise
 export interface IGameState extends IBaseGameState {
     /**
      * The multiplier for the amount of energy regenerated when resting in a
-     * base with the cat overlord.
+     * shelter with the cat overlord.
      */
     catEnergyMult: number;
 
@@ -32,6 +32,12 @@ export interface IGameState extends IBaseGameState {
      * used by the server and client to easily refer to the game objects via ID.
      */
     gameObjects: {[id: string]: IGameObjectState};
+
+    /**
+     * The amount of turns it takes for a Tile that was just harvested to grow
+     * food again.
+     */
+    harvestCooldown: number;
 
     /**
      * All the Jobs that Units can have in the game.
@@ -120,7 +126,7 @@ export interface IJobState extends IGameObjectState {
     /**
      * The amount of energy this Job normally uses to perform its actions.
      */
-    actCost: number;
+    actionCost: number;
 
     /**
      * How many combined resources a Unit with this Job can hold at once.
@@ -144,7 +150,7 @@ export interface IJobState extends IGameObjectState {
 
     /**
      * The amount of food per turn this Unit consumes. If there isn't enough
-     * food for every Unit, all units become starved and do not consume food.
+     * food for every Unit, all Units become starved and do not consume food.
      */
     upkeep: number;
 
@@ -211,7 +217,9 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
     units: IUnitState[];
 
     /**
-     * The total upkeep of every Unit owned by this Player.
+     * The total upkeep of every Unit owned by this Player. If there isn't
+     * enough food for every Unit, all Units become starved and do not consume
+     * food.
      */
     upkeep: number;
 
@@ -233,7 +241,8 @@ export interface IStructureState extends IGameObjectState {
     effectRadius: number;
 
     /**
-     * The number of materials in this Structure.
+     * The number of materials in this Structure. Once this number reaches 0,
+     * this Structure is destroyed.
      */
     materials: number;
 
@@ -243,12 +252,13 @@ export interface IStructureState extends IGameObjectState {
     owner: IPlayerState;
 
     /**
-     * The Tile this structure is on.
+     * The Tile this Structure is on.
      */
     tile: ITileState;
 
     /**
-     * The type of structure this is.
+     * The type of Structure this is ('shelter', 'monument', 'wall', 'road',
+     * 'neutral').
      */
     type: string;
 
@@ -264,7 +274,7 @@ export interface ITileState extends IGameObjectState {
     food: number;
 
     /**
-     * The amount of food that can be harvested from this tile per turn.
+     * The amount of food that can be harvested from this Tile per turn.
      */
     harvestRate: number;
 
@@ -274,9 +284,9 @@ export interface ITileState extends IGameObjectState {
     materials: number;
 
     /**
-     * The structure on this Tile if present, otherwise null.
+     * The Structure on this Tile if present, otherwise null.
      */
-    structure: string;
+    structure: IStructureState;
 
     /**
      * The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the
@@ -303,9 +313,9 @@ export interface ITileState extends IGameObjectState {
     tileWest: ITileState;
 
     /**
-     * What type of Tile this is.
+     * The amount of turns before this resource can be harvested.
      */
-    type: string;
+    turnsToHarvest: number;
 
     /**
      * The Unit on this Tile if present, otherwise null.
@@ -329,12 +339,12 @@ export interface ITileState extends IGameObjectState {
  */
 export interface IUnitState extends IGameObjectState {
     /**
-     * Whether this unit has performed its action this turn.
+     * Whether this Unit has performed its action this turn.
      */
     acted: boolean;
 
     /**
-     * The amount of energy this unit has (from 0.0 to 1.0).
+     * The amount of energy this Unit has (from 0.0 to 100.0).
      */
     energy: number;
 
@@ -355,7 +365,7 @@ export interface IUnitState extends IGameObjectState {
 
     /**
      * The tile this Unit is moving to. This only applies to neutral fresh
-     * humans spawned on the road.
+     * humans spawned on the road. Otherwise, the tile this Unit is on.
      */
     movementTarget: ITileState;
 
@@ -365,19 +375,19 @@ export interface IUnitState extends IGameObjectState {
     moves: number;
 
     /**
-     * The Player that owns and can control this Unit, or null if the unit is
+     * The Player that owns and can control this Unit, or null if the Unit is
      * neutral.
      */
     owner: IPlayerState;
 
     /**
-     * The units in the same squad as this unit. Units in the same squad attack
+     * The Units in the same squad as this Unit. Units in the same squad attack
      * and defend together.
      */
     squad: IUnitState[];
 
     /**
-     * Whether this unit is starving. Starving units regenerate energy at half
+     * Whether this Unit is starving. Starving Units regenerate energy at half
      * the rate they normally would while resting.
      */
     starving: boolean;
@@ -389,7 +399,7 @@ export interface IUnitState extends IGameObjectState {
 
     /**
      * The number of turns before this Unit dies. This only applies to neutral
-     * fresh humans created from combat.
+     * fresh humans created from combat. Otherwise, 0.
      */
     turnsToDie: number;
 
