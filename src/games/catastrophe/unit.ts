@@ -26,7 +26,7 @@ export class Unit extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true; // change this to true to render all instances of this class
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -53,7 +53,14 @@ export class Unit extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Unit here.
+        this.container.setParent(this.game.layers.game);
+
+        if (state.job.title === "fresh human") {
+            this.game.resources.freshHuman.newSprite(this.container);
+        }
+
+        this.container.position.set(state.tile.x, state.tile.y);
+
         // <<-- /Creer-Merge: constructor -->>
     }
 

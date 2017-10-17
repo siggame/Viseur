@@ -56,7 +56,17 @@ export class Tile extends GameObject {
         // Set the parent of the tile container as the background layer
         this.container.setParent(this.game.layers.background);
         // Set the container's sprite as the ground tile Sprite
-        this.game.resources.groundTile.newSprite(this.container);
+        const r = Math.floor(Math.random() * 3) + 1;
+        if (r === 1) {
+            this.game.resources.grass1.newSprite(this.container);
+        }
+        if (r === 2) {
+            this.game.resources.grass2.newSprite(this.container);
+        }
+        if (r === 3) {
+            this.game.resources.grass3.newSprite(this.container);
+        }
+
         // Set the position of the container to the current position
         this.container.position.set(state.x, state.y);
         // <<-- /Creer-Merge: constructor -->>
