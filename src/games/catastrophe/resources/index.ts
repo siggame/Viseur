@@ -12,6 +12,6 @@ export const GameResources = createResources("Catastrophe", {
 
     groundTile: load("groundTile.png"),
     shelterTile: load("shelterTile.png"),
-    monumentTile: load("monument.png"),
+    monumentTile: load("monumentTile.png"),
     // <<-- /Creer-Merge: resources -->>
 });
