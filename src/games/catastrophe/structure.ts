@@ -26,7 +26,7 @@ export class Structure extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true; // change this to true to render all instances of this class
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -41,6 +41,8 @@ export class Structure extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+
+    public sprite: PIXI.Sprite;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -54,6 +56,35 @@ export class Structure extends GameObject {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Structure here.
+
+        // Sets this container to be inside of the background layer of the game
+        this.container.setParent(this.game.layers.structure);
+
+        // type strings taken from game rules at
+        // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
+        if (state.type === "neutral") {
+            // Creates a copy of the shelter sprite and puts the copy inside of the current container
+            this.sprite = this.game.resources.neutral.newSprite(this.container);
+        }
+        if (state.type === "road") {
+            this.sprite = this.game.resources.road.newSprite(this.container);
+            if (state.tile.tileSouth != null && state.tile.tileSouth.structure != null
+                && state.tile.tileSouth.structure.type === "road") {
+                this.sprite.anchor.y = 1;
+                this.sprite.scale.y *= -1;
+            }
+        }
+        if (state.type === "shelter") {
+            this.sprite = this.game.resources.shelter.newSprite(this.container);
+        }
+        if (state.type === "wall") {
+            this.sprite = this.game.resources.shelter.newSprite(this.container);
+        }
+        if (state.type === "monument") {
+            this.sprite = this.game.resources.monument.newSprite(this.container);
+        }
+
+        this.container.position.set(state.tile.x, state.tile.y);
         // <<-- /Creer-Merge: constructor -->>
     }
 

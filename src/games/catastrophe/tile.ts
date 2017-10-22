@@ -41,6 +41,7 @@ export class Tile extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     // private groundTile: PIXI.Sprite;
+    public grass: PIXI.Sprite;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -56,15 +57,15 @@ export class Tile extends GameObject {
         // Set the parent of the tile container as the background layer
         this.container.setParent(this.game.layers.background);
         // Set the container's sprite as the ground tile Sprite
-        const r = Math.floor(Math.random() * 3) + 1;
+        let r = Math.floor(Math.random() * 3) + 1;
         if (r === 1) {
-            this.game.resources.grass1.newSprite(this.container);
+            this.grass = this.game.resources.grass1.newSprite(this.container);
         }
         if (r === 2) {
-            this.game.resources.grass2.newSprite(this.container);
+            this.grass = this.game.resources.grass2.newSprite(this.container);
         }
         if (r === 3) {
-            this.game.resources.grass3.newSprite(this.container);
+            this.grass = this.game.resources.grass3.newSprite(this.container);
         }
 
         // Set the position of the container to the current position

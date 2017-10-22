@@ -8,6 +8,9 @@ import { ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import * as Color from "color";
+import { ease } from "src/utils";
+import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -41,6 +44,16 @@ export class Unit extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+    // Owner of the unit
+    public owner: Player;
+    public job: string;
+
+    // Base sprite of the unit
+    public baseSprite: PIXI.Sprite;
+
+    // "Drop shadow" sprite
+    public dropShadow: PIXI.Sprite;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -53,14 +66,41 @@ export class Unit extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
+        this.owner = this.game.gameObjects[state.owner.id] as Player;
+        this.job = state.job.title;
+
         this.container.setParent(this.game.layers.game);
 
-        if (state.job.title === "fresh human") {
-            this.game.resources.freshHuman.newSprite(this.container);
+        this.dropShadow = this.game.resources.dropShadow.newSprite(this.container);
+
+        // job strings taken from game rules at
+        // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
+        if (this.job === "cat overlord") {
+            this.baseSprite = this.game.resources.catOverlord.newSprite(this.container);
+        }
+        if (this.job === "soldier") {
+            this.baseSprite = this.game.resources.soldierUnit.newSprite(this.container);
+        }
+        if (this.job === "gatherer") {
+            this.baseSprite = this.game.resources.gathererUnit.newSprite(this.container);
+        }
+        if (this.job === "builder") {
+            this.baseSprite = this.game.resources.builderHuman.newSprite(this.container);
+        }
+        if (this.job === "missionary") {
+            this.baseSprite = this.game.resources.converterUnit.newSprite(this.container);
+        }
+        if (this.job === "fresh human") {
+            this.baseSprite = this.game.resources.freshHuman.newSprite(this.container);
+        }
+
+        if (state.owner.id === "1") {
+            this.baseSprite.anchor.x = 1;
+            this.baseSprite.scale.x *= -1;
         }
 
         this.container.position.set(state.tile.x, state.tile.y);
-
+        this.recolor();
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -82,6 +122,14 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         // render where the Unit is
+
+        if (reason.run != null) {
+            console.log(reason.run.functionName);
+        }
+        this.container.position.set(
+            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.y, next.tile.y, dt),
+        );
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -94,6 +142,13 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        if (this.owner === null) {
+            const white = Color("white");
+            this.dropShadow.tint = white.rgbNumber();
+            return;
+        }
+        const ownerColor = this.game.getPlayersColor(this.owner);
+        this.dropShadow.tint = ownerColor.rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -117,6 +172,7 @@ export class Unit extends GameObject {
 
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
+
     // <<-- /Creer-Merge: public-functions -->>
 
     // NOTE: past this block are functions only used 99% of the time if
