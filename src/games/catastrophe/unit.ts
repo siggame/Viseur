@@ -66,7 +66,10 @@ export class Unit extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-        this.owner = this.game.gameObjects[state.owner.id] as Player;
+
+        if (state.owner) {
+            this.owner = this.game.gameObjects[state.owner.id] as Player;
+        }
         this.job = state.job.title;
 
         this.container.setParent(this.game.layers.game);
@@ -94,7 +97,7 @@ export class Unit extends GameObject {
             this.baseSprite = this.game.resources.freshHuman.newSprite(this.container);
         }
 
-        if (state.owner.id === "1") {
+        if (state.owner && state.owner.id === "1") {
             this.baseSprite.anchor.x = 1;
             this.baseSprite.scale.x *= -1;
         }
@@ -142,7 +145,7 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
-        if (this.owner === null) {
+        if (this.owner === undefined) {
             const white = Color("white");
             this.dropShadow.tint = white.rgbNumber();
             return;
