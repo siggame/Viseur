@@ -9,7 +9,7 @@ import { ITileState, IUnitState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 import * as Color from "color";
-import { ease } from "src/utils"; // updown
+import { ease, updown } from "src/utils"; // updown
 import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
@@ -45,7 +45,7 @@ export class Unit extends GameObject {
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
     // Owner of the unit
-    public owner: Player;
+    public owner?: Player;
     public job: string;
 
     // Base sprite of the unit
@@ -58,7 +58,10 @@ export class Unit extends GameObject {
 
     public spriteInUse: PIXI.Sprite;
 
-    public targetTile?: ITileState;
+    // State Change Variables
+    public attackingTile?: ITileState;
+    public jobChanged?: string;
+    public playerChange?: string;
 
     // "Drop shadow" sprite
     public dropShadow: PIXI.Sprite;
@@ -145,16 +148,6 @@ export class Unit extends GameObject {
             this.container.visible = false;
         }
 
-        if (!reason || !reason.run) {
-            return;
-        }
-
-        if (reason.run != null) {
-            if (reason.run.functionName !== "move" && reason.run.functionName !== "changeJob") {
-                console.log(reason);
-            }
-        }
-
         if (next.tile == null) { // Attempting to "Walk off the map"
             this.visible = false;
             return;
@@ -164,27 +157,40 @@ export class Unit extends GameObject {
             ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),
         );
-        let newJob = "";
 
-        if (reason.run.functionName === "changeJob") {
-            newJob = reason.run.args.job;
-            if (newJob !== this.job) {
-                this.set_job(newJob);
+        // Owner Change
+        if (current.owner !== next.owner) {
+            if (current.owner && current.owner.id === "1" && this.owner && current.owner.id !== this.owner.id) {
+                this.spriteInUse.anchor.x = 0;
+                this.spriteInUse.scale.x *= -1;
+            }
+            if (next.owner) {
+                if ((this.owner === undefined) || (this.owner.id !== next.owner.id)) {
+                    if (next.owner.id === "1") {
+                        this.spriteInUse.x = 1;
+                        this.spriteInUse.scale.x *= -1;
+                    }
+                }
+                this.owner = this.game.gameObjects[next.owner.id] as Player;
+            }
+            else {
+                this.owner = undefined;
+            }
+
+            this.recolor();
+        }
+
+        if (this.jobChanged) {
+            if (this.jobChanged !== this.job) {
+                this.set_job(this.jobChanged);
             }
         }
 
-        /*
-        if (reason.run.functionName === "attack") {
-            this.targetTile = reason.run.args.tile;
-        }
-        else {
-            this.targetTile = undefined;
-        } 
-
-        if (this.targetTile) {
+        /* This is broke right now */
+        if (this.attackingTile) {
             const d = updown(dt);
-            const dx = (this.targetTile.x - current.tile.x) / 2;
-            const dy = (this.targetTile.y - current.tile.y) / 2;
+            const dx = (this.attackingTile.x - current.tile.x) / 2;
+            const dy = (this.attackingTile.y - current.tile.y) / 2;
 
             this.container.x += dx * d;
             this.container.y += dy * d;
@@ -226,8 +232,21 @@ export class Unit extends GameObject {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Unit based off its states
-        // <<-- /Creer-Merge: state-updated -->>
+        this.attackingTile = undefined;
+        this.jobChanged = undefined;
+        if (nextReason && nextReason.run && nextReason.run.caller === this) {
+            const run = nextReason.run;
+            if (run.functionName === "attack" && nextReason.returned === true) {
+                this.attackingTile = nextReason.run.args.tile;
+            }
+            else if (run.functionName === "changeJob" && nextReason.returned === true) {
+                this.jobChanged = run.args.job;
+            }
+            else if (run.functionName !== "move" && nextReason.returned === true) {
+                console.log(run.functionName);
+            }
+        }
+            // <<-- /Creer-Merge: state-updated -->>
     }
 
     // <<-- Creer-Merge: public-functions -->>
