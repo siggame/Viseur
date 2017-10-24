@@ -49,10 +49,20 @@ export class Unit extends GameObject {
     public job: string;
 
     // Base sprite of the unit
-    public baseSprite: PIXI.Sprite;
+    public catSprite: PIXI.Sprite;
+    public humanSprite: PIXI.Sprite;
+    public builderSprite: PIXI.Sprite;
+    public soldierSprite: PIXI.Sprite;
+    public gathererSprite: PIXI.Sprite;
+    public converterSprite: PIXI.Sprite;
+
+    public spriteInUse: PIXI.Sprite;
 
     // "Drop shadow" sprite
     public dropShadow: PIXI.Sprite;
+
+    // "Visible" variable
+    public visible: boolean;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -76,33 +86,28 @@ export class Unit extends GameObject {
 
         this.dropShadow = this.game.resources.dropShadow.newSprite(this.container);
 
-        // job strings taken from game rules at
-        // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
-        if (this.job === "cat overlord") {
-            this.baseSprite = this.game.resources.catOverlord.newSprite(this.container);
-        }
-        if (this.job === "soldier") {
-            this.baseSprite = this.game.resources.soldierUnit.newSprite(this.container);
-        }
-        if (this.job === "gatherer") {
-            this.baseSprite = this.game.resources.gathererUnit.newSprite(this.container);
-        }
-        if (this.job === "builder") {
-            this.baseSprite = this.game.resources.builderHuman.newSprite(this.container);
-        }
-        if (this.job === "missionary") {
-            this.baseSprite = this.game.resources.converterUnit.newSprite(this.container);
-        }
-        if (this.job === "fresh human") {
-            this.baseSprite = this.game.resources.freshHuman.newSprite(this.container);
-        }
+        this.catSprite = this.game.resources.catOverlord.newSprite(this.container);
+        this.catSprite.visible = false;
+        this.soldierSprite = this.game.resources.soldierUnit.newSprite(this.container);
+        this.soldierSprite.visible = false;
+        this.gathererSprite = this.game.resources.gathererUnit.newSprite(this.container);
+        this.gathererSprite.visible = false;
+        this.builderSprite = this.game.resources.builderHuman.newSprite(this.container);
+        this.builderSprite.visible = false;
+        this.converterSprite = this.game.resources.converterUnit.newSprite(this.container);
+        this.converterSprite.visible = false;
+        this.humanSprite = this.game.resources.freshHuman.newSprite(this.container);
+        this.humanSprite.visible = false;
+
+        this.set_job(this.job);
 
         if (state.owner && state.owner.id === "1") {
-            this.baseSprite.anchor.x = 1;
-            this.baseSprite.scale.x *= -1;
+            this.spriteInUse.anchor.x = 1;
+            this.spriteInUse.scale.x *= -1;
         }
 
         this.container.position.set(state.tile.x, state.tile.y);
+        this.visible = true;
         this.recolor();
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -125,14 +130,39 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         // render where the Unit is
+        if (this.visible) {
+            this.container.visible = true;
+        }
+        else {
+            this.container.visible = false;
+        }
 
         if (reason.run != null) {
-            console.log(reason.run.functionName);
+            if (reason.run.functionName !== "move" && reason.run.functionName !== "changeJob") {
+                console.log(reason);
+            }
         }
+        if (reason.run == null) {
+            return;
+        }
+
+        if (next.tile == null) { // Attempting to "Walk off the map"
+            this.visible = false;
+            return;
+        }
+
         this.container.position.set(
             ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),
         );
+        let newJob = "";
+        if (reason.run.functionName === "changeJob") {
+            newJob = reason.run.args.job;
+            if (newJob !== this.job) {
+                this.set_job(newJob);
+            }
+        }
+
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -175,6 +205,34 @@ export class Unit extends GameObject {
 
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
+
+    public set_job(job: string): void {
+        if (this.spriteInUse) {
+            this.spriteInUse.visible = false;
+        }
+        // job strings taken from game rules at
+        // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
+        if (job === "cat overlord") {
+            this.spriteInUse = this.catSprite;
+        }
+        if (job === "soldier") {
+            this.spriteInUse = this.soldierSprite;
+        }
+        if (job === "gatherer") {
+            this.spriteInUse = this.gathererSprite;
+        }
+        if (job === "builder") {
+            this.spriteInUse = this.builderSprite;
+        }
+        if (job === "missionary") {
+            this.spriteInUse = this.converterSprite;
+        }
+        if (job === "fresh human") {
+            this.spriteInUse = this.humanSprite;
+        }
+        this.job = job;
+        this.spriteInUse.visible = true;
+    }
 
     // <<-- /Creer-Merge: public-functions -->>
 
