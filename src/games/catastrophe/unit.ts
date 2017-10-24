@@ -9,7 +9,7 @@ import { ITileState, IUnitState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 import * as Color from "color";
-import { ease } from "src/utils";
+import { ease } from "src/utils"; // updown
 import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
@@ -57,6 +57,8 @@ export class Unit extends GameObject {
     public converterSprite: PIXI.Sprite;
 
     public spriteInUse: PIXI.Sprite;
+
+    public targetTile?: ITileState;
 
     // "Drop shadow" sprite
     public dropShadow: PIXI.Sprite;
@@ -106,8 +108,14 @@ export class Unit extends GameObject {
             this.spriteInUse.scale.x *= -1;
         }
 
-        this.container.position.set(state.tile.x, state.tile.y);
-        this.visible = true;
+        if (state.tile) {
+            this.container.position.set(state.tile.x, state.tile.y);
+            this.visible = true;
+        }
+        else {
+            this.container.position.set(-1, -1);
+            this.visible = false;
+        }
         this.recolor();
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -137,13 +145,14 @@ export class Unit extends GameObject {
             this.container.visible = false;
         }
 
+        if (!reason || !reason.run) {
+            return;
+        }
+
         if (reason.run != null) {
             if (reason.run.functionName !== "move" && reason.run.functionName !== "changeJob") {
                 console.log(reason);
             }
-        }
-        if (reason.run == null) {
-            return;
         }
 
         if (next.tile == null) { // Attempting to "Walk off the map"
@@ -156,12 +165,30 @@ export class Unit extends GameObject {
             ease(current.tile.y, next.tile.y, dt),
         );
         let newJob = "";
+
         if (reason.run.functionName === "changeJob") {
             newJob = reason.run.args.job;
             if (newJob !== this.job) {
                 this.set_job(newJob);
             }
         }
+
+        /*
+        if (reason.run.functionName === "attack") {
+            this.targetTile = reason.run.args.tile;
+        }
+        else {
+            this.targetTile = undefined;
+        } 
+
+        if (this.targetTile) {
+            const d = updown(dt);
+            const dx = (this.targetTile.x - current.tile.x) / 2;
+            const dy = (this.targetTile.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }/**/
 
         // <<-- /Creer-Merge: render -->>
     }
