@@ -40,8 +40,10 @@ export class Tile extends GameObject {
     public next: ITileState;
 
     // <<-- Creer-Merge: variables -->>
-    // private groundTile: PIXI.Sprite;
     public grass: PIXI.Sprite;
+
+    public food: PIXI.Sprite;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -68,6 +70,15 @@ export class Tile extends GameObject {
             this.grass = this.game.resources.grass3.newSprite(this.container);
         }
 
+        // Change the resource here
+        this.food = this.game.resources.shelter.newSprite(this.container);
+        // the next line makes the sprite invisible
+        this.food.visible = false;
+        // this flips the sprite; this is for the AI and Game teams to differentiate between the temp sprite i'm 
+        // using and where that sprit is normally used, so this can be removed once the sprite if changed
+        this.food.anchor.y = 1;
+        this.food.scale.y *= -1; /* */
+
         // Set the position of the container to the current position
         this.container.position.set(state.x, state.y);
         // <<-- /Creer-Merge: constructor -->>
@@ -90,6 +101,9 @@ export class Tile extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         // render where the Tile is
+        if (current.harvestRate > 0) {
+            this.food.visible = true;
+        }
         // <<-- /Creer-Merge: render -->>
     }
 
