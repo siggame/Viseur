@@ -10,6 +10,7 @@ import { ITileState, IUnitState } from "./state-interfaces";
 // any additional imports you want can be added here safely between Creer runs
 import * as Color from "color";
 import { ease, updown } from "src/utils"; // updown
+import { GameBar } from "src/viseur/game";
 import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
@@ -66,8 +67,12 @@ export class Unit extends GameObject {
     // "Drop shadow" sprite
     public dropShadow: PIXI.Sprite;
 
+    public maxEnergy: number;
+    /** The bar that display's this unit's health */
+    private readonly healthBar: GameBar;
+
     // "Visible" variable
-    public visible: boolean;
+    // public visible: boolean;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -113,13 +118,17 @@ export class Unit extends GameObject {
 
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
-            this.visible = true;
+            this.container.visible = true;
         }
         else {
             this.container.position.set(-1, -1);
-            this.visible = false;
+            this.container.visible = false;
         }
         this.recolor();
+
+        this.maxEnergy = state.energy;
+        this.healthBar = new GameBar(this.container);
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -140,23 +149,22 @@ export class Unit extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Unit is
-        if (this.visible) {
-            this.container.visible = true;
+
+        // No longer on the map
+        if (next.tile == null) {
+            this.container.visible = false;
+            return;
         }
         else {
-            this.container.visible = false;
-        }
-
-        if (next.tile == null) { // Attempting to "Walk off the map"
-            this.visible = false;
-            return;
+            this.container.visible = true;
         }
 
         this.container.position.set(
             ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),
         );
+
+
 
         // Owner Change
         if (current.owner !== next.owner) {
@@ -180,11 +188,28 @@ export class Unit extends GameObject {
             this.recolor();
         }
 
-        if (this.jobChanged) {
+        if (this.jobChanged) { // If Job Changed called by player and returned true
             if (this.jobChanged !== this.job) {
                 this.set_job(this.jobChanged);
             }
         }
+        else { // This would be a unit losing loyalty/ or the game state jumps
+            if (this.job !== next.job.title) {
+                this.set_job(next.job.title);
+            }
+        }
+
+        let currEnergy;
+        let nextEnergy;
+        if (this.job === "fresh human") {
+            currEnergy = current.turnsToDie / 10; // Magic number 10 is max turns to die
+            nextEnergy = next.turnsToDie / 10;
+        }
+        else {
+            currEnergy = current.energy / this.maxEnergy;
+            nextEnergy = next.energy / this.maxEnergy;
+        }
+        this.healthBar.update(ease(currEnergy, nextEnergy, dt));
 
         /* This is broke right now */
         if (this.attackingTile) {
@@ -195,6 +220,7 @@ export class Unit extends GameObject {
             this.container.x += dx * d;
             this.container.y += dy * d;
         }/**/
+
 
         // <<-- /Creer-Merge: render -->>
     }
