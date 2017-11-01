@@ -10,6 +10,10 @@ export const GameResources = createResources("Catastrophe", {
     gathererUnit: load("gatherer.png"),
     catOverlord: load("overlord.png"),
 
+    bush: load("plain_bush.png"),
+    berry: load("plain_berries.png"),
+    indicator: load("bubble3.png"),
+
     grass1: load("grass1.png"),
     grass2: load("grass2.png"),
     grass3: load("grass3.png"),
@@ -17,5 +21,6 @@ export const GameResources = createResources("Catastrophe", {
     shelter: load("shelter.png"),
     monument: load("statue.png"),
     neutral: load("neutral.png"),
+    wall: load("wall_sprite.png"),
     // <<-- /Creer-Merge: resources -->>
 });

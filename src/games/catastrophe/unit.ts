@@ -59,10 +59,14 @@ export class Unit extends GameObject {
 
     public spriteInUse: PIXI.Sprite;
 
+    public indicatorSprite: PIXI.Sprite;
+
     // State Change Variables
     public attackingTile?: ITileState;
+    public harvestTile?: ITileState;
     public jobChanged?: string;
     public playerChange?: string;
+    public facing: string;
 
     // "Drop shadow" sprite
     public dropShadow: PIXI.Sprite;
@@ -70,9 +74,6 @@ export class Unit extends GameObject {
     public maxEnergy: number;
     /** The bar that display's this unit's health */
     private readonly healthBar: GameBar;
-
-    // "Visible" variable
-    // public visible: boolean;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -109,12 +110,10 @@ export class Unit extends GameObject {
         this.humanSprite = this.game.resources.freshHuman.newSprite(this.container);
         this.humanSprite.visible = false;
 
-        this.set_job(this.job);
+        this.indicatorSprite = this.game.resources.indicator.newSprite(this.container);
+        this.indicatorSprite.visible = false;
 
-        if (state.owner && state.owner.id === "1") {
-            this.spriteInUse.anchor.x = 1;
-            this.spriteInUse.scale.x *= -1;
-        }
+        this.set_job(this.job);
 
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
@@ -124,7 +123,14 @@ export class Unit extends GameObject {
             this.container.position.set(-1, -1);
             this.container.visible = false;
         }
+
         this.recolor();
+
+        this.facing = "left";
+        if (this.owner && this.owner.id === "0") {
+            this.facing = "right";
+            this.container.scale.x *= -1;
+        }
 
         this.maxEnergy = state.energy;
         this.healthBar = new GameBar(this.container);
@@ -159,32 +165,38 @@ export class Unit extends GameObject {
             this.container.visible = true;
         }
 
+        if (current.tile.tileWest && current.tile.tileWest.id === next.tile.id) {
+            if (this.facing !== "left") {
+                this.facing = "left";
+                this.container.scale.x *= -1;
+            }
+        }
+        if (current.tile.tileEast && current.tile.tileEast.id === next.tile.id) {
+            if (this.facing !== "right") {
+                this.facing = "right";
+                this.container.scale.x *= -1;
+            }
+        }
+
+        let cX = current.tile.x;
+        let nX = next.tile.x;
+        if (this.facing === "right") {
+            cX += 1;
+            nX += 1;
+        }
+
         this.container.position.set(
-            ease(current.tile.x, next.tile.x, dt),
+            ease(cX, nX, dt),
             ease(current.tile.y, next.tile.y, dt),
         );
 
-
-
-        // Owner Change
         if (current.owner !== next.owner) {
-            if (current.owner && current.owner.id === "1" && this.owner && current.owner.id !== this.owner.id) {
-                this.spriteInUse.anchor.x = 0;
-                this.spriteInUse.scale.x *= -1;
-            }
             if (next.owner) {
-                if ((this.owner === undefined) || (this.owner.id !== next.owner.id)) {
-                    if (next.owner.id === "1") {
-                        this.spriteInUse.x = 1;
-                        this.spriteInUse.scale.x *= -1;
-                    }
-                }
                 this.owner = this.game.gameObjects[next.owner.id] as Player;
             }
             else {
                 this.owner = undefined;
             }
-
             this.recolor();
         }
 
@@ -211,8 +223,20 @@ export class Unit extends GameObject {
         }
         this.healthBar.update(ease(currEnergy, nextEnergy, dt));
 
-        /* This is broke right now */
         if (this.attackingTile) {
+            if (current.tile.tileEast && current.tile.tileEast.id === this.attackingTile.id) {
+                if (this.facing !== "right") {
+                    this.facing = "right";
+                    this.container.scale.x *= -1;
+                }
+            }
+            if (current.tile.tileWest && current.tile.tileWest.id === this.attackingTile.id) {
+                if (this.facing !== "left") {
+                    this.facing = "left";
+                    this.container.scale.x *= -1;
+                }
+            }
+
             const d = updown(dt);
             const dx = (this.attackingTile.x - current.tile.x) / 2;
             const dy = (this.attackingTile.y - current.tile.y) / 2;
@@ -221,6 +245,27 @@ export class Unit extends GameObject {
             this.container.y += dy * d;
         }/**/
 
+        if (this.harvestTile) {
+            if (current.tile.tileEast && current.tile.tileEast.id === this.harvestTile.id) {
+                if (this.facing !== "right") {
+                    this.facing = "right";
+                    this.container.scale.x *= -1;
+                }
+            }
+            if (current.tile.tileWest && current.tile.tileWest.id === this.harvestTile.id) {
+                if (this.facing !== "left") {
+                    this.facing = "left";
+                    this.container.scale.x *= -1;
+                }
+            }
+
+            const d = updown(dt);
+            const dx = (this.harvestTile.x - current.tile.x) / 2;
+            const dy = (this.harvestTile.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }/**/
 
         // <<-- /Creer-Merge: render -->>
     }
@@ -259,14 +304,22 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: state-updated -->>
         this.attackingTile = undefined;
+        this.harvestTile = undefined;
         this.jobChanged = undefined;
         if (nextReason && nextReason.run && nextReason.run.caller === this) {
             const run = nextReason.run;
             if (run.functionName === "attack" && nextReason.returned === true) {
-                this.attackingTile = nextReason.run.args.tile;
+                this.attackingTile = nextReason.run.args.tile.current;
             }
             else if (run.functionName === "changeJob" && nextReason.returned === true) {
                 this.jobChanged = run.args.job;
+            }
+            else if (run.functionName === "harvest" && nextReason.returned === true) {
+                this.harvestTile = nextReason.run.args.tile.current;
+                this.indicatorSprite.visible = true;
+            }
+            else if (run.functionName === "drop" && nextReason.returned === true) {
+                this.indicatorSprite.visible = false;
             }
             else if (run.functionName !== "move" && nextReason.returned === true) {
                 console.log(run.functionName);
@@ -282,6 +335,7 @@ export class Unit extends GameObject {
         if (this.spriteInUse) {
             this.spriteInUse.visible = false;
         }
+
         // job strings taken from game rules at
         // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
         if (job === "cat overlord") {

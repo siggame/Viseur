@@ -1,5 +1,6 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
+import * as Color from "color";
 import { MenuItems } from "src/core/ui/context-menu";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
@@ -42,7 +43,8 @@ export class Tile extends GameObject {
     // <<-- Creer-Merge: variables -->>
     public grass: PIXI.Sprite;
 
-    public food: PIXI.Sprite;
+    public bush: PIXI.Sprite;
+    public berry: PIXI.Sprite;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -71,13 +73,14 @@ export class Tile extends GameObject {
         }
 
         // Change the resource here
-        this.food = this.game.resources.shelter.newSprite(this.container);
-        // the next line makes the sprite invisible
-        this.food.visible = false;
-        // this flips the sprite; this is for the AI and Game teams to differentiate between the temp sprite i'm 
-        // using and where that sprit is normally used, so this can be removed once the sprite if changed
-        this.food.anchor.y = 1;
-        this.food.scale.y *= -1; /* */
+        if (state.harvestRate > 0) {
+            this.bush = this.game.resources.bush.newSprite(this.container);
+            this.berry = this.game.resources.berry.newSprite(this.container);
+            const colors = [Color("purple"), Color("yellow"), Color("red"), Color("blue")]; // by ptm
+            const i = Math.floor(Math.random() * (colors.length));
+            this.berry.tint = colors[i].rgbNumber();
+            // this.berry.tint = Color("blue").rgbNumber();
+        } /** */
 
         // Set the position of the container to the current position
         this.container.position.set(state.x, state.y);
@@ -101,9 +104,14 @@ export class Tile extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         // render where the Tile is
-        if (current.harvestRate > 0) {
-            this.food.visible = true;
+
+        if (this.berry && current.harvestRate > 0) {
+            this.berry.visible = true;
         }
+        else if (this.berry) {
+            this.berry.visible = false;
+        }
+        /** */
         // <<-- /Creer-Merge: render -->>
     }
 

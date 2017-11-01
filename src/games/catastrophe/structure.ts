@@ -63,7 +63,7 @@ export class Structure extends GameObject {
         // type strings taken from game rules at
         // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
         if (state.type === "neutral") {
-            // Creates a copy of the shelter sprite and puts the copy inside of the current container
+            // Creates a copy of the neutral sprite and puts the copy inside of the current container
             this.sprite = this.game.resources.neutral.newSprite(this.container);
         }
         if (state.type === "road") {
@@ -78,7 +78,7 @@ export class Structure extends GameObject {
             this.sprite = this.game.resources.shelter.newSprite(this.container);
         }
         if (state.type === "wall") {
-            this.sprite = this.game.resources.shelter.newSprite(this.container);
+            this.sprite = this.game.resources.wall.newSprite(this.container);
         }
         if (state.type === "monument") {
             this.sprite = this.game.resources.monument.newSprite(this.container);
