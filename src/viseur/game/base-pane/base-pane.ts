@@ -293,7 +293,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
      * @param titlePrefix a prefix to add to the title
      * @returns All the PaneStats cleaned up
      */
-    private cleanStats(stats: Array<IPaneStat<G | P>>, titlePrefix: string): Array<IPaneStat<G | P>> {
+    private cleanStats(stats: Array<IPaneStat<any>>, titlePrefix: string): Array<IPaneStat<G | P>> {
         for (const stat of stats) {
             if (stat.label || stat.title) {
                 stat.title = `${titlePrefix}'s ${stat.label || stat.title}`;
@@ -339,7 +339,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
      * @param statsList the stats list to update each stat for from the object
      * @param obj the state information of the object
      */
-    private updateStatsList(statsList: IStatsList<G | P>, obj: any): void {
+    private updateStatsList(statsList: IStatsList<any>, obj: any): void {
         let i = -1;
         for (const stat of statsList.stats) {
             i++;
