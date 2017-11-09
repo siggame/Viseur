@@ -61,7 +61,7 @@ export class Tile extends GameObject {
         // Set the parent of the tile container as the background layer
         this.container.setParent(this.game.layers.background);
         // Set the container's sprite as the ground tile Sprite
-        let r = Math.floor(Math.random() * 3) + 1;
+        const r = Math.floor(Math.random() * 3) + 1;
         if (r === 1) {
             this.grass = this.game.resources.grass1.newSprite(this.container);
         }

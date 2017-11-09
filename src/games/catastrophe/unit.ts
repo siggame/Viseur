@@ -322,7 +322,7 @@ export class Unit extends GameObject {
                 this.indicatorSprite.visible = false;
             }
             else if (run.functionName !== "move" && nextReason.returned === true) {
-                console.log(run.functionName);
+                // console.log(run.functionName);
             }
         }
             // <<-- /Creer-Merge: state-updated -->>
