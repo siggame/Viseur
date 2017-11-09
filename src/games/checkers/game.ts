@@ -10,9 +10,7 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
-import { RendererResource } from "src/viseur/renderer";
-
+// any additional imports you want can be added here safely between Creer runsW
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -45,8 +43,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        this.defaultPlayerColors[0], // Player 0
-        this.defaultPlayerColors[1], // Player 1
+        Color("#c92b10"), // Player 0 = red(ish)
+        Color("#3a3a3a"), // Player 1 = black (well dark gray)
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
@@ -99,8 +97,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: state.boardWidth + this.borderLength * 2,
+            height: state.boardHeight + this.borderLength * 2,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -149,16 +147,16 @@ export class Game extends BaseGame {
         for (let x = 0; x < 8; x++) {
             this.tileSprites[x] = [];
             for (let y = 0; y < 8; y++) {
-                const color = (x + y) % 2
-                    ? "White"
-                    : "Black";
+                const resource = (x + y) % 2
+                    ? this.resources.tileWhite
+                    : this.resources.tileBlack;
 
-                this.tileSprites[x][y] = (this.resources[`tile${color}`] as RendererResource).newSprite(tileContainer, {
+                this.tileSprites[x][y] = resource.newSprite(tileContainer, {
                     tint: this.randomColor,
                     position: {
                         x,
                         y,
-                    }, /**/
+                    },
                 });
             }
         }

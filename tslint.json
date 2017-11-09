@@ -44,7 +44,14 @@
             "requireParamType": false,
             "matchDescription": ".+"
         }],
-        "valid-typeof": true
+        "valid-typeof": true,
+        "no-string-literal": true,
+        "quotemark": [
+            true,
+            "double",
+            "avoid-escape",
+            "avoid-template"
+        ]
     },
     "rulesDirectory": []
 }
