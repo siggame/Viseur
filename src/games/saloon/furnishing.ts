@@ -50,9 +50,6 @@ export class Furnishing extends GameObject {
     /** The game bar the represents this furnishing health */
     private readonly healthBar: GameBar;
 
-    /** The sprite that represents our furniture */
-    private readonly sprite: PIXI.Sprite;
-
     /** If we are a piano, this is our music being played */
     private readonly musicSprite?: PIXI.Sprite;
 
@@ -82,7 +79,7 @@ export class Furnishing extends GameObject {
             max: state.health,
         });
 
-        this.sprite = state.isPiano
+        state.isPiano
             ? this.game.resources.piano.newSprite(this.container)
             : this.game.resources.furnishing.newSprite(this.container);
 

@@ -64,9 +64,6 @@ export class Building extends GameObject {
     /** The owner of this building */
     private owner: Player;
 
-    /** The back of the building (neutral colors) */
-    private buildingSpriteBack: PIXI.Sprite;
-
     /** The front of the building (colored according to owner) */
     private buildingSpriteFront: PIXI.Sprite;
 
@@ -75,9 +72,6 @@ export class Building extends GameObject {
 
     /** The bar that displays our health */
     private healthBar: GameBar;
-
-    /** The visual graffiti displayed on the building indicating owner */
-    private graffitiSprite: PIXI.Sprite;
 
     /** The graphic used when we are targeted by an enemy */
     private targetedSprite: PIXI.Sprite;
@@ -122,8 +116,7 @@ export class Building extends GameObject {
         const base = unCapitalizeFirstLetter(state.gameObjectName);
 
         // the back sprite are neutral colors
-        this.buildingSpriteBack = (this.game.resources[`${base}Back`] as RendererResource)
-             .newSprite(this.aliveContainer);
+        (this.game.resources[`${base}Back`] as RendererResource).newSprite(this.aliveContainer);
         // and the front is a white map we will re-color to the team's color
         this.buildingSpriteFront = (this.game.resources[`${base}Front`] as RendererResource)
             .newSprite(this.aliveContainer);
@@ -146,7 +139,7 @@ export class Building extends GameObject {
         // the headquarters has no unique sprite, but instead a graffiti marking to easily make it stand out
         if (state.isHeadquarters) {
             // we have two players with id "0" and "1", so we use that to quickly get their graffiti sprite
-            this.graffitiSprite = (this.game.resources[`graffiti${state.owner.id}`] as RendererResource).newSprite(
+            (this.game.resources[`graffiti${state.owner.id}`] as RendererResource).newSprite(
                 this.aliveContainer, {
                     alpha: 0.9, // make it partially transparent because it looks nicer
                 },
@@ -207,7 +200,6 @@ export class Building extends GameObject {
         const targetedAlpha = ease(1 - dt, "cubicInOut");
         this.targetedSprite.alpha = targetedAlpha;
 
-        let deadInBothStates = false;
         if (current.health === 0 || next.health === 0) {
             // it died at some point, so make the dead sprite visible
             this.deadSprite.visible = true;
@@ -217,7 +209,6 @@ export class Building extends GameObject {
             let alpha = 1;
             if (current.health === 0 && next.health === 0) {
                 // it is dead, and remains dead, so just hide our normal sprite
-                deadInBothStates = true;
                 this.aliveContainer.visible = false;
             }
             else { // current.health !== 0 && next.health === 0, which means it burned down :(

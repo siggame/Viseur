@@ -1,7 +1,6 @@
 import { Timer } from "src/core/timer";
 import { viseur } from "src/viseur/";
 import { Event } from "ts-typed-events";
-import { BaseGame } from "./game/base-game";
 import { IGamelog } from "./game/gamelog";
 
 /** Simple container for the current time of the time manager */
@@ -35,9 +34,6 @@ export class TimeManager {
     /** The current index  to render */
     private currentIndex: number = -1;
 
-    /** The game we are managing time for */
-    private game: BaseGame;
-
     /** The gamelog we are counting deltas for */
     private gamelog: IGamelog;
 
@@ -57,7 +53,7 @@ export class TimeManager {
         });
 
         viseur.events.ready.on((data) => {
-            this.ready(data.game, data.gamelog);
+            this.ready(data.gamelog);
         });
     }
 
@@ -105,11 +101,9 @@ export class TimeManager {
 
     /**
      * Invoked when Viseur is ready
-     * @param {BaseGame} game - the game we are playing back
      * @param {Object} gamelog - the gamelog, may be streaming
      */
-    private ready(game: BaseGame, gamelog: IGamelog): void {
-        this.game = game;
+    private ready(gamelog: IGamelog): void {
         this.gamelog = gamelog;
 
         this.ticked(true);

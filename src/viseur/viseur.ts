@@ -435,7 +435,7 @@ export class Viseur {
         }
 
         if (this.game) {
-            throw new Error(`Viseur game already initialized`);
+            throw new Error("Viseur game already initialized");
         }
 
         if (!this.joueur) {

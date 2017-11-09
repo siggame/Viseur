@@ -296,9 +296,9 @@ export class FileTab extends Tab {
 
         viseur.events.connectionClosed.once((data) => {
             if (data.timedOut) {
-                this.log(`You timed out and were forcibly disconnected.`);
+                this.log("You timed out and were forcibly disconnected.");
             }
-            this.log(`Connection closed.`);
+            this.log("Connection closed.");
         });
 
         const type = this.connectTypeInput.value;

@@ -373,7 +373,7 @@ export class BaseGame extends StateObject {
             });
         }
 
-        return Settings.createSettings(this.name, combined);
+        return Settings.createSettings(this.name, combined) as any;
     }
 
     /**
