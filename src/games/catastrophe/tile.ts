@@ -105,11 +105,14 @@ export class Tile extends GameObject {
         // <<-- Creer-Merge: render -->>
         // render where the Tile is
 
-        if (this.berry && current.harvestRate > 0) {
-            this.berry.visible = true;
-        }
-        else if (this.berry) {
-            this.berry.visible = false;
+        if (this.bush) {
+            this.bush.visible = current.harvestRate > 0;
+            if (this.bush.visible && current.turnsToHarvest === 0) {
+                this.berry.visible = true;
+            }
+            else {
+                this.berry.visible = false;
+            }
         }
         /** */
         // <<-- /Creer-Merge: render -->>

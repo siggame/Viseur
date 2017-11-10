@@ -106,6 +106,9 @@ export class Structure extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         // render where the Structure is
+
+        // Convert next.tile to a boolean value
+        this.container.visible = !(!next.tile);
         // <<-- /Creer-Merge: render -->>
     }
 
