@@ -325,7 +325,7 @@ export class Unit extends GameObject {
                 // console.log(run.functionName);
             }
         }
-            // <<-- /Creer-Merge: state-updated -->>
+        // <<-- /Creer-Merge: state-updated -->>
     }
 
     // <<-- Creer-Merge: public-functions -->>
@@ -371,7 +371,8 @@ export class Unit extends GameObject {
     /**
      * Attacks an adjacent Tile. Costs an action for each Unit in this Unit's
      * squad. Units in the squad without an action don't participate in combat.
-     * Units in combat cannot move afterwards.
+     * Units in combat cannot move afterwards. Attacking structures will not
+     * give materials.
      * @param tile The Tile to attack.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
@@ -419,9 +420,8 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Removes materials from an adjacent Tile's Structure. Soldiers do not gain
-     * materials from doing this, but can deconstruct friendly Structures as
-     * well.
+     * Removes materials from an adjacent Tile's Structure. You cannot
+     * deconstruct friendly structures (see Unit.attack).
      * @param tile The Tile to deconstruct. It must have a Structure on it.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully

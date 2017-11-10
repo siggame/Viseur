@@ -1,6 +1,5 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
-import * as Color from "color";
 import { MenuItems } from "src/core/ui/context-menu";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
@@ -8,7 +7,7 @@ import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import * as Color from "color";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -56,6 +55,7 @@ export class Tile extends GameObject {
      */
     constructor(state: ITileState, game: Game) {
         super(state, game);
+
         // <<-- Creer-Merge: constructor -->>
         // render the board
         // Set the parent of the tile container as the background layer
@@ -86,6 +86,7 @@ export class Tile extends GameObject {
         this.container.position.set(state.x, state.y);
         // <<-- /Creer-Merge: constructor -->>
     }
+
     /**
      * Called approx 60 times a second to update and render Tile
      * instances. Leave empty if it is not being rendered.

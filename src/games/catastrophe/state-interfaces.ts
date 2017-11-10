@@ -45,6 +45,11 @@ export interface IGameState extends IBaseGameState {
     jobs: IJobState[];
 
     /**
+     * The amount that the harvest rate is lowered each season.
+     */
+    lowerHarvestAmount: number;
+
+    /**
      * The number of Tiles in the map along the y (vertical) axis.
      */
     mapHeight: number;
@@ -60,6 +65,22 @@ export interface IGameState extends IBaseGameState {
     maxTurns: number;
 
     /**
+     * The multiplier for the cost of actions when performing them in range of a
+     * monument. Does not effect pickup cost.
+     */
+    monumentCostMult: number;
+
+    /**
+     * The number of materials in a monument.
+     */
+    monumentMaterials: number;
+
+    /**
+     * The number of materials in a neutral Structure.
+     */
+    neutralMaterials: number;
+
+    /**
      * List of all the players in the game.
      */
     players: IPlayerState[];
@@ -68,6 +89,11 @@ export interface IGameState extends IBaseGameState {
      * A unique identifier for the game instance that is being played.
      */
     session: string;
+
+    /**
+     * The number of materials in a shelter.
+     */
+    shelterMaterials: number;
 
     /**
      * The multiplier for the amount of energy regenerated when resting while
@@ -87,9 +113,31 @@ export interface IGameState extends IBaseGameState {
     tiles: ITileState[];
 
     /**
+     * After a food tile is harvested, the number of turns before it can be
+     * harvested again.
+     */
+    turnsBetweenHarvests: number;
+
+    /**
+     * The number of turns between fresh humans being spawned on the road.
+     */
+    turnsToCreateHuman: number;
+
+    /**
+     * The number of turns before the harvest rate is lowered (length of each
+     * season basically).
+     */
+    turnsToLowerHarvest: number;
+
+    /**
      * Every Unit in the game.
      */
     units: IUnitState[];
+
+    /**
+     * The number of materials in a wall.
+     */
+    wallMaterials: number;
 
 }
 
