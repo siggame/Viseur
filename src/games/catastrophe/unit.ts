@@ -213,7 +213,7 @@ export class Unit extends GameObject {
 
         let currEnergy;
         let nextEnergy;
-        if (this.job === "fresh human") {
+        if (this.job === "fresh human" && this.owner === null) {
             currEnergy = current.turnsToDie / 10; // Magic number 10 is max turns to die
             nextEnergy = next.turnsToDie / 10;
         }
