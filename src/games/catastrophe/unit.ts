@@ -279,7 +279,7 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
-        if (this.owner === undefined) {
+        if (!this.owner) {
             const white = Color("white");
             this.dropShadow.tint = white.rgbNumber();
             return;
