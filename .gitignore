@@ -50,4 +50,5 @@ desktop.ini
 package-lock.json
 
 # webpack bundle
-built/
+dist/
+docs/

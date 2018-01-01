@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "8.5.0"
+  - "9.3.0"
 
 script:
   # run units tests
@@ -9,12 +9,13 @@ script:
 before_deploy:
   # run webpack to build the static pages to deploy
   - npm run build
+  # github pages needs this file so it knows vis.siggame.io is the domain name
   - echo vis.siggame.io >> built/CNAME
 
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: built/
+  local_dir: dist/
   github_token: $GH_TOKEN
   on:
     branch: master
