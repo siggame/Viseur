@@ -10,7 +10,7 @@ before_deploy:
   # run webpack to build the static pages to deploy
   - npm run build
   # github pages needs this file so it knows vis.siggame.io is the domain name
-  - echo vis.siggame.io >> built/CNAME
+  - echo vis.siggame.io >> dist/CNAME
 
 deploy:
   provider: pages
