@@ -109,11 +109,24 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
+        // generate a random color based on the game's random seed so each
+        // background color for each game has a slight different hue
+        const randomColor = Color().hsl(
+            this.chance.floating({min: 0, max: 360}), // hue, random number 0 to 360
+            60, // saturation
+            40, // lumosity
+        ).whiten(1.5);
+
         for (let x = 0; x < state.boardWidth; x++) {
             for (let y = 0; y < state.boardHeight; y++) {
-                this.resources.blank.newSprite(this.layers.background, {
+                const black = Boolean((x + y) % 2);
+
+                (black
+                    ? this.resources.tileBlack
+                    : this.resources.tileRed
+                ).newSprite(this.layers.background, {
                     position: {x, y},
-                    tint: ((x + y) % 2) ? "black" : "red",
+                    tint: Color(black ? "black" : "red").mix(randomColor, 0.85),
                 });
             }
         }
