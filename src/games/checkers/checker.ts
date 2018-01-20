@@ -41,7 +41,11 @@ export class Checker extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
 
-    public pieceSprite: PIXI.Sprite;
+    /** The sprite representing the piece of this checker on the board */
+    // private pieceSprite: PIXI.Sprite;
+
+    /** The kinged symbol on top of the piece, if kinged */
+    private kingedSprite: PIXI.Sprite;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -55,10 +59,16 @@ export class Checker extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-        this.pieceSprite = this.game.resources.piece.newSprite(this.game.layers.game, {
+        this.container.setParent(this.game.layers.game);
+
+        // not used (for now)
+        // this.pieceSprite =
+        this.game.resources.piece.newSprite(this.container, {
             // if they go DOWN the board (1), they are black, up (-1) is red
             tint: state.owner.yDirection === 1 ? "gray" : "darkred",
         });
+
+        this.kingedSprite = this.game.resources.kinged.newSprite(this.container);
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -79,8 +89,21 @@ export class Checker extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        this.pieceSprite.position.x = ease(current.x, next.x, dt);
-        this.pieceSprite.position.y = ease(current.y, next.y, dt);
+        this.container.position.x = ease(current.x, next.x, dt);
+        this.container.position.y = ease(current.y, next.y, dt);
+
+        // figure out how to render our kinged sprite
+        let kingedAlpha = 0;
+        if (current.kinged && next.kinged) {
+            kingedAlpha = 1;
+        }
+        else if (!current.kinged && next.kinged) {
+            // we are getting kinged next delta, so fade in the sprite
+            kingedAlpha = ease(dt);
+        }
+        // else 0 is fine
+        this.kingedSprite.alpha = kingedAlpha;
+
         // <<-- /Creer-Merge: render -->>
     }
 
