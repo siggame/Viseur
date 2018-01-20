@@ -101,7 +101,7 @@ export class Checker extends GameObject {
             kingedAlpha = ease(dt);
         }
         // else 0 is fine
-        this.kingedSprite.alpha = kingedAlpha;
+        this.kingedSprite.alpha = kingedAlpha * this.game.settings.kingedAlpha.get();
 
         // <<-- /Creer-Merge: render -->>
     }
