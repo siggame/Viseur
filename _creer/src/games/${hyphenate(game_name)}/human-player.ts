@@ -76,6 +76,7 @@ arguments.append({
     'description': 'The callback that eventually returns the return value from the server.' + (' - The returned value is ' + return_description) if return_description else ''
 
 })
+returnless['arguments'] = arguments
 docstring = shared['vis']['block_comment']('    ', returnless)
 
 formatted_name = '    public '+function_name+'('

@@ -18,7 +18,7 @@ export class Tabular extends BaseElement {
     private activeTab: Tab;
 
     /** parent container to store tab's tab item in */
-    private tabsElement= this.element.find(".tabular-tabs");
+    private tabsElement = this.element.find(".tabular-tabs");
 
     /** parent container to store tab's contents in */
     private contentsElement = this.element.find(".tabular-content");
