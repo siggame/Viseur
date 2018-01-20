@@ -7,7 +7,7 @@ import { GameObject } from "./game-object";
 import { ICheckerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -26,7 +26,7 @@ export class Checker extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -40,7 +40,9 @@ export class Checker extends GameObject {
     public next: ICheckerState;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+
+    public pieceSprite: PIXI.Sprite;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -53,7 +55,10 @@ export class Checker extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Checker here.
+        this.pieceSprite = this.game.resources.test.newSprite(this.game.layers.game, {
+            // if they go DOWN the board (1), they are black, up (-1) is red
+            tint: state.owner.yDirection === 1 ? "gray" : "darkred",
+        });
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -74,7 +79,8 @@ export class Checker extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Checker is
+        this.pieceSprite.position.x = ease(current.x, next.x, dt);
+        this.pieceSprite.position.y = ease(current.y, next.y, dt);
         // <<-- /Creer-Merge: render -->>
     }
 
