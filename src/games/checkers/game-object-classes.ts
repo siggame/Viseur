@@ -7,7 +7,7 @@ import { Player } from "./player";
 
 /** All the non Game classes in this game */
 export const GameObjectClasses: Readonly<IBaseGameObjectClasses> = Object.freeze({
-    Player,
     GameObject,
+    Player,
     Checker,
 }) as any;

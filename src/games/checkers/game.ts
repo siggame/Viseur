@@ -10,7 +10,7 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runsW
+// any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -43,8 +43,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        Color("#c92b10"), // Player 0 = red(ish)
-        Color("#3a3a3a"), // Player 1 = black (well dark gray)
+        this.defaultPlayerColors[0], // Player 0
+        this.defaultPlayerColors[1], // Player 1
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
@@ -67,22 +67,7 @@ export class Game extends BaseGame {
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
-
-    /** The container for pieces on the board */
-    public readonly piecesContainer = new PIXI.Container();
-
-    /** The random color used to make the board look different per game */
-    public readonly randomColor = Color().hsl(this.chance.floating({min: 0, max: 360}), 60, 40).whiten(1.5);
-
-    /** The compliment of the random color, used for UI on top of the background */
-    // private readonly randomColorCompliment = this.randomColor.rotate(180).opaquer(0.333);
-
-    /** The border length around the board to render rank/file numbers */
-    private borderLength = 0.5;
-
-    /** The sprites for each tile, in a 2d array */
-    private tileSprites: PIXI.Sprite[][] = [];
-
+    // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     // <<-- Creer-Merge: public-functions -->>
@@ -97,8 +82,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: state.boardWidth + this.borderLength * 2,
-            height: state.boardHeight + this.borderLength * 2,
+            width: 10, // Change these. Probably read in the map's width
+            height: 10, // and height from the initial state here.
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -124,43 +109,7 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
-        const backgroundColor = this.randomColor.darken(0.75);
-
-        const length = 8 + this.borderLength * 2;
-        this.layers.background.addChild(new PIXI.Graphics())
-            .beginFill(backgroundColor.rgbNumber(), 1)
-            .drawRect(0, 0, length, length)
-            .endFill();
-
-        const boardContainer = new PIXI.Container();
-        boardContainer.setParent(this.layers.background);
-        boardContainer.position.set(this.borderLength, this.borderLength);
-
-        const tileContainer = new PIXI.Container();
-        tileContainer.setParent(boardContainer);
-
-        const overlayContainer = new PIXI.Container();
-        overlayContainer.setParent(boardContainer);
-
-        this.piecesContainer.setParent(boardContainer);
-
-        for (let x = 0; x < 8; x++) {
-            this.tileSprites[x] = [];
-            for (let y = 0; y < 8; y++) {
-                const resource = (x + y) % 2
-                    ? this.resources.tileWhite
-                    : this.resources.tileBlack;
-
-                this.tileSprites[x][y] = resource.newSprite(tileContainer, {
-                    tint: this.randomColor,
-                    position: {
-                        x,
-                        y,
-                    },
-                });
-            }
-        }
-
+        // Initialize your background here if need be
         // <<-- /Creer-Merge: create-background -->>
     }
 

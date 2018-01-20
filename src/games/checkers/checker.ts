@@ -8,8 +8,6 @@ import { ICheckerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
-import { ease } from "src/utils";
-import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -28,7 +26,7 @@ export class Checker extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return true; // change this to true to render all instances of this class
+        return super.shouldRender; // change this to true to render all instances of this class
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -43,13 +41,6 @@ export class Checker extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
-
-    /** The player that owns this piece */
-    private owner: Player;
-
-    private readonly king: PIXI.Sprite;
-    private readonly checker: PIXI.Sprite;
-
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -63,13 +54,6 @@ export class Checker extends GameObject {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Checker here.
-        this.container.setParent(this.game.piecesContainer);
-        this.owner = this.game.gameObjects[state.owner.id] as Player;
-        this.checker = this.game.resources.checker.newSprite(this.container);
-        this.king = this.game.resources.king.newSprite(this.container);
-
-        this.king.visible = false;
-        this.recolor();
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -90,27 +74,7 @@ export class Checker extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        if (current.kinged) {
-            this.king.visible = true;
-        }
-        else {
-            this.king.visible = false;
-        }
-
-        const currentPosition = {
-            x: current.x,
-            y: current.y,
-        };
-        const nextPosition = {
-            x: next.x,
-            y: next.y,
-        };
-
-        this.container.position.set(
-            ease(currentPosition.x, nextPosition.x, dt),
-            ease(currentPosition.y, nextPosition.y, dt),
-        );
-
+        // render where the Checker is
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -122,8 +86,7 @@ export class Checker extends GameObject {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        const ownerColor = this.game.getPlayersColor(this.owner);
-        this.checker.tint = ownerColor.rgbNumber();
+        // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
     }
 

@@ -49,6 +49,7 @@ export class HumanPlayer extends BaseHumanPlayer {
      * This is called whenever your checker gets captured (during an opponent's
      * turn).
      * @param checker The checker that was captured.
+     * @param callback
      */
     public gotCaptured(checker: ICheckerState, callback: (returned: void) => void): void {
         // <<-- Creer-Merge: gotCaptured -->>
@@ -58,7 +59,10 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * This is called every time it is this AI.player's turn.
-     * @param callback function to be called
+     * @param callback The callback that eventually returns the return value
+     * from the server. - The returned value is Represents if you want to end
+     * your turn. True means end your turn, False means to keep your turn going
+     * and re-call this function.
      */
     public runTurn(callback: (returned: boolean) => void): void {
         // <<-- Creer-Merge: runTurn -->>
