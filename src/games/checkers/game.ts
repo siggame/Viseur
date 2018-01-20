@@ -82,8 +82,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: state.boardWidth,
+            height: state.boardHeight,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
