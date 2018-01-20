@@ -74,7 +74,11 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         const stats: Array<IPaneStat<P>> = super.getPlayerStats(state);
 
         // <<-- Creer-Merge: player-stats -->>
-        // add stats for players to show up here
+        stats.push({
+            icon: "circle",
+            title: "Player's pieces remaining",
+            get: (playerState) => playerState.checkers.length,
+        });
         // <<-- /Creer-Merge: player-stats -->>
 
         return stats;
