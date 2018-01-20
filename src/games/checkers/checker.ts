@@ -7,7 +7,7 @@ import { GameObject } from "./game-object";
 import { ICheckerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import { ease } from "src/utils";
+import { ease, getContrastingColor } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -42,10 +42,13 @@ export class Checker extends GameObject {
     // <<-- Creer-Merge: variables -->>
 
     /** The sprite representing the piece of this checker on the board */
-    // private pieceSprite: PIXI.Sprite;
+    private pieceSprite: PIXI.Sprite;
 
     /** The kinged symbol on top of the piece, if kinged */
     private kingedSprite: PIXI.Sprite;
+
+    /** The ID of our owner for recoloring */
+    private ownerID: string;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -59,15 +62,11 @@ export class Checker extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
+        this.ownerID = state.owner.id;
+
         this.container.setParent(this.game.layers.game);
 
-        // not used (for now)
-        // this.pieceSprite =
-        this.game.resources.piece.newSprite(this.container, {
-            // if they go DOWN the board (1), they are black, up (-1) is red
-            tint: state.owner.yDirection === 1 ? "gray" : "darkred",
-        });
-
+        this.pieceSprite = this.game.resources.piece.newSprite(this.container);
         this.kingedSprite = this.game.resources.kinged.newSprite(this.container);
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -115,7 +114,10 @@ export class Checker extends GameObject {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
+        const color = this.game.getPlayersColor(this.ownerID);
+
+        this.pieceSprite.tint = color.rgbNumber();
+        this.kingedSprite.tint = getContrastingColor(color).rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
