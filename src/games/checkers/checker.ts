@@ -55,7 +55,7 @@ export class Checker extends GameObject {
         super(state, game);
 
         // <<-- Creer-Merge: constructor -->>
-        this.pieceSprite = this.game.resources.test.newSprite(this.game.layers.game, {
+        this.pieceSprite = this.game.resources.piece.newSprite(this.game.layers.game, {
             // if they go DOWN the board (1), they are black, up (-1) is red
             tint: state.owner.yDirection === 1 ? "gray" : "darkred",
         });
