@@ -17,7 +17,7 @@ import "font-awesome-sass-loader";
 import * as $ from "jquery";
 import "./core/";
 
-$(document).on("ready", () => {
+$(document).ready(() => {
     const viseur = require("./viseur");
     anyWindow.viseur = viseur;
 

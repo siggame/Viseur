@@ -18,7 +18,7 @@ module.exports = {
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
         alias: {
-            //handlebars: "handlebars/dist/handlebars.min.js" // allows handlebars to work without the need for "fs"
+            // handlebars: "handlebars/dist/handlebars.min.js" // allows handlebars to work without the need for "fs"
         },
         alias: {
             "src": path.resolve(__dirname, "src/"),
@@ -27,7 +27,7 @@ module.exports = {
     output: {
         filename: "js/[name].js",
         path: path.resolve(__dirname, "dist"),
-        //publicPath: "dist/",
+        // publicPath: "dist/",
     },
     module: {
         loaders: [
@@ -42,7 +42,7 @@ module.exports = {
                     {
                         loader: "ts-loader",
                         options: {
-                            //transpileOnly: true, // IMPORTANT! use transpileOnly mode to speed-up compilation
+                            // transpileOnly: true, // IMPORTANT! use transpileOnly mode to speed-up compilation
                             logLevel: "error",
                             visualStudioErrorFormat: true,
                         }
@@ -114,12 +114,14 @@ module.exports = {
                 ]
             }
         ],
-        /*postLoaders: [
+        /*
+        postLoaders: [
             {
                 include: path.resolve(__dirname, "node_modules/pixi.js"), // this allows fs.readFileSync to work in pixi.js
                 loader: "transform?brfs",
             },
-        ],*/
+        ],
+        */
     },
     node: {
         fs: "empty"
@@ -132,14 +134,14 @@ module.exports = {
 
        function() {
             this.plugin("done", function(stats) {
-                //Since webpack dependent Stats.js
-                //Just see the API of Stats.js
-                //You can do anything with the stats output
+                // Since webpack dependent Stats.js
+                // Just see the API of Stats.js
+                // You can do anything with the stats output
                 if (stats && stats.hasErrors()) {
                     stats.toJson().errors.forEach((err) => {
                         console.error(err);
                     });
-                    //process.exit(1);
+                    // process.exit(1);
                 }
             });
         },
