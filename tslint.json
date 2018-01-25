@@ -51,7 +51,9 @@
             "double",
             "avoid-escape",
             "avoid-template"
-        ]
+        ],
+        "prefer-template": [true, "allow-single-concat"],
+        "forin": true
     },
     "rulesDirectory": []
 }

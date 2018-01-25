@@ -1,32 +1,31 @@
-const webpack = require("webpack");
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+import * as HtmlWebpackPlugin from "html-webpack-plugin";
+import { join, resolve } from "path";
+import * as webpack from "webpack";
 
-const babelOptions = {
-    "presets": "es2015"
-};
-
-function isNodeModule(module) {
+/**
+ * Checks if a given module is from the node_modules path
+ * @param module the module to check
+ * @returns true if a node_module, false otherwise
+ */
+function isNodeModule(module: any): boolean {
     return module.context && module.context.indexOf("node_modules") !== -1;
 }
 
-module.exports = {
+const config: webpack.Configuration = {
     entry: [
-        "font-awesome/scss/font-awesome.scss",
-        "src/index.ts",
+        "babel-polyfill/dist/polyfill.js", // polyfill new es functions for babel
+        "font-awesome/scss/font-awesome.scss", // font-awesome icons injection
+        "src/index.ts", // our actual starting file now that stuff is ready
     ],
     resolve: {
         extensions: [".tsx", ".ts", ".js"],
         alias: {
-            // handlebars: "handlebars/dist/handlebars.min.js" // allows handlebars to work without the need for "fs"
+            src: resolve(__dirname, "src/"),
         },
-        alias: {
-            "src": path.resolve(__dirname, "src/"),
-        }
     },
     output: {
         filename: "js/[name].js",
-        path: path.resolve(__dirname, "dist"),
+        path: resolve(__dirname, "dist"),
         // publicPath: "dist/",
     },
     module: {
@@ -37,41 +36,27 @@ module.exports = {
                 use: [
                     {
                         loader: "babel-loader",
-                        options: babelOptions
+                        options: {
+                            presets: ["babel-preset-env"],
+                        },
                     },
                     {
                         loader: "ts-loader",
-                        options: {
-                            // transpileOnly: true, // IMPORTANT! use transpileOnly mode to speed-up compilation
-                            logLevel: "error",
-                            visualStudioErrorFormat: true,
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: "babel-loader",
-                        options: babelOptions
-                    }
-                ]
-            },
-            {
-                test: /\.(jpe?g|png|gif|ico|svg)$/i,
-                use: [
-                    {
-                        loader: "file-loader",
-                        options: {
-                            outputPath: "resources/",
-                        },
                     },
                 ],
             },
             {
-                test: /\.(ttf|otf|eot|woff|woff2)$/i,
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: "babel-loader",
+                    options: {
+                        presets: ["@babel/preset-env"],
+                    },
+                },
+            },
+            {
+                test: /\.(jpe?g|png|gif|ico|svg|ttf|otf|eot|woff|woff2)$/i,
                 use: [
                     {
                         loader: "file-loader",
@@ -86,7 +71,7 @@ module.exports = {
                 use: {
                     loader: "handlebars-loader",
                     options: {
-                        helperDirs: [ __dirname + "/src/handlebars-helpers" ],
+                        helperDirs: [ join(__dirname, "/src/handlebars-") ],
                         inlineRequires: "\/images\/",
                     },
                 },
@@ -95,36 +80,20 @@ module.exports = {
                 test: /\.(css|sass|scss)$/,
                 use: [
                     {
-                        loader: "style-loader" // creates style nodes from JS strings
+                        loader: "style-loader", // creates style nodes from JS strings
                     },
                     {
-                        loader: "css-loader" // translates CSS into CommonJS
+                        loader: "css-loader", // translates CSS into CommonJS
                     },
                     {
-                        loader: "sass-loader" // compiles Sass to CSS
-                    }
-                ]
-            },
-            {
-                test: /\.json$/,
-                use: [
-                    {
-                        loader: "json-loader"
-                    }
-                ]
-            }
-        ],
-        /*
-        postLoaders: [
-            {
-                include: path.resolve(__dirname, "node_modules/pixi.js"), // this allows fs.readFileSync to work in pixi.js
-                loader: "transform?brfs",
+                        loader: "sass-loader", // compiles Sass to CSS
+                    },
+                ],
             },
         ],
-        */
     },
     node: {
-        fs: "empty"
+        fs: "empty",
     },
     plugins: [
         // generate for us our index.html page
@@ -132,13 +101,14 @@ module.exports = {
             title: "Viseur",
         }),
 
-       function() {
-            this.plugin("done", function(stats) {
+        function StatsPlugin(): void {
+            this.plugin("done", (stats) => {
                 // Since webpack dependent Stats.js
                 // Just see the API of Stats.js
                 // You can do anything with the stats output
                 if (stats && stats.hasErrors()) {
                     stats.toJson().errors.forEach((err) => {
+                        // tslint:disable-next-line:no-console
                         console.error(err);
                     });
                     // process.exit(1);
@@ -150,10 +120,10 @@ module.exports = {
         // https://webpack.js.org/plugins/commons-chunk-plugin/
         new webpack.optimize.CommonsChunkPlugin({
             names: ["node_modules"],
-            minChunks: function (module, count) {
+            minChunks: (module, count) => {
                 // creates a common vendor js file for libraries in node_modules
                 return isNodeModule(module);
-            }
+            },
         }),
     ],
     devtool: "source-map",
@@ -163,7 +133,9 @@ module.exports = {
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
-        }
+            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
+        },
     },
 };
+
+export default config;
