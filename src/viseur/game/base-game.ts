@@ -367,7 +367,7 @@ export class BaseGame extends StateObject {
         for (let i = 0; i < this.numberOfPlayers; i++) { // iterate in reverse order
             combined.playerColors[i] = new Settings.ColorSetting({
                 id: `player-color-${i}`,
-                label: "Player " + i + " Color",
+                label: `Player ${i} Color`,
                 hint: "Overrides the color for Player " + i,
                 default: this.defaultPlayerColors[i].hex(),
             });

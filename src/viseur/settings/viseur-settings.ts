@@ -33,10 +33,12 @@ export const ViseurSettings = createSettings("viseur", {
     playbackMode: new Setting.DropDownSetting<string>({
         id: "playback-mode",
         label: "Playback Mode",
-        hint: "The preferred playback mode.\nDeltas based means the actual sequence of events is shown, but playback "
-            + "may take longer for turns with a large number of events\nTurns based means the sequence of events is "
-            + "compressed so each GameObject does everything at the same time, which is not actually what happened. "
-            + "Playback speed increases with this enabled",
+        // tslint:disable:max-line-length
+        hint: `The preferred playback mode.
+Deltas based means the actual sequence of events is shown, however playback may take longer for turns with a large number of events.
+Turns based means the sequence of events is compressed so each GameObject does everything at the same time, which is not actually what happened.
+Playback speed is generally increased in Turns mode.`,
+        // tslint:enable:max-line-length
         options: [
             { text: "Deltas", value: "deltas" },
             { text: "Turns", value: "turns" },
@@ -46,8 +48,10 @@ export const ViseurSettings = createSettings("viseur", {
     resolutionScale: new Setting.NumberSetting({
         id: "resolution-scale",
         label: "Resolution Scale",
-        hint: "Up or down samples the resolution.\nValues below 1 render at a lower internal resolution, and may "
-            + "perform faster on older computers.\nValues above 1 may sharpen the image.\n1 is native resolution.",
+        hint: `Up or down samples the resolution.
+Values below 1 render at a lower internal resolution, and may perform faster on older computers.
+Values above 1 may sharpen the image.
+Value of 1 is native resolution.`,
         min: 0.01,
         max: 2,
         step: 0.01,
