@@ -7,7 +7,7 @@ import * as Color from "color";
  * @returns {Color} either black or white
  */
 export function getContrastingColor(color: Color): Color {
-    return color.light()
+    return color.isLight()
         ? Color("black")
         : Color("white");
 }

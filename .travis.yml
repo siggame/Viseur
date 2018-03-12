@@ -7,8 +7,10 @@ script:
   - npm test
 
 before_deploy:
-  # run webpack to build the static pages to deploy
-  - npm run build
+  # remove the dist built
+  - rm -rf dist/
+  # run webpack to build the static pages to deploy in production mode
+  - npm run build:prod
   # file to tell GitHub pages not to try to run jekyll stuff (can break urls)
   - touch dist/.nojekyll
   # github pages needs this file so it knows vis.siggame.io is the domain name

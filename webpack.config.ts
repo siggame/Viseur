@@ -7,9 +7,11 @@ import * as webpack from "webpack";
  * @param module the module to check
  * @returns true if a node_module, false otherwise
  */
+/*
 function isNodeModule(module: any): boolean {
     return module.context && module.context.indexOf("node_modules") !== -1;
 }
+*/
 
 const config: webpack.Configuration = {
     entry: [
@@ -29,7 +31,7 @@ const config: webpack.Configuration = {
         // publicPath: "dist/",
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.ts(x?)$/,
                 exclude: /node_modules/,
@@ -116,6 +118,7 @@ const config: webpack.Configuration = {
             });
         },
 
+        /*
         // provides a great speedup in both module use and development debugging
         // https://webpack.js.org/plugins/commons-chunk-plugin/
         new webpack.optimize.CommonsChunkPlugin({
@@ -125,8 +128,11 @@ const config: webpack.Configuration = {
                 return isNodeModule(module);
             },
         }),
+        */
     ],
-    devtool: "source-map",
+    devtool: process.env.NODE_ENV === "development"
+        ? "source-map"
+        : false,
     devServer: {
         historyApiFallback: true,
         watchOptions: { aggregateTimeout: 300, poll: 1000 },
@@ -135,6 +141,9 @@ const config: webpack.Configuration = {
             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
             "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
         },
+    },
+    performance: {
+        hints: false, // TODO: handle these warnings
     },
 };
 
