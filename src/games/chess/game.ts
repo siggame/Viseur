@@ -256,8 +256,8 @@ export class Game extends BaseGame {
             this.tileSprites[x] = [];
             for (let y = 0; y < 8; y++) {
                 const color = (x + y) % 2
-                    ? "White"
-                    : "Black";
+                    ? "Black"
+                    : "White";
 
                 this.tileSprites[x][y] = (this.resources[`tile${color}`] as RendererResource).newSprite(tileContainer, {
                     onClick: () => this.tileClicked(x, y),
