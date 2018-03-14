@@ -9,10 +9,10 @@ export interface IState {}
 
 export class StateObject {
     /** The current state (e.g. at delta time = 0) */
-    public current?: IState;
+    public current: IState | undefined;
 
     /** The next state (e.g. at delta time = 1) */
-    public next?: IState;
+    public next: IState | undefined;
 
     /**
      * Update this state object's current and next state, should call prior to

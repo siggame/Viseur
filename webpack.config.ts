@@ -15,7 +15,7 @@ function isNodeModule(module: any): boolean {
 
 const config: webpack.Configuration = {
     entry: [
-        "babel-polyfill/dist/polyfill.js", // polyfill new es functions for babel
+        "@babel/polyfill/dist/polyfill.js", // polyfill new es functions for babel
         "font-awesome/scss/font-awesome.scss", // font-awesome icons injection
         "src/index.ts", // our actual starting file now that stuff is ready
     ],
@@ -39,7 +39,7 @@ const config: webpack.Configuration = {
                     {
                         loader: "babel-loader",
                         options: {
-                            presets: ["babel-preset-env"],
+                            presets: ["@babel/preset-env"],
                         },
                     },
                     {

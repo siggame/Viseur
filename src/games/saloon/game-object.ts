@@ -1,6 +1,7 @@
 // This is a class to represent the GameObject object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { BaseGameObject, IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { IGameObjectState } from "./state-interfaces";
@@ -30,13 +31,13 @@ export class GameObject extends BaseGameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the GameObject (dt = 0) */
-    public current: IGameObjectState;
+    public current: IGameObjectState | undefined;
 
     /** The next state of the GameObject (dt = 1) */
-    public next: IGameObjectState;
+    public next: IGameObjectState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -46,10 +47,11 @@ export class GameObject extends BaseGameObject {
      * Constructor for the GameObject with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this GameObject
-     * @param game the game this GameObject is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IGameObjectState, game: Game) {
-        super(state, game);
+    constructor(state: IGameObjectState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new GameObject here.

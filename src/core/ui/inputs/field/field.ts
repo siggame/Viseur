@@ -44,6 +44,10 @@ export class Field extends DisableableElement {
         this.element.removeClass("disabled");
     }
 
+    /**
+     * Gets the Handlebars template for the field
+     * @returns the handlebars template function for the field
+     */
     protected getTemplate(): Handlebars {
         return require("./field.hbs");
     }

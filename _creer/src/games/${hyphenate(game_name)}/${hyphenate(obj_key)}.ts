@@ -23,6 +23,7 @@ if obj_key == 'Game':
     imports["./human-player"] = ['HumanPlayer']
 else:
     imports['./game'] = ['Game']
+    imports['src/viseur'] = ['Viseur']
     imports['src/core/ui/context-menu'] = ['MenuItems']
     if not base_object:
         imports['./'+hyphenate(parent_classes[0])] = [parent_classes[0]]
@@ -73,21 +74,21 @@ ${merge("        // ", "should-render", "        return super.shouldRender; // c
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
 % endif
     /** The current state of the ${obj_key} (dt = 0) */
-    public current: I${obj_key}State;
+    public current: I${obj_key}State | undefined;
 
     /** The next state of the ${obj_key} (dt = 1) */
-    public next: I${obj_key}State;
+    public next: I${obj_key}State | undefined;
 % if obj_key == 'Game':
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
 
     /** The human player playing this game */
-    public readonly humanPlayer: HumanPlayer;
+    public readonly humanPlayer: HumanPlayer | undefined;
 
     /** The default player colors for this game, there must be one for each player */<%
     lines = []
@@ -211,10 +212,11 @@ ${merge("        // ", "state-updated", "        // update the Game based on its
      * Constructor for the ${obj_key} with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this ${obj_key}
-     * @param game the game this ${obj_key} is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: I${obj_key}State, game: Game) {
-        super(state, game);
+    constructor(state: I${obj_key}State, viseur: Viseur) {
+        super(state, viseur);
 
 ${merge("        // ", "constructor", "        // You can initialize your new {} here.".format(obj_key), help=False)}
     }

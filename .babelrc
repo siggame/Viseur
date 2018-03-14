@@ -1,5 +1,10 @@
 {
-    "presets":
-        [["env", { "modules": false }]
+    "plugins": [
+        "@babel/plugin-proposal-object-rest-spread"
+    ],
+    "presets": [
+        ["@babel/preset-env", {
+            "shippedProposals": true
+        }]
     ]
 }

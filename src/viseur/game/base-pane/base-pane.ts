@@ -4,7 +4,7 @@ import partial from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
 import { escapeHTML, getContrastingColor, sum } from "src/utils";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { BaseGame, IBaseGameObjectState, IBaseGameState, IBasePlayerState } from "src/viseur/game";
 import "./base-pane.scss";
 
@@ -42,10 +42,10 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     public readonly game: BaseGame;
 
     /** The timer used to tick down a human player's time */
-    private readonly humansTimer: Timer;
+    private readonly humansTimer: Timer | undefined;
 
     /** when in human player mode, the time remaining from the last second tick */
-    private humansTimeRemaining: number;
+    private humansTimeRemaining: number | undefined;
 
     /** The player we are ticking for */
     private humansTickingPlayer?: IBasePlayerState;
@@ -67,10 +67,11 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
 
     /**
      * Creates the base pane at the bottom of the viseur below the rendered graphics
+     * @param viseur the Viseur instance controlling the pane
      * @param game the game this pane is representing
      * @param initialState the initial state in the game, where all players exist
      */
-    constructor(game: BaseGame, initialState: IBaseGameState) {
+    constructor(viseur: Viseur, game: BaseGame, initialState: IBaseGameState) {
         super({
             parent: viseur.gui.gamePaneWrapper,
         });
@@ -187,7 +188,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
      * @param playerID the player to tick for
      */
     public startTicking(playerID: string): void {
-        const gameState = this.game.current || this.game.next;
+        const gameState = this.game.current || this.game.next!;
         const player = gameState.players.find((p) => p.id === playerID);
         if (!player) {
             throw new Error(`ID ${playerID} is not a valid player to start ticking for`);
@@ -195,15 +196,19 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
 
         this.humansTickingPlayer = player;
         this.humansTimeRemaining = player.timeRemaining;
-        this.humansTimer.tick();
+        if (this.humansTimer) {
+            this.humansTimer.tick();
+        }
     }
 
     /**
      * Stops the player timer from ticking
      */
     public stopTicking(): void {
-        this.humansTimer.pause();
-        this.humansTimer.setProgress(0);
+        if (this.humansTimer) {
+            this.humansTimer.pause();
+            this.humansTimer.setProgress(0);
+        }
     }
 
     protected getTemplate(): Handlebars {
@@ -391,6 +396,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
      */
     private ticked(): void {
         if (this.humansTickingPlayer) {
+            this.humansTimeRemaining = this.humansTimeRemaining || 0;
             this.humansTimeRemaining -= (1000 * 1000000); // 1000 ms elapsed on this tick
 
             const list = this.playerToStatsList.get(this.humansTickingPlayer.id);
@@ -402,7 +408,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
                     li.html(this.formatTimeRemaining(this.humansTimeRemaining));
                 }
             }
-            this.humansTimer.restart();
+            this.humansTimer!.restart();
         }
     }
 }

@@ -1,7 +1,7 @@
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import * as utils from "src/utils";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
 import "./game-over-screen.scss";
 
@@ -29,6 +29,7 @@ export class GameOverScreen extends BaseElement {
     constructor(args: IBaseElementArgs & {
         /** The game this will be a game over screen for */
         game: BaseGame,
+        viseur: Viseur,
     }) {
         super(args);
 
@@ -36,7 +37,7 @@ export class GameOverScreen extends BaseElement {
 
         this.hide();
 
-        viseur.timeManager.events.ended.on(() => {
+        args.viseur.timeManager.events.ended.on(() => {
             this.show();
         });
     }
@@ -90,7 +91,7 @@ export class GameOverScreen extends BaseElement {
         this.losersElement.html("");
 
         this.items.length = 0; // empty array for [re]build
-        const gameState = this.game.current || this.game.next;
+        const gameState = this.game.current || this.game.next!;
         for (const player of gameState.players) {
             const color = this.game.getPlayersColor(player);
 

@@ -3,8 +3,9 @@ import * as screenfull from "screenfull";
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
-import { viseur } from "src/viseur";
+import { Viseur, viseurConstructed } from "src/viseur";
 import { Event, events } from "ts-typed-events";
+import { BaseGame } from "../game";
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
 import { KEYS } from "./keys";
@@ -32,12 +33,15 @@ export class GUI extends BaseElement {
     private readonly infoPane: InfoPane;
 
     /** The playback pane with controls to manipulate playback */
-    private readonly playbackPane: PlaybackPane = new PlaybackPane({
+    private readonly playbackPane = new PlaybackPane({
         parent: this.playbackWrapper,
     });
 
     /** The modal [re]used to display loading and error messages */
     private readonly modal: Modal;
+
+    // the game (for resizing purposes)
+    private game: BaseGame | undefined;
 
     /** The callback function that exits fullscreen */
     private exitFullscreenCall: () => void;
@@ -53,12 +57,15 @@ export class GUI extends BaseElement {
      * Creates a GUI to handle the user interaction(s) with html part of viseur
      * @param args the initialization args
      */
-    constructor(args: IBaseElementArgs) {
+    constructor(args: IBaseElementArgs & {
+        viseur: Viseur;
+    }) {
         super(args);
 
         this.infoPane = new InfoPane({
             parent: this.element,
             gui: this,
+            viseur: args.viseur,
         });
 
         // add the favicon
@@ -81,20 +88,23 @@ export class GUI extends BaseElement {
             parent: this.element.parent(),
         });
 
-        viseur.events.ready.on((data) => {
-            this.element.addClass("gamelog-loaded");
-            const date = data.gamelog.streaming
-                ? "Live"
-                : dateFormat(new Date(data.gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z");
+        viseurConstructed.once((viseur) => {
+            viseur.events.ready.on((data) => {
+                this.game = data.game;
+                this.element.addClass("gamelog-loaded");
+                const date = data.gamelog.streaming
+                    ? "Live"
+                    : dateFormat(new Date(data.gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z");
 
-            document.title = `${data.gamelog.gameName} - ${data.gamelog.gameSession} - ${date} | Viseur`;
+                document.title = `${data.gamelog.gameName} - ${data.gamelog.gameSession} - ${date} | Viseur`;
 
-            // HACK: resize after all transitions finish, because we can't know
-            // for sure when the browser will finish css transitions in what
-            // order
-            setTimeout(() => {
-                this.resize();
-            }, 350); // after all transitions end
+                // HACK: resize after all transitions finish, because we can't know
+                // for sure when the browser will finish css transitions in what
+                // order
+                setTimeout(() => {
+                    this.resize();
+                }, 350); // after all transitions end
+            });
         });
 
         this.infoPane.events.resized.on((resized) => {
@@ -243,8 +253,8 @@ export class GUI extends BaseElement {
             .height(remainingHeight);
 
         let gamePaneHeight = 0;
-        if (viseur.game && viseur.game.pane) {
-            gamePaneHeight = Number(viseur.game.pane.element.outerHeight());
+        if (this.game && this.game.pane) {
+            gamePaneHeight = Number(this.game.pane.element.outerHeight());
         }
 
         remainingHeight -= gamePaneHeight;

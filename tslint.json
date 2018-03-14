@@ -53,7 +53,8 @@
             "avoid-template"
         ],
         "prefer-template": [true, "allow-single-concat"],
-        "forin": true
+        "forin": true,
+        "prefer-readonly": true
     },
     "rulesDirectory": []
 }

@@ -1,6 +1,7 @@
 // This is a class to represent the PoliceDepartment object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Building } from "./building";
 import { Game } from "./game";
@@ -31,13 +32,13 @@ export class PoliceDepartment extends Building {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the PoliceDepartment (dt = 0) */
-    public current: IPoliceDepartmentState;
+    public current: IPoliceDepartmentState | undefined;
 
     /** The next state of the PoliceDepartment (dt = 1) */
-    public next: IPoliceDepartmentState;
+    public next: IPoliceDepartmentState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** the beam color name to use for beams */
@@ -50,10 +51,11 @@ export class PoliceDepartment extends Building {
      * Constructor for the PoliceDepartment with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this PoliceDepartment
-     * @param game the game this PoliceDepartment is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IPoliceDepartmentState, game: Game) {
-        super(state, game);
+    constructor(state: IPoliceDepartmentState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // initialization logic goes here

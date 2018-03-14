@@ -15,26 +15,26 @@ export interface IBasePlayer {
 
 export interface IBasePlayerState extends IBaseGameObjectState {
     /** The name of the player. */
-    name: string;
+    readonly name: string;
 
     /**
      * What type of client this is,
      * e.g. 'Python', 'JavaScript', or some other language. For potential data mining purposes.
      */
-    clientType: string;
+    readonly clientType: string;
 
     /** The amount of time (in ns) remaining for this AI to send commands. */
-    timeRemaining: number;
+    readonly timeRemaining: number;
 
     /** If the player won the game or not. */
-    won: boolean;
+    readonly won: boolean;
 
     /** If the player lost the game or not. */
-    lost: boolean;
+    readonly lost: boolean;
 
     /** The reason why the player won the game. */
-    reasonWon: string;
+    readonly reasonWon: string;
 
     /** The reason why the player lost the game. */
-    reasonLost: string;
+    readonly reasonLost: string;
 }

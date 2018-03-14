@@ -1,5 +1,5 @@
 import { Timer } from "src/core/timer";
-import { viseur } from "src/viseur/";
+import { Viseur } from "src/viseur/";
 import { Event } from "ts-typed-events";
 import { IGamelog } from "./game/gamelog";
 
@@ -35,13 +35,16 @@ export class TimeManager {
     private currentIndex: number = -1;
 
     /** The gamelog we are counting deltas for */
-    private gamelog: IGamelog;
+    private gamelog: IGamelog | undefined;
 
     /** The timer we use to count up or down the index */
     private readonly timer: Timer;
 
-    /** Creates the time manager  */
-    constructor() {
+    /**
+     * Creates the time manager
+     * @param viseur The Viseur instance this is managing time for
+     */
+    constructor(private readonly viseur: Viseur) {
         this.timer = new Timer(viseur.settings.playbackSpeed.get());
 
         this.timer.events.finished.on(() => {
@@ -108,19 +111,19 @@ export class TimeManager {
 
         this.ticked(true);
 
-        viseur.gui.events.playPause.on(() => {
+        this.viseur.gui.events.playPause.on(() => {
             this.playPause();
         });
 
-        viseur.gui.events.next.on(() => {
+        this.viseur.gui.events.next.on(() => {
             this.next();
         });
 
-        viseur.gui.events.back.on(() => {
+        this.viseur.gui.events.back.on(() => {
             this.back();
         });
 
-        viseur.gui.events.playbackSlide.on((value) => {
+        this.viseur.gui.events.playbackSlide.on((value) => {
             const index = Math.floor(value);
             const dt = value - index;
             const current = this.getCurrentTime();
@@ -130,8 +133,8 @@ export class TimeManager {
             }
         });
 
-        viseur.events.gamelogUpdated.on(() => {
-            if (this.currentIndex < this.gamelog.deltas.length) {
+        this.viseur.events.gamelogUpdated.on(() => {
+            if (this.currentIndex < this.gamelog!.deltas.length) {
                 this.play();
             }
         });
@@ -142,7 +145,7 @@ export class TimeManager {
      */
     private playPause(): void {
         if (!this.timer.isTicking()
-          && this.currentIndex === this.gamelog.deltas.length - 1
+          && this.currentIndex === this.gamelog!.deltas.length - 1
           && this.timer.getProgress() > 0.99
         ) { // then wrap around to the start
             this.setTime(0, 0);
@@ -163,7 +166,7 @@ export class TimeManager {
         this.currentIndex += (start ? 0 : 1);
 
         // check if we need to pause and go back a very small amount
-        const backPause = (this.gamelog.streaming && this.currentIndex === this.gamelog.deltas.length - 1);
+        const backPause = (this.gamelog!.streaming && this.currentIndex === this.gamelog!.deltas.length - 1);
 
         if (!backPause) {
             this.events.newIndex.emit(this.currentIndex);
@@ -175,7 +178,7 @@ export class TimeManager {
         }
 
         if (!start) {
-            if (this.currentIndex < this.gamelog.deltas.length) {
+            if (this.currentIndex < this.gamelog!.deltas.length) {
                 this.timer.restart();
             }
             else {

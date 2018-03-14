@@ -29,16 +29,16 @@ export class Game extends BaseGame {
     public readonly numberOfPlayers: number = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: IGameState;
+    public current: IGameState | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: IGameState;
+    public next: IGameState | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
 
     /** The human player playing this game */
-    public readonly humanPlayer: HumanPlayer;
+    public readonly humanPlayer: HumanPlayer | undefined;
 
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [

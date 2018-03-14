@@ -2,7 +2,7 @@ import * as fileSaver from "file-saver";
 import * as config from "src/../config.json";
 import { inputs, ITabArgs, Tab } from "src/core/ui";
 import { sortedAscending } from "src/utils";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import "./file-tab.scss";
 
 /**
@@ -13,6 +13,9 @@ export class FileTab extends Tab {
     public get title(): string {
         return "File";
     }
+
+    /** The instance of Viseur that controls everything */
+    private readonly viseur: Viseur;
 
     // ---- Local Gamelog Section ---- \\
 
@@ -68,39 +71,39 @@ export class FileTab extends Tab {
     // - connection inputs - \\
 
     /** The names of all the games sorted */
-    private gameNames = sortedAscending(Object.keys(viseur.games));
+    private readonly gameNames: string[];
 
     /** The names of all the games that are playable by humans, sorted */
-    private humanGameNames = this.gameNames.filter((name) => viseur.games[name].HumanPlayer.implemented);
+    private readonly humanGameNames: string[];
 
-    private gameInput = new inputs.DropDown<string>({
+    private readonly gameInput = new inputs.DropDown<string>({
         id: "remote-game-name",
         label: "Game",
         parent: this.connectWrapper,
         options: this.gameNames,
     });
 
-    private gameSettingsInput = new inputs.TextBox({
+    private readonly gameSettingsInput = new inputs.TextBox({
         id: "connect-game-settings",
         label: "Game Settings",
         parent: this.connectWrapper,
     });
 
-    private sessionInput = new inputs.TextBox({
+    private readonly sessionInput = new inputs.TextBox({
         id: "connect-session",
         label: "Session",
         parent: this.connectWrapper,
         placeholder: config.session || "new",
     });
 
-    private serverInput = new inputs.TextBox({
+    private readonly serverInput = new inputs.TextBox({
         id: "connect-server",
         label: "Server",
         parent: this.connectWrapper,
         value: config.server || window.location.hostname,
     });
 
-    private portInput = new inputs.NumberInput({
+    private readonly portInput = new inputs.NumberInput({
         id: "connect-port",
         label: "Port",
         parent: this.connectWrapper,
@@ -108,21 +111,21 @@ export class FileTab extends Tab {
         max: 65535, // port is an unsigned 16-bit number, so this is max
     });
 
-    private nameInput = new inputs.TextBox({
+    private readonly nameInput = new inputs.TextBox({
         id: "connect-name",
         label: "Player Name",
         parent: this.connectWrapper,
         placeholder: config.humanName || "Human",
     });
 
-    private presentationInput = new inputs.CheckBox({
+    private readonly presentationInput = new inputs.CheckBox({
         id: "presentation-mode",
         label: "Presentation Mode",
         parent: this.connectWrapper,
         value: true,
     });
 
-    private connectButton = new inputs.Button({
+    private readonly connectButton = new inputs.Button({
         id: "connect-connect-button",
         text: "Connect",
         // label: " ",
@@ -132,17 +135,25 @@ export class FileTab extends Tab {
     // ---- Download Section ---- \\
 
     /** The section element for the downloads */
-    private gamelogDownloadSection = this.element.find(".download-gamelog").addClass("collapsed");
+    private readonly gamelogDownloadSection = this.element.find(".download-gamelog").addClass("collapsed");
 
     /** The link to download the gamelog */
-    private gamelogDownloadLink = this.element.find(".download-gamelog-link");
+    private readonly gamelogDownloadLink = this.element.find(".download-gamelog-link");
 
     /**
      * Creates the File Tab
      * @param args the tab arguments
      */
-    constructor(args: ITabArgs) {
+    constructor(args: ITabArgs & {
+        viseur: Viseur;
+    }) {
         super(args);
+
+        this.viseur = args.viseur;
+        this.gameNames = sortedAscending(Object.keys(this.viseur.games));
+        this.humanGameNames = this.gameNames.filter(
+            (name) => this.viseur.games[name]!.HumanPlayer.implemented,
+        );
 
         // -- gamelog section -- \\
         this.gamelogInput.events.loading.on(() => {
@@ -162,11 +173,11 @@ export class FileTab extends Tab {
         });
 
         // -- connection section -- \\
-        viseur.events.gamelogIsRemote.on((url) => {
+        this.viseur.events.gamelogIsRemote.on((url) => {
             this.log("Downloading remote gamelog.");
         });
 
-        viseur.events.connectionMessage.on((message) => {
+        this.viseur.events.connectionMessage.on((message) => {
             this.log(message);
         });
 
@@ -187,7 +198,7 @@ export class FileTab extends Tab {
 
         // -- do stuff when viseur is ready -- \\
 
-        viseur.events.ready.on((data) => {
+        this.viseur.events.ready.on((data) => {
             this.localGamelogWrapper.addClass("collapsed");
             this.remoteGamelogWrapper.addClass("collapsed");
             this.connectWrapper.addClass("collapsed");
@@ -196,7 +207,7 @@ export class FileTab extends Tab {
                 // then let them download the gamelog from memory,
                 // otherwise it is being streamed so the gamelog in memory is incomplete
                 this.gamelogDownloadLink.on("click", () => {
-                    const blob = new Blob([viseur.unparsedGamelog], {type: "application/json;charset=utf-8"});
+                    const blob = new Blob([this.viseur.unparsedGamelog], {type: "application/json;charset=utf-8"});
                     fileSaver.saveAs(blob, `${data.gamelog.gameName}-${data.gamelog.gameSession}.json`);
                 });
 
@@ -204,7 +215,7 @@ export class FileTab extends Tab {
                 this.gamelogDownloadSection.removeClass("collapsed");
             }
             else { // don't show them the download section until the gamelog is finished streaming in
-                viseur.events.gamelogFinalized.on((finalized) => {
+                this.viseur.events.gamelogFinalized.on((finalized) => {
                     this.gamelogDownloadLink.attr("href", finalized.url);
                     this.gamelogDownloadSection.removeClass("collapsed");
                 });
@@ -260,15 +271,15 @@ export class FileTab extends Tab {
         );
 
         this.portInput.value = port;
-        this.portInput.field.element.toggleClass("collapsed", !showPort);
+        this.portInput.field!.element.toggleClass("collapsed", !showPort);
 
-        this.nameInput.field.element.toggleClass("collapsed", !showName);
-        this.sessionInput.field.element.toggleClass("collapsed", !showSession);
+        this.nameInput.field!.element.toggleClass("collapsed", !showName);
+        this.sessionInput.field!.element.toggleClass("collapsed", !showSession);
 
-        this.gameInput.field.element.toggleClass("collapsed", !showGame);
-        this.gameSettingsInput.field.element.toggleClass("collapsed", !showGameSettings);
+        this.gameInput.field!.element.toggleClass("collapsed", !showGame);
+        this.gameSettingsInput.field!.element.toggleClass("collapsed", !showGameSettings);
 
-        this.presentationInput.field.element.toggleClass("collapsed", !showPresentation);
+        this.presentationInput.field!.element.toggleClass("collapsed", !showPresentation);
     }
 
     /**
@@ -286,15 +297,15 @@ export class FileTab extends Tab {
 
         this.log(`Connecting to ${server}:${port}.`);
 
-        viseur.events.connectionConnected.once(() => {
+        this.viseur.events.connectionConnected.once(() => {
             this.log(`Successfully connected to ${server}:${port}.`);
         });
 
-        viseur.events.connectionError.on((err) => {
+        this.viseur.events.connectionError.on((err) => {
             this.log(`Unexpected error occurred in connection. ${err}`);
         });
 
-        viseur.events.connectionClosed.once((data) => {
+        this.viseur.events.connectionClosed.once((data) => {
             if (data.timedOut) {
                 this.log("You timed out and were forcibly disconnected.");
             }
@@ -304,16 +315,23 @@ export class FileTab extends Tab {
         const type = this.connectTypeInput.value;
         switch (type) {
             case "Tournament":
-                viseur.connectToTournament(server, port, playerName);
+                this.viseur.connectToTournament(server, port, playerName);
                 return;
             case "Arena":
-                viseur.startArenaMode(server, this.presentationInput.value);
+                this.viseur.startArenaMode(server, this.presentationInput.value);
                 return;
             case "Human":
-                viseur.playAsHuman(gameName, server, port, session, playerName, this.gameSettingsInput.value.trim());
+                this.viseur.playAsHuman(
+                    gameName,
+                    server,
+                    port,
+                    session,
+                    playerName,
+                    this.gameSettingsInput.value.trim(),
+                );
                 return;
             case "Spectate":
-                viseur.spectate(server, port, gameName, session);
+                this.viseur.spectate(server, port, gameName, session);
                 return;
         }
 
@@ -336,12 +354,12 @@ export class FileTab extends Tab {
      * Invoked when the local gamelog input starts loading a file
      */
     private localGamelogLoading(): void {
-        viseur.gui.modalMessage("Loading local gamelog.");
+        this.viseur.gui.modalMessage("Loading local gamelog.");
 
         this.gamelogInput.events.loaded.on((str) => {
-            viseur.gui.modalMessage("Local gamelog loaded");
+            this.viseur.gui.modalMessage("Local gamelog loaded");
 
-            viseur.parseGamelog(str);
+            this.viseur.parseGamelog(str);
         });
     }
 
@@ -350,6 +368,6 @@ export class FileTab extends Tab {
      * @param {string} url the url from the input box
      */
     private remoteGamelogSubmitted(url: string): void {
-        viseur.loadRemoteGamelog(url);
+        this.viseur.loadRemoteGamelog(url);
     }
 }

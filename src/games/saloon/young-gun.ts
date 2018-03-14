@@ -1,6 +1,7 @@
 // This is a class to represent the YoungGun object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -32,13 +33,13 @@ export class YoungGun extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the YoungGun (dt = 0) */
-    public current: IYoungGunState;
+    public current: IYoungGunState | undefined;
 
     /** The next state of the YoungGun (dt = 1) */
-    public next: IYoungGunState;
+    public next: IYoungGunState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -57,10 +58,11 @@ export class YoungGun extends GameObject {
      * Constructor for the YoungGun with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this YoungGun
-     * @param game the game this YoungGun is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IYoungGunState, game: Game) {
-        super(state, game);
+    constructor(state: IYoungGunState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
 

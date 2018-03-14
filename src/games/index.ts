@@ -7,7 +7,7 @@ for (const key of requireGameResource.keys()) {
 }
 
 /** All the game namespaces that can be loaded by this instance */
-export const Games: {[gameName: string]: IBaseGameNamespace} = {};
+export const Games: {[gameName: string]: IBaseGameNamespace | undefined} = {};
 
 const req = require.context("./", true, /^(.*(index.ts$))[^.]*$/im);
 

@@ -2,7 +2,7 @@ import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";
 import { ease } from "src/utils/";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { Renderer } from "src/viseur/renderer";
 import { BaseGame } from "./base-game";
 import { IDeltaReason } from "./gamelog";
@@ -21,33 +21,38 @@ export class BaseGameObject extends StateObject {
     public readonly game: BaseGame;
 
     /** The main container that all sprites to display this object should be put in */
-    public readonly container: PIXI.Container;
+    public readonly container!: PIXI.Container;
+    // TODO: in TS 2.8 this should be conditionally set when shouldRender is true
 
     /** The renderer that provides utility rendering functions (as well as heavy lifting for screen changes) */
     public readonly renderer: Renderer;
 
     /** The current state (e.g. at delta time = 0) */
-    public current: IBaseGameObjectState;
+    public current: IBaseGameObjectState | undefined;
 
     /** The next state (e.g. at delta time = 1) */
-    public next: IBaseGameObjectState;
+    public next: IBaseGameObjectState | undefined;
+
+    /** The Viseur instance that controls this game object */
+    protected readonly viseur: Viseur;
 
     /** pixi text to display the last logged string */
-    private loggedPixiText: PIXI.Text;
+    private loggedPixiText: PIXI.Text | undefined;
 
     /**
      * Initializes a BaseGameObject, should be invoked by subclass
-     * @param {Object} initialState - fully merged delta state for this object's first existence
-     * @param {BaseGame} game - The game this game object is being rendered in
+     * @param initialState Fully merged delta state for this object's first existence
+     * @param viseur The Viseur instance that controls this game object
      */
-    constructor(initialState: IBaseGameObjectState, game: BaseGame) {
+    constructor(initialState: IBaseGameObjectState, viseur: Viseur) {
         super();
 
         this.id = initialState.id;
         this.gameObjectName = initialState.gameObjectName;
 
-        this.game = game;
-        this.renderer = game.renderer;
+        this.viseur = viseur;
+        this.game = viseur.game!;
+        this.renderer = this.game.renderer;
 
         if (this.shouldRender) {
             // initialize the container that will be rendered!
@@ -93,7 +98,7 @@ export class BaseGameObject extends StateObject {
      * @param {Function} callback - callback to invoke once run, is passed the return value
      */
     public runOnServer(run: string, args: object, callback?: (returned: any) => void): void {
-        viseur.runOnServer(this.id, run, args, callback);
+        this.viseur.runOnServer(this.id, run, args, callback);
     }
 
     /**
@@ -185,7 +190,7 @@ export class BaseGameObject extends StateObject {
      * @param event the pixi event from the right click
      */
     private rightClicked(event: PIXI.interaction.InteractionEvent): void {
-        const scale = viseur.settings.resolutionScale.get();
+        const scale = this.viseur.settings.resolutionScale.get();
         this.showContextMenu(event.data.global.x / scale, event.data.global.y / scale);
     }
 
@@ -248,7 +253,7 @@ export class BaseGameObject extends StateObject {
      */
     private renderLogs(dt: number, current: IBaseGameObjectState, next: IBaseGameObjectState): void {
         if (this.container && next && next.logs) {
-            if (next.logs.length > 0 && viseur.settings.showLoggedText.get()) {
+            if (next.logs.length > 0 && this.viseur.settings.showLoggedText.get()) {
                 let alpha = 1;
                 if (current.logs.length < next.logs.length) {
                     alpha = ease(dt, "cubicInOut"); // fade it in

@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Tab, Tabular } from "src/core/ui/tabular";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { Event, events } from "ts-typed-events";
 import { GUI } from "../gui";
 import "./info-pane.scss";
@@ -36,7 +36,7 @@ export class InfoPane extends BaseElement {
     private readonly resizerElement: JQuery<HTMLElement>;
 
     /** The current length of the info pane */
-    private length: number;
+    private length: number = 0;
 
     /** The minimum length of the info pane when it is being resized */
     private readonly minimumLength: number = 200;
@@ -45,29 +45,34 @@ export class InfoPane extends BaseElement {
     private orientation: "horizontal" | "vertical" = "vertical";
 
     /** The current side the info pane is on */
-    private side: "top" | "left" | "bottom" | "right";
+    private side: "top" | "left" | "bottom" | "right" = "right";
 
     /** the possible valid sides */
     private readonly validSides = [ "top", "left", "bottom", "right" ];
 
+    /** The Viseur instance controlling us */
+    private readonly viseur: Viseur;
+
     constructor(args: IBaseElementArgs & {
         gui: GUI;
+        viseur: Viseur,
     }) {
         super(args);
 
+        this.viseur = args.viseur;
         this.gui = args.gui;
 
         this.resizerElement = this.element.find(".info-pane-resizer");
         this.contentElement = this.element.find(".info-pane-content");
 
-        this.snapTo(viseur.settings.infoPaneSide.get());
-        this.resize(viseur.settings.infoPaneLength.get());
+        this.snapTo(this.viseur.settings.infoPaneSide.get());
+        this.resize(this.viseur.settings.infoPaneLength.get());
 
         this.resizerElement.on("mousedown", (downEvent) => {
             this.onResize(downEvent);
         });
 
-        viseur.settings.infoPaneSide.changed.on((side) => {
+        this.viseur.settings.infoPaneSide.changed.on((side) => {
             this.snapTo(side);
         });
 
@@ -89,7 +94,7 @@ export class InfoPane extends BaseElement {
         this.element.addClass("resizing");
         if (newLength) {
             this.length = Math.max(newLength, this.minimumLength);
-            viseur.settings.infoPaneLength.set(this.length);
+            this.viseur.settings.infoPaneLength.set(this.length);
         }
 
         if (this.orientation === "horizontal") {
@@ -141,9 +146,11 @@ export class InfoPane extends BaseElement {
      * @returns {Tab} the constructed tab as per defined in `tabClass`
      */
     private createTab(tabClass: typeof Tab): Tab {
-        const newTab = new tabClass({
+        const newTab = new tabClass(Object.assign({
             tabular: this.tabular,
-        });
+        }, {
+            viseur: this.viseur, // some tabs require this
+        }));
 
         return newTab;
     }

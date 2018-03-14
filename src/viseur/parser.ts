@@ -5,9 +5,22 @@ import { IBaseGameState, IGameObjects } from "./game/interfaces";
 /** parses delta updates, and creates reverse deltas for gamelogs/cadre communications */
 export class Parser {
     /** The constants we require to parse deltas from the game server/gamelog */
-    private readonly constants: IGameServerConstants;
+    private constants: IGameServerConstants = {
+        DELTA_LIST_LENGTH: "",
+        DELTA_REMOVED: "",
+    };
 
-    constructor(constants: IGameServerConstants) {
+    constructor(constants?: IGameServerConstants) {
+        if (constants) {
+            this.constants = constants;
+        }
+    }
+
+    /**
+     * Updates the constants one they are sent/parsed to us
+     * @param constants new set of constants to use
+     */
+    public updateConstants(constants: IGameServerConstants): void {
         this.constants = constants;
     }
 

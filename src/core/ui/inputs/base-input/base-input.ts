@@ -28,7 +28,7 @@ export class BaseInput<T> extends DisableableElement {
     });
 
     /** the label field, if set */
-    public readonly field: Field;
+    public readonly field?: Field;
 
     /** the actual value of the input */
     protected actualValue: T;
@@ -58,6 +58,7 @@ export class BaseInput<T> extends DisableableElement {
         });
 
         this.value = args.value;
+        this.actualValue = args.value;
     }
 
     /**

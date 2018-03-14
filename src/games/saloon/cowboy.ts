@@ -1,6 +1,7 @@
 // This is a class to represent the Cowboy object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -39,13 +40,13 @@ export class Cowboy extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Cowboy (dt = 0) */
-    public current: ICowboyState;
+    public current: ICowboyState | undefined;
 
     /** The next state of the Cowboy (dt = 1) */
-    public next: ICowboyState;
+    public next: ICowboyState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -89,7 +90,7 @@ export class Cowboy extends GameObject {
     // -- Brawler Specific Variables --\\
 
     /** The attack displayed when the brawler attacks */
-    private readonly brawlerAttack: PIXI.Sprite;
+    private readonly brawlerAttack: PIXI.Sprite | undefined;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -97,10 +98,11 @@ export class Cowboy extends GameObject {
      * Constructor for the Cowboy with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Cowboy
-     * @param game the game this Cowboy is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: ICowboyState, game: Game) {
-        super(state, game);
+    constructor(state: ICowboyState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.job = state.job;
@@ -331,7 +333,7 @@ export class Cowboy extends GameObject {
             this.visibleShot(false);
         }
 
-        if (this.job === "Brawler") {
+        if (this.job === "Brawler" && this.brawlerAttack) {
             const attacking = Boolean(
                 nextReason &&
                 nextReason.order === "runTurn" &&

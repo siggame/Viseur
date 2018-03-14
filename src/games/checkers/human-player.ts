@@ -14,7 +14,7 @@ import { ICheckerState } from "./state-interfaces";
  */
 export class HumanPlayer extends BaseHumanPlayer {
     /** The game this human player is playing */
-    public game: Game;
+    public game!: Game;
 
     /**
      * Set this static flag to true to mark this game as able to be played by

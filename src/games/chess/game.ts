@@ -33,16 +33,16 @@ export class Game extends BaseGame {
     public readonly numberOfPlayers: number = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: IGameState;
+    public current: IGameState | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: IGameState;
+    public next: IGameState | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
 
     /** The human player playing this game */
-    public readonly humanPlayer: HumanPlayer;
+    public readonly humanPlayer: HumanPlayer | undefined;
 
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
@@ -75,7 +75,7 @@ export class Game extends BaseGame {
     public selectedPiece?: Piece;
 
     /** The valid moves for the current most game state */
-    public validMoves: Chess.IMove[];
+    public validMoves: Chess.IMove[] = [];
 
     /** The container for pieces on the board */
     public readonly piecesContainer = new PIXI.Container();
@@ -99,10 +99,10 @@ export class Game extends BaseGame {
     private tileSprites: PIXI.Sprite[][] = [];
 
     /** The UI sprite indicating where a piece is moving to */
-    private spriteTo: PIXI.Sprite;
+    private spriteTo!: PIXI.Sprite;
 
     /** The UI sprite indicating where a piece is moving from */
-    private spriteFrom: PIXI.Sprite;
+    private spriteFrom!: PIXI.Sprite;
 
     /** If we've updated the chess.js instance with the current fen */
     private chessUpdated: boolean = false;
@@ -128,7 +128,7 @@ export class Game extends BaseGame {
         this.selectedPiece = this.gameObjects[pieceID] as Piece;
 
         const piece = this.selectedPiece;
-        const pieceState = (piece.current || piece.next);
+        const pieceState = (piece.current || piece.next!);
         const from = pieceState.file + pieceState.rank;
         const fromPos = this.getXY(from);
 
@@ -378,7 +378,7 @@ export class Game extends BaseGame {
         if (!this.chessUpdated) {
             this.chessUpdated = true;
 
-            this.chess.load((this.current || this.next).fen);
+            this.chess.load((this.current || this.next!).fen);
 
             this.validMoves = this.chess.moves({ verbose: true }) as Chess.IMove[];
         }

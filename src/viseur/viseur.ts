@@ -2,6 +2,7 @@ import * as $ from "jquery";
 import * as queryString from "query-string";
 import { Games } from "src/games";
 import * as utils from "src/utils";
+import { viseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
 import { IDelta, IDeltaReason, IGamelog } from "./game/gamelog";
@@ -11,7 +12,6 @@ import { IJoueurConnectionArgs, Joueur, TournamentClient } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
 import { ViseurSettings } from "./settings";
-import { viseurStarted } from "./started";
 import { TimeManager } from "./time-manager";
 
 /** A game state that is used to transition a dt between the two states/reasons */
@@ -50,28 +50,25 @@ export interface IMergedDelta {
 
 /** The class that handles all the interconnected-ness of the application */
 export class Viseur {
-    /** The singleton instance of this class */
-    private static singleton: Viseur;
-
     //// ---- public ---- \\\\
 
     /** The game we are rendering and handling input for */
-    public game: BaseGame;
+    public game: BaseGame | undefined;
 
     /** The graphics user interface handler */
-    public gui: GUI;
+    public readonly gui: GUI;
 
     /** Manages the time for the current index and dt during playback */
-    public timeManager: TimeManager;
+    public readonly timeManager: TimeManager;
 
     /** The renderer that handles textures and base rendering for the visualizer */
-    public renderer: Renderer;
+    public readonly renderer: Renderer;
 
     /** Manages all the global (viseur), non-game, related settings */
     public readonly settings = ViseurSettings;
 
     /** The gamelog */
-    public gamelog?: IGamelog;
+    public gamelog: IGamelog | undefined;
 
     /** The gamelog in its unparsed json form */
     public unparsedGamelog?: string;
@@ -80,7 +77,9 @@ export class Viseur {
     public rawGamelog?: IGamelogWithReverses;
 
     /** All available game namespaces */
-    public games: {[gameName: string]: IBaseGameNamespace};
+    public games: {
+        [gameName: string]: IBaseGameNamespace | undefined;
+    };
 
     /** All the events Viseur emits */
     public readonly events = ViseurEvents;
@@ -88,16 +87,16 @@ export class Viseur {
     //// ---- private ---- \\\\
 
     /** Parameters parsed from the URL parameters */
-    private urlParameters: utils.IAnyObject;
+    private urlParameters!: utils.IAnyObject; // set in constructor, which calls parseURL
 
     /** The gamelog parser */
-    private parser: Parser;
+    private parser = new Parser();
 
     /** Our merged delta container */
-    private mergedDelta: IMergedDelta;
+    private mergedDelta!: IMergedDelta;
 
     /** Our current merged game states and reasons */
-    private currentState: IViseurGameState;
+    private currentState!: IViseurGameState;
 
     /** The game client we will use when playing or spectating games */
     private joueur?: Joueur;
@@ -109,20 +108,26 @@ export class Viseur {
     private loadedTextures: boolean = false;
 
     /** Creates the singleton viseur instance */
-    public start(): void {
+    public constructor() {
         this.games = Games;
 
-        this.timeManager = new TimeManager();
+        window.onerror = (message, source, lineno, colno, error) => {
+            this.handleError(error || new Error(message));
+        };
+
+        this.timeManager = new TimeManager(this);
         this.timeManager.events.newIndex.on((index: number) => {
             this.updateCurrentStateAsync(index);
         });
 
         this.gui = new GUI({
             parent: $(document.body),
+            viseur: this,
         });
 
         this.renderer = new Renderer({
             parent: this.gui.rendererWrapper,
+            viseur: this,
         });
 
         this.gui.events.resized.on((resized) => {
@@ -138,20 +143,9 @@ export class Viseur {
             }
         });
 
-        viseurStarted.emit(this);
+        viseurConstructed.emit(this);
 
         this.parseURL();
-    }
-
-    /**
-     * Gets the singleton instance of Viseur
-     */
-    public static get instance(): Viseur {
-        if (!Viseur.singleton) {
-            Viseur.singleton = new Viseur();
-        }
-
-        return Viseur.singleton;
     }
 
     /**
@@ -225,7 +219,7 @@ export class Viseur {
      * @returns {boolean} true if there is a human player, false otherwise (including spectator mode)
      */
     public hasHumanPlaying(): boolean {
-        return Boolean(this.game.humanPlayer);
+        return Boolean(this.game && this.game.humanPlayer);
     }
 
     /**
@@ -261,7 +255,7 @@ export class Viseur {
     public connectToTournament(server: string, port: number, playerName: string): void {
         this.doubleLog("Connecting to tournament server...");
 
-        this.tournamentClient = new TournamentClient();
+        this.tournamentClient = new TournamentClient(this);
 
         this.tournamentClient.events.error.on((err) => {
             this.gui.modalError(err.message);
@@ -276,7 +270,7 @@ export class Viseur {
         });
 
         this.tournamentClient.events.playing.on(() => {
-            this.events.connectionMessage.emit(`Now playing ${this.game.name}`);
+            this.events.connectionMessage.emit(`Now playing ${this.game && this.game.name}`);
         });
 
         this.tournamentClient.events.messaged.on((message) => {
@@ -400,7 +394,7 @@ export class Viseur {
      */
     private gamelogLoaded(gamelog: IGamelog): void {
         this.rawGamelog = gamelog;
-        this.parser = new Parser(gamelog.constants);
+        this.parser.updateConstants(gamelog.constants);
 
         if (!gamelog.streaming) {
             this.events.gamelogLoaded.emit(gamelog);
@@ -443,7 +437,7 @@ export class Viseur {
             this.timeManager.setTime(0, 0);
         }
 
-        this.game = new gameNamespace.Game(this.rawGamelog, playerID);
+        this.game = new gameNamespace.Game(this, this.rawGamelog, playerID);
 
         // preload all textures
         this.renderer.loadTextures(() => {
@@ -576,7 +570,7 @@ export class Viseur {
             // then we are ready to start
             this.gui.hideModal();
             this.events.ready.emit({
-                game: this.game,
+                game: this.game!,
                 gamelog: this.rawGamelog as IGamelog,
             });
 
@@ -603,7 +597,7 @@ export class Viseur {
      * @param args argus to connect with
      */
     private createJoueur(args: IJoueurConnectionArgs): void {
-        this.joueur = new Joueur();
+        this.joueur = new Joueur(this);
 
         this.rawGamelog = this.joueur.getGamelog();
 
@@ -659,5 +653,3 @@ export class Viseur {
         this.joueur.connect(args);
     }
 }
-
-export const viseur: Viseur = Viseur.instance;

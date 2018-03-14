@@ -1,7 +1,7 @@
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
-import { viseur } from "src/viseur";
+import { Viseur, viseurConstructed } from "src/viseur";
 import { IGamelog } from "src/viseur/game/gamelog";
 import { Event, events } from "ts-typed-events";
 import { KEYS } from "../keys";
@@ -29,8 +29,11 @@ export class PlaybackPane extends BaseElement {
         playPause: new Event(),
     });
 
+    /** The Viseur instance that controls this */
+    private viseur: Viseur | undefined;
+
     /** The number of deltas in the gamelog */
-    private numberOfDeltas: number;
+    private numberOfDeltas: number = 0;
 
     /** If all the inputs are disabled */
     private disabled: boolean = false;
@@ -142,8 +145,8 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.deltasButton.events.clicked.on(() => {
-            if (viseur.settings.playbackMode.get() !== "deltas") {
-                viseur.settings.playbackMode.set("deltas");
+            if (this.viseur && this.viseur.settings.playbackMode.get() !== "deltas") {
+                this.viseur.settings.playbackMode.set("deltas");
             }
         });
         this.turnsButton = new inputs.Button({
@@ -151,8 +154,8 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.turnsButton.events.clicked.on(() => {
-            if (viseur.settings.playbackMode.get() !== "turns") {
-                viseur.settings.playbackMode.set("turns");
+            if (this.viseur && this.viseur.settings.playbackMode.get() !== "turns") {
+                this.viseur.settings.playbackMode.set("turns");
             }
         });
 
@@ -162,15 +165,11 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
             min: 0,
             max: 0.98,
-            value: this.getSliderFromSpeed(),
+            value: 0,
         });
 
-        this.updateSpeedSlider();
         this.speedSlider.events.changed.on((value) => {
             this.updateSpeedSetting();
-        });
-        viseur.settings.playbackSpeed.changed.on((value) => {
-            this.updateSpeedSlider();
         });
 
         this.fullscreenButton = new inputs.Button({
@@ -194,35 +193,46 @@ export class PlaybackPane extends BaseElement {
 
         this.disable();
 
-        viseur.events.ready.once((data) => {
-            this.viseurReady(data.gamelog);
-        });
+        viseurConstructed.once((viseur) => {
+            this.viseur = viseur;
 
-        viseur.events.gamelogUpdated.on((gamelog: IGamelog) => {
-            this.updatePlaybackSlider(gamelog);
-        });
+            this.updateSpeedSlider();
+            this.speedSlider.value = this.getSliderFromSpeed();
 
-        viseur.events.gamelogFinalized.on(() => {
-            this.enable();
-        });
+            viseur.settings.playbackSpeed.changed.on((value) => {
+                this.updateSpeedSlider();
+            });
 
-        viseur.timeManager.events.playing.on(() => {
-            this.element.addClass("playing");
-        });
+            this.viseur.events.ready.once((data) => {
+                this.viseurReady(data.gamelog);
+            });
 
-        viseur.timeManager.events.paused.on(() => {
-            this.element.removeClass("playing");
-        });
+            this.viseur.events.gamelogUpdated.on((gamelog: IGamelog) => {
+                this.updatePlaybackSlider(gamelog);
+            });
 
-        viseur.events.timeUpdated.on((data) => {
-            this.timeUpdated(data.index, data.dt);
-        });
+            this.viseur.events.gamelogFinalized.on(() => {
+                this.enable();
+            });
 
-        viseur.settings.playbackMode.changed.on((value) => {
-            this.updatePlaybackMode(String(value));
-        });
+            this.viseur.timeManager.events.playing.on(() => {
+                this.element.addClass("playing");
+            });
 
-        this.updatePlaybackMode(viseur.settings.playbackMode.get());
+            this.viseur.timeManager.events.paused.on(() => {
+                this.element.removeClass("playing");
+            });
+
+            this.viseur.events.timeUpdated.on((data) => {
+                this.timeUpdated(data.index, data.dt);
+            });
+
+            this.viseur.settings.playbackMode.changed.on((value) => {
+                this.updatePlaybackMode(String(value));
+            });
+
+            this.updatePlaybackMode(this.viseur.settings.playbackMode.get());
+        });
     }
 
     protected getTemplate(): Handlebars {
@@ -243,7 +253,8 @@ export class PlaybackPane extends BaseElement {
         }
         else {
             this.speedSlider.enable(); // while streaming the gamelog only enable the speed slider
-            viseur.events.gamelogFinalized.on((data) => {
+            // viseur must be constructed at this point, because it's ready
+            this.viseur!.events.gamelogFinalized.on((data) => {
                 this.numberOfDeltas = data.gamelog.deltas.length;
             });
         }
@@ -315,14 +326,14 @@ export class PlaybackPane extends BaseElement {
      * @returns the speedSlider's value to represent y
      */
     private getSliderFromSpeed(): number {
-        return 1 - (viseur.settings.playbackSpeed.get() / 1000);
+        return 1 - (this.viseur!.settings.playbackSpeed.get() / 1000);
     }
 
     /**
      * Invoked when the speedSlider is dragged/changed.
      */
     private updateSpeedSetting(): void {
-        viseur.settings.playbackSpeed.set(this.getSpeedFromSlider());
+        this.viseur!.settings.playbackSpeed.set(this.getSpeedFromSlider());
     }
 
     /**

@@ -1,6 +1,7 @@
 // This is a class to represent the Piece object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -42,13 +43,13 @@ export class Piece extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Piece (dt = 0) */
-    public current: IPieceState;
+    public current: IPieceState | undefined;
 
     /** The next state of the Piece (dt = 1) */
-    public next: IPieceState;
+    public next: IPieceState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -73,10 +74,11 @@ export class Piece extends GameObject {
      * Constructor for the Piece with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Piece
-     * @param game the game this Piece is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IPieceState, game: Game) {
-        super(state, game);
+    constructor(state: IPieceState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.piecesContainer);
@@ -180,7 +182,7 @@ export class Piece extends GameObject {
         // <<-- Creer-Merge: state-updated -->>
 
         // check to see if we need to find the promoted sprite
-        if (!this.spritePromoted && this.initialType !== (this.next || this.current).type) {
+        if (!this.spritePromoted && this.initialType !== (this.next || this.current!).type) {
             // then we've been promoted
             this.spritePromoted = this.createSprite((next || current).type);
         }
@@ -242,7 +244,8 @@ export class Piece extends GameObject {
                 description: "Moves the piece to this position and ends your turn",
                 icon: "map-marker",
                 callback: () => {
-                    this.game.humanPlayer.handleTileClicked(pos);
+                    // it exists as from the above check
+                    this.game.humanPlayer!.handleTileClicked(pos);
                 },
             });
         }

@@ -1,6 +1,7 @@
 // This is a class to represent the FireDepartment object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Building } from "./building";
 import { Game } from "./game";
@@ -31,13 +32,13 @@ export class FireDepartment extends Building {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the FireDepartment (dt = 0) */
-    public current: IFireDepartmentState;
+    public current: IFireDepartmentState | undefined;
 
     /** The next state of the FireDepartment (dt = 1) */
-    public next: IFireDepartmentState;
+    public next: IFireDepartmentState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** the beam color name to use for beams */
@@ -50,10 +51,11 @@ export class FireDepartment extends Building {
      * Constructor for the FireDepartment with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this FireDepartment
-     * @param game the game this FireDepartment is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IFireDepartmentState, game: Game) {
-        super(state, game);
+    constructor(state: IFireDepartmentState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // initialization logic goes here

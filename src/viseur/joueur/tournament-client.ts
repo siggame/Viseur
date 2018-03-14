@@ -1,4 +1,4 @@
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { Event, events } from "ts-typed-events";
 
 /** Data sent from the Tournament server detailing how to connect to play */
@@ -38,7 +38,12 @@ export class TournamentClient {
     public connected: boolean = false;
 
     /** The web socket connection we'll use to talk to the Tournament server */
-    private socket: WebSocket;
+    private socket: WebSocket | undefined;
+
+    public constructor(
+        /** The Viseur instance that controls everything */
+        private readonly viseur: Viseur,
+    ) {}
 
     /**
      * connects to a remote tournament server
@@ -53,6 +58,7 @@ export class TournamentClient {
         }
         catch (err) {
             this.events.error.emit(err);
+            return;
         }
 
         this.socket.onopen = () => {
@@ -71,7 +77,7 @@ export class TournamentClient {
         };
 
         this.socket.onmessage = (message) => {
-            if (viseur.settings.printIO.get()) {
+            if (this.viseur.settings.printIO.get()) {
                 // tslint:disable-next-line:no-console
                 console.log("FROM TOURNAMENT <-- ", message.data);
             }
@@ -88,7 +94,9 @@ export class TournamentClient {
      * Force closes the websocket connection
      */
     public close(): void {
-        this.socket.close();
+        if (this.socket) {
+            this.socket.close();
+        }
     }
 
     /**
@@ -103,12 +111,12 @@ export class TournamentClient {
             data,
         });
 
-        if (viseur.settings.printIO.get()) {
+        if (this.viseur.settings.printIO.get()) {
             // tslint:disable-next-line:no-console
             console.log("TO TOURNAMENT --> ", str);
         }
 
-        this.socket.send(str);
+        this.socket!.send(str);
     }
 
     /**
@@ -150,6 +158,6 @@ export class TournamentClient {
     private onPlay(data: ITournamentPlayData): void {
         this.events.playing.emit(data);
 
-        viseur.playAsHuman(data.game, data.server, data.port, data.session, data.playerName);
+        this.viseur.playAsHuman(data.game, data.server, data.port, data.session, data.playerName);
     }
 }

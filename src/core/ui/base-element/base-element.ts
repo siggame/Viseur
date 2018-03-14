@@ -17,7 +17,7 @@ export class BaseElement {
     public readonly id?: string;
 
     /** The parent element of this element */
-    public parent: JQuery<HTMLElement>;
+    public parent?: JQuery<HTMLElement>;
 
     /** The raw element this is wrapped around */
     public readonly element: JQuery<HTMLElement>;

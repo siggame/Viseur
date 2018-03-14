@@ -12,7 +12,7 @@ import { Game } from "./game";
  */
 export class HumanPlayer extends BaseHumanPlayer {
     /** The game this human player is playing */
-    public game: Game;
+    public game!: Game;
 
     /**
      * Set this static flag to true to mark this game as able to be played by
@@ -45,6 +45,10 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * This is called every time it is this AI.player's turn.
+     * @param callback The callback that eventually returns the return value
+     * from the server. - The returned value is Represents if you want to end
+     * your turn. True means end your turn, False means to keep your turn going
+     * and re-call this function.
      */
     public runTurn(callback: (returned: boolean) => void): void {
         // <<-- Creer-Merge: runTurn -->>
@@ -61,7 +65,7 @@ export class HumanPlayer extends BaseHumanPlayer {
             return false;
         }
 
-        const state = piece.current || piece.next;
+        const state = piece.current || piece.next!;
 
         for (const move of this.game.validMoves) {
             if (piece && move.to === pos && move.from === (state.file + state.rank)) {

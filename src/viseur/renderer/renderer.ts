@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { clamp } from "src/utils";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { Event } from "ts-typed-events";
 import "./renderer.scss";
 
@@ -106,6 +106,9 @@ export class Renderer extends BaseElement {
     /** Our custom context menu */
     private readonly contextMenu: ContextMenu;
 
+    /** Our reference to the parent viseur */
+    private readonly viseur: Viseur;
+
     /**
      * Initializes the Renderer, should be called by Viseur
      * @param {Object} args initialization args
@@ -113,9 +116,11 @@ export class Renderer extends BaseElement {
     constructor(args: IBaseElementArgs & {
         /** The default font family to use and override the styled default */
         defaultFontFamily?: string,
+        viseur: Viseur,
     }) {
         super(args);
 
+        this.viseur = args.viseur;
         this.scene.addChild(this.gameContainer);
         this.gameContainer.addChild(this.gameGraphics);
 
@@ -128,12 +133,11 @@ export class Renderer extends BaseElement {
             || "Sans-Serif";
 
         // check only now for anti-aliasing, because them changing it requires a restart to see it inverted
-        const aa = viseur.settings.antiAliasing.get();
+        const aa = this.viseur.settings.antiAliasing.get();
 
                                             // will be resized, just placeholder dimensions
         this.pixiApp = new PIXI.Application(this.pxExternalWidth, this.pxExternalHeight, {
             antialias: aa,
-            forceFXAA: aa,
         });
 
         this.setSize({width: 10, height: 10});
@@ -152,11 +156,11 @@ export class Renderer extends BaseElement {
         this.pixiCanvas = this.element.find("canvas");
 
         // when resolution settings change, resize
-        viseur.settings.resolutionScale.changed.on(() => {
+        this.viseur.settings.resolutionScale.changed.on(() => {
             this.resize();
         });
 
-        viseur.settings.showGrid.changed.on(() => {
+        this.viseur.settings.showGrid.changed.on(() => {
             this.drawGrid();
         });
 
@@ -185,13 +189,17 @@ export class Renderer extends BaseElement {
     public loadTextures(callback?: () => void): void {
         const loader = PIXI.loader;
 
+        if (!this.viseur.game) {
+            throw new Error(`Cannot load textures for ${this.viseur.game}`);
+        }
+
         // add the game's resources to our own
-        for (const key of Object.keys(viseur.game.resources)) {
-            const resource = viseur.game.resources[key];
+        for (const key of Object.keys(this.viseur.game.resources)) {
+            const resource = this.viseur.game.resources[key];
 
             if (!resource.absolutePath) {
                 resource.absolutePath = require(
-                    `src/games/${viseur.game.name.toLowerCase()}/resources/${resource.path}`,
+                    `src/games/${this.viseur.game.name.toLowerCase()}/resources/${resource.path}`,
                 );
             }
 
@@ -288,7 +296,7 @@ export class Renderer extends BaseElement {
             this.pxExternalHeight = pxExternalHeight;
         }
 
-        const resolutionScale = viseur.settings.resolutionScale.get();
+        const resolutionScale = this.viseur.settings.resolutionScale.get();
 
         // Clamp between 1 to 4096 pixels, with 4096 being the smallest max a
         // that browser can do without screwing up our scaling math
@@ -375,7 +383,7 @@ export class Renderer extends BaseElement {
     private drawGrid(): void {
         this.pxGraphics.clear();
 
-        if (!viseur.settings.showGrid.get()) {
+        if (!this.viseur.settings.showGrid.get()) {
             // don't want to show the grid, let's bug out!
             return;
         }
