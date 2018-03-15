@@ -1,6 +1,7 @@
 // This is a class to represent the Bottle object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -31,13 +32,13 @@ export class Bottle extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Bottle (dt = 0) */
-    public current: IBottleState;
+    public current: IBottleState | undefined;
 
     /** The next state of the Bottle (dt = 1) */
-    public next: IBottleState;
+    public next: IBottleState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -57,10 +58,11 @@ export class Bottle extends GameObject {
      * Constructor for the Bottle with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Bottle
-     * @param game the game this Bottle is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IBottleState, game: Game) {
-        super(state, game);
+    constructor(state: IBottleState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // <<-- /Creer-Merge: constructor -->>

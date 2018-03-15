@@ -33,7 +33,7 @@ export interface I${game_obj_name}State extends ${', '.join(parent_classes)} {
     #if 'serverPredefined' in attrs and attrs['serverPredefined']:
     #    continue
 %>${shared['vis']['block_comment']('    ', attrs['description'])}
-    ${attr_name}: ${shared['vis']['type'](attrs['type'])};
+    readonly ${attr_name}: ${shared['vis']['type'](attrs['type'])};
 
 % endfor
 }

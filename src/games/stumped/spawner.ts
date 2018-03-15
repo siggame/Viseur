@@ -1,6 +1,7 @@
 // This is a class to represent the Spawner object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -31,13 +32,13 @@ export class Spawner extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Spawner (dt = 0) */
-    public current: ISpawnerState;
+    public current: ISpawnerState | undefined;
 
     /** The next state of the Spawner (dt = 1) */
-    public next: ISpawnerState;
+    public next: ISpawnerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -47,10 +48,11 @@ export class Spawner extends GameObject {
      * Constructor for the Spawner with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Spawner
-     * @param game the game this Spawner is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: ISpawnerState, game: Game) {
-        super(state, game);
+    constructor(state: ISpawnerState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Spawner here.

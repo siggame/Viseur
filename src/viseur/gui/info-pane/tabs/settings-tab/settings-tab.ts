@@ -1,5 +1,5 @@
 import { BaseInput, ITabArgs, Tab } from "src/core/ui";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { BaseSetting, IBaseSettings } from "src/viseur/settings";
 import "./settings-tab.scss";
 
@@ -22,12 +22,14 @@ export class SettingsTab extends Tab {
     /** The player color picker inputs to enabled/disable */
     private customColorInputs: Array<BaseInput<any>> = [];
 
-    constructor(args: ITabArgs) {
+    constructor(args: ITabArgs & {
+        viseur: Viseur;
+    }) {
         super(args);
 
-        this.manageSettings(viseur.settings, this.coreSettingsElement);
+        this.manageSettings(args.viseur.settings, this.coreSettingsElement);
 
-        viseur.events.ready.on((ready) => {
+        args.viseur.events.ready.on((ready) => {
             this.gameNameElement.html(ready.game.name);
             this.gameSettingsElement.removeClass("collapsed");
 

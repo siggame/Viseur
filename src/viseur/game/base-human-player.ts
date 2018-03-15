@@ -13,7 +13,7 @@ export class BaseHumanPlayer {
     protected readonly game: BaseGame;
 
     /** The player that represents this human player in the game  */
-    protected player: BaseGameObject;
+    protected player!: BaseGameObject; // set shortly after initialized... maybe shouldnt' be !'d
 
     /** Orders we could not do until our player was hooked up */
     private backOrders: IOrder[] = [];
@@ -56,7 +56,9 @@ export class BaseHumanPlayer {
             throw new Error(`No order '${order.name}' found in humanPlayer`);
         }
 
-        this.game.pane.startTicking(this.player.id);
+        if (this.game.pane) {
+            this.game.pane.startTicking(this.player.id);
+        }
 
         // add their return callback function
         order.args.push((returned: any) => {

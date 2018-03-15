@@ -1,6 +1,7 @@
 // This is a class to represent the Player object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -31,13 +32,13 @@ export class Player extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Player (dt = 0) */
-    public current: IPlayerState;
+    public current: IPlayerState | undefined;
 
     /** The next state of the Player (dt = 1) */
-    public next: IPlayerState;
+    public next: IPlayerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -47,10 +48,11 @@ export class Player extends GameObject {
      * Constructor for the Player with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Player
-     * @param game the game this Player is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IPlayerState, game: Game) {
-        super(state, game);
+    constructor(state: IPlayerState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // initialization logic goes here

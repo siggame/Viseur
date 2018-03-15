@@ -65,8 +65,9 @@ export class RendererSheetResource extends BaseRendererResource {
             throw new Error(`Resource ${this.path} lost its sheet somehow`);
         }
 
-        const width = this.texture.width / sheet.width;
-        const height = this.texture.height / sheet.height;
+        // texture is now set as it's loaded
+        const width = this.texture!.width / sheet.width;
+        const height = this.texture!.height / sheet.height;
 
         // assume x first for the major axis, but they can manually override with the axis: "y" sheet setting
         const yFirst = (sheet.axis === "y");
@@ -87,7 +88,7 @@ export class RendererSheetResource extends BaseRendererResource {
             }
 
             this.sheetTextures.push(new PIXI.Texture(
-                this.texture.baseTexture,
+                this.texture!.baseTexture,
                 new PIXI.Rectangle(x * width, y * height, width, height),
             ));
         }

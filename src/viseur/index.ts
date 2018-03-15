@@ -1,3 +1,2 @@
-import { viseur } from "./viseur";
+export * from "./constructed";
 export * from "./viseur";
-module.exports = viseur;

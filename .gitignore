@@ -46,9 +46,6 @@ desktop.ini
 # eslinter cache
 .eslintcache
 
-# npm package lock
-package-lock.json
-
 # webpack bundle
 dist/
 docs/

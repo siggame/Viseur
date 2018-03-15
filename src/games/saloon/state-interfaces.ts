@@ -13,108 +13,108 @@ export interface IGameState extends IBaseGameState {
     /**
      * How many turns a Bartender will be busy for after throwing a Bottle.
      */
-    bartenderCooldown: number;
+    readonly bartenderCooldown: number;
 
     /**
      * All the beer Bottles currently flying across the saloon in the game.
      */
-    bottles: IBottleState[];
+    readonly bottles: IBottleState[];
 
     /**
      * How much damage is applied to neighboring things bit by the Sharpshooter
      * between turns.
      */
-    brawlerDamage: number;
+    readonly brawlerDamage: number;
 
     /**
      * Every Cowboy in the game.
      */
-    cowboys: ICowboyState[];
+    readonly cowboys: ICowboyState[];
 
     /**
      * The player whose turn it is currently. That player can send commands.
      * Other players cannot.
      */
-    currentPlayer: IPlayerState;
+    readonly currentPlayer: IPlayerState;
 
     /**
      * The current turn number, starting at 0 for the first player's turn.
      */
-    currentTurn: number;
+    readonly currentTurn: number;
 
     /**
      * Every furnishing in the game.
      */
-    furnishings: IFurnishingState[];
+    readonly furnishings: IFurnishingState[];
 
     /**
      * A mapping of every game object's ID to the actual game object. Primarily
      * used by the server and client to easily refer to the game objects via ID.
      */
-    gameObjects: {[id: string]: IGameObjectState};
+    readonly gameObjects: {[id: string]: IGameObjectState};
 
     /**
      * All the jobs that Cowboys can be called in with.
      */
-    jobs: string[];
+    readonly jobs: string[];
 
     /**
      * The number of Tiles in the map along the y (vertical) axis.
      */
-    mapHeight: number;
+    readonly mapHeight: number;
 
     /**
      * The number of Tiles in the map along the x (horizontal) axis.
      */
-    mapWidth: number;
+    readonly mapWidth: number;
 
     /**
      * The maximum number of Cowboys a Player can bring into the saloon of each
      * specific job.
      */
-    maxCowboysPerJob: number;
+    readonly maxCowboysPerJob: number;
 
     /**
      * The maximum number of turns before the game will automatically end.
      */
-    maxTurns: number;
+    readonly maxTurns: number;
 
     /**
      * List of all the players in the game.
      */
-    players: IPlayerState[];
+    readonly players: IPlayerState[];
 
     /**
      * When a player's rowdiness reaches or exceeds this number their Cowboys
      * take a collective siesta.
      */
-    rowdinessToSiesta: number;
+    readonly rowdinessToSiesta: number;
 
     /**
      * A unique identifier for the game instance that is being played.
      */
-    session: string;
+    readonly session: string;
 
     /**
      * How much damage is applied to things hit by Sharpshooters when they act.
      */
-    sharpshooterDamage: number;
+    readonly sharpshooterDamage: number;
 
     /**
      * How long siestas are for a player's team.
      */
-    siestaLength: number;
+    readonly siestaLength: number;
 
     /**
      * All the tiles in the map, stored in Row-major order. Use `x + y *
      * mapWidth` to access the correct index.
      */
-    tiles: ITileState[];
+    readonly tiles: ITileState[];
 
     /**
      * How many turns a Cowboy will be drunk for if a bottle breaks on it.
      */
-    turnsDrunk: number;
+    readonly turnsDrunk: number;
 
 }
 
@@ -126,24 +126,24 @@ export interface IBottleState extends IGameObjectState {
      * The Direction this Bottle is flying and will move to between turns, can
      * be 'North', 'East', 'South', or 'West'.
      */
-    direction: string;
+    readonly direction: string;
 
     /**
      * The direction any Cowboys hit by this will move, can be 'North', 'East',
      * 'South', or 'West'.
      */
-    drunkDirection: string;
+    readonly drunkDirection: string;
 
     /**
      * True if this Bottle has impacted and has been destroyed (removed from the
      * Game). False if still in the game flying through the saloon.
      */
-    isDestroyed: boolean;
+    readonly isDestroyed: boolean;
 
     /**
      * The Tile this bottle is currently flying over.
      */
-    tile: ITileState;
+    readonly tile: ITileState;
 
 }
 
@@ -154,62 +154,62 @@ export interface ICowboyState extends IGameObjectState {
     /**
      * If the Cowboy can be moved this turn via its owner.
      */
-    canMove: boolean;
+    readonly canMove: boolean;
 
     /**
      * The direction this Cowboy is moving while drunk. Will be 'North', 'East',
      * 'South', or 'West' when drunk; or '' (empty string) when not drunk.
      */
-    drunkDirection: string;
+    readonly drunkDirection: string;
 
     /**
      * How much focus this Cowboy has. Different Jobs do different things with
      * their Cowboy's focus.
      */
-    focus: number;
+    readonly focus: number;
 
     /**
      * How much health this Cowboy currently has.
      */
-    health: number;
+    readonly health: number;
 
     /**
      * If this Cowboy is dead and has been removed from the game.
      */
-    isDead: boolean;
+    readonly isDead: boolean;
 
     /**
      * If this Cowboy is drunk, and will automatically walk.
      */
-    isDrunk: boolean;
+    readonly isDrunk: boolean;
 
     /**
      * The job that this Cowboy does, and dictates how they fight and interact
      * within the Saloon.
      */
-    job: string;
+    readonly job: string;
 
     /**
      * The Player that owns and can control this Cowboy.
      */
-    owner: IPlayerState;
+    readonly owner: IPlayerState;
 
     /**
      * The Tile that this Cowboy is located on.
      */
-    tile: ITileState;
+    readonly tile: ITileState;
 
     /**
      * How many times this unit has been drunk before taking their siesta and
      * reseting this to 0.
      */
-    tolerance: number;
+    readonly tolerance: number;
 
     /**
      * How many turns this unit has remaining before it is no longer busy and
      * can `act()` or `play()` again.
      */
-    turnsBusy: number;
+    readonly turnsBusy: number;
 
 }
 
@@ -220,28 +220,28 @@ export interface IFurnishingState extends IGameObjectState {
     /**
      * How much health this Furnishing currently has.
      */
-    health: number;
+    readonly health: number;
 
     /**
      * If this Furnishing has been destroyed, and has been removed from the
      * game.
      */
-    isDestroyed: boolean;
+    readonly isDestroyed: boolean;
 
     /**
      * True if this Furnishing is a piano and can be played, False otherwise.
      */
-    isPiano: boolean;
+    readonly isPiano: boolean;
 
     /**
      * If this is a piano and a Cowboy is playing it this turn.
      */
-    isPlaying: boolean;
+    readonly isPlaying: boolean;
 
     /**
      * The Tile that this Furnishing is located on.
      */
-    tile: ITileState;
+    readonly tile: ITileState;
 
 }
 
@@ -255,19 +255,19 @@ export interface IGameObjectState extends IBaseGameObjectState {
      * instance of. Used for reflection to create new instances on clients, but
      * exposed for convenience should AIs want this data.
      */
-    gameObjectName: string;
+    readonly gameObjectName: string;
 
     /**
      * A unique id for each instance of a GameObject or a sub class. Used for
      * client and server communication. Should never change value after being
      * set.
      */
-    id: string;
+    readonly id: string;
 
     /**
      * Any strings logged will be stored here. Intended for debugging.
      */
-    logs: string[];
+    readonly logs: string[];
 
 }
 
@@ -279,74 +279,74 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
      * What type of client this is, e.g. 'Python', 'JavaScript', or some other
      * language. For potential data mining purposes.
      */
-    clientType: string;
+    readonly clientType: string;
 
     /**
      * Every Cowboy owned by this Player.
      */
-    cowboys: ICowboyState[];
+    readonly cowboys: ICowboyState[];
 
     /**
      * How many enemy Cowboys this player's team has killed.
      */
-    kills: number;
+    readonly kills: number;
 
     /**
      * If the player lost the game or not.
      */
-    lost: boolean;
+    readonly lost: boolean;
 
     /**
      * The name of the player.
      */
-    name: string;
+    readonly name: string;
 
     /**
      * This player's opponent in the game.
      */
-    opponent: IPlayerState;
+    readonly opponent: IPlayerState;
 
     /**
      * The reason why the player lost the game.
      */
-    reasonLost: string;
+    readonly reasonLost: string;
 
     /**
      * The reason why the player won the game.
      */
-    reasonWon: string;
+    readonly reasonWon: string;
 
     /**
      * How rowdy their team is. When it gets too high their team takes a
      * collective siesta.
      */
-    rowdiness: number;
+    readonly rowdiness: number;
 
     /**
      * How many times their team has played a piano.
      */
-    score: number;
+    readonly score: number;
 
     /**
      * 0 when not having a team siesta. When greater than 0 represents how many
      * turns left for the team siesta to complete.
      */
-    siesta: number;
+    readonly siesta: number;
 
     /**
      * The amount of time (in ns) remaining for this AI to send commands.
      */
-    timeRemaining: number;
+    readonly timeRemaining: number;
 
     /**
      * If the player won the game or not.
      */
-    won: boolean;
+    readonly won: boolean;
 
     /**
      * The YoungGun this Player uses to call in new Cowboys.
      */
-    youngGun: IYoungGunState;
+    readonly youngGun: IYoungGunState;
 
 }
 
@@ -357,68 +357,68 @@ export interface ITileState extends IGameObjectState {
     /**
      * The beer Bottle currently flying over this Tile.
      */
-    bottle: IBottleState;
+    readonly bottle: IBottleState;
 
     /**
      * The Cowboy that is on this Tile, null otherwise.
      */
-    cowboy: ICowboyState;
+    readonly cowboy: ICowboyState;
 
     /**
      * The furnishing that is on this Tile, null otherwise.
      */
-    furnishing: IFurnishingState;
+    readonly furnishing: IFurnishingState;
 
     /**
      * If this Tile is pathable, but has a hazard that damages Cowboys that path
      * through it.
      */
-    hasHazard: boolean;
+    readonly hasHazard: boolean;
 
     /**
      * If this Tile is a balcony of the Saloon that YoungGuns walk around on,
      * and can never be pathed through by Cowboys.
      */
-    isBalcony: boolean;
+    readonly isBalcony: boolean;
 
     /**
      * The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the
      * map.
      */
-    tileEast: ITileState;
+    readonly tileEast: ITileState;
 
     /**
      * The Tile to the 'North' of this one (x, y-1). Null if out of bounds of
      * the map.
      */
-    tileNorth: ITileState;
+    readonly tileNorth: ITileState;
 
     /**
      * The Tile to the 'South' of this one (x, y+1). Null if out of bounds of
      * the map.
      */
-    tileSouth: ITileState;
+    readonly tileSouth: ITileState;
 
     /**
      * The Tile to the 'West' of this one (x-1, y). Null if out of bounds of the
      * map.
      */
-    tileWest: ITileState;
+    readonly tileWest: ITileState;
 
     /**
      * The x (horizontal) position of this Tile.
      */
-    x: number;
+    readonly x: number;
 
     /**
      * The y (vertical) position of this Tile.
      */
-    y: number;
+    readonly y: number;
 
     /**
      * The YoungGun on this tile, null otherwise.
      */
-    youngGun: IYoungGunState;
+    readonly youngGun: IYoungGunState;
 
 }
 
@@ -431,21 +431,21 @@ export interface IYoungGunState extends IGameObjectState {
      * The Tile that a Cowboy will be called in on if this YoungGun calls in a
      * Cowboy.
      */
-    callInTile: ITileState;
+    readonly callInTile: ITileState;
 
     /**
      * True if the YoungGun can call in a Cowboy, false otherwise.
      */
-    canCallIn: boolean;
+    readonly canCallIn: boolean;
 
     /**
      * The Player that owns and can control this YoungGun.
      */
-    owner: IPlayerState;
+    readonly owner: IPlayerState;
 
     /**
      * The Tile this YoungGun is currently on.
      */
-    tile: ITileState;
+    readonly tile: ITileState;
 
 }

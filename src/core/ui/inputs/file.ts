@@ -19,7 +19,7 @@ export class FileInput extends BaseInput<undefined> {
     constructor(args: IBaseInputArgs) {
         super(Object.assign({
             type: "file",
-        } as IBaseInputArgs, args));
+        }, args));
 
         this.element.on("change", () => {
             this.loadFile();

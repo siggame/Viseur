@@ -1,3 +1,4 @@
+import { Viseur } from "src/viseur";
 import { BasePane, IPaneStat } from "src/viseur/game";
 import { Game } from "./game";
 import { IGameState, IPlayerState } from "./state-interfaces";
@@ -17,11 +18,12 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
 
     /**
      * Creates the pane
+     * @param viseur the Viseur instance controlling the pane
      * @param game the game this pane is displaying stats for
      * @param state the initial state of the game
      */
-    constructor(game: Game, state: IGameState) {
-        super(game, state);
+    constructor(viseur: Viseur, game: Game, state: IGameState) {
+        super(viseur, game, state);
 
         // <<-- Creer-Merge: constructor -->>
         // constructor your pane here

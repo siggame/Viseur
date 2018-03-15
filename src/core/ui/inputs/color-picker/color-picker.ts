@@ -11,7 +11,7 @@ export class ColorPicker extends BaseInput<string> {
     constructor(args: IBaseInputArgs) {
         super(Object.assign({
             type: "color",
-        } as IBaseInputArgs, args));
+        }, args));
     }
 
     /**

@@ -1,6 +1,7 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -35,13 +36,13 @@ export class Unit extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Unit (dt = 0) */
-    public current: IUnitState;
+    public current: IUnitState | undefined;
 
     /** The next state of the Unit (dt = 1) */
-    public next: IUnitState;
+    public next: IUnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -57,7 +58,7 @@ export class Unit extends GameObject {
     public gathererSprite: PIXI.Sprite;
     public converterSprite: PIXI.Sprite;
 
-    public spriteInUse: PIXI.Sprite;
+    public spriteInUse: PIXI.Sprite | undefined;
 
     public indicatorSprite: PIXI.Sprite;
 
@@ -81,10 +82,11 @@ export class Unit extends GameObject {
      * Constructor for the Unit with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Unit
-     * @param game the game this Unit is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IUnitState, game: Game) {
-        super(state, game);
+    constructor(state: IUnitState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
 
@@ -357,7 +359,7 @@ export class Unit extends GameObject {
             this.spriteInUse = this.humanSprite;
         }
         this.job = job;
-        this.spriteInUse.visible = true;
+        this.spriteInUse!.visible = true;
     }
 
     // <<-- /Creer-Merge: public-functions -->>

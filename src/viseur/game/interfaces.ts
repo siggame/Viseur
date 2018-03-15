@@ -13,7 +13,7 @@ export interface IGameObjectReference extends IState {
      * Used for client and server communication.
      * Should never change value after being set.
      */
-    id: string;
+    readonly id: string;
 }
 
 /** A state of a game object at a discrete point in time */
@@ -22,12 +22,12 @@ export interface IBaseGameObjectState extends IGameObjectReference {
      * String representing the top level Class that this game object is an instance of.
      * Used for reflection to create new instances on clients, but exposed for convenience should AIs want this data.
      */
-    gameObjectName: string;
+    readonly gameObjectName: string;
 
     /**
      * Any strings logged will be stored here. Intended for debugging.
      */
-    logs: string[];
+    readonly logs: string[];
 }
 
 /** dictionary of all the game object classes in a game */

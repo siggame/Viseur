@@ -15,7 +15,7 @@ export class Tabular extends BaseElement {
     private tabs: Tab[] = [];
 
     /** the currently selected tab */
-    private activeTab: Tab;
+    private activeTab!: Tab; // will always be at least the first tab
 
     /** parent container to store tab's tab item in */
     private tabsElement = this.element.find(".tabular-tabs");
@@ -24,7 +24,7 @@ export class Tabular extends BaseElement {
     private contentsElement = this.element.find(".tabular-content");
 
     /** if this is fading in or out a tab */
-    private fading: boolean;
+    private fading: boolean = false;
 
     constructor(args: IBaseElementArgs & {
         tabs?: Tab[],

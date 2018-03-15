@@ -1,7 +1,13 @@
 import * as PIXI from "pixi.js";
 import { clamp, ColorTint, getTintFromColor } from "src/utils";
-import { viseur } from "src/viseur";
+import { Viseur, viseurConstructed } from "src/viseur";
 import { BaseSetting } from "src/viseur/settings";
+
+// kind of sketchy
+let viseur: Viseur | undefined;
+viseurConstructed.once((vis) => {
+    viseur = vis;
+});
 
 /** The optional args for a game bar */
 export interface IGameBarOptions {
@@ -57,8 +63,8 @@ export class GameBar {
         this.container.setParent(parent);
         this.max = options.max || 1;
 
-        this.background = viseur.game.resources.blank.newSprite(this.container, options);
-        this.foreground = viseur.game.resources.blank.newSprite(this.container, options);
+        this.background = viseur!.game!.resources.blank.newSprite(this.container, options);
+        this.foreground = viseur!.game!.resources.blank.newSprite(this.container, options);
 
         this.recolor(options.foregroundColor || 0x044F444, options.backgroundColor || 0x00000);
 

@@ -11,11 +11,11 @@ import { YoungGun } from "./young-gun";
 
 /** All the non Game classes in this game */
 export const GameObjectClasses: Readonly<IBaseGameObjectClasses> = Object.freeze({
-    Player,
     GameObject,
-    YoungGun,
-    Cowboy,
+    Player,
     Tile,
+    Cowboy,
     Furnishing,
     Bottle,
+    YoungGun,
 }) as any;

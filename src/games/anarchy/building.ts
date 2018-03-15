@@ -1,6 +1,7 @@
 // This is a class to represent the Building object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -40,13 +41,13 @@ export class Building extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Building (dt = 0) */
-    public current: IBuildingState;
+    public current: IBuildingState | undefined;
 
     /** The next state of the Building (dt = 1) */
-    public next: IBuildingState;
+    public next: IBuildingState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** the beam color name to use for beams */
@@ -77,7 +78,7 @@ export class Building extends GameObject {
     private targetedSprite: PIXI.Sprite;
 
     /** Sprite we use when we are beaming some other building */
-    private beamSprite: PIXI.Sprite;
+    private beamSprite: PIXI.Sprite | undefined;
 
     /** All the sprites from the fire spreadsheet to animate fire */
     private fireSprites: PIXI.Sprite[] = [];
@@ -94,10 +95,11 @@ export class Building extends GameObject {
      * Constructor for the Building with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Building
-     * @param game the game this Building is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IBuildingState, game: Game) {
-        super(state, game);
+    constructor(state: IBuildingState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.game);

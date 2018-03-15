@@ -14,130 +14,130 @@ export interface IGameState extends IBaseGameState {
      * The multiplier for the amount of energy regenerated when resting in a
      * shelter with the cat overlord.
      */
-    catEnergyMult: number;
+    readonly catEnergyMult: number;
 
     /**
      * The player whose turn it is currently. That player can send commands.
      * Other players cannot.
      */
-    currentPlayer: IPlayerState;
+    readonly currentPlayer: IPlayerState;
 
     /**
      * The current turn number, starting at 0 for the first player's turn.
      */
-    currentTurn: number;
+    readonly currentTurn: number;
 
     /**
      * A mapping of every game object's ID to the actual game object. Primarily
      * used by the server and client to easily refer to the game objects via ID.
      */
-    gameObjects: {[id: string]: IGameObjectState};
+    readonly gameObjects: {[id: string]: IGameObjectState};
 
     /**
      * The amount of turns it takes for a Tile that was just harvested to grow
      * food again.
      */
-    harvestCooldown: number;
+    readonly harvestCooldown: number;
 
     /**
      * All the Jobs that Units can have in the game.
      */
-    jobs: IJobState[];
+    readonly jobs: IJobState[];
 
     /**
      * The amount that the harvest rate is lowered each season.
      */
-    lowerHarvestAmount: number;
+    readonly lowerHarvestAmount: number;
 
     /**
      * The number of Tiles in the map along the y (vertical) axis.
      */
-    mapHeight: number;
+    readonly mapHeight: number;
 
     /**
      * The number of Tiles in the map along the x (horizontal) axis.
      */
-    mapWidth: number;
+    readonly mapWidth: number;
 
     /**
      * The maximum number of turns before the game will automatically end.
      */
-    maxTurns: number;
+    readonly maxTurns: number;
 
     /**
      * The multiplier for the cost of actions when performing them in range of a
      * monument. Does not effect pickup cost.
      */
-    monumentCostMult: number;
+    readonly monumentCostMult: number;
 
     /**
      * The number of materials in a monument.
      */
-    monumentMaterials: number;
+    readonly monumentMaterials: number;
 
     /**
      * The number of materials in a neutral Structure.
      */
-    neutralMaterials: number;
+    readonly neutralMaterials: number;
 
     /**
      * List of all the players in the game.
      */
-    players: IPlayerState[];
+    readonly players: IPlayerState[];
 
     /**
      * A unique identifier for the game instance that is being played.
      */
-    session: string;
+    readonly session: string;
 
     /**
      * The number of materials in a shelter.
      */
-    shelterMaterials: number;
+    readonly shelterMaterials: number;
 
     /**
      * The multiplier for the amount of energy regenerated when resting while
      * starving.
      */
-    starvingEnergyMult: number;
+    readonly starvingEnergyMult: number;
 
     /**
      * Every Structure in the game.
      */
-    structures: IStructureState[];
+    readonly structures: IStructureState[];
 
     /**
      * All the tiles in the map, stored in Row-major order. Use `x + y *
      * mapWidth` to access the correct index.
      */
-    tiles: ITileState[];
+    readonly tiles: ITileState[];
 
     /**
      * After a food tile is harvested, the number of turns before it can be
      * harvested again.
      */
-    turnsBetweenHarvests: number;
+    readonly turnsBetweenHarvests: number;
 
     /**
      * The number of turns between fresh humans being spawned on the road.
      */
-    turnsToCreateHuman: number;
+    readonly turnsToCreateHuman: number;
 
     /**
      * The number of turns before the harvest rate is lowered (length of each
      * season basically).
      */
-    turnsToLowerHarvest: number;
+    readonly turnsToLowerHarvest: number;
 
     /**
      * Every Unit in the game.
      */
-    units: IUnitState[];
+    readonly units: IUnitState[];
 
     /**
      * The number of materials in a wall.
      */
-    wallMaterials: number;
+    readonly wallMaterials: number;
 
 }
 
@@ -151,19 +151,19 @@ export interface IGameObjectState extends IBaseGameObjectState {
      * instance of. Used for reflection to create new instances on clients, but
      * exposed for convenience should AIs want this data.
      */
-    gameObjectName: string;
+    readonly gameObjectName: string;
 
     /**
      * A unique id for each instance of a GameObject or a sub class. Used for
      * client and server communication. Should never change value after being
      * set.
      */
-    id: string;
+    readonly id: string;
 
     /**
      * Any strings logged will be stored here. Intended for debugging.
      */
-    logs: string[];
+    readonly logs: string[];
 
 }
 
@@ -174,33 +174,33 @@ export interface IJobState extends IGameObjectState {
     /**
      * The amount of energy this Job normally uses to perform its actions.
      */
-    actionCost: number;
+    readonly actionCost: number;
 
     /**
      * How many combined resources a Unit with this Job can hold at once.
      */
-    carryLimit: number;
+    readonly carryLimit: number;
 
     /**
      * The number of moves this Job can make per turn.
      */
-    moves: number;
+    readonly moves: number;
 
     /**
      * The amount of energy normally regenerated when resting at a shelter.
      */
-    regenRate: number;
+    readonly regenRate: number;
 
     /**
      * The Job title.
      */
-    title: string;
+    readonly title: string;
 
     /**
      * The amount of food per turn this Unit consumes. If there isn't enough
      * food for every Unit, all Units become starved and do not consume food.
      */
-    upkeep: number;
+    readonly upkeep: number;
 
 }
 
@@ -211,70 +211,70 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
     /**
      * The overlord cat Unit owned by this Player.
      */
-    cat: IUnitState;
+    readonly cat: IUnitState;
 
     /**
      * What type of client this is, e.g. 'Python', 'JavaScript', or some other
      * language. For potential data mining purposes.
      */
-    clientType: string;
+    readonly clientType: string;
 
     /**
      * The amount of food owned by this player.
      */
-    food: number;
+    readonly food: number;
 
     /**
      * If the player lost the game or not.
      */
-    lost: boolean;
+    readonly lost: boolean;
 
     /**
      * The name of the player.
      */
-    name: string;
+    readonly name: string;
 
     /**
      * This player's opponent in the game.
      */
-    opponent: IPlayerState;
+    readonly opponent: IPlayerState;
 
     /**
      * The reason why the player lost the game.
      */
-    reasonLost: string;
+    readonly reasonLost: string;
 
     /**
      * The reason why the player won the game.
      */
-    reasonWon: string;
+    readonly reasonWon: string;
 
     /**
      * Every Structure owned by this Player.
      */
-    structures: IStructureState[];
+    readonly structures: IStructureState[];
 
     /**
      * The amount of time (in ns) remaining for this AI to send commands.
      */
-    timeRemaining: number;
+    readonly timeRemaining: number;
 
     /**
      * Every Unit owned by this Player.
      */
-    units: IUnitState[];
+    readonly units: IUnitState[];
 
     /**
      * The total upkeep of every Unit owned by this Player. If there isn't
      * enough food for every Unit, all Units become starved and do not consume
      * food.
      */
-    upkeep: number;
+    readonly upkeep: number;
 
     /**
      * If the player won the game or not.
      */
-    won: boolean;
+    readonly won: boolean;
 
 }
 
@@ -286,29 +286,29 @@ export interface IStructureState extends IGameObjectState {
      * The range of this Structure's effect. For example, a radius of 1 means
      * this Structure affects a 3x3 square centered on this Structure.
      */
-    effectRadius: number;
+    readonly effectRadius: number;
 
     /**
      * The number of materials in this Structure. Once this number reaches 0,
      * this Structure is destroyed.
      */
-    materials: number;
+    readonly materials: number;
 
     /**
      * The owner of this Structure if any, otherwise null.
      */
-    owner: IPlayerState;
+    readonly owner: IPlayerState;
 
     /**
      * The Tile this Structure is on.
      */
-    tile: ITileState;
+    readonly tile: ITileState;
 
     /**
      * The type of Structure this is ('shelter', 'monument', 'wall', 'road',
      * 'neutral').
      */
-    type: string;
+    readonly type: string;
 
 }
 
@@ -319,66 +319,66 @@ export interface ITileState extends IGameObjectState {
     /**
      * The number of food dropped on this Tile.
      */
-    food: number;
+    readonly food: number;
 
     /**
      * The amount of food that can be harvested from this Tile per turn.
      */
-    harvestRate: number;
+    readonly harvestRate: number;
 
     /**
      * The number of materials dropped on this Tile.
      */
-    materials: number;
+    readonly materials: number;
 
     /**
      * The Structure on this Tile if present, otherwise null.
      */
-    structure: IStructureState;
+    readonly structure: IStructureState;
 
     /**
      * The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the
      * map.
      */
-    tileEast: ITileState;
+    readonly tileEast: ITileState;
 
     /**
      * The Tile to the 'North' of this one (x, y-1). Null if out of bounds of
      * the map.
      */
-    tileNorth: ITileState;
+    readonly tileNorth: ITileState;
 
     /**
      * The Tile to the 'South' of this one (x, y+1). Null if out of bounds of
      * the map.
      */
-    tileSouth: ITileState;
+    readonly tileSouth: ITileState;
 
     /**
      * The Tile to the 'West' of this one (x-1, y). Null if out of bounds of the
      * map.
      */
-    tileWest: ITileState;
+    readonly tileWest: ITileState;
 
     /**
      * The amount of turns before this resource can be harvested.
      */
-    turnsToHarvest: number;
+    readonly turnsToHarvest: number;
 
     /**
      * The Unit on this Tile if present, otherwise null.
      */
-    unit: IUnitState;
+    readonly unit: IUnitState;
 
     /**
      * The x (horizontal) position of this Tile.
      */
-    x: number;
+    readonly x: number;
 
     /**
      * The y (vertical) position of this Tile.
      */
-    y: number;
+    readonly y: number;
 
 }
 
@@ -389,66 +389,66 @@ export interface IUnitState extends IGameObjectState {
     /**
      * Whether this Unit has performed its action this turn.
      */
-    acted: boolean;
+    readonly acted: boolean;
 
     /**
      * The amount of energy this Unit has (from 0.0 to 100.0).
      */
-    energy: number;
+    readonly energy: number;
 
     /**
      * The amount of food this Unit is holding.
      */
-    food: number;
+    readonly food: number;
 
     /**
      * The Job this Unit was recruited to do.
      */
-    job: IJobState;
+    readonly job: IJobState;
 
     /**
      * The amount of materials this Unit is holding.
      */
-    materials: number;
+    readonly materials: number;
 
     /**
      * The tile this Unit is moving to. This only applies to neutral fresh
      * humans spawned on the road. Otherwise, the tile this Unit is on.
      */
-    movementTarget: ITileState;
+    readonly movementTarget: ITileState;
 
     /**
      * How many moves this Unit has left this turn.
      */
-    moves: number;
+    readonly moves: number;
 
     /**
      * The Player that owns and can control this Unit, or null if the Unit is
      * neutral.
      */
-    owner: IPlayerState;
+    readonly owner: IPlayerState;
 
     /**
      * The Units in the same squad as this Unit. Units in the same squad attack
      * and defend together.
      */
-    squad: IUnitState[];
+    readonly squad: IUnitState[];
 
     /**
      * Whether this Unit is starving. Starving Units regenerate energy at half
      * the rate they normally would while resting.
      */
-    starving: boolean;
+    readonly starving: boolean;
 
     /**
      * The Tile this Unit is on.
      */
-    tile: ITileState;
+    readonly tile: ITileState;
 
     /**
      * The number of turns before this Unit dies. This only applies to neutral
      * fresh humans created from combat. Otherwise, 0.
      */
-    turnsToDie: number;
+    readonly turnsToDie: number;
 
 }

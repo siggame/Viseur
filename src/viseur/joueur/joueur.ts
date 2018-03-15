@@ -1,5 +1,5 @@
 import { IAnyObject } from "src/utils";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { IDelta, IGamelog, IGameServerConstants } from "src/viseur/game/gamelog";
 import { Event, events } from "ts-typed-events";
 import * as serializer from "./serializer";
@@ -78,16 +78,21 @@ export class Joueur {
     };
 
     /** The web socket connection we use to talk to the game server */
-    private socket: WebSocket;
+    private socket: WebSocket | undefined;
 
     /** True if the closed connection did so because we timed out connecting to them */
-    private timedOut: boolean;
+    private timedOut: boolean = false;
 
     /** The player's id of our player */
     private playerID?: string;
 
     /** True when the game has started, false otherwise */
     private started: boolean = false;
+
+    public constructor(
+        /** The Viseur instance that controls everything */
+        private readonly viseur: Viseur,
+    ) {}
 
     /**
      * Gets the gamelog this client is streaming
@@ -131,7 +136,7 @@ export class Joueur {
         };
 
         this.socket.onmessage = (message) => {
-            if (viseur.settings.printIO.get()) {
+            if (this.viseur.settings.printIO.get()) {
                 // tslint:disable-next-line:no-console
                 console.log("FROM SERVER <-- ", message.data);
             }
@@ -218,7 +223,9 @@ export class Joueur {
         this.gamelog.streaming = false;
         this.playerID = undefined;
         this.events.over.emit(data);
-        this.socket.close();
+        if (this.socket) {
+            this.socket.close();
+        }
     }
 
     /**
@@ -259,7 +266,8 @@ export class Joueur {
      */
     private autoHandleOrder(data: any): void {
         const args = serializer.deserialize(data.args);
-        viseur.game.humanPlayer.order({
+        // if we have an order to handle, then we must have a game
+        this.viseur.game!.humanPlayer!.order({
             name: data.name as string,
             args: args as any[],
             callback: (returned: any) => {
@@ -304,11 +312,11 @@ export class Joueur {
             data,
         });
 
-        if (viseur.settings.printIO.get()) {
+        if (this.viseur.settings.printIO.get()) {
             // tslint:disable-next-line:no-console
             console.log("TO SERVER --> ", str);
         }
 
-        this.socket.send(str);
+        this.socket!.send(str);
     }
 }

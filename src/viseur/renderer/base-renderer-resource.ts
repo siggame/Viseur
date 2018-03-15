@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js";
-import { viseur } from "src/viseur";
-import { viseurStarted } from "src/viseur/started";
+import { Viseur, viseurConstructed } from "src/viseur";
 
 /** non standard options for resources */
 export interface IBaseRendererResourceOptions {
@@ -28,11 +27,14 @@ export abstract class BaseRendererResource {
     /** The default height (in game units) for new sprites from this resource */
     public readonly defaultHeight: number = 1;
 
-    /** The texture for this sprite */
-    protected texture: PIXI.Texture;
+    /** The texture for this sprite, undefined while not loaded */
+    protected texture: PIXI.Texture | undefined;
 
     /** the name of the game this resource is for */
     private readonly gameName: string = ""; // will be set from the load function
+
+    /** The Viseur that controls everything */
+    private viseur: Viseur | undefined;
 
     /**
      * Creates and registers a new resource that can make sprites of it
@@ -47,8 +49,11 @@ export abstract class BaseRendererResource {
             ? this.path
             : "";
 
-        viseurStarted.on(() => {
-            viseur.renderer.events.texturesLoaded.on((resources) => this.onTextureLoaded(resources));
+        viseurConstructed.on((viseur) => {
+            this.viseur = viseur;
+            viseur.renderer.events.texturesLoaded.on(
+                (resources) => this.onTextureLoaded(resources),
+            );
         });
     }
 
@@ -69,7 +74,8 @@ export abstract class BaseRendererResource {
      * @returns a boolean indicating if this resource's texture was loaded
      */
     protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
-        if (viseur.game.name !== this.gameName) {
+        // if we have textures loaded, Viseur must have a game ready
+        if (this.viseur!.game!.name !== this.gameName) {
             // this resource is for a different game, and will never be used
             // so we don't care if it loaded or not
             return false;

@@ -1,6 +1,7 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
@@ -31,19 +32,20 @@ export class Tile extends GameObject {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Tile (dt = 0) */
-    public current: ITileState;
+    public current: ITileState | undefined;
 
     /** The next state of the Tile (dt = 1) */
-    public next: ITileState;
+    public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     public grass: PIXI.Sprite;
 
-    public bush: PIXI.Sprite;
-    public berry: PIXI.Sprite;
+    public bush: PIXI.Sprite | undefined;
+
+    public berry: PIXI.Sprite | undefined;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -51,10 +53,11 @@ export class Tile extends GameObject {
      * Constructor for the Tile with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Tile
-     * @param game the game this Tile is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: ITileState, game: Game) {
-        super(state, game);
+    constructor(state: ITileState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // render the board
@@ -68,7 +71,7 @@ export class Tile extends GameObject {
         if (r === 2) {
             this.grass = this.game.resources.grass2.newSprite(this.container);
         }
-        if (r === 3) {
+        else { // r === 3
             this.grass = this.game.resources.grass3.newSprite(this.container);
         }
 
@@ -106,7 +109,7 @@ export class Tile extends GameObject {
         // <<-- Creer-Merge: render -->>
         // render where the Tile is
 
-        if (this.bush) {
+        if (this.bush && this.berry) {
             this.bush.visible = current.harvestRate > 0;
             if (this.bush.visible && current.turnsToHarvest === 0) {
                 this.berry.visible = true;

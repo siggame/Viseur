@@ -13,60 +13,60 @@ export interface IGameState extends IBaseGameState {
     /**
      * The height of the board for the Y component of a checker.
      */
-    boardHeight: number;
+    readonly boardHeight: number;
 
     /**
      * The width of the board for X component of a checker.
      */
-    boardWidth: number;
+    readonly boardWidth: number;
 
     /**
      * The checker that last moved and must be moved because only one checker
      * can move during each players turn.
      */
-    checkerMoved: ICheckerState;
+    readonly checkerMoved: ICheckerState;
 
     /**
      * If the last checker that moved jumped, meaning it can move again.
      */
-    checkerMovedJumped: boolean;
+    readonly checkerMovedJumped: boolean;
 
     /**
      * All the checkers currently in the game.
      */
-    checkers: ICheckerState[];
+    readonly checkers: ICheckerState[];
 
     /**
      * The player whose turn it is currently. That player can send commands.
      * Other players cannot.
      */
-    currentPlayer: IPlayerState;
+    readonly currentPlayer: IPlayerState;
 
     /**
      * The current turn number, starting at 0 for the first player's turn.
      */
-    currentTurn: number;
+    readonly currentTurn: number;
 
     /**
      * A mapping of every game object's ID to the actual game object. Primarily
      * used by the server and client to easily refer to the game objects via ID.
      */
-    gameObjects: {[id: string]: IGameObjectState};
+    readonly gameObjects: {[id: string]: IGameObjectState};
 
     /**
      * The maximum number of turns before the game will automatically end.
      */
-    maxTurns: number;
+    readonly maxTurns: number;
 
     /**
      * List of all the players in the game.
      */
-    players: IPlayerState[];
+    readonly players: IPlayerState[];
 
     /**
      * A unique identifier for the game instance that is being played.
      */
-    session: string;
+    readonly session: string;
 
 }
 
@@ -77,22 +77,22 @@ export interface ICheckerState extends IGameObjectState {
     /**
      * If the checker has been kinged and can move backwards.
      */
-    kinged: boolean;
+    readonly kinged: boolean;
 
     /**
      * The player that controls this Checker.
      */
-    owner: IPlayerState;
+    readonly owner: IPlayerState;
 
     /**
      * The x coordinate of the checker.
      */
-    x: number;
+    readonly x: number;
 
     /**
      * The y coordinate of the checker.
      */
-    y: number;
+    readonly y: number;
 
 }
 
@@ -106,19 +106,19 @@ export interface IGameObjectState extends IBaseGameObjectState {
      * instance of. Used for reflection to create new instances on clients, but
      * exposed for convenience should AIs want this data.
      */
-    gameObjectName: string;
+    readonly gameObjectName: string;
 
     /**
      * A unique id for each instance of a GameObject or a sub class. Used for
      * client and server communication. Should never change value after being
      * set.
      */
-    id: string;
+    readonly id: string;
 
     /**
      * Any strings logged will be stored here. Intended for debugging.
      */
-    logs: string[];
+    readonly logs: string[];
 
 }
 
@@ -129,52 +129,52 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
     /**
      * All the checkers currently in the game owned by this player.
      */
-    checkers: ICheckerState[];
+    readonly checkers: ICheckerState[];
 
     /**
      * What type of client this is, e.g. 'Python', 'JavaScript', or some other
      * language. For potential data mining purposes.
      */
-    clientType: string;
+    readonly clientType: string;
 
     /**
      * If the player lost the game or not.
      */
-    lost: boolean;
+    readonly lost: boolean;
 
     /**
      * The name of the player.
      */
-    name: string;
+    readonly name: string;
 
     /**
      * This player's opponent in the game.
      */
-    opponent: IPlayerState;
+    readonly opponent: IPlayerState;
 
     /**
      * The reason why the player lost the game.
      */
-    reasonLost: string;
+    readonly reasonLost: string;
 
     /**
      * The reason why the player won the game.
      */
-    reasonWon: string;
+    readonly reasonWon: string;
 
     /**
      * The amount of time (in ns) remaining for this AI to send commands.
      */
-    timeRemaining: number;
+    readonly timeRemaining: number;
 
     /**
      * If the player won the game or not.
      */
-    won: boolean;
+    readonly won: boolean;
 
     /**
      * The direction your checkers must go along the y-axis until kinged.
      */
-    yDirection: number;
+    readonly yDirection: number;
 
 }

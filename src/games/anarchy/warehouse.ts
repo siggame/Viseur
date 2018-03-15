@@ -1,6 +1,7 @@
 // This is a class to represent the Warehouse object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Viseur } from "src/viseur";
 import { IDeltaReason } from "src/viseur/game";
 import { Building } from "./building";
 import { Game } from "./game";
@@ -31,13 +32,13 @@ export class Warehouse extends Building {
     }
 
     /** The instance of the game this game object is a part of */
-    public readonly game: Game;
+    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Warehouse (dt = 0) */
-    public current: IWarehouseState;
+    public current: IWarehouseState | undefined;
 
     /** The next state of the Warehouse (dt = 1) */
-    public next: IWarehouseState;
+    public next: IWarehouseState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     protected get beamColorName(): number {
@@ -49,10 +50,11 @@ export class Warehouse extends Building {
      * Constructor for the Warehouse with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Warehouse
-     * @param game the game this Warehouse is in
+     * @param Visuer the Viseur instance that controls everything and contains
+     * the game.
      */
-    constructor(state: IWarehouseState, game: Game) {
-        super(state, game);
+    constructor(state: IWarehouseState, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // initialization logic goes here

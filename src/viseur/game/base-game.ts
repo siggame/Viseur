@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
-import { viseur } from "src/viseur";
+import { Viseur } from "src/viseur";
 import { IRendererResources, IRendererSize, Renderer } from "src/viseur/renderer";
 import * as Settings from "src/viseur/settings";
 import { BaseGameObject } from "./base-game-object";
@@ -23,19 +23,19 @@ export class BaseGame extends StateObject {
     public readonly numberOfPlayers: number = 2;
 
     /** Mapping of the class names to their class for all sub game object classes */
-    public readonly gameObjectClasses: Readonly<IBaseGameObjectClasses>;
+    public readonly gameObjectClasses!: Readonly<IBaseGameObjectClasses>; // set in Creer template
 
     /** The current state of the game (dt = 0) */
-    public current: IBaseGameState;
+    public current: IBaseGameState | undefined;
 
     /** The next state of the game (dt = 1) */
-    public next: IBaseGameState;
+    public next: IBaseGameState | undefined;
 
     /** The reason for the current state */
-    public currentReason: IDeltaReason;
+    public currentReason: IDeltaReason | undefined;
 
     /** The reason for the next state */
-    public nextReason: IDeltaReason;
+    public nextReason: IDeltaReason | undefined;
 
     /** All the game objects in the game, indexed by their ID */
     public readonly gameObjects: {[id: string]: BaseGameObject} = {};
@@ -44,33 +44,36 @@ export class BaseGame extends StateObject {
     public readonly players: BaseGameObject[] = [];
 
     /** The human player, if there is one, in this game */
-    public readonly humanPlayer: BaseHumanPlayer;
+    public readonly humanPlayer: BaseHumanPlayer | undefined;
 
     /** The pane that displays information about this game */
-    public pane: BasePane<IBaseGameState, IBasePlayerState>;
+    public pane: BasePane<IBaseGameState, IBasePlayerState> | undefined;
 
     /** The renderer that provides utility rendering functions (as well as heavy lifting for screen changes) */
     public readonly renderer: Renderer;
 
     /** The settings for this game */
-    public readonly settings: Readonly<IBaseGameSettings>;
+    public readonly settings!: Readonly<IBaseGameSettings>; // set in Creer template
 
     /** The namespace this game is in */
-    public namespace: IBaseGameNamespace;
+    public namespace!: IBaseGameNamespace; // set in Creer template
 
     /** The random number generator we use */
     public readonly chance: Chance.Chance;
 
     /** The layers in the game */
-    public readonly layers: IGameLayers;
+    public readonly layers!: IGameLayers; // set in Creer template
 
     /** The resource factories that can create sprites for this game */
-    public readonly resources: IRendererResources;
+    public readonly resources!: IRendererResources; // set in Creer template
 
     /** The default player colors, there must be one for each player */
     public readonly defaultPlayerColors = [
         Color("#C33"), Color("#33C"), Color("#3C3"), Color("#CC3"), Color("#3CC"), Color("#C3C"),
     ];
+
+    /** The Viseur instance controlling this game. */
+    protected readonly viseur: Viseur;
 
     /** If this game has a human player interacting with it, then this is their player id */
     private readonly humanPlayerID?: string;
@@ -93,12 +96,14 @@ export class BaseGame extends StateObject {
 
     /**
      * Initializes the BaseGame, should be invoked by a Game super class
-     * @param {Object} gamelog the gamelog for this game, may be a streaming gamelog
-     * @param {string} [playerID] the player id of the human player, if there is one
+     * @param viseur The Viseur instance controlling this game
+     * @param gamelog the gamelog for this game, may be a streaming gamelog
+     * @param [playerID] the player id of the human player, if there is one
      */
-    constructor(gamelog?: IGamelog, playerID?: string) {
+    constructor(viseur: Viseur, gamelog?: IGamelog, playerID?: string) {
         super();
 
+        this.viseur = viseur;
         this.renderer = viseur.renderer;
 
         this.chance = new Chance(gamelog
@@ -122,6 +127,7 @@ export class BaseGame extends StateObject {
         this.gameOverScreen = new GameOverScreen({
             parent: viseur.gui.rendererWrapper,
             game: this,
+            viseur: this.viseur,
         });
     }
 
@@ -189,7 +195,8 @@ export class BaseGame extends StateObject {
 
         this.gameOverScreen.hide();
 
-        const gameObjects = this.next.gameObjects || this.current.gameObjects;
+        const gameObjects = (this.next && this.next.gameObjects)
+                         || (this.current && this.current.gameObjects)!; // TODO remove ! when conditional
 
         // initialize new game objects we have not seen yet
         const newGameObjects = new Set<BaseGameObject>();
@@ -203,7 +210,12 @@ export class BaseGame extends StateObject {
         this.currentReason = this.hookupGameObjectReferences(reason);
         this.nextReason = this.hookupGameObjectReferences(nextReason);
 
-        this.stateUpdated(current || next as IState, next || current as IState, this.currentReason, this.nextReason);
+        this.stateUpdated(
+            current || next as IState,
+            next || current as IState,
+            this.currentReason || this.nextReason!,
+            this.nextReason || this.currentReason!,
+        );
 
         // update all the game objects now (including those we may have just created)
         for (const id of Object.keys(this.gameObjects)) {
@@ -221,10 +233,10 @@ export class BaseGame extends StateObject {
 
             if ((current && current.gameObjects.hasOwnProperty(id)) || (next && next.gameObjects.hasOwnProperty(id))) {
                 gameObject.stateUpdated(
-                    gameObject.current || gameObject.next,
-                    gameObject.next || gameObject.current,
-                    this.currentReason,
-                    this.nextReason,
+                    gameObject.current || gameObject.next!,
+                    gameObject.next || gameObject.current!,
+                    this.currentReason || this.nextReason!,
+                    this.nextReason || this.currentReason!,
                 );
             }
 
@@ -234,15 +246,15 @@ export class BaseGame extends StateObject {
         }
 
         if (this.pane) {
-            this.pane.update(this.current || this.next);
+            this.pane.update(this.current || this.next!);
         }
 
         // intended to be overridden so we are calling it
         this.stateUpdated(
-            this.current || this.next,
-            this.next || this.current,
-            this.currentReason,
-            this.nextReason,
+            this.current || this.next!,
+            this.next || this.current!,
+            this.currentReason || this.nextReason!,
+            this.nextReason || this.currentReason!,
         );
     }
 
@@ -261,10 +273,10 @@ export class BaseGame extends StateObject {
 
         this.renderBackground(
             dt,
-            current,
-            next,
-            this.currentReason || this.nextReason,
-            this.nextReason || this.currentReason,
+            current || next!,
+            next || current!,
+            this.currentReason || this.nextReason!,
+            this.nextReason || this.currentReason!,
         );
 
         for (const id of Object.keys(this.gameObjects)) {
@@ -277,7 +289,7 @@ export class BaseGame extends StateObject {
 
             if (gameObject.container) {
                 // if it does not exist, no not render them, otherwise do, and later we'll call their render()
-                gameObject.container.visible = exists;
+                gameObject.container.visible = Boolean(exists);
             }
 
             // game objects by default do not render, as many are invisible
@@ -286,10 +298,10 @@ export class BaseGame extends StateObject {
             if (exists && gameObject.shouldRender) {
                 gameObject.render(
                     dt,
-                    gameObject.current || gameObject.next,
-                    gameObject.next || gameObject.current,
-                    this.currentReason || this.nextReason,
-                    this.nextReason || this.currentReason,
+                    gameObject.current || gameObject.next!,
+                    gameObject.next || gameObject.current!,
+                    this.currentReason || this.nextReason!,
+                    this.nextReason || this.currentReason!,
                 );
             }
         }
@@ -354,15 +366,15 @@ export class BaseGame extends StateObject {
             -1,
         ) + 1;
 
-        const combined: any = Object.assign({
+        const combined = Object.assign({
             customPlayerColors: new Settings.CheckBoxSetting({
                 id: "custom-player-colors",
                 label: "Custom Player Colors",
                 hint: "Use your custom player colors defined below.",
                 default: true,
             }),
-            playerColors: [],
-        } as IBaseGameSettings, settings);
+            playerColors: [] as Settings.ColorSetting[],
+        }, settings);
 
         for (let i = 0; i < this.numberOfPlayers; i++) { // iterate in reverse order
             combined.playerColors[i] = new Settings.ColorSetting({
@@ -407,12 +419,12 @@ export class BaseGame extends StateObject {
     private ready(): void {
         this.started = true;
 
-        const state = viseur.getCurrentState();
+        const state = this.viseur.getCurrentState();
 
         this.update(state.game, state.nextGame, state.reason, state.nextReason);
 
-        this.pane = new this.namespace.Pane(this, this.next);
-        this.pane.update(this.current || this.next);
+        this.pane = new this.namespace.Pane(this.viseur, this, this.next || this.current!);
+        this.pane.update(this.current || this.next!);
 
         if (this.humanPlayer && this.humanPlayerID) {
             this.humanPlayer.setPlayer(this.gameObjects[this.humanPlayerID]);
@@ -426,10 +438,10 @@ export class BaseGame extends StateObject {
             playerColorSetting.changed.on(recolor);
         }
 
-        const size = this.getSize(this.current || this.next);
+        const size = this.getSize(this.current || this.next!);
         this.renderer.setSize(size);
-        this.start(this.current || this.next);
-        this.createBackground(this.current || this.next);
+        this.start(this.current || this.next!);
+        this.createBackground(this.current || this.next!);
     }
 
     /**
@@ -467,7 +479,7 @@ export class BaseGame extends StateObject {
             throw new Error(`Could not create instance of ${state.gameObjectName}`);
         }
 
-        const newGameObject = new classConstructor(state, this);
+        const newGameObject = new classConstructor(state, this.viseur);
 
         /*
         TODO: Fix
@@ -496,7 +508,10 @@ export class BaseGame extends StateObject {
             this.gameObjects[id].recolor();
         }
 
-        this.pane.recolor();
+        if (this.pane) {
+            this.pane.recolor();
+        }
+
         this.gameOverScreen.recolor();
     }
 }
