@@ -2,18 +2,10 @@ import * as HtmlWebpackPlugin from "html-webpack-plugin";
 import { join, resolve } from "path";
 import * as webpack from "webpack";
 
-/**
- * Checks if a given module is from the node_modules path
- * @param module the module to check
- * @returns true if a node_module, false otherwise
- */
-/*
-function isNodeModule(module: any): boolean {
-    return module.context && module.context.indexOf("node_modules") !== -1;
-}
-*/
-
-const config: webpack.Configuration = {
+export default (
+    env: undefined,
+    options: webpack.Configuration,
+): webpack.Configuration => ({
     entry: [
         "@babel/polyfill/dist/polyfill.js", // polyfill new es functions for babel
         "font-awesome/scss/font-awesome.scss", // font-awesome icons injection
@@ -130,7 +122,7 @@ const config: webpack.Configuration = {
         }),
         */
     ],
-    devtool: process.env.NODE_ENV === "development"
+    devtool: options.mode === "development"
         ? "source-map"
         : false,
     devServer: {
@@ -145,6 +137,4 @@ const config: webpack.Configuration = {
     performance: {
         hints: false, // TODO: handle these warnings
     },
-};
-
-export default config;
+});
