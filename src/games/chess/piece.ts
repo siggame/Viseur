@@ -185,6 +185,7 @@ export class Piece extends GameObject {
         if (!this.spritePromoted && this.initialType !== (this.next || this.current!).type) {
             // then we've been promoted
             this.spritePromoted = this.createSprite((next || current).type);
+            this.recolor();
         }
         else if (this.spritePromoted) {
             // then we need to display the correct sprite if at this state is has or has not been promoted
@@ -281,7 +282,6 @@ export class Piece extends GameObject {
         });
 
         this.game.resources.piecesTop.newSprite(container, index, {
-            tint: this.game.getPlayersColor(this.owner),
             name: "front",
         });
 
