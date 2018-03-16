@@ -62,6 +62,21 @@
     }
 }
 
+@mixin button() {
+    background-color: $primary;
+    color: $white;
+    padding: 0.5em 1em;
+    margin: 0.5em 0;
+    border: none;
+    font-size: 1em;
+
+    &:hover, &:focus {
+        background-color: $primary-dark;
+        color: $white;
+        cursor: pointer;
+    }
+}
+
 @function parseInt($n) { /* 2 */
     @return $n / ($n * 0 + 1);
 }

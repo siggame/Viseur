@@ -38,4 +38,18 @@
     & button {
         margin-left: 12.25em;
     }
+
+    & #local-gamelog-input-label {
+        @include button();
+        width: auto;
+
+        &:before {
+            @include icon(upload);
+            margin-right: 0.5em;
+        }
+    }
+
+    & #local-gamelog-input {
+        display: none;
+    }
 }

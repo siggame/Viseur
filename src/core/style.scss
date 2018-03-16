@@ -31,18 +31,7 @@ a, .link {
 }
 
 button {
-    background-color: $primary;
-    color: $white;
-    padding: 0.5em 1em;
-    margin: 0.5em 0;
-    border: none;
-    font-size: 1em;
-
-    &:hover, &:focus {
-        background-color: $primary-dark;
-        color: $white;
-        cursor: pointer;
-    }
+    @include button();
 }
 
 input, style, button, option {

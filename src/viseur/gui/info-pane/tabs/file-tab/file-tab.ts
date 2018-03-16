@@ -26,6 +26,7 @@ export class FileTab extends Tab {
     private gamelogInput = new inputs.FileInput({
         id: "local-gamelog-input",
         parent: this.localGamelogWrapper,
+        label: "Choose saved gamelog",
     });
 
     // ---- Remote Gamelog Section ---- \\
