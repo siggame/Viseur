@@ -20,7 +20,7 @@ export const ViseurSettings = createSettings("viseur", {
         label: "Info Pane Length",
         hint: "The length (in pixels) of this info pane",
         min: 200,
-        default: 420,
+        default: 440,
     }),
     playbackSpeed: new Setting.NumberSetting({
         id: "playback-speed",
