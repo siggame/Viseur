@@ -5,7 +5,7 @@ import "./modal.scss";
 /** A modal that floats above the screen and blocks out all other input */
 export class Modal extends BaseElement {
     /** the content of the modal */
-    private content: JQuery<HTMLElement>;
+    private readonly content: JQuery<HTMLElement>;
 
     constructor(args: IBaseElementArgs) {
         super(args);

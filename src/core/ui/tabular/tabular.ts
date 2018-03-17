@@ -12,16 +12,16 @@ export class Tabular extends BaseElement {
     });
 
     /** all the tabs in this tabular */
-    private tabs: Tab[] = [];
+    private readonly tabs: Tab[] = [];
 
     /** the currently selected tab */
     private activeTab!: Tab; // will always be at least the first tab
 
     /** parent container to store tab's tab item in */
-    private tabsElement = this.element.find(".tabular-tabs");
+    private readonly tabsElement = this.element.find(".tabular-tabs");
 
     /** parent container to store tab's contents in */
-    private contentsElement = this.element.find(".tabular-content");
+    private readonly contentsElement = this.element.find(".tabular-content");
 
     /** if this is fading in or out a tab */
     private fading: boolean = false;

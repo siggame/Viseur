@@ -16,7 +16,7 @@ export interface IDropDownArgs<T> extends IBaseInputArgs {
 /** A select with options input */
 export class DropDown<T> extends BaseInput<T> {
     /** The options available on this drop down menu */
-    private options: Array<IDropDownOption<T>> = [];
+    private readonly options: Array<IDropDownOption<T>> = [];
 
     constructor(args: IDropDownArgs<T>) {
         super(args);

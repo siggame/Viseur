@@ -54,19 +54,19 @@ export class Piece extends GameObject {
     // <<-- Creer-Merge: variables -->>
 
     /** The player that owns this piece */
-    private owner: Player;
+    private readonly owner: Player;
 
     /** The initial type of this piece, used to determine promotion */
-    private initialType: string;
+    private readonly initialType: string;
 
     /** The initial sprite for this piece */
-    private spriteInitial: PIXI.Container;
+    private readonly spriteInitial: PIXI.Container;
 
     /** If this was a pawn, and got promoted, the new promoted sprite */
     private spritePromoted?: PIXI.Container;
 
     /** An offset from the bottom of it's tile to look better */
-    private bottomOffset = 0.125;
+    private readonly bottomOffset = 0.125;
 
     // <<-- /Creer-Merge: variables -->>
 

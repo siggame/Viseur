@@ -20,10 +20,10 @@ export class FileTab extends Tab {
     // ---- Local Gamelog Section ---- \\
 
     /** The wrapper for the local gamelog section */
-    private localGamelogWrapper = this.element.find(".local-gamelog");
+    private readonly localGamelogWrapper = this.element.find(".local-gamelog");
 
     /** The file input to load a local gamelog */
-    private gamelogInput = new inputs.FileInput({
+    private readonly gamelogInput = new inputs.FileInput({
         id: "local-gamelog-input",
         parent: this.localGamelogWrapper,
         label: "Choose saved gamelog",
@@ -32,10 +32,10 @@ export class FileTab extends Tab {
     // ---- Remote Gamelog Section ---- \\
 
     /** The wrapper for the [remote] gamelog section */
-    private remoteGamelogWrapper = this.element.find(".remote-gamelog");
+    private readonly remoteGamelogWrapper = this.element.find(".remote-gamelog");
 
     /** The url input for the remote gamelog to load */
-    private remoteGamelogInput = new inputs.TextBox({
+    private readonly remoteGamelogInput = new inputs.TextBox({
         id: "remote-gamelog-input",
         label: "Url",
         placeholder: "Enter url to gamelog",
@@ -43,7 +43,7 @@ export class FileTab extends Tab {
     });
 
     /** The button to click to load the remote gamelog and visualize it */
-    private remoteVisualizeButton = new inputs.Button({
+    private readonly remoteVisualizeButton = new inputs.Button({
         id: "remote-gamelog-button",
         text: "Visualize",
         // label: "",
@@ -53,16 +53,16 @@ export class FileTab extends Tab {
     // ---- Connect Section ---- \\
 
     /** The wrapper for the connection section */
-    private connectionWrapper = this.element.find(".connection-info").addClass("collapsed");
+    private readonly connectionWrapper = this.element.find(".connection-info").addClass("collapsed");
 
     /** The log of all connection events */
-    private connectionLog = this.connectionWrapper.find(".connection-log");
+    private readonly connectionLog = this.connectionWrapper.find(".connection-log");
 
     /** The wrapper for the connect form */
-    private connectWrapper = this.element.find(".connect");
+    private readonly connectWrapper = this.element.find(".connect");
 
     /** The drop down to select the connection type */
-    private connectTypeInput = new inputs.DropDown<string>({
+    private readonly connectTypeInput = new inputs.DropDown<string>({
         id: "connect-type",
         label: "Connection Type",
         parent: this.connectWrapper,

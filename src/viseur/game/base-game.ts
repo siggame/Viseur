@@ -92,7 +92,7 @@ export class BaseGame extends StateObject {
     }
 
     /** The order of containers, with the last element being the top most layer */
-    private layerOrder: PIXI.Container[] = [];
+    private readonly layerOrder: PIXI.Container[] = [];
 
     /**
      * Initializes the BaseGame, should be invoked by a Game super class

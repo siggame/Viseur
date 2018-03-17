@@ -60,34 +60,34 @@ export class Building extends GameObject {
      * put in this container and threat them as one "object" for the
      * purposes for hiding and showing
      */
-    private aliveContainer = new PIXI.Container();
+    private readonly aliveContainer = new PIXI.Container();
 
     /** The owner of this building */
-    private owner: Player;
+    private readonly owner: Player;
 
     /** The front of the building (colored according to owner) */
-    private buildingSpriteFront: PIXI.Sprite;
+    private readonly buildingSpriteFront: PIXI.Sprite;
 
     /** The sprite we display when we are dead */
-    private deadSprite: PIXI.Sprite;
+    private readonly deadSprite: PIXI.Sprite;
 
     /** The bar that displays our health */
-    private healthBar: GameBar;
+    private readonly healthBar: GameBar;
 
     /** The graphic used when we are targeted by an enemy */
-    private targetedSprite: PIXI.Sprite;
+    private readonly targetedSprite: PIXI.Sprite;
 
     /** Sprite we use when we are beaming some other building */
-    private beamSprite: PIXI.Sprite | undefined;
+    private readonly beamSprite: PIXI.Sprite | undefined;
 
     /** All the sprites from the fire spreadsheet to animate fire */
-    private fireSprites: PIXI.Sprite[] = [];
+    private readonly fireSprites: PIXI.Sprite[] = [];
 
     /** Random X number used to animate fire */
-    private randomX = Math.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    private readonly randomX = Math.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     /** Random Y number used to animate fire */
-    private randomY = Math.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    private readonly randomY = Math.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     // <<-- /Creer-Merge: variables -->>
 

@@ -77,7 +77,7 @@ export class Game extends BaseGame {
     public maxFire: number = 1;
 
     /** All the tiles used to make the background */
-    private tileSprites: PIXI.Sprite[] = [];
+    private readonly tileSprites: PIXI.Sprite[] = [];
 
     // <<-- /Creer-Merge: variables -->>
 

@@ -11,16 +11,16 @@ export class SettingsTab extends Tab {
     }
 
     /** The settings element for the core viseur settings */
-    private coreSettingsElement = this.element.find(".core-settings");
+    private readonly coreSettingsElement = this.element.find(".core-settings");
 
     /** The settings element for the game's settings */
-    private gameSettingsElement = this.element.find(".game-settings").addClass("collapsed");
+    private readonly gameSettingsElement = this.element.find(".game-settings").addClass("collapsed");
 
     /** The name of the game to be replaced */
-    private gameNameElement = this.gameSettingsElement.find(".game-name");
+    private readonly gameNameElement = this.gameSettingsElement.find(".game-name");
 
     /** The player color picker inputs to enabled/disable */
-    private customColorInputs: Array<BaseInput<any>> = [];
+    private readonly customColorInputs: Array<BaseInput<any>> = [];
 
     constructor(args: ITabArgs & {
         viseur: Viseur;

@@ -83,7 +83,7 @@
     "clean:docs": "rimraf docs/",
     "clean:build": "rimraf dist/",
     "docs": "typedoc --tsconfig ./tsconfig.json --out docs --module commonjs",
-    "lint": "tslint -c tslint.json 'src/**/*.ts'",
+    "lint": "tslint --project ./tsconfig.json --config tslint.json",
     "lint:fix": "tslint -c tslint.json 'src/**/*.ts' --fix --force",
     "server": "http-server dist/",
     "start": "npm run watch",

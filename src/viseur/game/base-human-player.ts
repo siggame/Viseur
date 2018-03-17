@@ -16,7 +16,7 @@ export class BaseHumanPlayer {
     protected player!: BaseGameObject; // set shortly after initialized... maybe shouldnt' be !'d
 
     /** Orders we could not do until our player was hooked up */
-    private backOrders: IOrder[] = [];
+    private readonly backOrders: IOrder[] = [];
 
     /**
      * Creates a base human player for a game

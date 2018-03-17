@@ -22,11 +22,6 @@ export type MenuItems = Array<"---" | IMenuItem>;
 /** A custom right click menu */
 export class ContextMenu extends BaseElement {
     /**
-     * callback to add/remove to document to hide the listener
-     */
-    private offHide: () => void;
-
-    /**
      * Creates a context menu
      * @param args base element args with optional structure
      */
@@ -46,8 +41,6 @@ export class ContextMenu extends BaseElement {
                 e.stopPropagation();
             }
         });
-
-        this.offHide = () => this.hide();
     }
 
     /**
@@ -85,7 +78,9 @@ export class ContextMenu extends BaseElement {
             .css("top", y)
             .removeClass("collapsed");
 
-        $(document).on("click", this.offHide);
+        $(document).on("click", () => {
+            this.lostFocus();
+        });
     }
 
     /**
@@ -93,10 +88,19 @@ export class ContextMenu extends BaseElement {
      */
     public hide(): void {
         this.element.addClass("collapsed");
-        $(document).off("click", this.offHide);
+        $(document).off("click", () => {
+            this.lostFocus();
+        });
     }
 
     protected getTemplate(): Handlebars {
         return require("./context-menu.hbs");
+    }
+
+    /**
+     * Invoked when the context menu is clicked away from
+     */
+    private lostFocus(): void {
+        this.hide();
     }
 }

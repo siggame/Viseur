@@ -24,7 +24,7 @@ export class InfoPane extends BaseElement {
     });
 
     /** The GUI this InfoPane is a part of */
-    private gui: GUI;
+    private readonly gui: GUI;
 
     /** The tabular that switches tabs on this info pane */
     private readonly tabular: Tabular;

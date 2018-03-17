@@ -44,10 +44,10 @@ export class WeatherStation extends Building {
     // <<-- Creer-Merge: variables -->>
 
     /** Visual display of the intensity (arrow) */
-    private intensitySprite: PIXI.Sprite;
+    private readonly intensitySprite: PIXI.Sprite;
 
     /** Visual rotation sprite for when the weather is rotated */
-    private rotationSprite: PIXI.Sprite;
+    private readonly rotationSprite: PIXI.Sprite;
 
     // <<-- /Creer-Merge: variables -->>
 

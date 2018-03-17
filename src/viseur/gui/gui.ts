@@ -44,7 +44,7 @@ export class GUI extends BaseElement {
     private game: BaseGame | undefined;
 
     /** The callback function that exits fullscreen */
-    private exitFullscreenCall: () => void;
+    private readonly exitFullscreenCall: () => void;
 
     /** All the events this GUI emits */
     // tslint:disable-next-line:member-ordering (because we need the private stuff above initialized first)

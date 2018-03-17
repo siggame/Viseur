@@ -90,7 +90,7 @@ export class Viseur {
     private urlParameters!: utils.IAnyObject; // set in constructor, which calls parseURL
 
     /** The gamelog parser */
-    private parser = new Parser();
+    private readonly parser = new Parser();
 
     /** Our merged delta container */
     private mergedDelta!: IMergedDelta;

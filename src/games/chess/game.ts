@@ -87,16 +87,16 @@ export class Game extends BaseGame {
     private readonly randomColorCompliment = this.randomColor.rotate(180).opaquer(0.333);
 
     /** The border length around the board to render rank/file numbers */
-    private borderLength = 0.5;
+    private readonly borderLength = 0.5;
 
     /** The strings that label each rank */
-    private rankStrings: PIXI.Text[][] = [];
+    private readonly rankStrings: PIXI.Text[][] = [];
 
     /** The strings that label each file */
-    private fileStrings: PIXI.Text[][] = [];
+    private readonly fileStrings: PIXI.Text[][] = [];
 
     /** The sprites for each tile, in a 2d array */
-    private tileSprites: PIXI.Sprite[][] = [];
+    private readonly tileSprites: PIXI.Sprite[][] = [];
 
     /** The UI sprite indicating where a piece is moving to */
     private spriteTo!: PIXI.Sprite;
@@ -108,7 +108,7 @@ export class Game extends BaseGame {
     private chessUpdated: boolean = false;
 
     /** The chess.js instance used to track game state */
-    private chess: Chess.Chess = new (Chess as any)();
+    private readonly chess: Chess.Chess = new (Chess as any)();
 
     /** All the tiles currently highlighted for UI usage */
     private readonly highlightedLocations: IPoint[] = [];
