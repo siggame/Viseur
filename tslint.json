@@ -1,38 +1,70 @@
 {
     "defaultSeverity": "error",
+
     "extends": [
         "tslint:recommended",
         "tslint-eslint-rules"
     ],
-    "jsRules": {},
+
     "rules": {
-        "brace-style": [ true, "stroustrup" ],
-        "new-parens": true,
+        // TSLint built-in rules
+        "forin": true,
         "no-bitwise": true,
-        "no-constant-condition": [true, { "checkLoops": false }],
-        "no-duplicate-case": true,
-        "no-ex-assign": true,
-        "ter-no-sparse-arrays": [true],
-        "no-extra-boolean-cast": true,
-        "no-extra-semi": true,
-        "no-inner-declarations": [ true, "both" ],
-        "no-invalid-regexp": true,
-        "no-multi-spaces": true,
-        "no-unused-expression": [true, "allow-new"],
+        "new-parens": true,
+        "no-irregular-whitespace": true,
+        "no-sparse-arrays": true,
+        "no-unused-expression": [true,
+            "allow-new"
+        ],
         "object-literal-sort-keys": false,
-        "one-line": [true, "check-open-brace", "check-whitespace"],
-        "space-in-parens": [true, "never"],
-        "ter-prefer-arrow-callback": [true],
-        "ter-func-call-spacing": [true],
-        "ter-indent": [true, 4, {
-            "SwitchCase": 1
-        }],
-        "ter-no-irregular-whitespace": [true],
-        "typedef": [ true,
+        "one-line": [ true,
+            "check-open-brace",
+            "check-whitespace"
+        ],
+        "only-arrow-functions": [true,
+            "allow-declarations",
+            "allow-named-functions"
+        ],
+        "prefer-readonly": true,
+        "prefer-template": [true,
+            "allow-single-concat"
+        ],
+        "quotemark": [
+            true,
+            "double",
+            "avoid-escape",
+            "avoid-template"
+        ],
+        "typedef": [true,
             "call-signature",
             "parameter",
             "property-declaration"
         ],
+
+        // ESLint rules via tslint-eslint-rules module
+        "brace-style": [true,
+            "stroustrup"
+        ],
+        "no-constant-condition": [true, {
+            "checkLoops": false
+        }],
+        "no-duplicate-case": true,
+        "no-ex-assign": true,
+        "no-extra-boolean-cast": true,
+        "no-extra-semi": true,
+        "no-inner-declarations": [true,
+            "both"
+        ],
+        "no-invalid-regexp": true,
+        "no-multi-spaces": true,
+        "no-string-literal": true,
+        "space-in-parens": [true,
+            "never"
+        ],
+        "ter-func-call-spacing": [ true ],
+        "ter-indent": [ true, 4, {
+            "SwitchCase": 1 // TSLint does not support this, hence why we use the eslint rule
+        }],
         "valid-jsdoc": [true, {
             "prefer": {
               "return": "returns"
@@ -44,17 +76,11 @@
             "requireParamType": false,
             "matchDescription": ".+"
         }],
-        "valid-typeof": true,
-        "no-string-literal": true,
-        "quotemark": [
-            true,
-            "double",
-            "avoid-escape",
-            "avoid-template"
-        ],
-        "prefer-template": [true, "allow-single-concat"],
-        "forin": true,
-        "prefer-readonly": true
+        "valid-typeof": true
+        // "ter-prefer-arrow-callback": [true],
+        // "ter-no-irregular-whitespace": [true],
     },
+
+    "jsRules": {},
     "rulesDirectory": []
 }
