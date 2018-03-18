@@ -2,8 +2,6 @@
 @import "src/core/colors";
 
 .field {
-    margin: 0.25em 0;
-
     &.disabled {
         opacity: 0.5 !important;
     }

@@ -76,6 +76,10 @@ export class InfoPane extends BaseElement {
             this.snapTo(side);
         });
 
+        this.viseur.settings.infoPaneLength.changed.on((length) => {
+            this.resize(length);
+        });
+
         this.tabular = new Tabular({
             id: "info-pane-tabular",
             parent: this.contentElement,
@@ -94,7 +98,9 @@ export class InfoPane extends BaseElement {
         this.element.addClass("resizing");
         if (newLength) {
             this.length = Math.max(newLength, this.minimumLength);
-            this.viseur.settings.infoPaneLength.set(this.length);
+            if (this.viseur.settings.infoPaneLength.get() !== newLength) {
+                this.viseur.settings.infoPaneLength.set(this.length);
+            }
         }
 
         if (this.orientation === "horizontal") {

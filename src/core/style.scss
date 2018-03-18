@@ -40,6 +40,11 @@ input, style, button, option {
 
 input, select, option {
     width: 10em;
+    font-size: 0.8em;
+}
+
+input[type=checkbox] {
+    width: 1em;
 }
 
 @import "./range";
