@@ -155,12 +155,26 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
                 throw new Error("Player's stat list missing");
             }
 
-            this.updateStatsList(playerStatsList, player); // it exists, ts being silly
+            this.updateStatsList(playerStatsList, player);
+            const backgroundImageCSS = playerStatsList.element.css("background-image");
 
-            const languageKey = player.clientType.replace("#", "s").toLowerCase();
-            const languageIcon = requireLanguageImage(`./${languageKey}.png`);
+            if (!backgroundImageCSS || backgroundImageCSS === "none") {
+                // then we need to load the background image of their
+                // programming language icon
 
-            if (playerStatsList) {
+                const languageKey = player.clientType.replace("#", "s").toLowerCase();
+
+                let languageIcon: string | undefined;
+                try {
+                    // try to get the image for the programing language
+                    languageIcon = requireLanguageImage(`./${languageKey}.png`);
+                }
+                catch {
+                    // but if it fails we don't have an image for that icon,
+                    // so give them the unknown icon instead
+                    languageIcon = requireLanguageImage("./unknown.png");
+                }
+
                 playerStatsList.element
                     .toggleClass("current-player", currentPlayer.id === player.id)
                     .css("background-image", `url(${languageIcon})`);
