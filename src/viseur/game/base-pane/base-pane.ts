@@ -9,7 +9,7 @@ import { BaseGame, IBaseGameObjectState, IBaseGameState, IBasePlayerState } from
 import "./base-pane.scss";
 
 const requireLanguageImage = require.context("../language-images/", true, /\.png$/);
-const timeRemainingTitle = "Player's time remaining (in min:sec:ms format)";
+const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 
 export interface IPaneStat<T> {
     /** callback that is send the current player/game state and should return some value to display */
@@ -237,11 +237,11 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     protected getPlayerStats(state: IBaseGameState): Array<IPaneStat<P>> {
         return [
             {
-                title: "Name",
+                title: "name",
                 get: (player) => escapeHTML(player.name),
             },
             {
-                title: timeRemainingTitle,
+                title: TIME_REMAINING_TITLE,
                 icon: "clock-o",
                 get: (player) => this.formatTimeRemaining(player.timeRemaining),
             },
@@ -416,7 +416,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
             const list = this.playerToStatsList.get(this.humansTickingPlayer.id);
 
             if (list) {
-                const index = list.stats.findIndex((s) => s.title === timeRemainingTitle);
+                const index = list.stats.findIndex((s) => s.title === TIME_REMAINING_TITLE);
                 const li = list.statsToListElement[index];
                 if (li) {
                     li.html(this.formatTimeRemaining(this.humansTimeRemaining));

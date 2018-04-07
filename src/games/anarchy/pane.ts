@@ -87,12 +87,12 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         // <<-- Creer-Merge: player-stats -->>
         stats.push(
             {
-                title: "Headquarter Health",
+                title: "health of the headquarters",
                 icon: "heart",
                 get: (player) => player.headquarters.health,
             },
             {
-                title: "number of buildings alive",
+                title: "number of buildings not burned down",
                 icon: "building-o",
                 get: (player) => {
                     return player.buildings.reduce((count, building) => {
