@@ -66,5 +66,5 @@ export function createResources<T extends {}>(gameName: string, resources: T): R
         resource.gameName = gameName;
     }
 
-    return frozen;
+    return frozen as any; // TODO: get TS to be happy with blank's key being a string
 }

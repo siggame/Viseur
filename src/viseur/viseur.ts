@@ -112,7 +112,10 @@ export class Viseur {
         this.games = Games;
 
         window.onerror = (message, source, lineno, colno, error) => {
-            this.handleError(error || new Error(message));
+            this.handleError(error || new Error(message instanceof Event
+                ? message.type
+                : message,
+            ));
         };
 
         this.timeManager = new TimeManager(this);
