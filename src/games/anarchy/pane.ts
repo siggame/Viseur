@@ -63,10 +63,12 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         // <<-- Creer-Merge: game-stats -->>
         stats.push(
             {
+                title: "current forecast intensity",
                 get: (gameState) => gameState.currentForecast ? gameState.currentForecast.intensity : "None",
                 icon: "fire",
             },
             {
+                title: "current forecast direction",
                 get: (gameState) => gameState.currentForecast ? gameState.currentForecast.direction : "None",
                 icon: "cloud",
             },
