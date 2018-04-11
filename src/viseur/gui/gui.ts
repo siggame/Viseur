@@ -43,9 +43,6 @@ export class GUI extends BaseElement {
     // the game (for resizing purposes)
     private game: BaseGame | undefined;
 
-    /** The callback function that exits fullscreen */
-    private readonly exitFullscreenCall: () => void;
-
     /** All the events this GUI emits */
     // tslint:disable-next-line:member-ordering (because we need the private stuff above initialized first)
     public readonly events = events.concat(this.playbackPane.events, {
@@ -79,9 +76,11 @@ export class GUI extends BaseElement {
             this.goFullscreen();
         });
 
-        this.exitFullscreenCall = () => {
-            screenfull.exit();
-        };
+        screenfull.on("change", () => {
+            if (!screenfull.isFullscreen) {
+                this.exitFullscreen();
+            }
+        });
 
         this.modal = new Modal({
             id: "main-modal",
@@ -171,16 +170,16 @@ export class GUI extends BaseElement {
 
         this.resizeVisualizer(0, 0); // top left now that we (should) be fullscreen
 
-        KEYS.escape.up.once(this.exitFullscreenCall);
+        KEYS.escape.up.once(this.exitFullscreen);
     }
 
     /**
      * Makes the GUI exit fullscreen
      */
-    public exitFullscreen(): void {
+    public exitFullscreen = () => {
         this.element.removeClass("fullscreen");
 
-        KEYS.escape.up.off(this.exitFullscreenCall);
+        KEYS.escape.up.off(this.exitFullscreen);
         screenfull.exit();
 
         setImmediate(() => { // HACK: width and height will be incorrect after going out of fullscreen, so wait a moment
