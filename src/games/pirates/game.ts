@@ -43,8 +43,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        this.defaultPlayerColors[0], // Player 0
-        this.defaultPlayerColors[1], // Player 1
+        Color("#29E22C"), // Player 0
+        Color("#E427C7"), // Player 1
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
