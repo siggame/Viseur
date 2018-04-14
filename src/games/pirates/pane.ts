@@ -85,9 +85,9 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
 
         stats.push(
             {
-                title: "pirates",
+                title: "infamy",
                 icon: "user-secret",
-                get: (player) => player.units.length,
+                get: (player) => player.infamy,
             },
         );
         // <<-- /Creer-Merge: player-stats -->>
