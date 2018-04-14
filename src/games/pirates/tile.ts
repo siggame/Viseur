@@ -47,10 +47,15 @@ export class Tile extends GameObject {
     public goldLand: PIXI.Sprite;
 
     public grass: PIXI.Sprite;
+    public tree: PIXI.Sprite;
     public water2: PIXI.Sprite;
+    public plants: PIXI.Sprite;
 
     public isWater: boolean;
     public isDecoration: boolean;
+
+    public isTree: boolean;
+    public isPlants: boolean;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -80,6 +85,13 @@ export class Tile extends GameObject {
         this.grass = this.game.resources.grass.newSprite(this.container);
         this.grass.visible = false;
         this.isDecoration = state.decoration;
+
+        this.isTree = (Math.random() < .03);
+        this.tree = this.game.resources.tree.newSprite(this.container);
+        this.tree.visible = false;
+        this.isPlants = (Math.random() > .97);
+        this.plants = this.game.resources.plants.newSprite(this.container);
+        this.plants.visible = false;
 
         this.container.position.set(state.x, state.y);
         // You can initialize your new Tile here.
@@ -115,7 +127,7 @@ export class Tile extends GameObject {
                 this.water2.visible = true;
             }
             else {
-            this.water.visible = true;
+                this.water.visible = true;
             }
         }
         else {
@@ -125,6 +137,12 @@ export class Tile extends GameObject {
             // else {
             this.land.visible = true;
             // }
+        }
+        if (this.isTree && !this.isWater) {
+            this.tree.visible = true;
+        }
+        if (this.isPlants && !this.isWater && !this.isTree) {
+            this.plants.visible = true;
         }
         // <<-- /Creer-Merge: render -->>
     }
