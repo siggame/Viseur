@@ -18,7 +18,7 @@ export const GameResources = createResources("Pirates", {
     grass: load("grass.png"),
     plants: load("plants.png"),
     tree: load("tree.png"),
-    water2: load("water.png"),
+    water2: load("water2.png"),
 
     test: load("test.png"), // load files like this,
                             // and remember to remove these lines and file!
