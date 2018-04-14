@@ -207,11 +207,10 @@ export class Unit extends GameObject {
     // <Joueur functions> --- functions invoked for human playable client
 
     /**
-     * Attacks either crew, a ship, or a port on a Tile in range.
+     * Attacks either the 'crew' or 'ship' on a Tile in range.
      * @param tile The Tile to attack.
-     * @param target Whether to attack 'crew', 'ship', or 'port'. Crew deal
-     * damage to crew, and ships deal damage to ships and ports. Consumes any
-     * remaining moves.
+     * @param target Whether to attack 'crew' or 'ship'. Crew deal damage to
+     * crew and ships deal damage to ships. Consumes any remaining moves.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
@@ -223,19 +222,10 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Builds a Port on the given Tile.
-     * @param tile The Tile to build the Port on.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if successfully constructed
-     * a Port, false otherwise.
-     */
-    public build(tile: ITileState, callback?: (returned: boolean) => void): void {
-        this.runOnServer("build", {tile}, callback);
-    }
-
-    /**
-     * Buries gold on this Unit's Tile.
-     * @param amount How much gold this Unit should bury.
+     * Buries gold on this Unit's Tile. Gold must be a certain distance away for
+     * it to get interest (Game.minInterestDistance).
+     * @param amount How much gold this Unit should bury. Amounts <= 0 will bury
+     * as much as possible.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully buried,
      * false otherwise.
@@ -245,9 +235,9 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Puts gold into an adjacent Port. If that Port is the Player's main port,
-     * the gold is added to that Player. If that Port is owned by merchants,
-     * adds to the investment.
+     * Puts gold into an adjacent Port. If that Port is the Player's port, the
+     * gold is added to that Player. If that Port is owned by merchants, it adds
+     * to that Port's investment.
      * @param amount The amount of gold to deposit. Amounts <= 0 will deposit
      * all the gold on this Unit.
      * @param callback? The callback that eventually returns the return value
@@ -271,7 +261,10 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Moves this Unit from its current Tile to an adjacent Tile.
+     * Moves this Unit from its current Tile to an adjacent Tile. If this Unit
+     * merges with another one, the other Unit will be destroyed and its tile
+     * will be set to null. Make sure to check that your Unit's tile is not null
+     * before doing things with it.
      * @param tile The Tile this Unit should move to.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if it moved, false
@@ -282,22 +275,35 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Move a number of crew to Tile. This will consume a move from those crew.
+     * Regenerates this Unit's health. Must be used in range of a port.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully rested,
+     * false otherwise.
+     */
+    public rest(callback?: (returned: boolean) => void): void {
+        this.runOnServer("rest", {}, callback);
+    }
+
+    /**
+     * Moves a number of crew from this Unit to the given Tile. This will
+     * consume a move from those crew.
      * @param tile The Tile to move the crew to.
      * @param amount The number of crew to move onto that Tile. Amount <= 0 will
      * move all the crew to that Tile.
+     * @param gold The amount of gold the crew should take with them. Gold < 0
+     * will move all the gold to that Tile.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully split,
      * false otherwise.
      */
-    public split(tile: ITileState, amount: number, callback?: (returned:
-                 boolean) => void,
+    public split(tile: ITileState, amount: number, gold: number, callback?:
+                 (returned: boolean) => void,
     ): void {
-        this.runOnServer("split", {tile, amount}, callback);
+        this.runOnServer("split", {tile, amount, gold}, callback);
     }
 
     /**
-     * Takes gold from the Player. You can only withdraw from your main port.
+     * Takes gold from the Player. You can only withdraw from your own Port.
      * @param amount The amount of gold to withdraw. Amounts <= 0 will withdraw
      * everything.
      * @param callback? The callback that eventually returns the return value

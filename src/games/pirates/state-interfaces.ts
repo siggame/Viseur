@@ -10,6 +10,11 @@ import { IBaseGameObjectState, IBaseGameState, IBasePlayerState } from "src/vise
  */
 export interface IGameState extends IBaseGameState {
     /**
+     * The rate buried gold increases each turn.
+     */
+    readonly buryInterestRate: number;
+
+    /**
      * How much gold it costs to construct a single crew.
      */
     readonly crewCost: number;
@@ -23,6 +28,11 @@ export interface IGameState extends IBaseGameState {
      * The maximum amount of health a crew member can have.
      */
     readonly crewHealth: number;
+
+    /**
+     * The number of moves Units with only crew are given each turn.
+     */
+    readonly crewMoves: number;
 
     /**
      * A crew's attack range. Range is circular.
@@ -47,6 +57,11 @@ export interface IGameState extends IBaseGameState {
     readonly gameObjects: {[id: string]: IGameObjectState};
 
     /**
+     * How much health a Unit recovers when they rest.
+     */
+    readonly healFactor: number;
+
+    /**
      * The number of Tiles in the map along the y (vertical) axis.
      */
     readonly mapHeight: number;
@@ -57,20 +72,26 @@ export interface IGameState extends IBaseGameState {
     readonly mapWidth: number;
 
     /**
-     * The Euclidean distance from a Player port required to reach
-     * maxInterestRate.
-     */
-    readonly maxInterestDistance: number;
-
-    /**
-     * The maximum rate buried gold can increase over time.
-     */
-    readonly maxInterestRate: number;
-
-    /**
      * The maximum number of turns before the game will automatically end.
      */
     readonly maxTurns: number;
+
+    /**
+     * How much gold merchant Ports get each turn.
+     */
+    readonly merchantGoldRate: number;
+
+    /**
+     * When a merchant ship spawns, the amount of additional gold it has
+     * relative to the Port's investment.
+     */
+    readonly merchantInterestRate: number;
+
+    /**
+     * The Euclidean distance buried gold must be from the Player's Port to
+     * accumulate interest.
+     */
+    readonly minInterestDistance: number;
 
     /**
      * List of all the players in the game.
@@ -78,19 +99,14 @@ export interface IGameState extends IBaseGameState {
     readonly players: IPlayerState[];
 
     /**
-     * Every Port in the game.
+     * Every Port in the game. Merchant ports have owner set to null.
      */
-    readonly port: IPortState[];
+    readonly ports: IPortState[];
 
     /**
-     * How much gold it costs to construct a port.
+     * How far a Unit can be from a Port to rest. Range is circular.
      */
-    readonly portCost: number;
-
-    /**
-     * The maximum amount of health a Port can have.
-     */
-    readonly portHealth: number;
+    readonly restRange: number;
 
     /**
      * A unique identifier for the game instance that is being played.
@@ -113,6 +129,11 @@ export interface IGameState extends IBaseGameState {
     readonly shipHealth: number;
 
     /**
+     * The number of moves Units with ships are given each turn.
+     */
+    readonly shipMoves: number;
+
+    /**
      * A ship's attack range. Range is circular.
      */
     readonly shipRange: number;
@@ -124,7 +145,7 @@ export interface IGameState extends IBaseGameState {
     readonly tiles: ITileState[];
 
     /**
-     * Every Unit in the game.
+     * Every Unit in the game. Merchant units have targetPort set to a port.
      */
     readonly units: IUnitState[];
 
@@ -192,9 +213,9 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
     readonly opponent: IPlayerState;
 
     /**
-     * The ports owned by this Player.
+     * The Port owned by this Player.
      */
-    readonly ports: IPortState[];
+    readonly port: IPortState;
 
     /**
      * The reason why the player lost the game.
@@ -205,11 +226,6 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
      * The reason why the player won the game.
      */
     readonly reasonWon: string;
-
-    /**
-     * This Player's starting port.
-     */
-    readonly startingPort: IPortState;
 
     /**
      * The amount of time (in ns) remaining for this AI to send commands.
@@ -233,28 +249,15 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
  */
 export interface IPortState extends IGameObjectState {
     /**
-     * Whether this Port has created a Unit this turn.
-     */
-    readonly cooldown: boolean;
-
-    /**
-     * Whether this Port can be destroyed.
-     */
-    readonly destroyable: number;
-
-    /**
-     * (Merchants only) How much gold this Port has accumulated. Once this port
-     * can afford to create a ship, it will spend gold to construct one.
+     * For players, how much more gold this Port can spend this turn. For
+     * merchants, how much gold this Port has accumulated (it will spawn a ship
+     * when the Port can afford one).
      */
     readonly gold: number;
 
     /**
-     * How much health this Port has.
-     */
-    readonly health: number;
-
-    /**
-     * (Merchants only) How much gold this Port accumulates each turn.
+     * (Merchants only) How much gold was invested into this Port. Investment
+     * determines the strength and value of the next ship.
      */
     readonly investment: number;
 
@@ -274,6 +277,12 @@ export interface IPortState extends IGameObjectState {
  * A Tile in the game that makes up the 2D map grid.
  */
 export interface ITileState extends IGameObjectState {
+    /**
+     * (Visualizer only) Whether this tile is deep sea or grassy. This has no
+     * effect on gameplay, but feel free to use it if you want.
+     */
+    readonly decoration: boolean;
+
     /**
      * The amount of gold buried on this tile.
      */
@@ -369,13 +378,25 @@ export interface IUnitState extends IGameObjectState {
      * (Merchants only) The path this Unit will follow. The first element is the
      * Tile this Unit will move to next.
      */
-    readonly path: ITileState;
+    readonly path: ITileState[];
 
     /**
      * If a ship is on this Tile, how much health it has remaining. 0 for no
      * ship.
      */
     readonly shipHealth: number;
+
+    /**
+     * (Merchants only) The number of turns this merchant ship won't be able to
+     * move. They will still attack. Merchant ships are stunned when they're
+     * attacked.
+     */
+    readonly stunTurns: number;
+
+    /**
+     * (Merchants only) The Port this Unit is moving to.
+     */
+    readonly targetPort: IPortState;
 
     /**
      * The Tile this Unit is on.

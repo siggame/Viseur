@@ -134,7 +134,7 @@ export class Port extends GameObject {
     public recolor(): void {
         super.recolor();
 
-        // <<-- Creer-Merge: recolor -->
+        // <<-- Creer-Merge: recolor -->>
         if (!this.owner) {
             const white = Color("white");
             this.portColor.tint = white.rgbNumber();
