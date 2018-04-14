@@ -46,7 +46,11 @@ export class Tile extends GameObject {
     public land: PIXI.Sprite;
     public goldLand: PIXI.Sprite;
 
+    public grass: PIXI.Sprite;
+    public water2: PIXI.Sprite;
+
     public isWater: boolean;
+    public isDecoration: boolean;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -70,6 +74,12 @@ export class Tile extends GameObject {
         this.goldLand = this.game.resources.gold.newSprite(this.container);
         this.goldLand.visible = false;
         this.isWater = (state.type === "water");
+
+        this.water2 = this.game.resources.water2.newSprite(this.container);
+        this.water2.visible = false;
+        this.grass = this.game.resources.grass.newSprite(this.container);
+        this.grass.visible = false;
+        this.isDecoration = state.decoration;
 
         this.container.position.set(state.x, state.y);
         // You can initialize your new Tile here.
@@ -101,10 +111,20 @@ export class Tile extends GameObject {
         }
 
         if (this.isWater) {
+            if (this.isDecoration) {
+                this.water2.visible = true;
+            }
+            else {
             this.water.visible = true;
+            }
         }
         else {
+            // if (this.isDecoration) {
+            //     this.grass.visible = true;
+            // }
+            // else {
             this.land.visible = true;
+            // }
         }
         // <<-- /Creer-Merge: render -->>
     }
