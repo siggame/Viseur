@@ -126,17 +126,21 @@ export class Unit extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        this.recolor();
-        if (next == null) {
-            this.container.visible = false;
-            return;
-        }
         if (next.tile == null) {
             this.container.visible = false;
             return;
         }
         else {
             this.container.visible = true;
+        }
+        if (current.owner !== next.owner) {
+            if (next.owner) {
+                this.owner = this.game.gameObjects[next.owner.id] as Player;
+            }
+            else {
+                this.owner = undefined;
+            }
+            this.recolor();
         }
         if (current.crewHealth > 0) {
             this.pirateSprite.visible = true;
