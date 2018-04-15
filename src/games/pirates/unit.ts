@@ -127,6 +127,10 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         this.recolor();
+        if (next == null) {
+            this.container.visible = false;
+            return;
+        }
         if (next.tile == null) {
             this.container.visible = false;
             return;
@@ -140,11 +144,27 @@ export class Unit extends GameObject {
             this.flag.visible = false;
             this.shipSprite.visible = false;
         }
+        else {
+            this.pirateSprite.visible = false;
+            this.shirt.visible = false;
+        }
         if (current.shipHealth > 0) {
             this.shipSprite.visible = true;
             this.flag.visible = true;
             this.shirt.visible = false;
             this.pirateSprite.visible = false;
+        }
+        else {
+            this.shipSprite.visible = false;
+            this.flag.visible = false;
+        }
+        if (next.crewHealth <= 0) {
+            this.shipSprite.visible = false;
+            this.flag.visible = false;
+        }
+        if (next.shipHealth <= 0) {
+            this.pirateSprite.visible = false;
+            this.shirt.visible = false;
         }
 
         const cX = current.tile.x;
