@@ -126,6 +126,7 @@ export class Unit extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
+        this.recolor();
         if (next.tile == null) {
             this.container.visible = false;
             return;
