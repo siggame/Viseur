@@ -202,19 +202,12 @@ export class Viseur {
 
     /**
      * Connects to a game server to play a game for the human controlling this Viseur
-     * @param gameName the name of the game to spectate
-     * @param server the server is running on (without port)
-     * @param port the port the server is running on
-     * @param session the game session to play in
-     * @param playerName the name of the [human] player
-     * @param gameSettings optional game settings to use to make the game
+     * @param args - The args to send to the joueur client
      */
-    public playAsHuman(
-        gameName: string, server: string, port: number, session: string, playerName: string, gameSettings?: string,
-    ): void {
+    public playAsHuman(args: IJoueurConnectionArgs): void {
         this.gui.modalMessage("Connecting to game server...");
 
-        this.createJoueur({server, port, gameName, session, playerName, gameSettings});
+        this.createJoueur(args);
     }
 
     /**

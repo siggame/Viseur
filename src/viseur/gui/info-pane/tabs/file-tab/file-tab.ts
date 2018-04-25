@@ -109,7 +109,7 @@ export class FileTab extends Tab {
         label: "Port",
         parent: this.connectWrapper,
         min: 0,
-        max: 65535, // port is an unsigned 16-bit number, so this is max
+        max: 65535, // port is an unsigned 16-bit number, so this is the max
     });
 
     private readonly nameInput = new inputs.TextBox({
@@ -117,6 +117,18 @@ export class FileTab extends Tab {
         label: "Player Name",
         parent: this.connectWrapper,
         placeholder: config.humanName || "Human",
+    });
+
+    private readonly playerIndexInput = new inputs.DropDown<string>({
+        id: "player-index-input",
+        label: "Player Index",
+        parent: this.connectWrapper,
+        hint: "Specify which player index (order) you are.",
+        options: [ // TODO: these should be filled in once we know how many player are in a game.
+            "",
+            { text: "First", value: "0" },
+            { text: "Second", value: "1" },
+        ],
     });
 
     private readonly presentationInput = new inputs.CheckBox({
@@ -235,6 +247,7 @@ export class FileTab extends Tab {
     private onConnectTypeChange(newType: string): void {
         let port = Number(window.location.port);
         let showName = false;
+        let showPlayerIndex = false;
         let showPort = true;
         let showGame = true;
         let showSession = false;
@@ -254,6 +267,7 @@ export class FileTab extends Tab {
                 humanPlayable = true;
                 showSession = true;
                 showGameSettings = true;
+                showPlayerIndex = true;
                 break;
             case "Spectate":
                 port = 3088;
@@ -279,6 +293,7 @@ export class FileTab extends Tab {
 
         this.gameInput.field!.element.toggleClass("collapsed", !showGame);
         this.gameSettingsInput.field!.element.toggleClass("collapsed", !showGameSettings);
+        this.playerIndexInput.field!.element.toggleClass("collapsed", !showPlayerIndex);
 
         this.presentationInput.field!.element.toggleClass("collapsed", !showPresentation);
     }
@@ -322,14 +337,15 @@ export class FileTab extends Tab {
                 this.viseur.startArenaMode(server, this.presentationInput.value);
                 return;
             case "Human":
-                this.viseur.playAsHuman(
+                this.viseur.playAsHuman({
                     gameName,
                     server,
                     port,
                     session,
                     playerName,
-                    this.gameSettingsInput.value.trim(),
-                );
+                    playerIndex: this.playerIndexInput.value,
+                    gameSettings: this.gameSettingsInput.value.trim(),
+                });
                 return;
             case "Spectate":
                 this.viseur.spectate(server, port, gameName, session);

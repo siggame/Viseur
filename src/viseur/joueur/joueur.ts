@@ -23,6 +23,9 @@ export interface IJoueurConnectionArgs {
     /** The name of our player */
     playerName?: string;
 
+    /** The index of your player in the players array */
+    playerIndex?: string | number;
+
     /** Server-side game settings */
     gameSettings?: string;
 }
@@ -127,6 +130,7 @@ export class Joueur {
                 clientType: "Human",
                 metaDeltas: true,
                 requestedSession: args.session,
+                playerIndex: args.playerIndex,
                 gameSettings: args.gameSettings,
             });
         };
