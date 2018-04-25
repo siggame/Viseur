@@ -94,7 +94,7 @@ export class FileTab extends Tab {
         id: "connect-session",
         label: "Session",
         parent: this.connectWrapper,
-        placeholder: config.session || "new",
+        placeholder: config.session || "*",
     });
 
     private readonly serverInput = new inputs.TextBox({
@@ -200,7 +200,7 @@ export class FileTab extends Tab {
             this.connect();
         });
 
-        this.connectTypeInput.value = "Spectate";
+        this.connectTypeInput.value = "Human"; // default connection type
 
         // if in the config there is a default game
         if (config.game) {
@@ -308,7 +308,7 @@ export class FileTab extends Tab {
         const gameName = this.gameInput.value;
         const server = this.serverInput.value;
         const port = this.portInput.value;
-        const session = this.sessionInput.value || "new";
+        const session = this.sessionInput.value || "*";
         const playerName = this.nameInput.value || "Human";
 
         this.log(`Connecting to ${server}:${port}.`);
