@@ -246,7 +246,7 @@ export class BaseGame extends StateObject {
         }
 
         if (this.pane) {
-            this.pane.update(this.current || this.next!);
+            this.pane.update(this.current || this.next!, this.next);
         }
 
         // intended to be overridden so we are calling it
@@ -424,7 +424,7 @@ export class BaseGame extends StateObject {
         this.update(state.game, state.nextGame, state.reason, state.nextReason);
 
         this.pane = new this.namespace.Pane(this.viseur, this, this.next || this.current!);
-        this.pane.update(this.current || this.next!);
+        this.pane.update(this.current || this.next!, this.next);
 
         if (this.humanPlayer && this.humanPlayerID) {
             this.humanPlayer.setPlayer(this.gameObjects[this.humanPlayerID]);
