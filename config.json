@@ -1,5 +1,4 @@
 {
-    "connectTab": {
-        "game": "Chess"
-    }
+    "game": "Chess",
+    "server": "game.siggame.io"
 }

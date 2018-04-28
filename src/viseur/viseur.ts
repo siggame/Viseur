@@ -170,7 +170,7 @@ export class Viseur {
     public spectate(server: string, port: number, gameName: string, session: string): void {
         this.gui.modalMessage("Spectating game...");
 
-        this.createJoueur({server, port, gameName, session});
+        this.createJoueur({server, port, gameName, session, spectating: true});
     }
 
     /**
