@@ -349,6 +349,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
             list.statsToListElement.push($("<li>")
                 .appendTo(list.element)
                 .addClass("stat")
+                .addClass(`stat-${i}`)
                 .attr("title", stat.title || "")
                 .html(String(i),
             ));

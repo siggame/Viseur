@@ -48,11 +48,11 @@
         height: 100%;
         table-layout: fixed;
 
-        & .humans-player .stat-name:before {
+        & .humans-player .stat-0:after { // the first stat is the stat name
             font-style: italic;
             font-weight: normal;
             content: "(You)";
-            margin-right: 0.25em;
+            margin-left: 0.25em;
         }
 
         & > .players {
