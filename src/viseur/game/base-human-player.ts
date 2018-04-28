@@ -62,6 +62,9 @@ export class BaseHumanPlayer {
 
         // add their return callback function
         order.args.push((returned: any) => {
+            if (this.game.pane) {
+                this.game.pane.stopTicking();
+            }
             order.callback(returned);
         });
 
