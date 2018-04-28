@@ -1,3 +1,8 @@
+/** Used for html character entity lookups */
+interface IEntityObject {
+    [key: string]: string;
+}
+
 /* Contains useful string related functions */
 
 /**
@@ -98,23 +103,32 @@ export function validateURL(str: string): boolean {
     return validURL.test(str);
 }
 
-const htmlEntityMap: any = {
+const htmlEntityMap: IEntityObject = {
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
+};
+
+const htmlAttributeEntityMap: IEntityObject = {
     "\"": "&quot;",
     "'": "&#39;",
     "/": "&#x2F;",
 };
+
 /**
  * Escapes a string to be displayed in HTML, but not AS HTML.
  * @param {string} str the string to escape
+ * @param {boolean} escapeAttributes if characters in attributes should be escapes as well
  * @returns {string} str now escaped
  */
-export function escapeHTML(str: string): string {
-    return String(str).replace(/[&<>"'\/]/g, (s) => {
-        return htmlEntityMap[s];
-    });
+export function escapeHTML(str: string, escapeAttributes: boolean = false): string {
+    let htmlEscaped = String(str).replace(/[&<>]/g, (s) => htmlEntityMap[s]);
+
+    if (escapeAttributes) {
+        htmlEscaped = htmlEscaped.replace(/["'\/]/g, (s) => htmlAttributeEntityMap[s]);
+    }
+
+    return htmlEscaped;
 }
 
 /**
