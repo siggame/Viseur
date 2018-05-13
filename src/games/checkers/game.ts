@@ -43,8 +43,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        this.defaultPlayerColors[0], // Player 0
-        this.defaultPlayerColors[1], // Player 1
+        Color("#c92b10"), // Player 0 = red(ish)
+        Color("#3a3a3a"), // Player 1 = black (well dark gray)
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
@@ -82,8 +82,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: state.boardWidth,
+            height: state.boardHeight,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -109,24 +109,27 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
-        // Initialize your background here if need be
+        // generate a random color based on the game's random seed so each
+        // background color for each game has a slight different hue
+        const randomColor = Color().hsl(
+            this.chance.floating({min: 0, max: 360}), // hue, random number 0 to 360
+            60, // saturation
+            40, // lumosity
+        ).whiten(1.5);
 
-        // this is an example of how to render a sprite. You'll probably want
-        // to remove this code and the test sprite once actually doing things
-        this.resources.test.newSprite(this.layers.background, {
-            position: {x: 5, y: 5},
-        });
+        for (let x = 0; x < state.boardWidth; x++) {
+            for (let y = 0; y < state.boardHeight; y++) {
+                const black = Boolean((x + y) % 2);
 
-        // this shows you how to render text that scales to the game
-        // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
-        this.renderer.newPixiText(
-            "This game has no\ngame logic added\nto it... yet!",
-            this.layers.game,
-            {
-                fill: 0xFFFFFF, // white in hexademical color format
-            },
-            1,
-        );
+                (black
+                    ? this.resources.tileBlack
+                    : this.resources.tileRed
+                ).newSprite(this.layers.background, {
+                    position: {x, y},
+                    tint: Color(black ? "black" : "red").mix(randomColor, 0.85),
+                });
+            }
+        }
         // <<-- /Creer-Merge: create-background -->>
     }
 

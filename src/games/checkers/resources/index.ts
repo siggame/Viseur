@@ -2,7 +2,10 @@ import { createResources, load } from "src/viseur/renderer";
 
 export const GameResources = createResources("Checkers", {
     // <<-- Creer-Merge: resources -->>
-    test: load("test.png"), // load files like this,
-                            // and remember to remove these lines and file!
+    piece: load("piece.png"),
+    kinged: load("kinged.png"),
+
+    tileBlack: load("tile-black.png"),
+    tileRed: load("tile-red.png"),
     // <<-- /Creer-Merge: resources -->>
 });
