@@ -43,13 +43,13 @@ export class Checker extends GameObject {
     // <<-- Creer-Merge: variables -->>
 
     /** The sprite representing the piece of this checker on the board */
-    private pieceSprite: PIXI.Sprite;
+    private readonly pieceSprite: PIXI.Sprite;
 
     /** The kinged symbol on top of the piece, if kinged */
-    private kingedSprite: PIXI.Sprite;
+    private readonly kingedSprite: PIXI.Sprite;
 
     /** The ID of our owner for recoloring */
-    private ownerID: string;
+    private readonly ownerID: string;
 
     // <<-- /Creer-Merge: variables -->>
 
