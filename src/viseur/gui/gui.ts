@@ -3,6 +3,7 @@ import * as screenfull from "screenfull";
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
+import { PrettyPolygons } from "src/core/ui/pretty-polygons";
 import { Viseur, viseurConstructed } from "src/viseur";
 import { Event, events } from "ts-typed-events";
 import { BaseGame } from "../game";
@@ -28,6 +29,9 @@ export class GUI extends BaseElement {
 
     /** The wrapper for the visualizer's pane */
     private readonly visualizerPaneWrapper = this.element.find(".visualizer-pane-wrapper");
+
+    /** The pretty polygons we animate as a background */
+    private readonly prettyPolygons = new PrettyPolygons(this.visualizerPaneWrapper);
 
     /** The info pane part of the gui */
     private readonly infoPane: InfoPane;
@@ -102,6 +106,7 @@ export class GUI extends BaseElement {
                 // order
                 setTimeout(() => {
                     this.resize();
+                    this.prettyPolygons.stop();
                 }, 350); // after all transitions end
             });
         });

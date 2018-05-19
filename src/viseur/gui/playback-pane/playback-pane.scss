@@ -55,7 +55,7 @@
 
         &:hover, &:focus {
             &:not(:disabled) {
-                background-color: $primary;
+                background-color: $secondary-light;
             }
         }
     }
