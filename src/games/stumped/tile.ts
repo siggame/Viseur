@@ -8,7 +8,100 @@ import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
+
+const RESOURCES: ["branches", "food"] = ["branches", "food"];
+
+// bit auto-tiling from:
+// https://gamedevelopment.tutsplus.com/tutorials/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673
+const DIRECTIONS: ["North", "South", "East", "West"] = ["North", "South", "East", "West"];
+const CORNERS = [["North", "West"], ["North", "East"], ["South", "West"], ["South", "East"]];
+
+const DIRECTION_BITS = {
+    NorthWest: 1,
+    North: 2,
+    NorthEast: 4,
+    West: 8,
+    East: 16,
+    SouthWest: 32,
+    South: 64,
+    SouthEast: 128,
+};
+
+const BIT_TO_INDEX: { [bit: number]: number } = {
+    2: 1,
+    8: 2,
+    10: 3,
+    11: 4,
+    16: 5,
+    18: 6,
+    22: 7,
+    24: 8,
+    26: 9,
+    27: 10,
+    30: 11,
+    31: 12,
+    64: 13,
+    66: 14,
+    72: 15,
+    74: 16,
+    75: 17,
+    80: 18,
+    82: 19,
+    86: 20,
+    88: 21,
+    90: 22,
+    91: 23,
+    94: 24,
+    95: 25,
+    104: 26,
+    106: 27,
+    107: 28,
+    120: 29,
+    122: 30,
+    123: 31,
+    126: 32,
+    127: 33,
+    208: 34,
+    210: 35,
+    214: 36,
+    216: 37,
+    218: 38,
+    219: 39,
+    222: 40,
+    223: 41,
+    248: 42,
+    250: 43,
+    251: 44,
+    254: 45,
+    255: 46,
+    0: 47,
+};
+
+/**
+ * Checks if a tile in a direction or two is a land tile for auto-tiling
+ * @param state - tile we are looking at
+ * @param direction - direction from tile
+ * @param direction2 - direction from the direction tile
+ * @returns true if that is a land tile, false otherwise
+ */
+function isLand(state: ITileState, direction: string, direction2?: string): boolean {
+    let neighbor = (state as any)[`tile${direction}`];
+    if (!neighbor) { // off map, just use our type as the off map type
+        neighbor = state;
+    }
+
+    if (neighbor.type.toLowerCase() !== "land") {
+        return false;
+    }
+
+    if (direction2) {
+        return isLand(neighbor, direction2);
+    }
+
+    return true;
+}
+
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -27,7 +120,7 @@ export class Tile extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -41,7 +134,22 @@ export class Tile extends GameObject {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+
+    /** If we are water and have a flow direction, this is the sprite for that. */
+    private readonly flowSprite?: PIXI.Sprite;
+
+    /** bottom of the lodge sprite */
+    private readonly lodgeBottomSprite: PIXI.Sprite;
+
+    /** bottom of the lodge sprite */
+    private readonly lodgeTopSprite: PIXI.Sprite;
+
+    /** sprite to indicate branches on this tile */
+    private readonly branchesSprite: PIXI.Sprite;
+
+    /** sprite to indicate food on this tile */
+    private readonly foodSprite: PIXI.Sprite;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -55,7 +163,69 @@ export class Tile extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Tile here.
+
+        let byte: number | undefined;
+        if (state.type === "land") {
+            // make it look cool
+            let sum = 0;
+            for (const direction of DIRECTIONS) {
+                if (isLand(state, direction)) {
+                    sum += DIRECTION_BITS[direction];
+                }
+            }
+
+            for (const corner of CORNERS) {
+                const vert = corner[0];
+                const hor = corner[1];
+
+                if (
+                    isLand(state, vert) &&
+                    isLand(state, hor) &&
+                    isLand(state, vert, hor)
+                ) {
+                    sum += (DIRECTION_BITS as any)[vert + hor]; // ts is too dumb to know this is valid
+                }
+            }
+
+            byte = BIT_TO_INDEX[sum];
+        }
+
+        byte !== undefined
+            ? this.game.resources.tileset.newSprite(this.container, byte)
+            : this.game.resources.tileWater.newSprite(this.container);
+
+        if (state.flowDirection) {
+            this.flowSprite = this.game.resources.flow.newSprite(this.container, {
+                alpha: 0.333,
+            });
+
+            switch (state.flowDirection) {
+                case "East":
+                    break; // default direction
+                case "South":
+                    this.flowSprite.rotation += Math.PI / 2;
+                    this.flowSprite.x += 1;
+                    break;
+                case "West":
+                    this.flowSprite.rotation += Math.PI;
+                    this.flowSprite.x += 1;
+                    this.flowSprite.y += 1;
+                    break;
+                case "North":
+                    this.flowSprite.rotation += 3 * Math.PI / 2;
+                    this.flowSprite.y += 1;
+                    break;
+            }
+        }
+
+        this.lodgeBottomSprite = this.game.resources.lodgeBottom.newSprite(this.container);
+        this.lodgeTopSprite = this.game.resources.lodgeTop.newSprite(this.container);
+
+        this.branchesSprite = this.game.resources.tileBranch.newSprite(this.container);
+        this.foodSprite = this.game.resources.tileFood.newSprite(this.container);
+
+        this.container.position.set(state.x, state.y);
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -76,7 +246,68 @@ export class Tile extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Tile is
+
+        // render resources
+        for (const resource of RESOURCES) {
+            const sprite = resource === "branches"
+                ? this.branchesSprite
+                : this.foodSprite;
+
+            const currentAmount = current[resource];
+            const nextAmount = next[resource];
+
+            if (currentAmount === 0 && nextAmount === 0) {
+                sprite.visible = false;
+            }
+            else {
+                sprite.visible = true;
+
+                let opacity = 1;
+                if (currentAmount === 0) {
+                    // fade in as it's going from 0 to N
+                    opacity = dt;
+                }
+                else if (nextAmount === 0) {
+                    // fade out as it's going from N to 0
+                    opacity = 1 - dt;
+                }
+
+                sprite.alpha = ease(opacity, "cubicInOut");
+            }
+        }
+
+        // render the lodge
+        if (!current.lodgeOwner && !next.lodgeOwner) {
+            // don't render the lodge, it's never used
+            this.lodgeBottomSprite.visible = false;
+            this.lodgeTopSprite.visible = false;
+        }
+        else {
+            // the tile has a lodge on it at some point
+
+            this.lodgeBottomSprite.visible = true;
+            this.lodgeTopSprite.visible = true;
+
+            // and color the top (flag part) of the lodge sprite based on the player's color
+            const color = this.game.getPlayersColor(current.lodgeOwner || next.lodgeOwner);
+            this.lodgeTopSprite.tint = color.rgbNumber();
+
+            let alpha = 1;
+            if (!current.lodgeOwner) {
+                // then they are creating the lodge on the `next` state
+                // so fade in the lodge (fade from 0 to 1)
+                alpha = ease(dt, "cubicInOut");
+            }
+            else if (!next.lodgeOwner) {
+                // then they lost the lodge on the `next` state
+                // so fade it out (1 to 0)
+                alpha = ease(1 - dt, "cubicInOut");
+            }
+
+            this.lodgeBottomSprite.alpha = alpha;
+            this.lodgeTopSprite.alpha = alpha;
+        }
+
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -88,7 +319,9 @@ export class Tile extends GameObject {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
+
+        // no need to recolor, as we recolor in render as we can change owners
+
         // <<-- /Creer-Merge: recolor -->>
     }
 

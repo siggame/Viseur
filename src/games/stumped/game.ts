@@ -43,8 +43,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        this.defaultPlayerColors[0], // Player 0
-        this.defaultPlayerColors[1], // Player 1
+        Color("#FFCC00"), // Player 0 = gold
+        Color("#9900CC"), // Player 1 = purple
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
@@ -82,8 +82,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: state.mapWidth,
+            height: state.mapHeight,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
