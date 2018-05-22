@@ -164,6 +164,8 @@ export class Tile extends GameObject {
 
         // <<-- Creer-Merge: constructor -->>
 
+        this.container.setParent(this.game.layers.background);
+
         let byte: number | undefined;
         if (state.type === "land") {
             // make it look cool
