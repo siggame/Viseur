@@ -27,7 +27,7 @@ export class Nest extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -55,7 +55,12 @@ export class Nest extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Nest here.
+        this.container.position.set(state.x, state.y);
+
+        this.game.resources.nest.newSprite(this.container, {
+            relativeScale: 10,
+            relativePivot: 0.5,
+        });
         // <<-- /Creer-Merge: constructor -->>
     }
 

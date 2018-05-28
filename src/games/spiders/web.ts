@@ -8,7 +8,7 @@ import { GameObject } from "./game-object";
 import { IWebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { Graphics } from "pixi.js";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -27,7 +27,7 @@ export class Web extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -55,7 +55,16 @@ export class Web extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Web here.
+
+        const graphics = new Graphics();
+        graphics.setParent(this.game.layers.ui);
+
+        graphics.lineStyle(1, 0x555555);
+        graphics.moveTo(state.nestA.x, state.nestA.y);
+        graphics.lineTo(state.nestB.x, state.nestB.y);
+
+        this.container.alpha = 0.5;
+
         // <<-- /Creer-Merge: constructor -->>
     }
 

@@ -82,8 +82,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: Math.max(...state.nests.map((n) => n.x)) * 1.05, // 5% over size so the max next is not on the edge
+            height: Math.max(...state.nests.map((n) => n.y)) * 1.05,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -109,24 +109,12 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
-        // Initialize your background here if need be
 
-        // this is an example of how to render a sprite. You'll probably want
-        // to remove this code and the test sprite once actually doing things
-        this.resources.test.newSprite(this.layers.background, {
-            position: {x: 5, y: 5},
+        this.resources.background.newSprite(this.layers.background, {
+            width: this.renderer.width,
+            height: this.renderer.height,
         });
 
-        // this shows you how to render text that scales to the game
-        // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
-        this.renderer.newPixiText(
-            "This game has no\ngame logic added\nto it... yet!",
-            this.layers.game,
-            {
-                fill: 0xFFFFFF, // white in hexademical color format
-            },
-            1,
-        );
         // <<-- /Creer-Merge: create-background -->>
     }
 
