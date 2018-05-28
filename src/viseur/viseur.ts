@@ -96,7 +96,7 @@ export class Viseur {
     private mergedDelta!: IMergedDelta;
 
     /** Our current merged game states and reasons */
-    private currentState!: IViseurGameState;
+    private readonly currentState: IViseurGameState = {};
 
     /** The game client we will use when playing or spectating games */
     private joueur?: Joueur;
@@ -474,12 +474,9 @@ export class Viseur {
         const deltas = this.rawGamelog.deltas;
 
         if (index < 0) {
-            this.currentState = {
-                game: d.currentState,
-                nextGame: d.nextState,
-                reason: undefined,
-                nextReason: this.deltaToReason(deltas[0]),
-            } as any;
+            this.currentState.game = d.currentState;
+            this.currentState.nextGame = d.nextState;
+            this.currentState.reason = undefined;
 
             return;
         }
@@ -506,6 +503,8 @@ export class Viseur {
             if (d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
                 d.nextState = this.parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
             }
+
+            this.updateStepped(d);
         }
 
         // if decreasing index...
@@ -524,20 +523,27 @@ export class Viseur {
             }
 
             d.index--;
+            this.updateStepped(d);
         }
+
+        if (indexChanged) {
+            this.updateStepped(d);
+            this.events.stateChanged.emit(this.currentState);
+        }
+    }
+
+    private updateStepped(d: IMergedDelta): void {
+        const deltas = this.rawGamelog!.deltas;
 
         const delta = deltas[d.index];
         const nextDelta = deltas[d.index + 1];
-        if (indexChanged) {
-            this.currentState = Object.assign({}, delta, {
-                game: d.currentState,
-                nextGame: d.nextState,
-                reason: this.deltaToReason(delta),
-                nextReason: this.deltaToReason(nextDelta),
-            });
 
-            this.events.stateChanged.emit(this.currentState);
-        }
+        this.currentState.game = d.currentState;
+        this.currentState.nextGame = d.nextState;
+        this.currentState.reason = this.deltaToReason(delta) as any;
+        this.currentState.nextReason = this.deltaToReason(nextDelta) as any;
+
+        this.events.stateChangedStep.emit(this.currentState);
     }
 
     /**

@@ -9,6 +9,9 @@ export const ViseurEvents = events({
     /** Triggers when the game's state changes and sends the new state */
     stateChanged: new Event<IViseurGameState>(),
 
+    /** Triggers when a state changes, but it is just one step in a large number of changes */
+    stateChangedStep: new Event<IViseurGameState>(),
+
     /** Triggers when the timer ticks */
     timeUpdated: new Event<ICurrentTime>(),
 

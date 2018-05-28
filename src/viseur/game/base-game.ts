@@ -1,7 +1,7 @@
 import { Chance } from "chance";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
-import { Viseur } from "src/viseur";
+import { IViseurGameState, Viseur } from "src/viseur";
 import { IRendererResources, IRendererSize, Renderer } from "src/viseur/renderer";
 import * as Settings from "src/viseur/settings";
 import { BaseGameObject } from "./base-game-object";
@@ -115,8 +115,12 @@ export class BaseGame extends StateObject {
             this.ready();
         });
 
+        viseur.events.stateChangedStep.on((state) => {
+            this.initializeGameObjects(state);
+        });
+
         viseur.events.stateChanged.on((state) => {
-            this.update(state.game, state.nextGame, state.reason, state.nextReason);
+            this.update(state);
         });
 
         this.humanPlayerID = playerID;
@@ -176,35 +180,64 @@ export class BaseGame extends StateObject {
     }
 
     /**
-     * Invoked when the state updates. Intended to be overridden by subclass(es)
-     * @param {Object} current the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next the next (most) game state, will be this.current if this.next is null
-     * @param {DeltaReason} reason the reason for the current delta
-     * @param {DeltaReason} nextReason the reason for the next delta
+     * Initialize new game objects based on each state step update.
+     *
+     * @param state - The state for this step
      */
-    public update(
-        current?: IBaseGameState,
-        next?: IBaseGameState,
-        reason?: IDeltaReason,
-        nextReason?: IDeltaReason,
-    ): void {
-        if (!this.started) {
-            return;
-        }
-        super.update(current, next, reason, nextReason);
+    public initializeGameObjects(state: IViseurGameState): void {
+        super.update(state.game, state.nextGame); // yes update our state during initialization
 
-        this.gameOverScreen.hide();
-
-        const gameObjects = (this.next && this.next.gameObjects)
-                         || (this.current && this.current.gameObjects)!; // TODO remove ! when conditional
+        /** The current state's game objects to use to initialize new game objects we find */
+        const gameObjects = (state.game && state.game.gameObjects)
+                         || (state.nextGame && state.nextGame.gameObjects)!;
 
         // initialize new game objects we have not seen yet
         const newGameObjects = new Set<BaseGameObject>();
         for (const id of Object.keys(gameObjects).sort()) {
             if (!this.gameObjects[id]) {
-                newGameObjects.add(this.createGameObject(id, gameObjects[id]));
+                const newGameObject = this.createGameObject(id, gameObjects[id]);
+
+                newGameObjects.add(newGameObject);
+                newGameObject.update(
+                    state.game && state.game.gameObjects[id],
+                    state.nextGame && state.nextGame.gameObjects[id],
+                    state.reason,
+                    state.nextReason,
+                );
             }
         }
+
+        for (const gameObject of newGameObjects) {
+            gameObject.stateUpdated(
+                gameObject.current || gameObject.next!,
+                gameObject.next || gameObject.current!,
+                state.reason || state.nextReason!,
+                state.nextReason || state.reason!,
+            );
+
+            if (newGameObjects.has(gameObject)) {
+                gameObject.recolor();
+            }
+        }
+    }
+
+    /**
+     * Invoked when the state updates. Intended to be overridden by subclass(es)
+     *
+     * @param state the current viseur state to update off of
+     */
+    public update(state: IViseurGameState): void {
+        if (!this.started) {
+            return;
+        }
+
+        const current = state.game;
+        const next = state.nextGame;
+        const { reason, nextReason } = state;
+
+        super.update(current, next, reason, nextReason);
+
+        this.gameOverScreen.hide();
 
         // save the reasons for the current and next deltas
         this.currentReason = this.hookupGameObjectReferences(reason);
@@ -238,10 +271,6 @@ export class BaseGame extends StateObject {
                     this.currentReason || this.nextReason!,
                     this.nextReason || this.currentReason!,
                 );
-            }
-
-            if (newGameObjects.has(gameObject)) {
-                gameObject.recolor();
             }
         }
 
@@ -421,7 +450,8 @@ export class BaseGame extends StateObject {
 
         const state = this.viseur.getCurrentState();
 
-        this.update(state.game, state.nextGame, state.reason, state.nextReason);
+        this.initializeGameObjects(state);
+        this.update(state);
 
         this.pane = new this.namespace.Pane(this.viseur, this, this.next || this.current!);
         this.pane.update(this.current || this.next!, this.next);
