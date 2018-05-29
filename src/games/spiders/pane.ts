@@ -4,7 +4,6 @@ import { Game } from "./game";
 import { IGameState, IPlayerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// Add additional imports you need here
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -76,7 +75,29 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         const stats: Array<IPaneStat<P>> = super.getPlayerStats(state);
 
         // <<-- Creer-Merge: player-stats -->>
-        // add stats for players to show up here
+
+        stats.push(
+            {
+                title: "Broodmother's health",
+                get: (p) => p.broodMother.health,
+                icon: "❤️",
+            },
+            {
+                title: "Broodmother's eggs",
+                get: (p) => p.broodMother.eggs,
+                icon: "🥚",
+            },
+            {
+                title: "Spiderling count",
+                get: (p) => p.spiders.length - 1,
+                icon: "🕷️",
+            },
+            {
+                title: "controlled nests",
+                get: () => "???",
+                icon: "🕸️",
+            },
+        );
         // <<-- /Creer-Merge: player-stats -->>
 
         return stats;

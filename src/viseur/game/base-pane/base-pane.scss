@@ -76,6 +76,10 @@
                 & li.stat {
                     & .icon {
                         margin-right: 0.125em;
+
+                        &:not(.fa) {
+                            font-style: normal;
+                        }
                     }
                 }
 

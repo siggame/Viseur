@@ -8,7 +8,7 @@ import { GameObject } from "./game-object";
 import { IWebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import { Graphics } from "pixi.js";
+import { ease, renderSpriteBetween } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -56,14 +56,13 @@ export class Web extends GameObject {
 
         // <<-- Creer-Merge: constructor -->>
 
-        const graphics = new Graphics();
-        graphics.setParent(this.game.layers.ui);
+        this.container.setParent(this.game.layers.webs);
 
-        graphics.lineStyle(1, 0x555555);
-        graphics.moveTo(state.nestA.x, state.nestA.y);
-        graphics.lineTo(state.nestB.x, state.nestB.y);
-
-        this.container.alpha = 0.5;
+        renderSpriteBetween(
+            this.game.resources.webMiddle.newSprite(this.container),
+            state.nestA,
+            state.nestB,
+        );
 
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -85,7 +84,12 @@ export class Web extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Web is
+
+        this.container.visible = Boolean(current.nestA || next.nestA); // do not render if snapped
+        this.container.alpha = !next.nestA // then it is in the process of snapping, so fade it out
+            ? ease(1 - dt)
+            : 1;
+
         // <<-- /Creer-Merge: render -->>
     }
 

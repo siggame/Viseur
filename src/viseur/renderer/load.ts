@@ -39,6 +39,8 @@ export function load(texture: string, options: IResourceLoadOptions): RendererSh
  */
 export function load(texture: string, options?: IResourceLoadOptions,
 ): RendererResource | RendererSheetResource {
+    texture = texture.replace("./", ""); // remove un-needed dir part
+
     if (options && options.sheet) {
         const sheet = options.sheet;
         delete options.sheet;

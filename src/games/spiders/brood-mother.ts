@@ -8,7 +8,7 @@ import { Spider } from "./spider";
 import { IBroodMotherState, ISpiderlingState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { setRelativePivot } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -41,7 +41,13 @@ export class BroodMother extends Spider {
     public next: IBroodMotherState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+
+    /** The owner's ID */
+    private readonly ownerID: string;
+
+    /** the top part of the sprite to re-color */
+    private readonly spriteTop: PIXI.Sprite;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -55,7 +61,16 @@ export class BroodMother extends Spider {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new BroodMother here.
+
+        this.ownerID = state.owner.id;
+
+        const scaled = { relativeScale: 7.5 };
+        this.game.resources.broodmotherBottom.newSprite(this.container, scaled);
+        this.spriteTop = this.game.resources.broodmotherTop.newSprite(this.container, scaled);
+
+        setRelativePivot(this.container);
+        this.container.position.set(state.nest.x, state.nest.y);
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -76,7 +91,6 @@ export class BroodMother extends Spider {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the BroodMother is
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -88,7 +102,11 @@ export class BroodMother extends Spider {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
+
+        const color = this.game.getPlayersColor(this.ownerID);
+
+        this.spriteTop.tint = color.rgbNumber();
+
         // <<-- /Creer-Merge: recolor -->>
     }
 

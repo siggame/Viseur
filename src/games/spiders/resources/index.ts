@@ -7,6 +7,12 @@ export const GameResources = createResources("Spiders", {
         height: 9,
     }),
 
+    broodmotherTop: load("./broodmother-top.png"),
+    broodmotherBottom: load("./broodmother-bottom.png"),
+
     nest: load("nest.png"),
+
+    webMiddle: load("web-middle.png"),
+    webEnd: load("web-end.png"),
     // <<-- /Creer-Merge: resources -->>
 });

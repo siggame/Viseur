@@ -209,7 +209,7 @@ export function setRelativePivot(
 }
 
 /**
- * Takes a sprite a "stretches" it between two points along it's width, useful for beam type effects
+ * Takes a sprite and "stretches" it between two points along it's width, useful for beam type effects
  * @param {PIXI.Sprite} sprite the sprite to use. Assumed to be 1x1 units by default.
  *                             It's width and pivot will be scaled for the stretching
  * @param {IPoint} pointA the first point, an object with an {x, y} to derive coordinates from
@@ -226,4 +226,20 @@ export function renderSpriteBetween(sprite: PIXI.Sprite, pointA: IPoint, pointB:
     const midX = (pointA.x + pointB.x) / 2;
     const midY = (pointA.y + pointB.y) / 2;
     sprite.position.set(midX + 0.5, midY + 0.5);
+}
+
+/**
+ * Takes a sprite, renders it at a given point, and then rotates it towards another point
+ * @param {PIXI.Sprite} sprite the sprite to use. Assumed to be 1x1 units by default.
+ *                             It's width and pivot will be scaled for the stretching
+ * @param {IPoint} pointA the first point, an object with an {x, y} to derive coordinates from
+ * @param {IPoint} pointB the second point, an object with an {x, y} to derive coordinates from
+ */
+export function renderSpriteRotatedTowards(sprite: PIXI.Sprite, pointA: IPoint, pointB: IPoint): void {
+    setRelativePivot(sprite, 0.5, 0.5);
+
+    const angleRadians = Math.atan2(pointB.y - pointA.y, pointB.x - pointA.x);
+    sprite.rotation = angleRadians;
+
+    sprite.position.set(pointA.x, pointA.y);
 }

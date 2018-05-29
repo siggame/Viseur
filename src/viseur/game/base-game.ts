@@ -400,7 +400,7 @@ export class BaseGame extends StateObject {
                 id: "custom-player-colors",
                 label: "Custom Player Colors",
                 hint: "Use your custom player colors defined below.",
-                default: true,
+                default: false,
             }),
             playerColors: [] as Settings.ColorSetting[],
         }, settings);
