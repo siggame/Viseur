@@ -172,21 +172,10 @@ export interface IJobState extends IGameObjectState {
  */
 export interface IMachineState extends IGameObjectState {
     /**
-     * The amount of ore that is in the machine. Cannot be higher than the
-     * refineInput value.
-     */
-    readonly input: number;
-
-    /**
      * What type of ore the machine takes it, also determins the type of
      * material it outputs.
      */
     readonly oreType: string;
-
-    /**
-     * The amount of material that is waiting to be collected in the machine.
-     */
-    readonly output: number;
 
     /**
      * The amount of ore that needs to be inputted into the machine.
