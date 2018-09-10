@@ -145,6 +145,7 @@ export class Unit extends GameObject {
 
     /**
      * Drops material at the units feat
+     * @param tile The tile the materials will be dropped on.
      * @param amount The amount of materials to dropped. Amounts <= 0 will drop
      * all the materials on the Unit.
      * @param material The material the unit will drop.
@@ -152,10 +153,10 @@ export class Unit extends GameObject {
      * from the server. - The returned value is True if successfully deposited,
      * false otherwise.
      */
-    public drop(amount: number, material: string, callback?: (returned: boolean)
-                => void,
+    public drop(tile: ITileState, amount: number, material: string, callback?:
+                (returned: boolean) => void,
     ): void {
-        this.runOnServer("drop", {amount, material}, callback);
+        this.runOnServer("drop", {tile, amount, material}, callback);
     }
 
     /**
@@ -171,6 +172,7 @@ export class Unit extends GameObject {
 
     /**
      * Picks up material at the units feat
+     * @param tile The tile the materials will be dropped on.
      * @param amount The amount of materials to pick up. Amounts <= 0 will pick
      * up all the materials on the Unit.
      * @param material The material the unit will pick up.
@@ -178,10 +180,10 @@ export class Unit extends GameObject {
      * from the server. - The returned value is True if successfully deposited,
      * false otherwise.
      */
-    public pickup(amount: number, material: string, callback?: (returned:
-                  boolean) => void,
+    public pickup(tile: ITileState, amount: number, material: string, callback?:
+                  (returned: boolean) => void,
     ): void {
-        this.runOnServer("pickup", {amount, material}, callback);
+        this.runOnServer("pickup", {tile, amount, material}, callback);
     }
 
     // </Joueur functions>

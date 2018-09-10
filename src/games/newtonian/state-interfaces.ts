@@ -92,6 +92,11 @@ export interface IGameState extends IBaseGameState {
     readonly spawnTime: number;
 
     /**
+     * How many turns a unit is stunned.
+     */
+    readonly stunTime: number;
+
+    /**
      * All the tiles in the map, stored in Row-major order. Use `x + y *
      * mapWidth` to access the correct index.
      */
@@ -102,6 +107,11 @@ export interface IGameState extends IBaseGameState {
      * turn.
      */
     readonly timeAddedPerTurn: number;
+
+    /**
+     * How many turns a unit is immune to being stunned.
+     */
+    readonly timeImmune: number;
 
     /**
      * Every Unit in the game.
@@ -172,21 +182,10 @@ export interface IJobState extends IGameObjectState {
  */
 export interface IMachineState extends IGameObjectState {
     /**
-     * The amount of ore that is in the machine. Cannot be higher than the
-     * refineInput value.
-     */
-    readonly input: number;
-
-    /**
      * What type of ore the machine takes it, also determins the type of
      * material it outputs.
      */
     readonly oreType: string;
-
-    /**
-     * The amount of material that is waiting to be collected in the machine.
-     */
-    readonly output: number;
 
     /**
      * The amount of ore that needs to be inputted into the machine.
@@ -229,11 +228,6 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
      * language. For potential data mining purposes.
      */
     readonly clientType: string;
-
-    /**
-     * Every generator tile owned by this Player.
-     */
-    readonly generatorTiles: ITileState[];
 
     /**
      * The amount of heat this Player has.
@@ -420,7 +414,7 @@ export interface IUnitState extends IGameObjectState {
     readonly blueiumOre: number;
 
     /**
-     * If a ship is on this Tile, how much health it has remaining.
+     * The remaining health of a unit.
      */
     readonly health: number;
 
