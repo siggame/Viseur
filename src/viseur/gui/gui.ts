@@ -80,11 +80,13 @@ export class GUI extends BaseElement {
             this.goFullscreen();
         });
 
-        screenfull.on("change", () => {
-            if (!screenfull.isFullscreen) {
-                this.exitFullscreen();
-            }
-        });
+        if (screenfull) {
+            screenfull.on("change", () => {
+                if (screenfull && !screenfull.isFullscreen) {
+                    this.exitFullscreen();
+                }
+            });
+        }
 
         this.modal = new Modal({
             id: "main-modal",
@@ -171,7 +173,9 @@ export class GUI extends BaseElement {
     public goFullscreen(): void {
         this.element.addClass("fullscreen");
 
-        screenfull.request();
+        if (screenfull) {
+            screenfull.request();
+        }
 
         this.resizeVisualizer(0, 0); // top left now that we (should) be fullscreen
 
@@ -185,7 +189,9 @@ export class GUI extends BaseElement {
         this.element.removeClass("fullscreen");
 
         KEYS.escape.up.off(this.exitFullscreen);
-        screenfull.exit();
+        if (screenfull) {
+            screenfull.exit();
+        }
 
         setImmediate(() => { // HACK: width and height will be incorrect after going out of fullscreen, so wait a moment
             this.resize();
@@ -197,7 +203,7 @@ export class GUI extends BaseElement {
      * @returns {boolean} true if fullscreen, false otherwise
      */
     public isFullscreen(): boolean {
-        return screenfull.isFullscreen;
+        return screenfull && screenfull.isFullscreen;
     }
 
     /**
