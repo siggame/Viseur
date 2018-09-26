@@ -10,7 +10,7 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import * as Chess from "chess.js";
+import { Chess, ChessInstance, Move } from "chess.js";
 import { IPoint } from "src/utils";
 import { RendererResource } from "src/viseur/renderer";
 import { Piece } from "./piece";
@@ -75,7 +75,7 @@ export class Game extends BaseGame {
     public selectedPiece?: Piece;
 
     /** The valid moves for the current most game state */
-    public validMoves: Chess.IMove[] = [];
+    public validMoves: Move[] = [];
 
     /** The container for pieces on the board */
     public readonly piecesContainer = new PIXI.Container();
@@ -108,7 +108,7 @@ export class Game extends BaseGame {
     private chessUpdated: boolean = false;
 
     /** The chess.js instance used to track game state */
-    private readonly chess: Chess.Chess = new (Chess as any)();
+    private readonly chess: ChessInstance = new Chess();
 
     /** All the tiles currently highlighted for UI usage */
     private readonly highlightedLocations: IPoint[] = [];
@@ -380,7 +380,7 @@ export class Game extends BaseGame {
 
             this.chess.load((this.current || this.next!).fen);
 
-            this.validMoves = this.chess.moves({ verbose: true }) as Chess.IMove[];
+            this.validMoves = this.chess.moves({ verbose: true });
         }
     }
 
