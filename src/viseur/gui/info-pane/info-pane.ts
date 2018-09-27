@@ -2,7 +2,7 @@ import * as $ from "jquery";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Tab, Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
-import { Event, events } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 import { GUI } from "../gui";
 import "./info-pane.scss";
 import { TABS } from "./tabs";
@@ -17,10 +17,10 @@ export class InfoPane extends BaseElement {
         resized: new Event<{width: number, height: number}>(),
 
         /** Emitted when this starts resizing */
-        resizeStart: new Event<undefined>(),
+        resizeStart: new Signal(),
 
         /** Emitted when this stops resizing */
-        resizeEnd: new Event<undefined>(),
+        resizeEnd: new Signal(),
     });
 
     /** The GUI this InfoPane is a part of */
@@ -204,7 +204,7 @@ export class InfoPane extends BaseElement {
 
         $document // cached at the top of this file
             .on("mousemove", (moveEvent) => {
-                this.events.resizeStart.emit(undefined);
+                this.events.resizeStart.emit();
 
                 const oldX = x;
                 const oldY = y;
@@ -238,7 +238,7 @@ export class InfoPane extends BaseElement {
             })
             .on("mouseup", () => {
                 this.element.removeClass("resizing");
-                this.events.resizeEnd.emit(undefined);
+                this.events.resizeEnd.emit();
                 $document.off("mousemove mouseup");
             });
     }

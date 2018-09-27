@@ -1,7 +1,7 @@
-import { IAnyObject } from "src/utils";
+import { ParsedJSON, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { IDelta, IGamelog, IGameServerConstants } from "src/viseur/game/gamelog";
-import { Event, events } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 import * as serializer from "./serializer";
 
 export interface IJoueurConnectionArgs {
@@ -39,7 +39,7 @@ export class Joueur {
         error: new Event<Error>(),
 
         /** Emitted once this initially connects to the tournament server */
-        connected: new Event(),
+        connected: new Signal(),
 
         /** Emitted once the connection is closed */
         closed: new Event<{timedOut: boolean}>(),
@@ -121,7 +121,7 @@ export class Joueur {
         }
 
         this.socket.onopen = () => {
-            this.events.connected.emit(undefined);
+            this.events.connected.emit();
 
             this.send("play", {
                 gameName: args.gameName,
@@ -175,7 +175,7 @@ export class Joueur {
      * @param {string} functionName the function to run
      * @param {Object} args the key value pairs for the function to run
      */
-    public run(callerID: string, functionName: string, args: IAnyObject): void {
+    public run(callerID: string, functionName: string, args: UnknownObject): void {
         this.send("run", {
             caller: {id: callerID},
             functionName,
@@ -307,7 +307,7 @@ export class Joueur {
      * @param {string} eventName the name of the event, should be something game server expects
      * @param {*} [data] the additional data about the event
      */
-    private send(eventName: string, data: any): void {
+    private send(eventName: string, data: ParsedJSON): void {
         // NOTE: this does not serialize game objects
         //       so don't be sending cycles like other joueur clients
         const str = JSON.stringify({

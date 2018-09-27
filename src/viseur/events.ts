@@ -1,4 +1,4 @@
-import { Event, events } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 import { BaseGame } from "./game/base-game";
 import { IGamelog } from "./game/gamelog";
 import { ICurrentTime } from "./time-manager";
@@ -16,7 +16,7 @@ export const ViseurEvents = events({
     timeUpdated: new Event<ICurrentTime>(),
 
     /** Triggers literally 1 second after the ready event */
-    delayedReady: new Event<undefined>(),
+    delayedReady: new Signal(),
 
     /** Triggers when all async events are done and we are ready to being normal operations */
     ready: new Event<{game: BaseGame, gamelog: IGamelog}>(),
@@ -39,7 +39,7 @@ export const ViseurEvents = events({
     // -- connection events -- \\
 
     /** Triggers when a connection event occurs and we have some message to send */
-    connectionConnected: new Event<undefined>(),
+    connectionConnected: new Signal(),
 
     /** Triggers when a connection event occurs and we have some message to send */
     connectionMessage: new Event<string>(),

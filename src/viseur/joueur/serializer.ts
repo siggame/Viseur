@@ -1,6 +1,6 @@
 /** functions to serialize and un-serialize json communications strings */
 
-import * as utils from "src/utils/object";
+import { isEmptyExceptFor, isObject, UnknownObject } from "src/utils";
 import { BaseGame } from "src/viseur/game/base-game";
 
 /**
@@ -9,7 +9,7 @@ import { BaseGame } from "src/viseur/game/base-game";
  * @returns true if appears to be a game object reference, false otherwise
  */
 export function isGameObjectReference(obj: object): boolean {
-    return utils.isEmptyExceptFor(obj, "id");
+    return isEmptyExceptFor(obj, "id");
 }
 
 /**
@@ -18,8 +18,8 @@ export function isGameObjectReference(obj: object): boolean {
  * @param key the key to check in obj
  * @returns true if it is serializable, false otherwise
  */
-export function isSerializable(obj: utils.IAnyObject, key: string): boolean {
-    return utils.isObject(obj) && obj.hasOwnProperty(key);
+export function isSerializable(obj: object, key: string): boolean {
+    return isObject(obj) && obj.hasOwnProperty(key);
 }
 
 /**
@@ -29,17 +29,17 @@ export function isSerializable(obj: utils.IAnyObject, key: string): boolean {
  * @param data the data to serialize
  * @returns a serialized object safe to send via a joueur
  */
-export function serialize(data: utils.IAnyObject): utils.IAnyObject {
+export function serialize(data: unknown): string | number | UnknownObject {
     // then no need to serialize it, it's already json serializable as a string, number, boolean, null, etc.
-    if (!utils.isObject(data)) {
-        return data;
+    if (!isObject(data)) {
+        return data as string | number;
     }
 
     if (data.id) { // no need to serialize this whole game object, send an object reference
         return { id: data.id };
     }
 
-    const serialized = Array.isArray(data) ? [] : {} as utils.IAnyObject;
+    const serialized = Array.isArray(data) ? [] : {} as UnknownObject;
     for (const key of Object.keys(data)) {
         if (isSerializable(data, key)) {
             serialized[key] = serialize(data[key]);
@@ -55,8 +55,8 @@ export function serialize(data: utils.IAnyObject): utils.IAnyObject {
  * @returns a copy of an object safely deserialized
  */
 export function deserialize(data: any, game?: BaseGame): any {
-    if (utils.isObject(data)) {
-        const result = Array.isArray(data) ? [] : {} as utils.IAnyObject;
+    if (isObject(data)) {
+        const result = Array.isArray(data) ? [] : {} as UnknownObject;
 
         for (const key of (Object.keys(data))) {
             const value = data[key];

@@ -3,7 +3,7 @@ import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
 import { Viseur, viseurConstructed } from "src/viseur";
 import { IGamelog } from "src/viseur/game/gamelog";
-import { Event, events } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 import { KEYS } from "../keys";
 import "./playback-pane.scss";
 
@@ -17,16 +17,16 @@ export class PlaybackPane extends BaseElement {
         playbackSlide: new Event<number>(),
 
         /** Emitted when fullscreen is toggled */
-        toggleFullscreen: new Event(),
+        toggleFullscreen: new Signal(),
 
         /** Emitted when we want to go to the next state */
-        next: new Event(),
+        next: new Signal(),
 
         /** Emitted when we want to go to the previous state */
-        back: new Event(),
+        back: new Signal(),
 
         /** Emitted when we want play or pause (toggled) */
-        playPause: new Event(),
+        playPause: new Signal(),
     });
 
     /** The Viseur instance that controls this */
@@ -108,7 +108,7 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomLeftContainerElement,
         });
         this.playPauseButton.events.clicked.on(() => {
-            this.events.playPause.emit(undefined);
+            this.events.playPause.emit();
         });
 
         KEYS.space.up.on(() => { // space bar up, hence the ' => '
@@ -121,7 +121,7 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomLeftContainerElement,
         });
         this.backButton.events.clicked.on(() => {
-            this.events.back.emit(undefined);
+            this.events.back.emit();
         });
         KEYS.leftArrow.up.on(() => {
             this.backButton.click();
@@ -133,7 +133,7 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomLeftContainerElement,
         });
         this.nextButton.events.clicked.on(() => {
-            this.events.next.emit(undefined);
+            this.events.next.emit();
         });
         KEYS.rightArrow.up.on(() => {
             this.nextButton.click();
@@ -177,7 +177,7 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.fullscreenButton.events.clicked.on(() => {
-            this.events.toggleFullscreen.emit(undefined);
+            this.events.toggleFullscreen.emit();
         });
 
         this.inputs = [

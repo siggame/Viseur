@@ -1,6 +1,6 @@
+import { euclideanDistance, IPoint } from "cadre-ts-utils";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
-import { euclideanDistance, IPoint } from "./math";
 
 export type ColorTint = Color | number | string;
 

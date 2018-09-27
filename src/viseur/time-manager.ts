@@ -1,6 +1,6 @@
 import { Timer } from "src/core/timer";
 import { Viseur } from "src/viseur/";
-import { Event } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 import { IGamelog } from "./game/gamelog";
 
 /** Simple container for the current time of the time manager */
@@ -17,18 +17,18 @@ export interface ICurrentTime {
 /** Manages playback time and what the game state to show should look like */
 export class TimeManager {
     /** Events this class emits */
-    public readonly events = Object.freeze({
+    public readonly events = events({
         /** Triggered when the current index changes */
         newIndex: new Event<number>(),
 
         /** Triggered when we starting ticking (playing) */
-        playing: new Event(),
+        playing: new Signal(),
 
         /** Triggered when we stop ticking (pause) */
-        paused: new Event(),
+        paused: new Signal(),
 
         /** Triggered when we reach the end of the indexes we can iterate through */
-        ended: new Event(),
+        ended: new Signal(),
     });
 
     /** The current index  to render */
@@ -155,7 +155,7 @@ export class TimeManager {
         (paused
             ? this.events.paused
             : this.events.playing
-        ).emit(undefined);
+        ).emit();
     }
 
     /**
@@ -183,7 +183,7 @@ export class TimeManager {
             }
             else {
                 this.pause(this.currentIndex, 0);
-                this.events.ended.emit(undefined);
+                this.events.ended.emit();
             }
         }
     }
@@ -224,6 +224,6 @@ export class TimeManager {
             this.setTime(index, dt);
         }
 
-        this.events.paused.emit(undefined);
+        this.events.paused.emit();
     }
 }

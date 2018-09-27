@@ -1,4 +1,4 @@
-import { Event, events } from "ts-typed-events";
+import { events, Signal } from "ts-typed-events";
 import { DisableableElement, IDisableableElementArgs } from "../../disableable-element";
 
 /** A range input for numbers */
@@ -6,7 +6,7 @@ export class Button extends DisableableElement {
     /** Events this class emits */
     public readonly events = events({
         /** Emitted when this button is clicked */
-        clicked: new Event<undefined>(),
+        clicked: new Signal(),
     });
 
     constructor(args: IDisableableElementArgs & {
@@ -51,7 +51,7 @@ export class Button extends DisableableElement {
      */
     public click(): void {
         if (!this.element.prop("disabled")) {
-            this.events.clicked.emit(undefined);
+            this.events.clicked.emit();
         }
     }
 

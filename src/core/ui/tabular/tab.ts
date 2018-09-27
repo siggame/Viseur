@@ -1,5 +1,5 @@
 import partial from "src/core/partial";
-import { Event, events } from "ts-typed-events";
+import { events, Signal } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tabular } from "./tabular";
 
@@ -12,7 +12,7 @@ export class Tab extends BaseElement {
     /** The events this class emits */
     public readonly events = events({
         /** Emitted when this tab's tab is selected */
-        selected: new Event<undefined>(),
+        selected: new Signal(),
     });
 
     /** The clickable tab that shows the content in the tabular */
@@ -39,7 +39,7 @@ export class Tab extends BaseElement {
 
         this.tab = partial(require("./tab.hbs"), this);
         this.tab.on("click", () => {
-            this.events.selected.emit(undefined);
+            this.events.selected.emit();
         });
     }
 }

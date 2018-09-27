@@ -4,7 +4,7 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { clamp } from "src/utils";
 import { Viseur } from "src/viseur";
-import { Event } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 import "./renderer.scss";
 
 export interface IRendererSize {
@@ -56,12 +56,12 @@ export class Renderer extends BaseElement {
     public readonly gameContainer = new PIXI.Container();
 
     /** All the events this emits */
-    public readonly events = Object.freeze({
+    public readonly events = events({
         /** Emitted once the textures are loaded for the game */
         texturesLoaded: new Event<PIXI.loaders.ResourceDictionary>(),
 
         /** Triggered when a specific id key is changed */
-        rendering: new Event<undefined>(),
+        rendering: new Signal(),
     });
 
     /** The scene (root) of all PIXI objects we will render */
@@ -417,7 +417,7 @@ export class Renderer extends BaseElement {
      */
     private render(): void {
         // tell everything that is observing us that they need to update their PIXI objects
-        this.events.rendering.emit(undefined);
+        this.events.rendering.emit();
         // and now have PIXI render it
         // this.pixiApp.renderer.render(this.scene);
         // this.pixiApp.renderer.render(this.pixiApp.stage);

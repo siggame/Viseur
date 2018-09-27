@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { Games } from "src/games";
-import * as utils from "src/utils";
+import { objectHasProperty, UnknownObject, unStringify, validateURL } from "src/utils";
 import { viseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
@@ -87,7 +87,9 @@ export class Viseur {
     //// ---- private ---- \\\\
 
     /** Parameters parsed from the URL parameters */
-    private urlParameters!: utils.IAnyObject; // set in constructor, which calls parseURL
+    private urlParameters!: {
+        [key: string]: undefined | null | string | string[],
+    }; // set in constructor, which calls parseURL
 
     /** The gamelog parser */
     private readonly parser = new Parser();
@@ -180,7 +182,7 @@ export class Viseur {
      * @param {boolean} presentationMode true if should auto fullscreen, false otherwise
      */
     public startArenaMode(url: string, presentationMode: boolean = false): void {
-        if (utils.validateURL(url)) {
+        if (validateURL(url)) {
             this.urlParameters.arena = url;
 
             if (presentationMode) {
@@ -228,7 +230,7 @@ export class Viseur {
     public runOnServer(
         callerID: string,
         functionName: string,
-        args: utils.IAnyObject,
+        args: UnknownObject,
         callback?: (returned: any) => void,
     ): void {
         if (!this.joueur) {
@@ -337,25 +339,32 @@ export class Viseur {
         for (const key of Object.keys(this.urlParameters)) {
             const setting = (this.settings as any)[key];
             if (setting) {
-                setting.set(utils.unstringify(this.urlParameters[key]));
+                const value = this.urlParameters[key];
+                if (value !== undefined) {
+                    setting.set(Array.isArray(value)
+                        ? value.map((v) => unStringify(v))
+                        : unStringify(value),
+                    );
+                }
             }
         }
 
         // check if the gamelog url is remote
-        const logUrl: string = this.urlParameters.log
-                            || this.urlParameters.logUrl
-                            || this.urlParameters.logURL;
-        if (logUrl) {
+        const logUrl = this.urlParameters.log
+                    || this.urlParameters.logUrl
+                    || this.urlParameters.logURL;
+        if (typeof logUrl === "string") {
             this.loadRemoteGamelog(logUrl);
         }
-        else if (this.urlParameters.arena) { // then we are in arena mode
+        else if (typeof this.urlParameters.arena === "string") {
+            // then we are in arena mode
             this.gui.modalMessage("Requesting next gamelog from Arena...");
             $.ajax({
                 dataType: "text",
                 url: this.urlParameters.arena,
                 crossDomain: true,
                 success: (gamelogURL: string) => {
-                    const presentationMode = Object.hasOwnProperty.call(this.urlParameters, "presentation");
+                    const presentationMode = objectHasProperty(this.urlParameters, "presentation");
                     if (presentationMode) {
                         this.gui.goFullscreen();
                     }
@@ -580,7 +589,7 @@ export class Viseur {
             //       sometimes (seemingly randomly) is the wrong height
             setTimeout(() => {
                 this.gui.resize();
-                this.events.delayedReady.emit(undefined); // ready but delayed so we are super ready (arena mode play)
+                this.events.delayedReady.emit(); // ready but delayed so we are super ready (arena mode play)
             }, 1000);
         }
     }
@@ -606,7 +615,7 @@ export class Viseur {
         this.joueur.events.connected.on(() => {
             this.gui.modalMessage("Awaiting game to start...");
 
-            this.events.connectionConnected.emit(undefined);
+            this.events.connectionConnected.emit();
         });
 
         let lobbiedData: any;

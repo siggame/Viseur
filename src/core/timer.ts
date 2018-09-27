@@ -1,12 +1,12 @@
-import { clamp } from "src/utils/math";
-import { Event } from "ts-typed-events";
+import { clamp } from "src/utils";
+import { events, Signal } from "ts-typed-events";
 
 /** ticks at a custom rate to a number of steps */
 export class Timer {
     /** Events this class emits */
-    public readonly events = Object.freeze({
+    public readonly events = events({
         /** Emitted when this timer finishes ticking */
-        finished: new Event<undefined>(),
+        finished: new Signal(),
     });
 
     /** Last timer progress before being paused */
@@ -85,7 +85,7 @@ export class Timer {
         this.lastTime = new Date().getTime();
         this.timeout = window.setTimeout(() => {
             this.pause();
-            this.events.finished.emit(undefined);
+            this.events.finished.emit();
         }, (1 - this.getProgress()) * this.speed);
 
         return true;

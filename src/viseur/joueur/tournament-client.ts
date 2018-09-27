@@ -1,5 +1,5 @@
 import { Viseur } from "src/viseur";
-import { Event, events } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 
 /** Data sent from the Tournament server detailing how to connect to play */
 export interface ITournamentPlayData {
@@ -22,10 +22,10 @@ export class TournamentClient {
         error: new Event<Error>(),
 
         /** Emitted once this initially connects to the tournament server */
-        connected: new Event(),
+        connected: new Signal(),
 
         /** Emitted once the connection is closed */
-        closed: new Event(),
+        closed: new Signal(),
 
         /** Emitted any time the tournament server sends a message */
         messaged: new Event<string>(),
@@ -50,7 +50,7 @@ export class TournamentClient {
      * @param {string} server the server to connection to via web sockets
      * @param {number} port the port for the server
      * @param {string} playerName the name for the human player, must match
-     *                            exactly as the one on the tournament server
+     * exactly as the one on the tournament server.
      */
     public connect(server: string, port: number, playerName: string = "ReplaceMe"): void {
         try {
@@ -63,7 +63,7 @@ export class TournamentClient {
 
         this.socket.onopen = () => {
             this.connected = true;
-            this.events.connected.emit(undefined);
+            this.events.connected.emit();
 
             this.send("register", {
                 type: "Viseur",
@@ -86,7 +86,7 @@ export class TournamentClient {
         };
 
         this.socket.onclose = () => {
-            this.events.closed.emit(undefined);
+            this.events.closed.emit();
         };
     }
 
