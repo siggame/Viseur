@@ -121,8 +121,9 @@ export class Unit extends GameObject {
     // <Joueur functions> --- functions invoked for human playable client
 
     /**
-     * Makes the unit do something to a machine on its tile. Interns sabotage,
-     * physicists run, and managers protect.
+     * Makes the unit do something to a machine adjacent to its tile. Interns
+     * sabotage, physicists work. Interns stun physicist, physicist stuns
+     * manager, manager stuns intern.
      * @param tile The tile the unit acts on.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully acted,
@@ -133,7 +134,7 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Attacks a unit on a ajacent tile.
+     * Attacks a unit on an adjacent tile.
      * @param tile The Tile to attack.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
@@ -144,10 +145,10 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Drops material at the units feat
+     * Drops materials at the units feet or adjacent tile.
      * @param tile The tile the materials will be dropped on.
-     * @param amount The amount of materials to dropped. Amounts <= 0 will drop
-     * all the materials on the Unit.
+     * @param amount The number of materials to dropped. Amounts <= 0 will drop
+     * all the materials.
      * @param material The material the unit will drop.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully deposited,
@@ -171,10 +172,10 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Picks up material at the units feat
-     * @param tile The tile the materials will be dropped on.
+     * Picks up material at the units feet or adjacent tile.
+     * @param tile The tile the materials will be picked up from.
      * @param amount The amount of materials to pick up. Amounts <= 0 will pick
-     * up all the materials on the Unit.
+     * up all the materials that the unit can.
      * @param material The material the unit will pick up.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully deposited,

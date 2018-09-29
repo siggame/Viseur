@@ -21,7 +21,7 @@ export interface IGameState extends IBaseGameState {
     readonly currentTurn: number;
 
     /**
-     * Determins the rate at which the highest value victory points degrade.
+     * Percent loss from the difference of Heat and Pressure. (0 to 1).
      */
     readonly degradeRate: number;
 
@@ -32,12 +32,13 @@ export interface IGameState extends IBaseGameState {
     readonly gameObjects: {[id: string]: IGameObjectState};
 
     /**
-     * How many interns a player can have.
+     * The maximum number of interns a player can have.
      */
     readonly internCap: number;
 
     /**
-     * Every job in the game.
+     * A list of all jobs. first item is intern, second is physicists, and third
+     * is manager.
      */
     readonly jobs: IJobState[];
 
@@ -47,7 +48,7 @@ export interface IGameState extends IBaseGameState {
     readonly machines: IMachineState[];
 
     /**
-     * How many managers a player can have.
+     * The maximum number of managers a player can have.
      */
     readonly managerCap: number;
 
@@ -62,12 +63,17 @@ export interface IGameState extends IBaseGameState {
     readonly mapWidth: number;
 
     /**
+     * The number of materials that spawn per spawn cycle.
+     */
+    readonly materialSpawn: number;
+
+    /**
      * The maximum number of turns before the game will automatically end.
      */
     readonly maxTurns: number;
 
     /**
-     * How many physicists a player can have.
+     * The maximum number of physicists a player can have.
      */
     readonly physicistCap: number;
 
@@ -77,7 +83,8 @@ export interface IGameState extends IBaseGameState {
     readonly players: IPlayerState[];
 
     /**
-     * How much each refined ore adds when put in the generator.
+     * The amount of victory points added when a refined ore is consumed by the
+     * generator.
      */
     readonly refinedValue: number;
 
@@ -87,12 +94,12 @@ export interface IGameState extends IBaseGameState {
     readonly session: string;
 
     /**
-     * The number of turns between spawning unit waves.
+     * The amount of turns it takes a unit to spawn.
      */
     readonly spawnTime: number;
 
     /**
-     * How many turns a unit is stunned.
+     * The amount of turns a unit cannot do anything when stunned.
      */
     readonly stunTime: number;
 
@@ -109,7 +116,7 @@ export interface IGameState extends IBaseGameState {
     readonly timeAddedPerTurn: number;
 
     /**
-     * How many turns a unit is immune to being stunned.
+     * The number turns a unit is immune to being stunned.
      */
     readonly timeImmune: number;
 
@@ -147,11 +154,11 @@ export interface IGameObjectState extends IBaseGameObjectState {
 }
 
 /**
- * Information about a units's job.
+ * Information about a unit's job.
  */
 export interface IJobState extends IGameObjectState {
     /**
-     * How many combined resources a beaver with this Job can hold at once.
+     * How many combined resources a unit with this Job can hold at once.
      */
     readonly carryLimit: number;
 
@@ -178,27 +185,29 @@ export interface IJobState extends IGameObjectState {
 }
 
 /**
- * A machine on a tile.
+ * A machine in the game. Used to refine ore.
  */
 export interface IMachineState extends IGameObjectState {
     /**
-     * What type of ore the machine takes it, also determins the type of
-     * material it outputs.
+     * What type of ore the machine takes it. Also determines the type of
+     * material it outputs. (redium or blueium).
      */
     readonly oreType: string;
 
     /**
-     * The amount of ore that needs to be inputted into the machine.
+     * The amount of ore that needs to be inputted into the machine for it to be
+     * worked.
      */
     readonly refineInput: number;
 
     /**
-     * The amount of material that out of the machine after running.
+     * The amount of refined ore that is returned after the machine has been
+     * fully worked.
      */
     readonly refineOutput: number;
 
     /**
-     * The amount of turns this machine takes to refine the ore.
+     * The number of times this machine needs to be worked to refine ore.
      */
     readonly refineTime: number;
 
@@ -208,12 +217,7 @@ export interface IMachineState extends IGameObjectState {
     readonly tile: ITileState;
 
     /**
-     * Time till the machine finishes running.
-     */
-    readonly timeLeft: number;
-
-    /**
-     * Tracks how many times this machine has been worked.
+     * Tracks how many times this machine has been worked. (0 to refineTime).
      */
     readonly worked: number;
 
@@ -230,12 +234,18 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
     readonly clientType: string;
 
     /**
+     * Every generator Tile owned by this Player. (listed from the outer edges
+     * inward, from top to bottom).
+     */
+    readonly generatorTiles: ITileState[];
+
+    /**
      * The amount of heat this Player has.
      */
     readonly heat: number;
 
     /**
-     * Time left till a intern spawns.
+     * The time left till a intern spawns. (0 to spawnTime).
      */
     readonly internSpawn: number;
 
@@ -245,7 +255,7 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
     readonly lost: boolean;
 
     /**
-     * Time left till a manager spawns.
+     * The time left till a manager spawns. (0 to spawnTime).
      */
     readonly managerSpawn: number;
 
@@ -260,7 +270,7 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
     readonly opponent: IPlayerState;
 
     /**
-     * Time left till a physicist spawns.
+     * The time left till a physicist spawns. (0 to spawnTime).
      */
     readonly physicistSpawn: number;
 
@@ -278,6 +288,12 @@ export interface IPlayerState extends IGameObjectState, IBasePlayerState {
      * The reason why the player won the game.
      */
     readonly reasonWon: string;
+
+    /**
+     * All the tiles this Player's units can spawn on. (listed from the outer
+     * edges inward, from top to bottom).
+     */
+    readonly spawnTiles: ITileState[];
 
     /**
      * The amount of time (in ns) remaining for this AI to send commands.
@@ -311,24 +327,24 @@ export interface ITileState extends IGameObjectState {
     readonly blueiumOre: number;
 
     /**
-     * (Visualizer only) Different tile tipes, cracked, slightly dirty, ect.
+     * (Visualizer only) Different tile types, cracked, slightly dirty, etc.
      * This has no effect on gameplay, but feel free to use it if you want.
      */
     readonly decoration: number;
 
     /**
      * The direction of a conveyor belt ('blank', 'north', 'east', 'south', or
-     * 'west'). blank mean no conveyor.
+     * 'west'). blank means conveyor doesn't move.
      */
     readonly direction: string;
 
     /**
-     * Weither or not the tile is a wall.
+     * Whether or not the tile is a wall.
      */
     readonly isWall: boolean;
 
     /**
-     * The machine on this Tile if present, otherwise null.
+     * The Machine on this Tile if present, otherwise null.
      */
     readonly machine: IMachineState;
 
@@ -399,17 +415,19 @@ export interface ITileState extends IGameObjectState {
  */
 export interface IUnitState extends IGameObjectState {
     /**
-     * Whether this Unit has performed its action this turn.
+     * Whether or not this Unit has performed its action this turn.
      */
     readonly acted: boolean;
 
     /**
-     * The amount of blueium carried by this unit.
+     * The amount of blueium carried by this unit. (0 to job carry capacity -
+     * other carried items).
      */
     readonly blueium: number;
 
     /**
-     * The amount of blueium ore carried by this unit.
+     * The amount of blueium ore carried by this unit. (0 to job carry capacity
+     * - other carried items).
      */
     readonly blueiumOre: number;
 
@@ -419,12 +437,12 @@ export interface IUnitState extends IGameObjectState {
     readonly health: number;
 
     /**
-     * The Job this Unit does.
+     * The Job this Unit has.
      */
     readonly job: IJobState;
 
     /**
-     * How many more times this Unit may move this turn.
+     * The number of moves this unit has left this turn.
      */
     readonly moves: number;
 
@@ -434,22 +452,24 @@ export interface IUnitState extends IGameObjectState {
     readonly owner: IPlayerState;
 
     /**
-     * The amount of redium carried by this unit.
+     * The amount of redium carried by this unit. (0 to job carry capacity -
+     * other carried items).
      */
     readonly redium: number;
 
     /**
-     * The amount of redium ore carried by this unit.
+     * The amount of redium ore carried by this unit. (0 to job carry capacity -
+     * other carried items).
      */
     readonly rediumOre: number;
 
     /**
-     * Duration of stun immunity.
+     * Duration of stun immunity. (0 to timeImmune).
      */
     readonly stunImmune: number;
 
     /**
-     * Duration the unit is stunned.
+     * Duration the unit is stunned. (0 to the game constant stunTime).
      */
     readonly stunTime: number;
 
