@@ -40,7 +40,7 @@ export class Button extends DisableableElement {
 
     /**
      * Sets the text on this button
-     * @param {string} str the text to display on the button
+     * @param str the text to display on the button
      */
     public setText(str: string): void {
         this.element.html(str);

@@ -1,6 +1,6 @@
 {
   "name": "viseur",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Visualizer for the Cadre AI game framework",
   "license": "MIT",
   "private": true,
@@ -24,7 +24,7 @@
     "@types/handlebars": "4.0.39",
     "@types/html-webpack-plugin": "3.2.0",
     "@types/humps": "1.1.2",
-    "@types/jquery": "3.3.9",
+    "@types/jquery": "3.3.10",
     "@types/node": "9.6.2",
     "@types/pixi.js": "4.8.1",
     "@types/query-string": "6.1.0",
@@ -33,7 +33,7 @@
     "@types/uuid": "3.4.4",
     "@types/webpack-env": "1.13.6",
     "babel-loader": "8.0.2",
-    "cadre-ts-utils": "github:siggame/Cadre-TS-Utils#b102490d7a6f9998153c9e136d084337fd5c80e0",
+    "cadre-ts-utils": "github:siggame/Cadre-TS-Utils#f2923f5087a23dccb82aba1caf22f369b8a4fc5d",
     "chance": "1.0.16",
     "chess.js": "0.10.2",
     "color": "3.0.0",
@@ -62,12 +62,12 @@
     "store": "2.0.12",
     "style-loader": "0.23.0",
     "transform-loader": "0.2.4",
-    "ts-loader": "5.2.0",
+    "ts-loader": "5.2.1",
     "ts-node": "7.0.1",
     "ts-typed-events": "1.1.1",
-    "typescript": "3.0.3",
+    "typescript": "3.1.1",
     "url-loader": "1.1.1",
-    "webpack": "4.19.1"
+    "webpack": "4.20.2"
   },
   "devDependencies": {
     "@types/webpack": "4.4.12",

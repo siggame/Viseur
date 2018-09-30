@@ -6,7 +6,7 @@ import "./color-picker.scss";
 export class ColorPicker extends BaseInput<string> {
     /**
      * Initializes the Number Input
-     * @param {object} args - initialization args
+     * @param args - initialization args
      */
     constructor(args: IBaseInputArgs) {
         super(Object.assign({

@@ -41,7 +41,7 @@ export class BaseHumanPlayer {
 
     /**
      * Order the human playing to do some
-     * @param {object} order the order details
+     * @param order the order details
      * @throws {Error} if the order is invalid (name can't be found as a function)
      */
     public order(order: IOrder): void {

@@ -5,7 +5,7 @@ import "./modal.scss";
 /** A modal that floats above the screen and blocks out all other input */
 export class Modal extends BaseElement {
     /** the content of the modal */
-    private readonly content: JQuery<HTMLElement>;
+    private readonly content: JQuery;
 
     constructor(args: IBaseElementArgs) {
         super(args);
@@ -20,7 +20,7 @@ export class Modal extends BaseElement {
      * @param {function} [callback] - callback to execute after showing
      * (not after animation, but after show is invoked async)
      */
-    public show(element: JQuery<HTMLElement>, callback?: () => void): void {
+    public show(element: JQuery, callback?: () => void): void {
         this.element.removeClass("hidden");
 
         setImmediate(() => {

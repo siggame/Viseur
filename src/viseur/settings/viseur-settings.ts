@@ -2,6 +2,9 @@
 import * as Setting from "./setting";
 import { createSettings } from "./settings";
 
+/**
+ * The settings for the core Viseur instance
+ */
 export const ViseurSettings = createSettings("viseur", {
     infoPaneSide: new Setting.DropDownSetting<string>({
         id: "info-pane-side",

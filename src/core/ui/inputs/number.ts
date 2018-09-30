@@ -25,7 +25,7 @@ export class NumberInput extends BaseInput<number> {
 
     /**
      * Initializes the Number Input
-     * @param {object} args initialization args, can have min, max, and step
+     * @param args initialization args, can have min, max, and step
      */
     constructor(args: INumberInputArgs) {
         super(Object.assign({
@@ -43,7 +43,7 @@ export class NumberInput extends BaseInput<number> {
 
     /**
      * Sets the min attribute of this input
-     * @param {number} min the minimum value this number input can be
+     * @param min the minimum value this number input can be
      */
     public setMin(min?: number): void {
         if (min !== undefined) {
@@ -60,7 +60,7 @@ export class NumberInput extends BaseInput<number> {
 
     /**
      * Sets the max attribute of this input
-     * @param {number} max the maximum value this number input can be
+     * @param max the maximum value this number input can be
      */
     public setMax(max?: number): void {
         if (max !== undefined) {

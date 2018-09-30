@@ -47,9 +47,9 @@ export class TournamentClient {
 
     /**
      * connects to a remote tournament server
-     * @param {string} server the server to connection to via web sockets
-     * @param {number} port the port for the server
-     * @param {string} playerName the name for the human player, must match
+     * @param server the server to connection to via web sockets
+     * @param port the port for the server
+     * @param playerName the name for the human player, must match
      * exactly as the one on the tournament server.
      */
     public connect(server: string, port: number, playerName: string = "ReplaceMe"): void {
@@ -102,8 +102,8 @@ export class TournamentClient {
     /**
      * sends an event to the server
      *
-     * @param {string} eventName - name of the event
-     * @param {Object} data - data about the event
+     * @param eventName - name of the event
+     * @param data - data about the event
      */
     private send(eventName: string, data: object): void {
         const str = JSON.stringify({
@@ -121,7 +121,7 @@ export class TournamentClient {
 
     /**
      * Invoked when we receive some data from the server
-     * @param {Object} data the data received from the server
+     * @param data the data received from the server
      */
     private received(data: {
         /** the event name */
@@ -145,7 +145,7 @@ export class TournamentClient {
 
     /**
      * Invoked on a 'message' event
-     * @param {string} data the message sent from the server
+     * @param data the message sent from the server
      */
     private onMessage(data: string): void {
         this.events.messaged.emit(data);
@@ -153,7 +153,7 @@ export class TournamentClient {
 
     /**
      * Invoked on a 'play' event
-     * @param {Object} data the data on what game server to connect to for bridging the human playable connection
+     * @param data the data on what game server to connect to for bridging the human playable connection
      */
     private onPlay(data: ITournamentPlayData): void {
         this.events.playing.emit(data);

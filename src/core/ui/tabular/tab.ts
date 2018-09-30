@@ -3,11 +3,13 @@ import { events, Signal } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tabular } from "./tabular";
 
+/** The interface arguments for a Tab can extend from. */
 export interface ITabArgs extends IBaseElementArgs {
     /** The tabular this tab is to be a part of */
     tabular: Tabular;
 }
 
+/** A Tab in a Tabular */
 export class Tab extends BaseElement {
     /** The events this class emits */
     public readonly events = events({
@@ -16,10 +18,10 @@ export class Tab extends BaseElement {
     });
 
     /** The clickable tab that shows the content in the tabular */
-    public readonly tab: JQuery<HTMLElement>;
+    public readonly tab: JQuery;
 
     /** The content wrapper around the element */
-    public readonly content: JQuery<HTMLElement>;
+    public readonly content: JQuery;
 
     /** The tabular this is a part of */
     public readonly tabular: Tabular;

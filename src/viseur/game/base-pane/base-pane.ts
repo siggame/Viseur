@@ -1,9 +1,9 @@
 import * as dateFormat from "dateformat";
 import * as $ from "jquery";
-import partial from "src/core/partial";
+import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
-import { escapeHTML, getContrastingColor, sum } from "src/utils";
+import { escapeHTML, getContrastingColor, isObject, objectHasProperty, sum, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame, IBaseGameObjectState, IBaseGameState, IBasePlayerState } from "src/viseur/game";
 import "./base-pane.scss";
@@ -11,65 +11,80 @@ import "./base-pane.scss";
 const requireLanguageImage = require.context("../language-images/", true, /\.png$/);
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 
-export interface IPaneStat<T> {
-    /** callback that is send the current player/game state and should return some value to display */
-    get: (state: T) => string | number;
-
-    /** a label to place before the (formatted) value, e.g. label: value */
+/** The information for a stat on the pane. */
+export interface IPaneStat<T = unknown> {
+    /** A label to place before the (formatted) value, e.g. label: value. */
     label?: string;
 
-    /** The font-awesome icon prefix (without fa-) */
+    /** The font-awesome icon prefix (without fa-). */
     icon?: string;
 
-    /** Title to display over this stat */
+    /** Title to display over this stat. */
     title?: string;
+
+    /**
+     * Callback that is send the current player/game state and should return
+     * some value to display.
+     */
+    get(state: T): string | number;
 }
 
-export interface IStatsList<T> {
+/** The list of stats. */
+export interface IStatsList<T = unknown> {
     /** the list of stats in order to display */
     stats: Array<IPaneStat<T>>;
 
     /** The container element */
-    element: JQuery<HTMLElement>;
+    element: JQuery;
 
     /** Mapping of the stat key to its list item element */
-    statsToListElement: Array<JQuery<HTMLElement>>;
+    statsToListElement: JQuery[];
 }
 
 /** the base class for all game panes, which are the HTML part of the game normally used to show player stats */
-export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> extends BaseElement {
-    /** The game this pane represents */
+export class BasePane<
+    G extends IBaseGameState,
+    P extends IBasePlayerState,
+> extends BaseElement {
+    /** The game this pane represents. */
     public readonly game: BaseGame;
 
-    /** The timer used to tick down a human player's time */
+    /** The timer used to tick down a human player's time. */
     private readonly humansTimer: Timer | undefined;
 
-    /** when in human player mode, the time remaining from the last second tick */
+    /**
+     * When in human player mode, the time remaining from the last second tick.
+     */
     private humansTimeRemaining: number | undefined;
 
-    /** The player we are ticking for */
+    /**
+     * The player we are ticking for.
+     */
     private humansTickingPlayer?: IBasePlayerState;
 
-    /** stats list for the game */
+    /** Stats list for the game. */
     private readonly gameStatsList: IStatsList<G>;
 
-    /** stats list for each player, indexed by their IDs */
-    private readonly playerToStatsList: Map<string, IStatsList<P>> = new Map();
+    /** Stats list for each player, indexed by their IDs. */
+    private readonly playerToStatsList = new Map<string, IStatsList<P>>();
 
-    /** Element that holds the player's stats lists */
-    private readonly playersElement: JQuery<HTMLElement>;
+    /** Element that holds the player's stats lists. */
+    private readonly playersElement: JQuery;
 
-    /** indexed by player index in game.players, to their html element */
-    private readonly playerProgressBars: Map<string, JQuery<HTMLElement>> = new Map();
+    /** Indexed by player index in game.players, to their html element. */
+    private readonly playerProgressBars = new Map<string, JQuery>();
 
-    /** the div containing the player progress bars */
-    private readonly playerProgressBarsDiv: JQuery<HTMLElement>;
+    /** The div containing the player progress bars. */
+    private readonly playerProgressBarsDiv: JQuery;
 
     /**
-     * Creates the base pane at the bottom of the viseur below the rendered graphics
-     * @param viseur the Viseur instance controlling the pane
-     * @param game the game this pane is representing
-     * @param initialState the initial state in the game, where all players exist
+     * Creates the base pane at the bottom of the viseur below the rendered
+     * graphics.
+     *
+     * @param viseur - The Viseur instance controlling the pane.
+     * @param game - The game this pane is representing.
+     * @param initialState - The initial state in the game, where all players
+     * exist.
      */
     constructor(viseur: Viseur, game: BaseGame, initialState: IBaseGameState) {
         super({
@@ -91,15 +106,26 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
 
         this.element.addClass(`game-${this.game.name}`);
 
-        // top of pane game stats list
-        const gameStats = this.cleanStats(this.getGameStats(initialState), "Game");
-        this.gameStatsList = this.createStatList(gameStats, this.element.find(".top-game-stats"), "game");
+        // Top of pane game stats list
+        const gameStats = this.cleanStats(
+            this.getGameStats(initialState),
+            "Game",
+        );
 
-        // bottom of pane each player stats lists
-        const playerStats = this.cleanStats(this.getPlayerStats(initialState), "Player");
+        this.gameStatsList = this.createStatList(
+            gameStats,
+            this.element.find(".top-game-stats"),
+            "game",
+        );
+
+        // Bottom of pane each player stats lists
+        const playerStats = this.cleanStats(
+            this.getPlayerStats(initialState),
+            "Player",
+        );
 
         this.playersElement = this.element.find(".players");
-        this.playersElement.addClass("number-of-players-" + playerIDs.length);
+        this.playersElement.addClass(`number-of-players-${playerIDs.length}`);
 
         this.playerProgressBarsDiv = this.element.find(".player-progress-bars");
 
@@ -142,17 +168,23 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     }
 
     /**
-     * updates the base pane upon a new state, updating player and game stats
-     * @param state - The current(most) state of the game to update reflecting
-     * @param nextState - The next state, if there is one.
+     * Updates the base pane upon a new state, updating player and game stats.
+     *
+     * @param currentState - The current(most) state of the game to update
+     * reflecting.
+     * @param nextState - The next state, if there is one..
      */
-    public update(state: IBaseGameState, nextState?: IBaseGameState): void {
-        if (this.humansTimer && nextState) {
-            // we have a human player, so use the next state which is actually the most current state
-            state = nextState;
-        }
+    public update(currentState: IBaseGameState, nextState?: IBaseGameState): void {
+        const state = (this.humansTimer && nextState)
+            // If we have a human player, so use the next state which is
+            // actually the most current state.
+            ? nextState
+            : currentState;
 
-        const currentPlayer = ((state as any).currentPlayer as IBaseGameObjectState) || {};
+        const currentPlayerId = objectHasProperty(state, "currentPlayer")
+                           && isObject(state.currentPlayer)
+                           && state.currentPlayer.id !== undefined
+                           && String(state.currentPlayer.id);
 
         for (const player of state.players) {
             const playerStatsList = this.playerToStatsList.get(player.id);
@@ -184,7 +216,9 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
                 playerStatsList.element.css("background-image", `url(${languageIcon})`);
             }
 
-            playerStatsList.element.toggleClass("current-player", currentPlayer.id === player.id);
+            if (currentPlayerId) {
+                playerStatsList.element.toggleClass("current-player", currentPlayerId === player.id);
+            }
         }
 
         // update games
@@ -197,7 +231,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     /**
      * Sets the player's list as a human player for special styling
      *
-     * @param {string} playerID - the player's id who is the human player
+     * @param playerID - the player's id who is the human player
      */
     public setHumanPlayer(playerID: string): void {
         this.element.find(`.player-id-${playerID}`).addClass("humans-player");
@@ -208,7 +242,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
      * @param playerID the player to tick for
      */
     public startTicking(playerID: string): void {
-        const gameState = this.game.current || this.game.next!;
+        const gameState = this.game.getCurrentMostState();
         const player = gameState.players.find((p) => p.id === playerID);
         if (!player) {
             throw new Error(`ID ${playerID} is not a valid player to start ticking for`);
@@ -232,12 +266,15 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     }
 
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./base-pane.hbs");
     }
 
     /**
-     * Gets the stats to show on each player pane, which tracks stats for that player
-     * @param state the initial state of the game
+     * Gets the stats to show on each player pane,
+     * which tracks stats for that player.
+     *
+     * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the player.
      */
     protected getPlayerStats(state: IBaseGameState): Array<IPaneStat<P>> {
@@ -255,17 +292,19 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     }
 
     /**
-     * Gets the stats to show on the top bar of the pane, which tracks stats in the game
-     * @param {GameState} state - the initial state of the game
+     * Gets the stats to show on the top bar of the pane,
+     * which tracks stats in the game.
+     *
+     * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the game.
      */
     protected getGameStats(state: IBaseGameState): Array<IPaneStat<G>> {
         const list: Array<IPaneStat<G>> = [];
 
-        if (state.hasOwnProperty("currentTurn")) {
+        if (objectHasProperty(state, "currentTurn")) {
             list.push({
                 label: "Turn",
-                get: (game: any) => game.currentTurn,
+                get: (game: UnknownObject) => Number(game.currentTurn),
             });
         }
 
@@ -273,12 +312,13 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     }
 
     /**
-     * Gets the stats for the players score bars
-     * @param state the current(most) state of the game to update this pane for
+     * Gets the stats for the players score bars.
+     *
+     * @param state The current(most) state of the game to update this pane
+     * for.
      * @returns an array of numbers, where each index is the player at that
-     *          index. Sum does not matter, it will resize dynamically.
-     *          If You want to display no score, return undefined
-     *          or an empty array.
+     * index. Sum does not matter, it will resize dynamically.
+     * If You want to display no score, return undefined or an empty array.
      */
     protected getPlayersScores(state: IBaseGameState): number[] | undefined {
         // intended to be overridden and scores calculated there
@@ -286,10 +326,11 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     }
 
     /**
-     * Sets the progress bars to a certain percentage for each of them
-     * @param progresses undefined/empty if they have no progress (hides bars),
-     * or an array of numbers, indexed by their location in game.players,
-     * with each value being [0, 1] for their progress...
+     * Sets the progress bars to a certain percentage for each of them.
+     *
+     * @param progresses - undefined/empty if they have no progress
+     * (hides bars), or an array of numbers, indexed by their location in
+     * game.players, with each value being [0, 1] for their progress.
      */
     protected setPlayersProgresses(progresses?: number[]): void {
         let summed = 0;
@@ -307,18 +348,23 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
             }
 
             if (bar) {
-                bar.css("width", (percentage * 100) + "%");
+                bar.css("width", `${(percentage * 100)}%`);
             }
         }
     }
 
     /**
-     * Cleans up shorthand PaneStats to all the attributes expected by the BasePane
-     * @param stats the stats, that can be in shorthand, to cleanup
-     * @param titlePrefix a prefix to add to the title
+     * Cleans up shorthand PaneStats to all the attributes expected by the
+     * BasePane.
+     *
+     * @param stats - The stats, that can be in shorthand, to cleanup.
+     * @param titlePrefix - A prefix to add to the title.
      * @returns All the PaneStats cleaned up
      */
-    private cleanStats(stats: Array<IPaneStat<any>>, titlePrefix: string): Array<IPaneStat<G | P>> {
+    private cleanStats(
+        stats: IPaneStat[],
+        titlePrefix: string,
+    ): Array<IPaneStat<G | P>> {
         for (const stat of stats) {
             if (stat.label || stat.title) {
                 stat.title = `${titlePrefix}'s ${stat.label || stat.title}`;
@@ -329,18 +375,27 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     }
 
     /**
-     * Creates a stats list container to be updated by this pane
-     * @param {Array.<PaneStat>} stats all the stats to list
-     * @param {$} parent jQuery parent for this list
-     * @param {string} [classes] optional classes for the html element
-     * @returns {Object} container object containing all the parts of this list
+     * Creates a stats list container to be updated by this pane.
+     *
+     * @param stats - All the stats to list.
+     * @param parent - jQuery parent for this list.
+     * @param [classes] - An optional classes for the html element.
+     * @returns A container object containing all the parts of this list.
      */
-    private createStatList(stats: Array<IPaneStat<G | P>>,
-                           parent: JQuery<HTMLElement>, classes: string = "",
+    private createStatList(
+        stats: Array<IPaneStat<G | P>>,
+        parent: JQuery, classes: string = "",
     ): IStatsList<G | P> {
+        const element = partial(
+            // tslint:disable-next-line:no-require-imports
+            require("./base-pane-stats.hbs"),
+            { classes },
+            parent,
+        );
+
         const list: IStatsList<G | P> = {
             stats,
-            element: partial(require("./base-pane-stats.hbs"), {classes}, parent),
+            element,
             statsToListElement: [],
         };
 
@@ -351,8 +406,8 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
                 .addClass("stat")
                 .addClass(`stat-${i}`)
                 .attr("title", stat.title || "")
-                .html(String(i),
-            ));
+                .html(String(i)), // tslint:disable-line:no-inner-html - safe, it will always be a number
+            );
 
             i++;
         }
@@ -361,11 +416,13 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
     }
 
     /**
-     * Updates a stats list based on a state
-     * @param statsList the stats list to update each stat for from the object
-     * @param obj the state information of the object
+     * Updates a stats list based on a state.
+     *
+     * @param statsList - The stats list to update each stat for from the
+     * object.
+     * @param obj - The state information of the object.
      */
-    private updateStatsList(statsList: IStatsList<any>, obj: any): void {
+    private updateStatsList(statsList: IStatsList, obj: unknown): void {
         let i = -1;
         for (const stat of statsList.stats) {
             i++;
@@ -400,8 +457,8 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
 
     /**
      * Formats the time remaining in min:sec:ms format
-     * @param {number} timeRemaining - time remaining in ns
-     * @returns {string} human readable string of the time remaining in the format min:sec:ms
+     * @param timeRemaining - time remaining in ns
+     * @returns human readable string of the time remaining in the format min:sec:ms
      */
     private formatTimeRemaining(timeRemaining: number): string {
         const negative = timeRemaining < 0;
@@ -429,7 +486,10 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
                     li.html(this.formatTimeRemaining(this.humansTimeRemaining));
                 }
             }
-            this.humansTimer!.restart();
+            if (this.humansTimer) {
+                // Should always happen
+                this.humansTimer.restart();
+            }
         }
     }
 }

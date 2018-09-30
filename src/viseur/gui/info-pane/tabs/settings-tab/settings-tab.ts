@@ -51,7 +51,7 @@ export class SettingsTab extends Tab {
      * @param {Array} baseSettings the list of settings from a settings.js file
      * @param {$} parent the jQuery parent element
      */
-    private manageSettings(baseSettings: IBaseSettings, parent: JQuery<HTMLElement>): void {
+    private manageSettings(baseSettings: IBaseSettings, parent: JQuery): void {
         const settings: Array<BaseSetting<any>> = [];
         const playerColorSettings = new Set<BaseSetting<any>>();
         for (const key of Object.keys(baseSettings)) {

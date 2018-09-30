@@ -386,8 +386,8 @@ export class Game extends BaseGame {
 
     /**
      * flips a y coordinate based on the flip board setting
-     * @param {number} y - y coordinate to flip
-     * @returns {number} y coordinate flipped if needed
+     * @param y - y coordinate to flip
+     * @returns y coordinate flipped if needed
      */
     private flipY(y: number): number {
         return (this.settings.flipBoard.get()
@@ -398,8 +398,8 @@ export class Game extends BaseGame {
 
     /**
      * Transforms a chess coordinate to x,y   E.g. "a1" -> 0,0
-     * @param {string} chessPosition a position valid to chess, with file then rank
-     * @returns {Object} {x, y}, ranged [0, 7]
+     * @param chessPosition a position valid to chess, with file then rank
+     * @returns {x, y}, ranged [0, 7]
      */
     private getXY(chessPosition: string): IPoint {
         return {
@@ -412,9 +412,9 @@ export class Game extends BaseGame {
 
     /**
      * Transforms an (x, y) coordinate to a chess coordinate   E.g. 0,0 -> "a1"
-     * @param {number} x - x coordinate, ranged [0, 7]
-     * @param {number} y - y coordinate, ranged [0, 7]
-     * @returns {string} a chess coordinate e.g. "a1"
+     * @param x - x coordinate, ranged [0, 7]
+     * @param y - y coordinate, ranged [0, 7]
+     * @returns a chess coordinate e.g. "a1"
      */
     private getFileRank(x: number, y: number): string {
         return String.fromCharCode("a".charCodeAt(0) + x) + (7 - y + 1);
@@ -422,8 +422,8 @@ export class Game extends BaseGame {
 
     /**
      * Invoked when a tile is clicked
-     * @param {number} x - x coordinate
-     * @param {number} y - y coordinate
+     * @param x - x coordinate
+     * @param y - y coordinate
      */
     private tileClicked(x: number, y: number): void {
         const pos = this.getFileRank(x, y);

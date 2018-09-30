@@ -135,7 +135,7 @@ export class GUI extends BaseElement {
     /**
      * Displays a message in the modal
      *
-     * @param {string} message to display
+     * @param message to display
      * @param {function} [callback] - callback to invoke upon showing async
      */
     public modalMessage(message: string, callback?: () => void): void {
@@ -148,7 +148,7 @@ export class GUI extends BaseElement {
     /**
      * Displays a message to the user, but as an error
      *
-     * @param {string} message to display
+     * @param message to display
      * @param {function} [callback] - callback to invoke upon showing async
      */
     public modalError(message: string, callback?: () => void): void {
@@ -200,7 +200,7 @@ export class GUI extends BaseElement {
 
     /**
      * Checks if the GUI is fullscreen
-     * @returns {boolean} true if fullscreen, false otherwise
+     * @returns true if fullscreen, false otherwise
      */
     public isFullscreen(): boolean {
         return screenfull && screenfull.isFullscreen;
@@ -224,8 +224,8 @@ export class GUI extends BaseElement {
 
     /**
      * Resizes the visualization's wrapper
-     * @param {number} width the width taken away from the info pane
-     * @param {number} height the height taken away from the info pane
+     * @param width the width taken away from the info pane
+     * @param height the height taken away from the info pane
      */
     private resizeVisualizer(width: number, height: number): void {
         let newWidth = Number(this.element.width());

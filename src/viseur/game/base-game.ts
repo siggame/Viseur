@@ -1,3 +1,4 @@
+import { IBasePlayer } from "cadre-ts-utils/cadre";
 import { Chance } from "chance";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
@@ -7,7 +8,7 @@ import * as Settings from "src/viseur/settings";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
-import { IBasePlayer, IBasePlayerState } from "./base-player";
+import { IBasePlayerInstance } from "./base-player";
 import { GameOverScreen } from "./game-over-screen";
 import { IDeltaReason, IGamelog } from "./gamelog";
 import { IBaseGameNamespace, IBaseGameObjectClasses, IBaseGameObjectState,
@@ -47,7 +48,7 @@ export class BaseGame extends StateObject {
     public readonly humanPlayer: BaseHumanPlayer | undefined;
 
     /** The pane that displays information about this game */
-    public pane: BasePane<IBaseGameState, IBasePlayerState> | undefined;
+    public pane: BasePane<IBaseGameState, IBasePlayerInstance> | undefined;
 
     /** The renderer that provides utility rendering functions (as well as heavy lifting for screen changes) */
     public readonly renderer: Renderer;
@@ -88,6 +89,7 @@ export class BaseGame extends StateObject {
     public get name(): string {
         // because inheriting games will override their static game name,
         // we'll get the top level class constructor's static game name here
+        // tslint:disable-next-line:no-any no-unsafe-any
         return (this.constructor as any).gameName;
     }
 
@@ -189,7 +191,7 @@ export class BaseGame extends StateObject {
 
         /** The current state's game objects to use to initialize new game objects we find */
         const gameObjects = (state.game && state.game.gameObjects)
-                         || (state.nextGame && state.nextGame.gameObjects)!;
+                         || (state.nextGame && state.nextGame.gameObjects);
 
         // initialize new game objects we have not seen yet
         const newGameObjects = new Set<BaseGameObject>();
@@ -246,8 +248,8 @@ export class BaseGame extends StateObject {
         this.stateUpdated(
             current || next as IState,
             next || current as IState,
-            this.currentReason || this.nextReason!,
-            this.nextReason || this.currentReason!,
+            this.currentReason || this.nextReason,
+            this.nextReason || this.currentReason,
         );
 
         // update all the game objects now (including those we may have just created)
@@ -266,10 +268,10 @@ export class BaseGame extends StateObject {
 
             if ((current && current.gameObjects.hasOwnProperty(id)) || (next && next.gameObjects.hasOwnProperty(id))) {
                 gameObject.stateUpdated(
-                    gameObject.current || gameObject.next!,
-                    gameObject.next || gameObject.current!,
-                    this.currentReason || this.nextReason!,
-                    this.nextReason || this.currentReason!,
+                    gameObject.current || gameObject.next,
+                    gameObject.next || gameObject.current,
+                    this.currentReason || this.nextReason,
+                    this.nextReason || this.currentReason,
                 );
             }
         }
@@ -289,8 +291,8 @@ export class BaseGame extends StateObject {
 
     /**
      * Called at approx 60/sec to render the game, and all the game objects within it
-     * @param {number} index the index of the state to render
-     * @param {number} dt - the tweening between the index state and the next to render
+     * @param index the index of the state to render
+     * @param dt - the tweening between the index state and the next to render
      */
     public render(index: number, dt: number): void {
         if (!this.started) {
@@ -336,6 +338,14 @@ export class BaseGame extends StateObject {
         }
     }
 
+    public getCurrentMostState(): NonNullable<this["current"]> {
+        if (!this.current || !this.next) {
+            throw new Error("No game state to get!");
+        }
+
+        return (this.current || this.next) as NonNullable<this["current"]>;
+    }
+
     /**
      * Called once to initialize any PIXI objects needed to render the background
      * @param state the initial state of the game
@@ -346,12 +356,12 @@ export class BaseGame extends StateObject {
 
     /**
      * renders the static background, called approx 1/60 sec
-     * @param {Number} dt a floating point number [0, 1) which represents how
+     * @param dt a floating point number [0, 1) which represents how
      *                    far into the next turn that current turn we are
      *                    rendering is at
-     * @param {Object} current the current (most) game state, will be this.next
+     * @param current the current (most) game state, will be this.next
      *                         if this.current is null
-     * @param {Object} next the next (most) game state, will be this.current if
+     * @param next the next (most) game state, will be this.current if
      *                      this.next is null
      * @param reason the current reason for the current delta
      * @param nextReason the reason for the next delta (why we are transitioning dt)
@@ -476,8 +486,8 @@ export class BaseGame extends StateObject {
 
     /**
      * find game object references, and hooks them up in an object
-     * @param {Object} obj - object to search through and clone, hooking up game object references
-     * @returns {Object} a new object, with no game object references
+     * @param obj - object to search through and clone, hooking up game object references
+     * @returns a new object, with no game object references
      */
     private hookupGameObjectReferences(obj: any): any {
         if (typeof(obj) !== "object" || !obj) {
@@ -498,9 +508,9 @@ export class BaseGame extends StateObject {
 
     /**
      * initializes a new game object with the given id
-     * @param {string} id - the id of the game object to initialize
-     * @param {Object} state - the initial state of the new game object
-     * @returns {BaseGameObject} the newly created game object
+     * @param id - the id of the game object to initialize
+     * @param state - the initial state of the new game object
+     * @returns The newly created game object.
      */
     private createGameObject(id: string, state: IBaseGameObjectState): BaseGameObject {
         const classConstructor = this.gameObjectClasses[state.gameObjectName];

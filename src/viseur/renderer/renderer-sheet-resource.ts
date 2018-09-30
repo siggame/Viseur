@@ -22,23 +22,41 @@ export class RendererSheetResource extends BaseRendererResource {
     /** The mapped textures for each image in the sheet, if this resource is a sheet */
     private readonly sheetTextures: PIXI.Texture[] = [];
 
-    constructor(path: string, sheet: ISheetData, options?: IBaseRendererResourceOptions) {
+    /**
+     * Creates a sprite sheet for the renderer given options.
+     *
+     * @param path - The path to the resource.
+     * @param sheet - The data about the sprite sheet.
+     * @param options - Options about how to render sprites in the sheet.
+     */
+    constructor(
+        path: string,
+        sheet: ISheetData,
+        options?: IBaseRendererResourceOptions,
+    ) {
         super(path, options);
         this.sheet = sheet;
     }
 
     /**
-     * Creates and initializes a sprite for this resource
-     * @param {PIXI.Container} parentContainer the parent container for the sprite
-     * @param index the index of the sheet
-     * @param options the optional options to set at init
-     * @returns {PIXI.Sprite} a sprite with the given texture key, added to the parentContainer
+     * Creates and initializes a sprite for this resource.
+     *
+     * @param parentContainer - The parent container for the sprite.
+     * @param index - The index of the sheet.
+     * @param options - The optional options to set at init.
+     * @returns A sprite with the given texture key, added to the
+     * parentContainer.
      */
-    public newSprite(parentContainer: PIXI.Container, index: number, options?: IPixiSpriteOptions): PIXI.Sprite {
+    public newSprite(
+        parentContainer: PIXI.Container,
+        index: number,
+        options?: IPixiSpriteOptions,
+    ): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.sheetTextures[index]);
         sprite.setParent(parentContainer);
 
-        // now scale the sprite, as it defaults to the dimensions of it's texture's pixel size
+        // Now scale the sprite, as it defaults to the dimensions of its
+        // texture's pixel size.
         this.resetScale(sprite);
 
         if (options) {
@@ -65,9 +83,13 @@ export class RendererSheetResource extends BaseRendererResource {
             throw new Error(`Resource ${this.path} lost its sheet somehow`);
         }
 
+        if (!this.texture) {
+            throw new Error(`Resource ${this.path} not actually loaded`);
+        }
+
         // texture is now set as it's loaded
-        const width = this.texture!.width / sheet.width;
-        const height = this.texture!.height / sheet.height;
+        const width = this.texture.width / sheet.width;
+        const height = this.texture.height / sheet.height;
 
         // assume x first for the major axis, but they can manually override with the axis: "y" sheet setting
         const yFirst = (sheet.axis === "y");
@@ -88,7 +110,7 @@ export class RendererSheetResource extends BaseRendererResource {
             }
 
             this.sheetTextures.push(new PIXI.Texture(
-                this.texture!.baseTexture,
+                this.texture.baseTexture,
                 new PIXI.Rectangle(x * width, y * height, width, height),
             ));
         }

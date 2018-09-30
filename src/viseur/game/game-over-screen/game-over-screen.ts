@@ -20,11 +20,11 @@ export class GameOverScreen extends BaseElement {
     private built: boolean = false;
 
     /** The items containing winners and losers */
-    private readonly items: Array<JQuery<HTMLElement>> = [];
+    private readonly items: Array<JQuery> = [];
 
     /**
      * Initialized the game over screen
-     * @param {object} args - BaseElement init args
+     * @param args - BaseElement init args
      */
     constructor(args: IBaseElementArgs & {
         /** The game this will be a game over screen for */

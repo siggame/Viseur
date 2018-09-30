@@ -1,3 +1,4 @@
+import { IBaseGameObject } from "cadre-ts-utils/cadre";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";
@@ -5,8 +6,6 @@ import { ease } from "src/utils/";
 import { Viseur } from "src/viseur";
 import { Renderer } from "src/viseur/renderer";
 import { BaseGame } from "./base-game";
-import { IDeltaReason } from "./gamelog";
-import { IBaseGameObjectState } from "./interfaces";
 import { StateObject } from "./state-object";
 
 /** the base class all GameObjects inherit from */
@@ -28,10 +27,10 @@ export class BaseGameObject extends StateObject {
     public readonly renderer: Renderer;
 
     /** The current state (e.g. at delta time = 0) */
-    public current: IBaseGameObjectState | undefined;
+    public current: IBaseGameObject | undefined;
 
     /** The next state (e.g. at delta time = 1) */
-    public next: IBaseGameObjectState | undefined;
+    public next: IBaseGameObject | undefined;
 
     /** The Viseur instance that controls this game object */
     protected readonly viseur: Viseur;
@@ -44,14 +43,14 @@ export class BaseGameObject extends StateObject {
      * @param initialState Fully merged delta state for this object's first existence
      * @param viseur The Viseur instance that controls this game object
      */
-    constructor(initialState: IBaseGameObjectState, viseur: Viseur) {
+    constructor(initialState: IBaseGameObject, viseur: Viseur) {
         super();
 
         this.id = initialState.id;
         this.gameObjectName = initialState.gameObjectName;
 
         this.viseur = viseur;
-        this.game = viseur.game!;
+        this.game = viseur.game as BaseGame;
         this.renderer = this.game.renderer;
 
         if (this.shouldRender) {
@@ -92,26 +91,32 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * Runs some command on the server, on behalf of this object
-     * @param {string} run - the function to run
-     * @param {Object} args - key value pairs for the function to run
-     * @param {Function} callback - callback to invoke once run, is passed the return value
+     * Runs some command on the server, on behalf of this object.
+     *
+     * @param run - The function to run.
+     * @param args - Key/value pairs for the function to run.
+     * @param callback - An optional callback to invoke once run, is passed
+     * the return value.
      */
-    public runOnServer(run: string, args: object, callback?: (returned: any) => void): void {
+    public runOnServer(
+        run: string,
+        args: object,
+        callback?: (returned: unknown) => void,
+    ): void {
         this.viseur.runOnServer(this.id, run, args, callback);
     }
 
     /**
      * should be invoked after the game object's current and next state, prior to rendering
-     * @override
-     * @param {Object} current - the current state
-     * @param {Object} next - the next state
-     * @param {DeltaReason} reason - the reason for the current delta
-     * @param {DeltaReason} nextReason - the reason for the next delta
+     *
+     * @param current - the current state
+     * @param next - the next state
+     * @param reason - the reason for the current delta
+     * @param nextReason - the reason for the next delta
      */
     public update(
-        current?: IBaseGameObjectState,
-        next?: IBaseGameObjectState,
+        current?: IBaseGameObject,
+        next?: IBaseGameObject,
         reason?: IDeltaReason,
         nextReason?: IDeltaReason,
     ): void {
@@ -120,18 +125,21 @@ export class BaseGameObject extends StateObject {
 
     /**
      * Renders the GameObject, this is the main method that developers will
-     * override in the inheriting class to render them via game logic
-     * @param {Number} dt a floating point number [0, 1) which represents how
-     *                    far into the next turn that current turn we are rendering is at
-     * @param {GameObjectState} current the current (most) game state, will be this.next if this.current is null
-     * @param {GameObjectState} next the next (most) game state, will be this.current if this.next is null
-     * @param {DeltaReason} reason the reason for the current delta
-     * @param {DeltaReason} nextReason the reason for the next delta
+     * override in the inheriting class to render them via game logic.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is null.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is null.
+     * @param reason - The reason for the current delta.
+     * @param nextReason - The reason for the next delta.
      */
     public render(
         dt: number,
-        current: IBaseGameObjectState,
-        next: IBaseGameObjectState,
+        current: IBaseGameObject,
+        next: IBaseGameObject,
         reason: IDeltaReason,
         nextReason: IDeltaReason,
     ): void {
@@ -148,15 +156,19 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * Invoked when the state updates. Intended to be overridden by subclass(es)
-     * @param {Object} current the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next the next (most) game state, will be this.current if this.next is null
-     * @param {DeltaReason} reason the reason for the current delta
-     * @param {DeltaReason} nextReason the reason for the next delta
+     * Invoked when the state updates. Intended to be overridden by
+     * subclass(es).
+     *
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is null.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is null.
+     * @param reason - The reason for the current delta.
+     * @param nextReason - The reason for the next delta.
      */
     public stateUpdated(
-        current: IBaseGameObjectState,
-        next: IBaseGameObjectState,
+        current: IBaseGameObject,
+        next: IBaseGameObject,
         reason: IDeltaReason,
         nextReason: IDeltaReason,
     ): void {
@@ -164,16 +176,19 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * gets the unique context menu items, intended to be overridden by sub classes
-     * @returns Any array of items valid for a ContextMenu
+     * Gets the unique context menu items, intended to be overridden by
+     * subclasses.
+     *
+     * @returns An array of items valid for a ContextMenu.
      */
     protected getContextMenu(): MenuItems {
         return [];
     }
 
     /**
-     * Invoked when this game object's container is clicked
-     * @param event the click event
+     * Invoked when this game object's container is clicked.
+     *
+     * @param event - The click event.
      */
     private clicked(event: PIXI.interaction.InteractionEvent): void {
         const menu = this.getContextMenu();
@@ -186,28 +201,36 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * Invoked when this game object's container is right clicked, to pull up its context menu
-     * @param event the pixi event from the right click
+     * Invoked when this game object's container is right clicked, to pull up
+     * its context menu.
+     *
+     * @param event - The pixi event from the right click.
      */
     private rightClicked(event: PIXI.interaction.InteractionEvent): void {
         const scale = this.viseur.settings.resolutionScale.get();
-        this.showContextMenu(event.data.global.x / scale, event.data.global.y / scale);
+        this.showContextMenu(
+            event.data.global.x / scale,
+            event.data.global.y / scale,
+        );
     }
 
     // Context Menus \\
 
     /**
-     * Displays a context menu (right click menu) over this game object
-     * @param {number} x the x coordinate where it should be shown (in pixels)
-     * @param {number} y the y coordinate where it should be shown (in pixels)
+     * Displays a context menu (right click menu) over this game object.
+     *
+     * @param x - The x coordinate where it should be shown (in pixels).
+     * @param y - The y coordinate where it should be shown (in pixels).
      */
     private showContextMenu(x: number, y: number): void {
         this.renderer.showContextMenu(this.getFullContextMenu(), x, y);
     }
 
     /**
-     * Gets the full context menu (getContextMenu + getBottomContextMenu) and removes unneeded separators
-     * @returns Any array of items valid for a ContextMenu
+     * Gets the full context menu (getContextMenu + getBottomContextMenu) and
+     * removes unneeded separators.
+     *
+     * @returns Any array of items valid for a ContextMenu.
      */
     private getFullContextMenu(): MenuItems {
         const menu = this.getContextMenu().concat(this.getBottomContextMenu());
@@ -227,8 +250,9 @@ export class BaseGameObject extends StateObject {
 
     /**
      * Gets the bottom part of the context menu to be automatically appended to
-     * the regular _getContextMenu part, should be a separator + Inspect
-     * @returns Any array of items valid for a ContextMenu
+     * the regular _getContextMenu part, should be a separator + Inspect.
+     *
+     * @returns Any array of items valid for a ContextMenu.
      */
     private getBottomContextMenu(): MenuItems {
         return [
@@ -246,14 +270,21 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * Render the most recently logged text above this game object
-     * @param dt the delta time
-     * @param current the current most state
-     * @param next the next state
+     * Render the most recently logged text above this game object.
+     *
+     * @param dt - The delta time.
+     * @param current - The current most state.
+     * @param next - The next state.
      */
-    private renderLogs(dt: number, current: IBaseGameObjectState, next: IBaseGameObjectState): void {
+    private renderLogs(
+        dt: number,
+        current: IBaseGameObject,
+        next: IBaseGameObject,
+    ): void {
         if (this.container && next && next.logs) {
-            if (next.logs.length > 0 && this.viseur.settings.showLoggedText.get()) {
+            if (next.logs.length > 0
+                && this.viseur.settings.showLoggedText.get()
+            ) {
                 let alpha = 1;
                 if (current.logs.length < next.logs.length) {
                     alpha = ease(dt, "cubicInOut"); // fade it in
@@ -262,9 +293,12 @@ export class BaseGameObject extends StateObject {
                 const str = next.logs[next.logs.length - 1];
 
                 if (!this.loggedPixiText) {
-                    this.loggedPixiText = this.renderer.newPixiText(str, this.container, {
-                        fill: Color("white").hex(),
-                    }, 0.25);
+                    this.loggedPixiText = this.renderer.newPixiText(
+                        str,
+                        this.container,
+                        { fill: Color("white").hex() },
+                        0.25,
+                    );
                     this.loggedPixiText.anchor.set(0.5);
                     this.loggedPixiText.x = 0.5;
                 }

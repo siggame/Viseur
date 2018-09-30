@@ -293,9 +293,9 @@ export class Piece extends GameObject {
      *   This assumes that the origin for a chess board is the bottom left at a1,
      *   and rendering is done at 0,0 being in the top left.
      *
-     * @param {string} file the file position
-     * @param {number} rank the rank position
-     * @returns {Object} and object with an x, y coordinate between [0, 7] for both
+     * @param file the file position
+     * @param rank the rank position
+     * @returns and object with an x, y coordinate between [0, 7] for both
      */
     private transformFileRank(file: string, rank: number): IPoint {
         return {

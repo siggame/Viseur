@@ -62,7 +62,7 @@ export class TimeManager {
 
     /**
      * Returns the current time. Calling this does not effect the timer.
-     * @returns {Object} contains the current `index` and `dt`.
+     * @returns contains the current `index` and `dt`.
      */
     public getCurrentTime(): ICurrentTime {
         return {
@@ -73,8 +73,8 @@ export class TimeManager {
 
     /**
      * Sets the current time to some index and dt
-     * @param {number} index the current index, must be between [0, deltas.length]
-     * @param {number} [dt=0] the "tweening" between index and index + 1, must be between [0, 1)
+     * @param index the current index, must be between [0, deltas.length]
+     * @param [dt=0] the "tweening" between index and index + 1, must be between [0, 1)
      */
     public setTime(index: number, dt?: number): void {
         const oldIndex = this.currentIndex;
@@ -89,8 +89,8 @@ export class TimeManager {
     /**
      * force plays the next animation
      *
-     * @param {number} [index] the index to play at
-     * @param {number} [dt] the dt to play at
+     * @param [index] the index to play at
+     * @param [dt] the dt to play at
      */
     public play(index?: number, dt?: number): void {
         if (index !== undefined) {
@@ -104,7 +104,7 @@ export class TimeManager {
 
     /**
      * Invoked when Viseur is ready
-     * @param {Object} gamelog - the gamelog, may be streaming
+     * @param gamelog - the gamelog, may be streaming
      */
     private ready(gamelog: IGamelog): void {
         this.gamelog = gamelog;
@@ -133,8 +133,8 @@ export class TimeManager {
             }
         });
 
-        this.viseur.events.gamelogUpdated.on(() => {
-            if (this.currentIndex < this.gamelog!.deltas.length) {
+        this.viseur.events.gamelogUpdated.on((updated) => {
+            if (this.currentIndex < updated.deltas.length) {
                 this.play();
             }
         });
@@ -145,7 +145,8 @@ export class TimeManager {
      */
     private playPause(): void {
         if (!this.timer.isTicking()
-          && this.currentIndex === this.gamelog!.deltas.length - 1
+          && this.gamelog
+          && this.currentIndex === this.gamelog.deltas.length - 1
           && this.timer.getProgress() > 0.99
         ) { // then wrap around to the start
             this.setTime(0, 0);
@@ -160,13 +161,14 @@ export class TimeManager {
 
     /**
      * Invoked when the timer ticks, advancing the index by 1, and resetting dt to 0
-     * @param {boolean} [start] - true if the tick is from the start of rendering, e.g. Viseur is ready, false otherwise
+     * @param [start] - true if the tick is from the start of rendering, e.g. Viseur is ready, false otherwise
      */
     private ticked(start?: boolean): void {
         this.currentIndex += (start ? 0 : 1);
 
+        const gamelog = this.gamelog as IGamelog; // must exist to tick
         // check if we need to pause and go back a very small amount
-        const backPause = (this.gamelog!.streaming && this.currentIndex === this.gamelog!.deltas.length - 1);
+        const backPause = (gamelog.streaming && this.currentIndex === gamelog.deltas.length - 1);
 
         if (!backPause) {
             this.events.newIndex.emit(this.currentIndex);
@@ -174,11 +176,12 @@ export class TimeManager {
         else {
             // stop, we hit the end
             this.pause(this.currentIndex - 1, 0.9999);
+
             return;
         }
 
         if (!start) {
-            if (this.currentIndex < this.gamelog!.deltas.length) {
+            if (this.currentIndex < gamelog.deltas.length) {
                 this.timer.restart();
             }
             else {
@@ -214,8 +217,8 @@ export class TimeManager {
 
     /**
      * Pauses the timer. Doe not call to pause as in a play/pause
-     * @param {number} [index] the index to pause the time to
-     * @param {number} [dt] the dt to pause the time to
+     * @param [index] the index to pause the time to
+     * @param [dt] the dt to pause the time to
      */
     private pause(index?: number, dt?: number): void {
         this.timer.pause();

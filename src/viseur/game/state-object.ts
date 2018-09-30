@@ -17,8 +17,8 @@ export class StateObject {
     /**
      * Update this state object's current and next state, should call prior to
      * rendering
-     * @param {Object} current - the current state
-     * @param {Object} next - the next state
+     * @param current - the current state
+     * @param next - the next state
      * @param {DeltaReason} reason - the reason for the current delta
      * @param {DeltaReason} nextReason - the reason for the next delta
      */
@@ -35,8 +35,8 @@ export class StateObject {
 
     /**
      * Invoked when the state updates. Intended to be overridden by subclass(es)
-     * @param {Object} current the current (most) game state, will be this.next if this.current is null
-     * @param {Object} next the next (most) game state, will be this.current if this.next is null
+     * @param current the current (most) game state, will be this.next if this.current is null
+     * @param next the next (most) game state, will be this.current if this.next is null
      * @param {DeltaReason} reason the reason for the current delta
      * @param {DeltaReason} nextReason the reason for the next delta
      */

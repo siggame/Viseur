@@ -8,11 +8,14 @@ import { BaseGame } from "./game/base-game";
 import { IDelta, IDeltaReason, IGamelog } from "./game/gamelog";
 import { IBaseGameNamespace, IBaseGameState } from "./game/interfaces";
 import { GUI } from "./gui";
-import { IJoueurConnectionArgs, Joueur, TournamentClient } from "./joueur";
+import { IJoueurConnectionArgs, ILobbiedData, Joueur, TournamentClient } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
-import { ViseurSettings } from "./settings";
+import { BaseSetting, ViseurSettings } from "./settings";
 import { TimeManager } from "./time-manager";
+
+/** The possible types a parsed query string can result in values from. */
+type QueryStringTypes = undefined | null | string | string[];
 
 /** A game state that is used to transition a dt between the two states/reasons */
 export interface IViseurGameState {
@@ -88,7 +91,7 @@ export class Viseur {
 
     /** Parameters parsed from the URL parameters */
     private urlParameters!: {
-        [key: string]: undefined | null | string | string[],
+        [key: string]: QueryStringTypes;
     }; // set in constructor, which calls parseURL
 
     /** The gamelog parser */
@@ -154,20 +157,22 @@ export class Viseur {
     }
 
     /**
-     * Returns the current state of the game
-     * @returns {Object} the current state, which is a custom object containing
-     *                   the current `game` state and the `nextGame` state.
+     * Returns the current state of the game.
+     *
+     * @returns The current state, which is a custom object containing
+     * the current `game` state and the `nextGame` state.
      */
     public getCurrentState(): IViseurGameState {
         return this.currentState;
     }
 
     /**
-     * Connects to a game server to spectate some game
-     * @param {string} server - the server is running on (without port)
-     * @param {number} port - the port the server is running on
-     * @param {string} gameName - name of the game to spectate
-     * @param session the session to spectate
+     * Connects to a game server to spectate some game.
+     *
+     * @param server - The server is running on (without port).
+     * @param port - The port the server is running on.
+     * @param gameName - The name of the game to spectate.
+     * @param session - The session to spectate.
      */
     public spectate(server: string, port: number, gameName: string, session: string): void {
         this.gui.modalMessage("Spectating game...");
@@ -177,11 +182,15 @@ export class Viseur {
 
     /**
      * Starts up "arena" mode, which grabs gamelogs from a url, then plays, it,
-     * then repeats
-     * @param {String} url the url to start grabbing arena gamelog urls from
-     * @param {boolean} presentationMode true if should auto fullscreen, false otherwise
+     * then repeats.
+     *
+     * @param url - The url to start grabbing arena gamelog urls from.
+     * @param presentationMode true if should auto fullscreen, false otherwise.
      */
-    public startArenaMode(url: string, presentationMode: boolean = false): void {
+    public startArenaMode(
+        url: string,
+        presentationMode: boolean = false,
+    ): void {
         if (validateURL(url)) {
             this.urlParameters.arena = url;
 
@@ -191,7 +200,8 @@ export class Viseur {
                 this.urlParameters.presentation = null;
             }
             else {
-                delete this.urlParameters.presentation; // remove the key, meaning false
+                // remove the key, meaning false
+                delete this.urlParameters.presentation;
             }
 
             // this refreshes the page, as we want
@@ -213,25 +223,29 @@ export class Viseur {
     }
 
     /**
-     * Checks if there is currently a human playing
-     * @returns {boolean} true if there is a human player, false otherwise (including spectator mode)
+     * Checks if there is currently a human playing.
+     *
+     * @returns true if there is a human player, false otherwise
+     * (including spectator mode).
      */
     public hasHumanPlaying(): boolean {
         return Boolean(this.game && this.game.humanPlayer);
     }
 
     /**
-     * Runs some function the server for a game object
-     * @param {string} callerID - the id of the caller
-     * @param {string} functionName - the function to run
-     * @param {Object} args - key value pairs for the function to run
-     * @param {Function} callback - callback to invoke once run, is passed the return value
+     * Runs some function the server for a game object.
+     *
+     * @param callerID - The id of the caller.
+     * @param functionName - The name function to run (as a string).
+     * @param args - An object of key/value pairs for the function to run.
+     * @param callback - An optional callback to invoke once run, is passed the
+     * return value.
      */
     public runOnServer(
         callerID: string,
         functionName: string,
         args: UnknownObject,
-        callback?: (returned: any) => void,
+        callback?: (returned: unknown) => void,
     ): void {
         if (!this.joueur) {
             throw new Error("No game client to run game logic for.");
@@ -245,12 +259,19 @@ export class Viseur {
     }
 
     /**
-     * Connects to a tournament server to wait for play data to later connect as a human client
-     * @param {string} server the server tournament server is running on (without port)
-     * @param {number} port the port the server is running on
-     * @param {string} playerName the name of the player in the tournament
+     * Connects to a tournament server to wait for play data to later connect
+     * as a human client.
+     *
+     * @param server - The server tournament server is running on
+     * (without port).
+     * @param port - The port the server is running on.
+     * @param playerName - The name of the player in the tournament.
      */
-    public connectToTournament(server: string, port: number, playerName: string): void {
+    public connectToTournament(
+        server: string,
+        port: number,
+        playerName: string,
+    ): void {
         this.doubleLog("Connecting to tournament server...");
 
         this.tournamentClient = new TournamentClient(this);
@@ -264,23 +285,29 @@ export class Viseur {
         });
 
         this.tournamentClient.events.closed.on(() => {
-            this.events.connectionMessage.emit("Connected to tournament server closed.");
+            this.events.connectionMessage.emit(
+                "Connected to tournament server closed.",
+            );
         });
 
         this.tournamentClient.events.playing.on(() => {
-            this.events.connectionMessage.emit(`Now playing ${this.game && this.game.name}`);
+            this.events.connectionMessage.emit(
+                `Now playing ${this.game && this.game.name}`,
+            );
         });
 
         this.tournamentClient.events.messaged.on((message) => {
-            this.events.connectionMessage.emit(`Message from tournament server: '${message}'`);
+            this.events.connectionMessage.emit(
+                `Message from tournament server: '${message}'`,
+            );
         });
 
         this.tournamentClient.connect(server, port, playerName);
     }
 
     /**
-     * Handle an uncaught error, if this gets hit something BAD happened
-     * @param {Error} error - the uncaught error
+     * Handles an uncaught error, if this gets hit something BAD happened.
+     * @param error - The uncaught error.
      */
     public handleError(error: Error): void {
         if (this.gui) {
@@ -289,8 +316,9 @@ export class Viseur {
     }
 
     /**
-     * Does an ajax call to load a remote gamelog at some url
-     * @param {string} url a url that will respond with the gamelog to load
+     * Does an ajax call to load a remote gamelog at some url.
+     *
+     * @param url - A url that will respond with the gamelog to load.
      */
     public loadRemoteGamelog(url: string): void {
         this.gui.modalMessage("Loading remote gamelog");
@@ -311,18 +339,22 @@ export class Viseur {
     }
 
     /**
-     * Parses a json string to a gamelog
-     * @param {string} jsonGamelog the json formatted string that is the gamelog
+     * Parses a json string to a gamelog.
+     *
+     * @param jsonGamelog - The json formatted string that is the gamelog.
      */
     public parseGamelog(jsonGamelog: string): void {
         this.unparsedGamelog = jsonGamelog;
 
         let parsed: IGamelog;
         try {
-            parsed = JSON.parse(jsonGamelog);
+            parsed = JSON.parse(jsonGamelog) as IGamelog;
         }
         catch (err) {
-            this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
+            this.gui.modalError(
+                "Error parsing gamelog - Does not appear to be valid JSON",
+            );
+
             return;
         }
 
@@ -330,19 +362,25 @@ export class Viseur {
     }
 
     /**
-     * parses URL parameters and does whatever they do, ignores unknown url parameters.
+     * Parses URL parameters and does whatever they do, ignores unknown url
+     * parameters.
      */
     private parseURL(): void {
-        this.urlParameters = queryString.parse(location.search);
+        this.urlParameters = queryString.parse(location.search) as {
+            [key: string]: QueryStringTypes;
+        };
 
         // set Settings via url parameters if they are valid
         for (const key of Object.keys(this.urlParameters)) {
-            const setting = (this.settings as any)[key];
+            const setting = (this.settings as {
+                [key: string]: BaseSetting | undefined;
+            })[key];
+
             if (setting) {
                 const value = this.urlParameters[key];
                 if (value !== undefined) {
                     setting.set(Array.isArray(value)
-                        ? value.map((v) => unStringify(v))
+                        ? value.map(unStringify)
                         : unStringify(value),
                     );
                 }
@@ -395,7 +433,7 @@ export class Viseur {
 
     /**
      * Called once a gamelog is loaded
-     * @param {Object} gamelog the deserialized JSON object that is the FULL gamelog
+     * @param gamelog the deserialized JSON object that is the FULL gamelog
      */
     private gamelogLoaded(gamelog: IGamelog): void {
         this.rawGamelog = gamelog;
@@ -412,6 +450,7 @@ export class Viseur {
             index: -1,
             currentState: undefined,
             // clone the current game state into an empty object
+            // tslint:disable-next-line:no-any
             nextState: this.parser.mergeDelta({} as any, delta.game),
         };
 
@@ -423,8 +462,8 @@ export class Viseur {
     /**
      * Initializes the Game object for the specified gameName.
      * The class created will be the one in src/games/{gameName}/game.js
-     * @param {string} gameName - name of the game to initialize. Must be a valid game name, or throws an error
-     * @param {string} [playerID] - id of the player if this game has a human player
+     * @param gameName - name of the game to initialize. Must be a valid game name, or throws an error
+     * @param [playerID] - id of the player if this game has a human player
      */
     private createGame(gameName: string, playerID?: string): void {
         const gameNamespace = this.games[gameName];
@@ -453,7 +492,7 @@ export class Viseur {
 
     /**
      * Invokes updateCurrentState asynchronously if it may take a long time, so the gui can update
-     * @param {number} index - the new states index, must be between [0, deltas.length]
+     * @param index - the new states index, must be between [0, deltas.length]
      */
     private updateCurrentStateAsync(index: number): void {
         if (Math.abs(index - this.mergedDelta.index) > 25) {
@@ -472,7 +511,7 @@ export class Viseur {
      * Brings the current state & next state to the one at the specified index.
      * If the current and passed in indexes are far apart this operation can
      * take a decent chunk of time...
-     * @param {number} index the new states index, must be between [0, deltas.length]
+     * @param index the new states index, must be between [0, deltas.length]
      */
     private updateCurrentState(index: number): void {
         if (!this.rawGamelog) {
@@ -491,7 +530,8 @@ export class Viseur {
         }
 
         const indexChanged = (index !== d.index);
-        d.currentState = (d.currentState || {}) as any;
+        // tslint:disable-next-line:no-any no-unsafe-any
+        d.currentState = (d.currentState || {} as any);
 
         // if increasing index...
         while (index > d.index) {
@@ -506,7 +546,7 @@ export class Viseur {
             }
 
             if (deltas[d.index]) {
-                d.currentState = this.parser.mergeDelta(d.currentState as any, deltas[d.index].game);
+                d.currentState = this.parser.mergeDelta(d.currentState as IBaseGameState, deltas[d.index].game);
             }
 
             if (d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
@@ -522,12 +562,12 @@ export class Viseur {
             const r2 = d.nextState && deltas[d.index + 1] && deltas[d.index + 1].reversed;
 
             if (r) {
-                d.currentState = this.parser.mergeDelta(d.currentState as any, r);
+                d.currentState = this.parser.mergeDelta(d.currentState as IBaseGameState, r);
             }
 
             if (r2) {
                 if (deltas[d.index + 1]) { // if there is a next state (not at the end)
-                    d.nextState = this.parser.mergeDelta(d.nextState as any, r2);
+                    d.nextState = this.parser.mergeDelta(d.nextState as IBaseGameState, r2);
                 }
             }
 
@@ -541,16 +581,25 @@ export class Viseur {
         }
     }
 
+    /**
+     * Invoked when we step 1 delta away from the old current.
+     *
+     * @param d - The current delta states.
+     */
     private updateStepped(d: IMergedDelta): void {
-        const deltas = this.rawGamelog!.deltas;
+        if (!this.rawGamelog) {
+            return;
+        }
+
+        const deltas = this.rawGamelog.deltas;
 
         const delta = deltas[d.index];
         const nextDelta = deltas[d.index + 1];
 
         this.currentState.game = d.currentState;
         this.currentState.nextGame = d.nextState;
-        this.currentState.reason = this.deltaToReason(delta) as any;
-        this.currentState.nextReason = this.deltaToReason(nextDelta) as any;
+        this.currentState.reason = this.deltaToReason(delta);
+        this.currentState.nextReason = this.deltaToReason(nextDelta);
 
         this.events.stateChangedStep.emit(this.currentState);
     }
@@ -558,14 +607,15 @@ export class Viseur {
     /**
      * Formats a delta to a simpler delta reason structure
      *
-     * @param {Object} delta - raw delta from the gamelog to format
-     * @returns {Object|null} the type of delta and it's data in one object, null if no delta
+     * @param delta - raw delta from the gamelog to format
+     * @returns the type of delta and it's data in one object, null if no delta
      */
-    private deltaToReason(delta: IReverseDelta): IReverseDelta | undefined {
+    private deltaToReason(delta: IReverseDelta): IDeltaReason | undefined {
         if (delta) {
-            return Object.assign({
+            return {
                 type: delta.type,
-            }, delta.data || {}) as any;
+                ...delta.data,
+            };
         }
 
         return undefined;
@@ -581,7 +631,7 @@ export class Viseur {
             // then we are ready to start
             this.gui.hideModal();
             this.events.ready.emit({
-                game: this.game!,
+                game: this.game as BaseGame,
                 gamelog: this.rawGamelog as IGamelog,
             });
 
@@ -596,7 +646,7 @@ export class Viseur {
 
     /**
      * Logs a string to the modal and connection tab
-     * @param {string} message the string to log
+     * @param message the string to log
      */
     private doubleLog(message: string): void {
         this.gui.modalMessage(message);
@@ -618,7 +668,7 @@ export class Viseur {
             this.events.connectionConnected.emit();
         });
 
-        let lobbiedData: any;
+        let lobbiedData: ILobbiedData | undefined;
         this.joueur.events.lobbied.on((data) => {
             lobbiedData = data;
             this.gui.modalMessage(`In lobby '${data.gameSession}' for '${data.gameName}'. Waiting for game to start.`);
@@ -627,6 +677,10 @@ export class Viseur {
         this.joueur.events.start.on(() => {
             if (!this.joueur) {
                 throw new Error("Joueur client destroyed before game started");
+            }
+
+            if (!lobbiedData) {
+                throw new Error("Game started before being lobbied!");
             }
 
             this.createGame(lobbiedData.gameName, this.joueur.getPlayerID());
@@ -647,7 +701,7 @@ export class Viseur {
                 this.gamelogLoaded(this.rawGamelog);
             }
 
-            this.events.gamelogUpdated.emit(this.rawGamelog as any);
+            this.events.gamelogUpdated.emit(this.rawGamelog as IGamelog);
         });
 
         this.joueur.events.over.on((data) => {
@@ -658,7 +712,7 @@ export class Viseur {
         });
 
         this.joueur.events.fatal.on((data) => {
-            this.gui.modalError("Fatal game server event: " + data.message);
+            this.gui.modalError(`Fatal game server event: ${data.message}`);
         });
 
         this.joueur.connect(args);

@@ -2,21 +2,57 @@ import * as $ from "jquery";
 
 export const transitionEvents = "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend";
 
-export function onceTransitionEnds(element: JQuery<HTMLElement>, callback: () => void): JQuery<HTMLElement> {
+/**
+ * Utility function to invoke a callback once CSS transitions end.
+ *
+ * @param element - The element to attach to.
+ * @param callback  - The callback to invoke.
+ * @returns The same element you passed, for method chaning.
+ */
+export function onceTransitionEnds<T extends JQuery>(
+    element: T,
+    callback: () => void,
+): T {
     return element.one(transitionEvents, callback);
 }
 
-export function onTransitionEnds(element: JQuery<HTMLElement>, callback: () => void): JQuery<HTMLElement> {
+/**
+ * Utility function to invoke a callback on CSS transitions ends.
+ *
+ * @param element - The element to attach to.
+ * @param callback  - The callback to invoke.
+ * @returns The same element you passed, for method chaning.
+ */
+export function onTransitionEnds<T extends JQuery>(
+    element: T,
+    callback: () => void,
+): T {
     return element.on(transitionEvents, callback);
 }
 
-export function offTransitionEnds(element: JQuery<HTMLElement>, callback: () => void): JQuery<HTMLElement> {
+/**
+ * Utility function to remove a callback for CSS transitions ends.
+ *
+ * @param element - The element to attach to.
+ * @param callback  - The callback to invoke.
+ * @returns The same element you passed, for method chaning.
+ */
+export function offTransitionEnds<T extends JQuery>(
+    element: T,
+    callback: () => void,
+): T {
     return element.off(transitionEvents, callback);
 }
 
-export function deepCopy(obj: any): any {
+/**
+ * JQuery's deep copy utility function.
+ *
+ * @param obj - The object to deep copy.
+ * @returns A **new** object, that is a deep copy of the passed in obj.
+ */
+export function deepCopy<T extends object>(obj: T): T {
     return jQuery.extend(true, {}, obj);
 }
 
-// for easy debugging
+// tslint:disable-next-line:no-any - for easy debugging
 (window as any).$ = $;

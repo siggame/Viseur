@@ -30,6 +30,13 @@ export interface IJoueurConnectionArgs {
     gameSettings?: string;
 }
 
+/** Data sent from the server once we are lobbied */
+export interface ILobbiedData {
+    gameSession: string;
+    gameName: string;
+    constants: IGameServerConstants;
+}
+
 /**
  * The websocket client to a game server.
  * Handles i/o with the game server, and mostly merges delta states from it.
@@ -45,7 +52,7 @@ export class Joueur {
         closed: new Event<{timedOut: boolean}>(),
 
         /** Emitted when we are lobbied by the game server */
-        lobbied: new Event<{gameSession: string, gameName: string, constants: IGameServerConstants}>(),
+        lobbied: new Event<ILobbiedData>(),
 
         /** Emitted when the game on the game server starts */
         start: new Event<{playerID: string}>(),
@@ -155,7 +162,7 @@ export class Joueur {
 
     /**
      * Checks if the Joueur has recorded that the game has started
-     * @returns {boolean} true if started, false otherwise
+     * @returns true if started, false otherwise
      */
     public hasStarted(): boolean {
         return this.started;
@@ -171,9 +178,9 @@ export class Joueur {
 
     /**
      * Runs some function the server for a game object
-     * @param {string} callerID the id of the caller
-     * @param {string} functionName the function to run
-     * @param {Object} args the key value pairs for the function to run
+     * @param callerID the id of the caller
+     * @param functionName the function to run
+     * @param args the key value pairs for the function to run
      */
     public run(callerID: string, functionName: string, args: UnknownObject): void {
         this.send("run", {
@@ -186,7 +193,7 @@ export class Joueur {
     /**
      * Invoked when we receive some data from the websocket
      *
-     * @param {Object} data - game server interchange formatted data
+     * @param data - game server interchange formatted data
      */
     private received(data: any): void {
         const eventName = (data.event as string).toLowerCase();
@@ -221,7 +228,7 @@ export class Joueur {
 
     /**
      * Invoked automatically to handle the 'over' events
-     * @param {Object} data the game over data
+     * @param data the game over data
      */
     private autoHandleOver(data: any): void {
         this.gamelog.streaming = false;
@@ -234,7 +241,7 @@ export class Joueur {
 
     /**
      * Invoked automatically to handle the 'over' events
-     * @param {Object} data the start data, such as playerID, gameName
+     * @param data the start data, such as playerID, gameName
      */
     private autoHandleStart(data: any): void {
         this.playerID = data.playerID;
@@ -244,7 +251,7 @@ export class Joueur {
 
     /**
      * Invoked automatically to handle the 'lobbied' events
-     * @param {Object} data - data about what game session this client is lobbied in, such as 'session' and 'gameName'
+     * @param data - data about what game session this client is lobbied in, such as 'session' and 'gameName'
      */
     private autoHandleLobbied(data: any): void {
         this.gamelog.gameName = data.gameName;
@@ -256,7 +263,7 @@ export class Joueur {
     /**
      * Invoked automatically to handle the 'delta' events
      *
-     * @param {Object} data - a meta delta (complete delta, with reasons why it occurred) about what changed in the game
+     * @param data - a meta delta (complete delta, with reasons why it occurred) about what changed in the game
      */
     private autoHandleDelta(data: any): void {
         this.gamelog.deltas.push(data);
@@ -266,7 +273,7 @@ export class Joueur {
     /**
      * Invoked to make the AI do some order
      *
-     * @param {Object} data the order details
+     * @param data the order details
      */
     private autoHandleOrder(data: any): void {
         const args = serializer.deserialize(data.args);
@@ -287,7 +294,7 @@ export class Joueur {
 
     /**
      * Invoked automatically to handle the 'fatal' events
-     * @param {Object} data the fatal information as to what happened
+     * @param data the fatal information as to what happened
      */
     private autoHandleFatal(data: any): void {
         if (data.timedOut) {
@@ -304,7 +311,7 @@ export class Joueur {
 
     /**
      * Sends some event to the game server game server connected to
-     * @param {string} eventName the name of the event, should be something game server expects
+     * @param eventName the name of the event, should be something game server expects
      * @param {*} [data] the additional data about the event
      */
     private send(eventName: string, data: ParsedJSON): void {

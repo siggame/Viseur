@@ -39,19 +39,19 @@ export class PlaybackPane extends BaseElement {
     private disabled: boolean = false;
 
     /** element displaying the current playback time */
-    private readonly playbackTimeCurrentElement: JQuery<HTMLElement>;
+    private readonly playbackTimeCurrentElement: JQuery;
 
     /** element displaying the max playback time */
-    private readonly playbackTimeMaxElement: JQuery<HTMLElement>;
+    private readonly playbackTimeMaxElement: JQuery;
 
     /** the top container for buttons */
-    private readonly topContainerElement: JQuery<HTMLElement>;
+    private readonly topContainerElement: JQuery;
 
     /** the bottom left container for buttons */
-    private readonly bottomLeftContainerElement: JQuery<HTMLElement>;
+    private readonly bottomLeftContainerElement: JQuery;
 
     /** the bottom right container for buttons */
-    private readonly bottomRightContainerElement: JQuery<HTMLElement>;
+    private readonly bottomRightContainerElement: JQuery;
 
     /** Handy collection of all our inputs */
     private readonly inputs: DisableableElement[];
@@ -243,7 +243,7 @@ export class PlaybackPane extends BaseElement {
      * Invoked when the gamelog is loaded
      *
      * @private
-     * @param {Object} gamelog - the gamelog that was loaded
+     * @param gamelog - the gamelog that was loaded
      */
     private viseurReady(gamelog: IGamelog): void {
         this.numberOfDeltas = gamelog.deltas.length;
@@ -267,7 +267,7 @@ export class PlaybackPane extends BaseElement {
 
     /**
      * Invoked when the gamelog's number of deltas is known or changes
-     * @param {Object} gamelog - the gamelog to get info from
+     * @param gamelog - the gamelog to get info from
      */
     private updatePlaybackSlider(gamelog: IGamelog): void {
         this.playbackSlider.setMax(gamelog.deltas.length - 1 / 1e10); // basically round down a bit
@@ -287,8 +287,8 @@ export class PlaybackPane extends BaseElement {
 
     /**
      * Invoked when the TimeManager's time changes, so we can update the slider and buttons
-     * @param {number} index - the index that was updated to
-     * @param {number} dt - the dt number [0, 1) that was updated
+     * @param index - the index that was updated to
+     * @param dt - the dt number [0, 1) that was updated
      */
     private timeUpdated(index: number, dt: number): void {
         this.playbackTimeCurrentElement.html(String(index));
@@ -315,7 +315,7 @@ export class PlaybackPane extends BaseElement {
 
     /**
      * Converts from the speed slider's value to the actual speed for the TimeManager
-     * @returns {number}  the TimeMangers speed based on the slider value x
+     * @returns  the TimeMangers speed based on the slider value x
      */
     private getSpeedFromSlider(): number {
         return Math.round(1000 * (1 - this.speedSlider.value));
@@ -338,7 +338,7 @@ export class PlaybackPane extends BaseElement {
 
     /**
      * Invoked when the playback-speed setting is changed, so we can update the slider
-     * @param {number} value - the new speed value set to the SettingManager,
+     * @param value - the new speed value set to the SettingManager,
      *                         we will update the speedSlider according to it
      */
     private updateSpeedSlider(): void {
@@ -368,7 +368,7 @@ export class PlaybackPane extends BaseElement {
     /**
      * Checks if the playback pane is enabled (playback can be manipulated).
      * It should be disabled during streaming gamelogs
-     * @returns {Boolean} true if enabled, false otherwise
+     * @returns true if enabled, false otherwise
      */
     private isEnabled(): boolean {
         return !this.disabled;

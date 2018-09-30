@@ -242,7 +242,7 @@ export class FileTab extends Tab {
 
     /**
      * Invoked when the gamelog type input changes values, so certain fields may need to be shown/hidden
-     * @param {string} newType the new type that it was changed to
+     * @param newType the new type that it was changed to
      */
     private onConnectTypeChange(newType: string): void {
         let port = Number(window.location.port);
@@ -357,7 +357,7 @@ export class FileTab extends Tab {
 
     /**
      * Logs some string to the connection log
-     * @param {string} message the string to log
+     * @param message the string to log
      */
     private log(message: string): void {
         this.connectionWrapper.removeClass("collapsed");
@@ -382,7 +382,7 @@ export class FileTab extends Tab {
 
     /**
      * Invoked when a remote gamelog url is submitted
-     * @param {string} url the url from the input box
+     * @param url the url from the input box
      */
     private remoteGamelogSubmitted(url: string): void {
         this.viseur.loadRemoteGamelog(url);

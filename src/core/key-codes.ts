@@ -1,5 +1,6 @@
 // these are keycodes, that code for keyCodes to human readable strings
 
+/** The key code number to the name of the key as a string. */
 export const CODE_TO_KEY_NAME = {
     8: "backspace",
     9: "tab",
@@ -122,11 +123,12 @@ export const CODE_TO_KEY_NAME = {
     325: "f12",
 };
 
+/** The name of a key to the key's code number. */
 export const KEY_NAME_TO_CODE: {[key: string]: number} = {};
 
-const code = CODE_TO_KEY_NAME as any;
+const code = CODE_TO_KEY_NAME as { [code: number]: string };
 for (const key of Object.keys(CODE_TO_KEY_NAME)) {
-    KEY_NAME_TO_CODE[code[key]] = Number(key);
+    KEY_NAME_TO_CODE[code[Number(key)]] = Number(key);
 }
 
 KEY_NAME_TO_CODE.space = KEY_NAME_TO_CODE[" "];

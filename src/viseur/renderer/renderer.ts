@@ -101,7 +101,7 @@ export class Renderer extends BaseElement {
     private readonly pixiApp: PIXI.Application;
 
     /** The actual canvas element pixi uses for rendering */
-    private readonly pixiCanvas: JQuery<HTMLElement>;
+    private readonly pixiCanvas: JQuery;
 
     /** Our custom context menu */
     private readonly contextMenu: ContextMenu;
@@ -111,12 +111,12 @@ export class Renderer extends BaseElement {
 
     /**
      * Initializes the Renderer, should be called by Viseur
-     * @param {Object} args initialization args
+     * @param args initialization args
      */
     constructor(args: IBaseElementArgs & {
         /** The default font family to use and override the styled default */
-        defaultFontFamily?: string,
-        viseur: Viseur,
+        defaultFontFamily?: string;
+        viseur: Viseur;
     }) {
         super(args);
 
@@ -183,8 +183,10 @@ export class Renderer extends BaseElement {
     }
 
     /**
-     * loads textures into PIXI
-     * @param {function} callback an optional callback function to invoke once all functions are loaded
+     * Loads textures into PIXI.
+     *
+     * @param callback - An optional callback function to invoke once all
+     * functions are loaded.
      */
     public loadTextures(callback?: () => void): void {
         const loader = PIXI.loader;
@@ -194,11 +196,14 @@ export class Renderer extends BaseElement {
         }
 
         // add the game's resources to our own
-        for (const key of Object.keys(this.viseur.game.resources)) {
-            const resource = this.viseur.game.resources[key];
+        for (const [key, resource] of Object.entries(this.viseur.game.resources)) {
+            if (!resource) {
+                throw new Error(`undefined key set for ${key}`);
+            }
 
             if (!resource.absolutePath) {
                 resource.absolutePath = require(
+                    // tslint:disable-next-line:no-require-imports non-literal-require
                     `src/games/${this.viseur.game.name.toLowerCase()}/resources/${resource.path}`,
                 );
             }
@@ -235,25 +240,29 @@ export class Renderer extends BaseElement {
 
     /**
      * Creates a new Pixi.Text object in the Renderer.
-     * This will use DPI scaling based on screen resolution for crisp text
-     * @param {string} text the text to initialize in the PIXI.Text
-     * @param {PIXI.Container} parent the the parent container for the new text
-     * @param {Object} [options] the options to send to the PIXI.Text initialization
-     * @param {number} [height=1] the desired height of the text, relative to the game's units (not px)
-     * @returns {PIXI.Text} the newly created text
+     * This will use DPI scaling based on screen resolution for crisp text.
+     *
+     * @param text - The text to initialize in the PIXI.Text.
+     * @param parent - The the parent container for the new text.
+     * @param [options] - The options to send to the PIXI.Text initialization.
+     * @param [height=1] - The desired height of the text, relative to the
+     * game's units (not px).
+     * @returns The newly created PIXI.Text.
      */
     public newPixiText(
         text: string,
         parent: PIXI.Container,
-        options?: PIXI.TextStyleOptions,
+        options?: Readonly<PIXI.TextStyleOptions>,
         height: number = 1,
     ): PIXI.Text {
-        options = Object.assign({
+        const opts: PIXI.TextStyleOptions = {
             fontFamily: this.defaultFontFamily,
-        }, options) || {};
+            ...options,
+        };
 
         const pxSize = (height * (screen.height / this.height));
-        options.fontSize = pxSize + "px"; // the max height in pixels that this text should be drawn at
+        // The max height in pixels that this text should be drawn at
+        opts.fontSize = `${pxSize}px`;
 
         const pixiText = new PIXI.Text(text, options);
 
@@ -265,9 +274,9 @@ export class Renderer extends BaseElement {
 
     /**
      * Shows a menu structure as a context menu at the given (x, y)
-     * @param {Object} menus the ContextMenu structure to show
-     * @param {number} x the x position in pixels relative to top left of canvas
-     * @param {number} y the y position in pixels relative to top left of canvas
+     * @param menus the ContextMenu structure to show
+     * @param x the x position in pixels relative to top left of canvas
+     * @param y the y position in pixels relative to top left of canvas
      */
     public showContextMenu(menus: MenuItems, x: number, y: number): void {
         this.contextMenu.setStructure(menus);
@@ -275,23 +284,23 @@ export class Renderer extends BaseElement {
     }
 
     /**
-     * Resizes the render to fit its container, or resize to fit a new size
-     * @param {number} [pxExternalWidth] the max width in px the renderer can fill,
-     *                                   defaults to the last stored mxMaxWidth
-     * @param {number} [pxExternalHeight] the max height in px the renderer can fill,
-     *                                    defaults to the last stored mxMaxHeight
+     * Resizes the render to fit its container, or resize to fit a new size.
+     *
+     * @param [width] The max width in px the renderer can fill,
+     * defaults to the last stored mxMaxWidth.
+     * @param [height] The max height in px the renderer can fill,
+     * defaults to the last stored mxMaxHeight.
      */
-    public resize(pxExternalWidth?: number, pxExternalHeight?: number): void {
-        if (pxExternalWidth === undefined && pxExternalHeight === undefined) {
-            // then get the saved resolution
-            pxExternalWidth = this.pxExternalWidth;
-            pxExternalHeight = this.pxExternalHeight;
-        }
-        else {
-            // save this resolution
-            pxExternalWidth = pxExternalWidth || 800;
-            pxExternalHeight = pxExternalHeight || 600;
+    public resize(width?: number, height?: number): void {
+        const pxExternalWidth = width === undefined
+            ? this.pxExternalWidth // then get the saved resolution
+            : width;
+        const pxExternalHeight = height === undefined
+            ? this.pxExternalHeight // then get the saved resolution
+            : height;
 
+        if (width && height) {
+            // they set the resolution, so save it.
             this.pxExternalWidth = pxExternalWidth;
             this.pxExternalHeight = pxExternalHeight;
         }
@@ -330,7 +339,7 @@ export class Renderer extends BaseElement {
 
                 const cssWidth = this.pixiCanvas.attr("width") as string;
                 const ratio = Number(cssWidth.replace("px", "")) / this.pxWidth;
-                this.pixiCanvas.css("width", (pxWidth * ratio) + "px");
+                this.pixiCanvas.css("width", `${(pxWidth * ratio)}px`);
             }
             else {
                 // pixel perfect fit
@@ -347,14 +356,15 @@ export class Renderer extends BaseElement {
     }
 
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./renderer.hbs");
     }
 
     /**
      * Gets the scale ratio based on available width/height to draw in
-     * @param {number} width available pixels along x
-     * @param {number} height available pixels along y
-     * @returns {number} a number to scale the width and height both by to fill them according to our aspect ratio
+     * @param width available pixels along x
+     * @param height available pixels along y
+     * @returns a number to scale the width and height both by to fill them according to our aspect ratio
      */
     private getScaleRatio(width: number, height: number): number {
         // source: https://www.snip2code.com/Snippet/83438/A-base-implementation-of-properly-handli
@@ -364,15 +374,9 @@ export class Renderer extends BaseElement {
         const ourFatness = this.width / this.height;
 
         // adjust scaling
-        let scaleRatio = 1;
-        if (ourFatness >= pxFatness) {
-            // scale for a snug width
-            scaleRatio = width / this.width;
-        }
-        else {
-            // scale for a snug height
-            scaleRatio = height / this.height;
-        }
+        const scaleRatio = (ourFatness >= pxFatness)
+            ? width / this.width // Scale for a snug width
+            : height / this.height; // Scale for a snug height
 
         return scaleRatio;
     }

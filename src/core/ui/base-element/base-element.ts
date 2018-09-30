@@ -1,12 +1,12 @@
 import * as $ from "jquery";
-import partial from "src/core/partial";
+import { partial } from "src/core/partial";
 
 /** BaseElement constructor args */
 export interface IBaseElementArgs {
     /** id to assign to */
     id?: string;
     /** parent element to attach this newly constructed element to */
-    parent?: HTMLElement | JQuery<HTMLElement>;
+    parent?: HTMLElement | JQuery;
 }
 
 /**
@@ -17,21 +17,19 @@ export class BaseElement {
     public readonly id?: string;
 
     /** The parent element of this element */
-    public parent?: JQuery<HTMLElement>;
+    public parent?: JQuery;
 
     /** The raw element this is wrapped around */
-    public readonly element: JQuery<HTMLElement>;
+    public readonly element: JQuery;
 
     /**
      * Creates a new base element
      * @param args the arguments to set value(s) from
      */
-    constructor(args?: IBaseElementArgs) {
-        args = args || {};
-
+    constructor(args?: IBaseElementArgs = {}) {
         this.id = args.id;
         if (args.parent) {
-            this.parent = $(args.parent) as JQuery<HTMLElement>; // TODO: bad
+            this.parent = $(args.parent) as JQuery; // TODO: bad
         }
 
         this.element = partial(this.getTemplate(), args, this.parent);
@@ -41,8 +39,8 @@ export class BaseElement {
      * Sets the parent of this element
      * @param newParent the new parent to set this to
      */
-    public setParent(newParent: JQuery<HTMLElement> | HTMLElement): void {
-        this.parent = $(newParent) as JQuery<HTMLElement>;
+    public setParent(newParent: JQuery | HTMLElement): void {
+        this.parent = $(newParent) as JQuery;
     }
 
     /**
@@ -50,6 +48,7 @@ export class BaseElement {
      * @returns the handlebars template required
      */
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./base-element.hbs");
     }
 }

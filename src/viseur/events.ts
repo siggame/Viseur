@@ -19,7 +19,10 @@ export const ViseurEvents = events({
     delayedReady: new Signal(),
 
     /** Triggers when all async events are done and we are ready to being normal operations */
-    ready: new Event<{game: BaseGame, gamelog: IGamelog}>(),
+    ready: new Event<{
+        game: BaseGame;
+        gamelog: IGamelog;
+    }>(),
 
     /** Triggered during loading of the gamelog if the gamelog is found at a remote url */
     gamelogIsRemote: new Event<{url?: string}>(),
@@ -34,7 +37,10 @@ export const ViseurEvents = events({
      * Triggers when a streaming gamelog is finished streaming and will no longer change.
      * In addition a url to the finalized gamelog (with other player's non obfuscated data) will be emitted
      */
-    gamelogFinalized: new Event<{ gamelog: IGamelog, url: string }>(),
+    gamelogFinalized: new Event<{
+        gamelog: IGamelog;
+        url: string;
+    }>(),
 
     // -- connection events -- \\
 

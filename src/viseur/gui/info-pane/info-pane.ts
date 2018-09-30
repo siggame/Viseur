@@ -30,10 +30,10 @@ export class InfoPane extends BaseElement {
     private readonly tabular: Tabular;
 
     /** The main content container */
-    private readonly contentElement: JQuery<HTMLElement>;
+    private readonly contentElement: JQuery;
 
     /** The element for the re-sizer bar */
-    private readonly resizerElement: JQuery<HTMLElement>;
+    private readonly resizerElement: JQuery;
 
     /** The current length of the info pane */
     private length: number = 0;
@@ -90,7 +90,7 @@ export class InfoPane extends BaseElement {
 
     /**
      * Resizes the info pane based on position and length
-     * @param {number} [newLength] the new length (in pixels) of this info pane.
+     * @param [newLength] the new length (in pixels) of this info pane.
      *                             If omitted the old length is used.
      *                             Value cannot be less than minimumLength.
      */
@@ -128,7 +128,7 @@ export class InfoPane extends BaseElement {
 
     /**
      * Gets the current orientation
-     * @returns {string} the current orientation
+     * @returns the current orientation
      */
     public getOrientation(): "horizontal" | "vertical" {
         return this.orientation;
@@ -136,7 +136,7 @@ export class InfoPane extends BaseElement {
 
     /**
      * Gets the current side
-     * @returns {string} the current side
+     * @returns the current side
      */
     public getSide(): "top" | "left" | "bottom" | "right" {
         return this.side;
@@ -164,7 +164,7 @@ export class InfoPane extends BaseElement {
     /**
      * Snaps to a new side of the screen
      *
-     * @param {string} side - the side to snap to, must be 'top', 'left', 'bottom', or 'right'
+     * @param side - the side to snap to, must be 'top', 'left', 'bottom', or 'right'
      */
     private snapTo(side: string): void {
         side = side.toLowerCase();

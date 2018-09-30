@@ -2,8 +2,10 @@ import { euclideanDistance, IPoint } from "cadre-ts-utils";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 
+/** The possible types that can be used for PIXI tints. */
 export type ColorTint = Color | number | string;
 
+/** Options that can be used in the create sprite util functions. */
 export interface IPixiSpriteOptions {
     /** The width to set the sprite to */
     width?: number;
@@ -35,9 +37,6 @@ export interface IPixiSpriteOptions {
     /** A name to attach to the new sprite */
     name?: string;
 
-    /** A callback for if this sprite is clicked */
-    onClick?: () => void;
-
     /** if set toggles visibility */
     visible?: boolean;
 
@@ -46,6 +45,9 @@ export interface IPixiSpriteOptions {
 
     /** The scale, multiplied byt he current scale instead of static */
     relativeScale?: number | IPoint;
+
+    /** A callback for if this sprite is clicked */
+    onClick?(): void;
 }
 
 /**
@@ -70,7 +72,10 @@ export function getTintFromColor(color: ColorTint): number {
  * @param sprite the sprite to set properties on
  * @param options the options to set the properties from
  */
-export function setPixiOptions(sprite: PIXI.Sprite, options: IPixiSpriteOptions): void {
+export function setPixiOptions(
+    sprite: PIXI.Sprite,
+    options: Readonly<IPixiSpriteOptions>,
+): void {
     let x: number;
     let y: number;
     if (options.width !== undefined) {
@@ -204,18 +209,30 @@ export function setRelativePivot(
     relativeX: number = 0.5,
     relativeY: number = 0.5,
 ): PIXI.Container {
-    obj.pivot.set(relativeX * obj.width / obj.scale.x, relativeY * obj.height / obj.scale.y);
+    obj.pivot.set(
+        relativeX * obj.width / obj.scale.x,
+        relativeY * obj.height / obj.scale.y,
+    );
+
     return obj;
 }
 
 /**
- * Takes a sprite and "stretches" it between two points along it's width, useful for beam type effects
- * @param {PIXI.Sprite} sprite the sprite to use. Assumed to be 1x1 units by default.
- *                             It's width and pivot will be scaled for the stretching
- * @param {IPoint} pointA the first point, an object with an {x, y} to derive coordinates from
- * @param {IPoint} pointB the second point, an object with an {x, y} to derive coordinates from
+ * Takes a sprite and "stretches" it between two points along it's width,
+ * useful for beam type effects.
+ *
+ * @param sprite - The sprite to use. Assumed to be 1x1 units by default.
+ * It's width and pivot will be scaled for the stretching.
+ * @param pointA - The first point, an object with an {x, y} to derive
+ * coordinates from.
+ * @param pointB - The second point, an object with an {x, y} to derive
+ * coordinates from.
  */
-export function renderSpriteBetween(sprite: PIXI.Sprite, pointA: IPoint, pointB: IPoint): void {
+export function renderSpriteBetween(
+    sprite: PIXI.Sprite,
+    pointA: Readonly<IPoint>,
+    pointB: Readonly<IPoint>,
+): void {
     const distance = euclideanDistance(pointA, pointB);
     sprite.width = distance;
     setRelativePivot(sprite, 0.5, 0.5);
@@ -229,13 +246,21 @@ export function renderSpriteBetween(sprite: PIXI.Sprite, pointA: IPoint, pointB:
 }
 
 /**
- * Takes a sprite, renders it at a given point, and then rotates it towards another point
- * @param {PIXI.Sprite} sprite the sprite to use. Assumed to be 1x1 units by default.
- *                             It's width and pivot will be scaled for the stretching
- * @param {IPoint} pointA the first point, an object with an {x, y} to derive coordinates from
- * @param {IPoint} pointB the second point, an object with an {x, y} to derive coordinates from
+ * Takes a sprite, renders it at a given point, and then rotates it towards
+ * another point.
+ *
+ * @param sprite - The sprite to use. Assumed to be 1x1 units by default.
+ * It's width and pivot will be scaled for the stretching.
+ * @param pointA - The first point, an object with an {x, y} to derive
+ * coordinates from.
+ * @param pointB - The second point, an object with an {x, y} to derive
+ * coordinates from.
  */
-export function renderSpriteRotatedTowards(sprite: PIXI.Sprite, pointA: IPoint, pointB: IPoint): void {
+export function renderSpriteRotatedTowards(
+    sprite: PIXI.Sprite,
+    pointA: Readonly<IPoint>,
+    pointB: Readonly<IPoint>,
+): void {
     setRelativePivot(sprite, 0.5, 0.5);
 
     const angleRadians = Math.atan2(pointB.y - pointA.y, pointB.x - pointA.x);
