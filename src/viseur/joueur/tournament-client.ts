@@ -1,3 +1,4 @@
+import { FirstArg } from "src/utils";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
 
@@ -15,6 +16,11 @@ export interface ITournamentPlayData {
     session: string;
 }
 
+/** The connection arguments for a tournament to connect */
+export type TournamentConnnectionArgs = Readonly<FirstArg<
+    TournamentClient["connect"]
+>>;
+
 /** A WS connection to a tournament server */
 export class TournamentClient {
     public readonly events = events({
@@ -30,7 +36,10 @@ export class TournamentClient {
         /** Emitted any time the tournament server sends a message */
         messaged: new Event<string>(),
 
-        /** Emitted once we are told that we are playing a game, includes details on how to play that game */
+        /**
+         * Emitted once we are told that we are playing a game,
+         * includes details on how to play that game.
+         */
         playing: new Event<ITournamentPlayData>(),
     });
 
@@ -40,6 +49,11 @@ export class TournamentClient {
     /** The web socket connection we'll use to talk to the Tournament server */
     private socket: WebSocket | undefined;
 
+    /**
+     * Creates a Tournament Client.
+     *
+     * @param viseur - The Viseur instance this is in.
+     */
     public constructor(
         /** The Viseur instance that controls everything */
         private readonly viseur: Viseur,
@@ -52,12 +66,17 @@ export class TournamentClient {
      * @param playerName the name for the human player, must match
      * exactly as the one on the tournament server.
      */
-    public connect(server: string, port: number, playerName: string = "ReplaceMe"): void {
+    public connect(
+        server: string,
+        port: number,
+        playerName: string = "ReplaceMe",
+    ): void {
         try {
             this.socket = new WebSocket(`ws://${server}:${port}`);
         }
         catch (err) {
             this.events.error.emit(err);
+
             return;
         }
 
@@ -106,6 +125,9 @@ export class TournamentClient {
      * @param data - data about the event
      */
     private send(eventName: string, data: object): void {
+        if (!this.socket) {
+            throw new Error("Tournament Client tried to send before connected");
+        }
         const str = JSON.stringify({
             event: eventName,
             data,
@@ -116,7 +138,7 @@ export class TournamentClient {
             console.log("TO TOURNAMENT --> ", str);
         }
 
-        this.socket!.send(str);
+        this.socket.send(str);
     }
 
     /**
@@ -127,14 +149,15 @@ export class TournamentClient {
         /** the event name */
         event: string;
         /** the data about the event */
-        data?: any;
+        data?: unknown;
     }): void {
         switch (data.event) {
             case "message":
-                this.onMessage(data.data);
+                this.onMessage(String(data.data));
                 break;
             case "play":
-                this.onPlay(data.data);
+                // TODO: verify this impliments said interface.
+                this.onPlay(data.data as ITournamentPlayData);
                 break;
             default:
                 throw new Error(`Unexpected tournament event ${data.event}`);
@@ -144,22 +167,26 @@ export class TournamentClient {
     // --- On Received Callbacks --- \\
 
     /**
-     * Invoked on a 'message' event
-     * @param data the message sent from the server
+     * Invoked on a 'message' event.
+     *
+     * @param data - The message sent from the server.
      */
     private onMessage(data: string): void {
         this.events.messaged.emit(data);
     }
 
     /**
-     * Invoked on a 'play' event
-     * @param data the data on what game server to connect to for bridging the human playable connection
+     * Invoked on a 'play' event.
+     *
+     * @param data - The data on what game server to connect to for bridging
+     * the human playable connection.
      */
     private onPlay(data: ITournamentPlayData): void {
         this.events.playing.emit(data);
 
-        this.viseur.playAsHuman(Object.assign({
+        this.viseur.playAsHuman({
             gameName: data.game,
-        }, data));
+            ...data,
+        });
     }
 }

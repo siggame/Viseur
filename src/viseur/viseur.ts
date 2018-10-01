@@ -1,14 +1,16 @@
+import { IBaseGame, IDelta, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { Games } from "src/games";
-import { objectHasProperty, UnknownObject, unStringify, validateURL } from "src/utils";
+import { objectHasProperty, UnknownObject, unStringify, validateURL,
+       } from "src/utils";
 import { viseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
-import { IDelta, IDeltaReason, IGamelog } from "./game/gamelog";
-import { IBaseGameNamespace, IBaseGameState } from "./game/interfaces";
+import { IBaseGameNamespace, IDeltaReason, IViseurGamelog,
+       } from "./game/interfaces";
 import { GUI } from "./gui";
-import { IJoueurConnectionArgs, ILobbiedData, Joueur, TournamentClient } from "./joueur";
+import { Joueur, TournamentClient, TournamentConnnectionArgs } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
 import { BaseSetting, ViseurSettings } from "./settings";
@@ -20,9 +22,9 @@ type QueryStringTypes = undefined | null | string | string[];
 /** A game state that is used to transition a dt between the two states/reasons */
 export interface IViseurGameState {
     /** The current game state */
-    game?: IBaseGameState;
+    game?: IBaseGame;
     /** The next game state */
-    nextGame?: IBaseGameState;
+    nextGame?: IBaseGame;
     /** The current delta reason */
     reason?: IDeltaReason;
     /** The next delta reason */
@@ -32,11 +34,11 @@ export interface IViseurGameState {
 /** Extends to add a reverse delta to the delta */
 export interface IReverseDelta extends IDelta {
     /** A delta that goes BACKWARDs in state when merged */
-    reversed?: IBaseGameState;
+    reversed?: IBaseGame;
 }
 
 /** A gamelog with reverse deltas */
-export interface IGamelogWithReverses extends IGamelog {
+export interface IGamelogWithReverses extends IViseurGamelog {
     /** List of deltas with their reverses as options */
     deltas: IReverseDelta[];
 }
@@ -47,8 +49,8 @@ export interface IGamelogWithReverses extends IGamelog {
  */
 export interface IMergedDelta {
     index: number;
-    currentState?: IBaseGameState;
-    nextState?: IBaseGameState;
+    currentState?: IBaseGame;
+    nextState?: IBaseGame;
 }
 
 /** The class that handles all the interconnected-ness of the application */
@@ -71,7 +73,7 @@ export class Viseur {
     public readonly settings = ViseurSettings;
 
     /** The gamelog */
-    public gamelog: IGamelog | undefined;
+    public gamelog?: IViseurGamelog;
 
     /** The gamelog in its unparsed json form */
     public unparsedGamelog?: string;
@@ -216,7 +218,7 @@ export class Viseur {
      * Connects to a game server to play a game for the human controlling this Viseur
      * @param args - The args to send to the joueur client
      */
-    public playAsHuman(args: IJoueurConnectionArgs): void {
+    public playAsHuman(args: TournamentConnnectionArgs): void {
         this.gui.modalMessage("Connecting to game server...");
 
         this.createJoueur(args);
@@ -435,7 +437,7 @@ export class Viseur {
      * Called once a gamelog is loaded
      * @param gamelog the deserialized JSON object that is the FULL gamelog
      */
-    private gamelogLoaded(gamelog: IGamelog): void {
+    private gamelogLoaded(gamelog: IViseurGamelog): void {
         this.rawGamelog = gamelog;
         this.parser.updateConstants(gamelog.constants);
 
@@ -515,7 +517,7 @@ export class Viseur {
      */
     private updateCurrentState(index: number): void {
         if (!this.rawGamelog) {
-            throw new Error("cannot update current state deltas without a gamelog");
+            throw new Error("cannot update state deltas without a gamelog");
         }
 
         const d = this.mergedDelta;
@@ -538,19 +540,36 @@ export class Viseur {
             d.index++;
 
             if (deltas[d.index] && !deltas[d.index].reversed) {
-                deltas[d.index].reversed = this.parser.createReverseDelta(d.currentState, deltas[d.index].game);
+                deltas[d.index].reversed = this.parser.createReverseDelta(
+                    d.currentState as IBaseGame,
+                    deltas[d.index].game,
+                );
             }
 
-            if (d.nextState && deltas[d.index] && deltas[d.index + 1] && !deltas[d.index + 1].reversed) {
-                deltas[d.index + 1].reversed = this.parser.createReverseDelta(d.nextState, deltas[d.index + 1].game);
+            if (d.nextState
+                && deltas[d.index]
+                && deltas[d.index + 1]
+                && !deltas[d.index + 1].reversed
+            ) {
+                deltas[d.index + 1].reversed = this.parser.createReverseDelta(
+                    d.nextState,
+                    deltas[d.index + 1].game,
+                );
             }
 
             if (deltas[d.index]) {
-                d.currentState = this.parser.mergeDelta(d.currentState as IBaseGameState, deltas[d.index].game);
+                d.currentState = this.parser.mergeDelta(
+                    d.currentState as IBaseGame,
+                    deltas[d.index].game,
+                );
             }
 
-            if (d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
-                d.nextState = this.parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
+            if (d.nextState && deltas[d.index + 1]) {
+                // then there is a next state (not at the end)
+                d.nextState = this.parser.mergeDelta(
+                    d.nextState,
+                    deltas[d.index + 1].game,
+                );
             }
 
             this.updateStepped(d);
@@ -559,15 +578,23 @@ export class Viseur {
         // if decreasing index...
         while (index < d.index) {
             const r = deltas[d.index] && deltas[d.index].reversed;
-            const r2 = d.nextState && deltas[d.index + 1] && deltas[d.index + 1].reversed;
+            const r2 = d.nextState && deltas[d.index + 1]
+                   && deltas[d.index + 1].reversed;
 
             if (r) {
-                d.currentState = this.parser.mergeDelta(d.currentState as IBaseGameState, r);
+                d.currentState = this.parser.mergeDelta(
+                    d.currentState as IBaseGame,
+                    r,
+                );
             }
 
             if (r2) {
-                if (deltas[d.index + 1]) { // if there is a next state (not at the end)
-                    d.nextState = this.parser.mergeDelta(d.nextState as IBaseGameState, r2);
+                if (deltas[d.index + 1]) {
+                    // Then there is a next state (not at the end)
+                    d.nextState = this.parser.mergeDelta(
+                        d.nextState as IBaseGame,
+                        r2,
+                    );
                 }
             }
 
@@ -668,7 +695,7 @@ export class Viseur {
             this.events.connectionConnected.emit();
         });
 
-        let lobbiedData: ILobbiedData | undefined;
+        let lobbiedData: LobbiedEvent["data"] | undefined;
         this.joueur.events.lobbied.on((data) => {
             lobbiedData = data;
             this.gui.modalMessage(`In lobby '${data.gameSession}' for '${data.gameName}'. Waiting for game to start.`);

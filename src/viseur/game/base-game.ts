@@ -268,8 +268,8 @@ export class BaseGame extends StateObject {
 
             if ((current && current.gameObjects.hasOwnProperty(id)) || (next && next.gameObjects.hasOwnProperty(id))) {
                 gameObject.stateUpdated(
-                    gameObject.current || gameObject.next,
-                    gameObject.next || gameObject.current,
+                    gameObject.getCurrentMostState(),
+                    gameObject.getNextMostState(),
                     this.currentReason || this.nextReason,
                     this.nextReason || this.currentReason,
                 );
@@ -299,13 +299,13 @@ export class BaseGame extends StateObject {
             return;
         }
 
-        const current = this.current || this.next;
-        const next = this.next || this.current;
+        const current = this.getCurrentMostState();
+        const next = this.getNextMostState();
 
         this.renderBackground(
             dt,
-            current || next!,
-            next || current!,
+            current,
+            next,
             this.currentReason || this.nextReason!,
             this.nextReason || this.currentReason!,
         );
@@ -336,14 +336,6 @@ export class BaseGame extends StateObject {
                 );
             }
         }
-    }
-
-    public getCurrentMostState(): NonNullable<this["current"]> {
-        if (!this.current || !this.next) {
-            throw new Error("No game state to get!");
-        }
-
-        return (this.current || this.next) as NonNullable<this["current"]>;
     }
 
     /**

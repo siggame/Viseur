@@ -1,4 +1,4 @@
-/** functions to serialize and un-serialize json communications strings */
+/** Functions to serialize and un-serialize json communications strings. */
 
 import { isEmptyExceptFor, isObject, UnknownObject } from "src/utils";
 import { BaseGame } from "src/viseur/game/base-game";
@@ -13,9 +13,10 @@ export function isGameObjectReference(obj: object): boolean {
 }
 
 /**
- * Checks if an objects key is serializable
- * @param obj the object to check
- * @param key the key to check in obj
+ * Checks if an objects key is serializable.
+ *
+ * @param obj - The object to check.
+ * @param key - The key to check in obj.
  * @returns true if it is serializable, false otherwise
  */
 export function isSerializable(obj: object, key: string): boolean {
@@ -25,48 +26,51 @@ export function isSerializable(obj: object, key: string): boolean {
 /**
  * Takes an object and returns a clone that is safe to serialize,
  * by transforming game objects into game object references
- * NOTE: Do not send objects with cycles
- * @param data the data to serialize
- * @returns a serialized object safe to send via a joueur
+ * NOTE: Do not send objects with cycles.
+ *
+ * @param data - The data to serialize.
+ * @returns A serialized object safe to send via a joueur.
  */
-export function serialize(data: unknown): string | number | UnknownObject {
-    // then no need to serialize it, it's already json serializable as a string, number, boolean, null, etc.
+export function serialize(
+    data: unknown,
+): string | number | { [key: string]: string | number } {
+    // Then no need to serialize it, it's already json serializable as a
+    // string, number, boolean, null, etc.
     if (!isObject(data)) {
         return data as string | number;
     }
 
-    if (data.id) { // no need to serialize this whole game object, send an object reference
-        return { id: data.id };
+    if (data.id) {
+        // No need to serialize this whole game object,
+        // just send an object reference
+        return { id: String(data.id) };
     }
 
-    const serialized = Array.isArray(data) ? [] : {} as UnknownObject;
+    const serialized: UnknownObject = Array.isArray(data) ? [] : {};
     for (const key of Object.keys(data)) {
         if (isSerializable(data, key)) {
             serialized[key] = serialize(data[key]);
         }
     }
-    return serialized;
+
+    return serialized as { [key: string]: string | number };
 }
 
 /**
- * Takes a serialized object and casts game object references back to their game objects
- * @param data the object to deserialize
- * @param game the game that contains game objects
- * @returns a copy of an object safely deserialized
+ * Takes a serialized object and casts game object references back to their
+ * game objects.
+ *
+ * @param data - The object to deserialize.
+ * @param game - The game that contains game objects.
+ * @returns A copy of an object safely deserialized.
  */
-export function deserialize(data: any, game?: BaseGame): any {
+export function deserialize(data: unknown, game?: BaseGame): unknown {
     if (isObject(data)) {
-        const result = Array.isArray(data) ? [] : {} as UnknownObject;
+        // TODO: check for game object reference?
+        const result: UnknownObject = Array.isArray(data) ? [] : {};
 
         for (const key of (Object.keys(data))) {
-            const value = data[key];
-            if (typeof(value) === "object") {
-                // we don't care to deserialize shallow game object references, if we did we'd check so here
-                result[key] = deserialize(value);
-            }
-            else {
-                result[key] = value;
-            }
+            result[key] = deserialize(data[key], game);
         }
 
         return result;

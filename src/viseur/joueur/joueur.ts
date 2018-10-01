@@ -1,40 +1,33 @@
-import { ParsedJSON, UnknownObject } from "src/utils";
+import { ClientEvent, IDelta, IGamelog, ServerEvent } from "cadre-ts-utils/cadre";
+import * as ServerEvents from "cadre-ts-utils/cadre/events/server";
+import { UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDelta, IGamelog, IGameServerConstants } from "src/viseur/game/gamelog";
+import { IViseurGamelog } from "src/viseur/game";
 import { Event, events, Signal } from "ts-typed-events";
 import * as serializer from "./serializer";
 
-export interface IJoueurConnectionArgs {
-    /** The name of the game to connect to */
-    gameName: string;
+// handy types to access the "data" property of our events
+type FatalData = Readonly<ServerEvents.FatalEvent["data"]>;
+type LobbiedData = Readonly<ServerEvents.LobbiedEvent["data"]>;
+type MetaDeltaData = Readonly<ServerEvents.MetaDeltaEvent["data"]>;
+type OrderData = Readonly<ServerEvents.OrderEvent["data"]>;
+type OverData = Readonly<ServerEvents.OverEvent["data"]>;
+type RanData = Readonly<ServerEvents.RanEvent["data"]>;
+type StartData = Readonly<ServerEvents.StartEvent["data"]>;
 
-    /** The server address */
-    server: string;
+/** Represents an order that the game server sends game clients */
+export interface IOrder {
+    /** The name of the function to execute for said order. */
+    name: string;
 
-    /** The port to connect through */
-    port: number;
+    /** The arguments, in order, to the function name */
+    args: ReadonlyArray<unknown>;
 
-    /** The session to connect to */
-    session: string;
-
-    /** If we are spectating or now */
-    spectating?: boolean;
-
-    /** The name of our player */
-    playerName?: string;
-
-    /** The index of your player in the players array */
-    playerIndex?: string | number;
-
-    /** Server-side game settings */
-    gameSettings?: string;
-}
-
-/** Data sent from the server once we are lobbied */
-export interface ILobbiedData {
-    gameSession: string;
-    gameName: string;
-    constants: IGameServerConstants;
+    /**
+     * The callback that will send back the returned value as the first
+     * parameter.
+     */
+    callback(returned: unknown): void;
 }
 
 /**
@@ -49,25 +42,28 @@ export class Joueur {
         connected: new Signal(),
 
         /** Emitted once the connection is closed */
-        closed: new Event<{timedOut: boolean}>(),
+        closed: new Event<{ timedOut: boolean }>(),
 
         /** Emitted when we are lobbied by the game server */
-        lobbied: new Event<ILobbiedData>(),
+        lobbied: new Event<LobbiedData>(),
 
         /** Emitted when the game on the game server starts */
-        start: new Event<{playerID: string}>(),
+        start: new Event<StartData>(),
 
-        /** Emitted when a change in game state (delta) is sent from the game server */
-        delta: new Event<IDelta>(),
+        /**
+         * Emitted when a change in game state (delta) is sent from the game
+         * server.
+         */
+        delta: new Event<MetaDeltaData>(),
 
         /** Emitted by the game server after it runs something for us */
-        ran: new Event<any>(),
+        ran: new Event<RanData>(),
 
         /** Emitted when the game is over */
-        over: new Event<{gamelogURL: string, visualizerURL: string, message: string}>(),
+        over: new Event<OverData>(),
 
         /** Emitted when a fatal event is sent from the server */
-        fatal: new Event<{message: string}>(),
+        fatal: new Event<FatalData>(),
     });
 
     /**
@@ -75,22 +71,25 @@ export class Joueur {
      * All values are junk values until we get more information from the
      * game server
      */
-    private readonly gamelog: IGamelog = {
+    private readonly gamelog: IViseurGamelog = {
         constants: {DELTA_LIST_LENGTH: "", DELTA_REMOVED: ""},
         deltas: [],
         epoch: 0,
         gameName: "",
         gameSession: "",
         losers: [],
-        randomSeed: "",
         streaming: true,
+        settings: { randomSeed: "" },
         winners: [],
     };
 
     /** The web socket connection we use to talk to the game server */
     private socket: WebSocket | undefined;
 
-    /** True if the closed connection did so because we timed out connecting to them */
+    /**
+     * True if the closed connection did so because we timed out connecting to
+     * them
+     */
     private timedOut: boolean = false;
 
     /** The player's id of our player */
@@ -113,10 +112,28 @@ export class Joueur {
     }
 
     /**
-     * Connects to some game server
-     * @param args the connection arguments
+     * Connects to some game server.
+     *
+     * @param args - The connection arguments.
      */
-    public connect(args: IJoueurConnectionArgs): void {
+    public connect(args: {
+        /** The name of the game to connect to */
+        gameName: string;
+        /** The server address */
+        server: string;
+        /** The port to connect through */
+        port: number;
+        /** The session to connect to */
+        session: string;
+        /** If we are spectating or now */
+        spectating?: boolean;
+        /** The name of our player */
+        playerName?: string;
+        /** The index of your player in the players array */
+        playerIndex?: string | number;
+        /** Server-side game settings */
+        gameSettings?: string;
+    }): void {
         this.gamelog.gameName = args.gameName;
 
         try {
@@ -124,21 +141,25 @@ export class Joueur {
         }
         catch (err) {
             this.events.error.emit(err);
+
             return;
         }
 
         this.socket.onopen = () => {
             this.events.connected.emit();
 
-            this.send("play", {
-                gameName: args.gameName,
-                spectating: args.spectating || false,
-                playerName: args.playerName || "Human Player",
-                clientType: "Human",
-                metaDeltas: true,
-                requestedSession: args.session,
-                playerIndex: args.playerIndex,
-                gameSettings: args.gameSettings,
+            this.send({
+                event: "play",
+                data: {
+                    gameName: args.gameName,
+                    spectating: args.spectating || false,
+                    playerName: args.playerName || "Human Player",
+                    clientType: "Human",
+                    metaDeltas: true,
+                    requestedSession: args.session,
+                    playerIndex: args.playerIndex,
+                    gameSettings: args.gameSettings,
+                },
             });
         };
 
@@ -170,7 +191,7 @@ export class Joueur {
 
     /**
      * Gets the ID of the Player this Joueur can send commands for
-     * @returns {string|undefined} undefined if not playing, otherwise the id of the player
+     * @returns undefined if not playing, otherwise the id of the player
      */
     public getPlayerID(): string | undefined {
         return this.playerID;
@@ -182,58 +203,62 @@ export class Joueur {
      * @param functionName the function to run
      * @param args the key value pairs for the function to run
      */
-    public run(callerID: string, functionName: string, args: UnknownObject): void {
-        this.send("run", {
-            caller: {id: callerID},
-            functionName,
-            args: serializer.serialize(args),
+    public run(
+        callerID: string,
+        functionName: string,
+        args: UnknownObject,
+    ): void {
+        this.send({
+            event: "run",
+            data: {
+                caller: { id: callerID },
+                functionName,
+                args: serializer.serialize(args) as UnknownObject,
+            },
         });
     }
 
     /**
      * Invoked when we receive some data from the websocket
      *
-     * @param data - game server interchange formatted data
+     * @param event - game server interchange formatted data
      */
-    private received(data: any): void {
-        const eventName = (data.event as string).toLowerCase();
-
-        const orderData = data.data;
-        switch (eventName) {
+    private received(event: Readonly<ServerEvent>): void {
+        switch (event.event) {
             case "over":
-                this.autoHandleOver(orderData);
+                this.autoHandleOver(event.data);
                 break;
             case "start":
-                this.autoHandleStart(orderData);
+                this.autoHandleStart(event.data);
                 break;
             case "lobbied":
-                this.autoHandleLobbied(orderData);
+                this.autoHandleLobbied(event.data);
                 break;
-            case "delta":
-                this.autoHandleDelta(orderData);
+            case "meta-delta":
+                this.autoHandleMetaDelta(event.data);
                 break;
             case "order":
-                this.autoHandleOrder(orderData);
+                this.autoHandleOrder(event.data);
                 break;
             case "ran":
-                this.events.ran.emit(orderData);
+                this.events.ran.emit(Object.freeze(event.data));
                 break;
             case "fatal":
-                this.autoHandleFatal(orderData);
+                this.autoHandleFatal(event.data);
                 break;
             default:
-                throw new Error(`Could not find an auto handler for event ${data.event}`);
+                throw new Error(`Could not find an auto handler for event ${event.event}`);
         }
     }
 
     /**
      * Invoked automatically to handle the 'over' events
-     * @param data the game over data
+     * @param over the game over data
      */
-    private autoHandleOver(data: any): void {
+    private autoHandleOver(over: OverData): void {
         this.gamelog.streaming = false;
         this.playerID = undefined;
-        this.events.over.emit(data);
+        this.events.over.emit(over);
         if (this.socket) {
             this.socket.close();
         }
@@ -241,86 +266,96 @@ export class Joueur {
 
     /**
      * Invoked automatically to handle the 'over' events
-     * @param data the start data, such as playerID, gameName
+     * @param start the start data, such as playerID, gameName
      */
-    private autoHandleStart(data: any): void {
-        this.playerID = data.playerID;
+    private autoHandleStart(start: StartData): void {
+        this.playerID = start.playerID;
         this.started = true;
-        this.events.start.emit(data.playerID);
+        this.events.start.emit(start);
     }
 
     /**
      * Invoked automatically to handle the 'lobbied' events
-     * @param data - data about what game session this client is lobbied in, such as 'session' and 'gameName'
+     * @param lobbied - Data about what game session this client is lobbied in,
+     * such as 'session' and 'gameName'.
      */
-    private autoHandleLobbied(data: any): void {
-        this.gamelog.gameName = data.gameName;
-        this.gamelog.gameSession = data.gameSession;
-        this.gamelog.constants = data.constants;
-        this.events.lobbied.emit(data);
+    private autoHandleLobbied(lobbied: LobbiedData): void {
+        this.gamelog.gameName = lobbied.gameName;
+        this.gamelog.gameSession = lobbied.gameSession;
+        this.gamelog.constants = lobbied.constants;
+        this.events.lobbied.emit(lobbied);
     }
 
     /**
      * Invoked automatically to handle the 'delta' events
      *
-     * @param data - a meta delta (complete delta, with reasons why it occurred) about what changed in the game
+     * @param delta - A meta delta (complete delta, with reasons why it
+     * occurred) about what changed in the game.
      */
-    private autoHandleDelta(data: any): void {
-        this.gamelog.deltas.push(data);
-        this.events.delta.emit(data);
+    private autoHandleMetaDelta(delta: MetaDeltaData): void {
+        this.gamelog.deltas.push(delta);
+        this.events.delta.emit(delta);
     }
 
     /**
-     * Invoked to make the AI do some order
+     * Invoked to make the AI do some order.
      *
-     * @param data the order details
+     * @param order - The order this clioent should execute.
      */
-    private autoHandleOrder(data: any): void {
-        const args = serializer.deserialize(data.args);
+    private autoHandleOrder(order: OrderData): void {
+        const args = serializer.deserialize(order.args);
+        const { name } = order;
+        if (!this.viseur.game || !this.viseur.game.humanPlayer) {
+            throw new Error(`Cannot execute order ${name} without a game or human!`);
+        }
         // if we have an order to handle, then we must have a game
-        this.viseur.game!.humanPlayer!.order({
-            name: data.name as string,
-            args: args as any[],
-            callback: (returned: any) => {
+        this.viseur.game.humanPlayer.order({
+            name,
+            args,
+            callback: (returned: unknown) => {
                 setTimeout(() => {
-                    this.send("finished", {
-                        orderIndex: data.index,
-                        returned,
+                    this.send({
+                        event: "finished",
+                        data: { orderIndex: order.index, returned },
                     });
-                }, 50); // delay before sending over, no idea why this is needed
+                }, 50); // delay before sending over, does not work otherwise!?
             },
         });
     }
 
     /**
-     * Invoked automatically to handle the 'fatal' events
-     * @param data the fatal information as to what happened
+     * Invoked automatically to handle the 'fatal' events.
+     *
+     * @param fatal - The fatal information as to what happened.
      */
-    private autoHandleFatal(data: any): void {
-        if (data.timedOut) {
+    private autoHandleFatal(fatal: FatalData): void {
+        if (fatal.timedOut) {
             this.timedOut = true;
-            return; // our human player's fault, so this error is expected
+
+            return; // Our human player's fault, so this error is expected
                     // and not really an error. Immediately following this we
-                    // should get a delta saying they lost to display
+                    // should get a delta saying they lost to display.
         }
 
-        const err = new Error(`An unexpected fatal error occurred on the game server: '${data.message}'`);
+        const err = new Error(`An unexpected fatal error occurred on the game server: '${fatal.message}'`);
         this.events.error.emit(err);
         throw err;
     }
 
     /**
-     * Sends some event to the game server game server connected to
-     * @param eventName the name of the event, should be something game server expects
-     * @param {*} [data] the additional data about the event
+     * Sends some event to the game server game server connected to.
+     *
+     * @param event - The event to send to the game server.
      */
-    private send(eventName: string, data: ParsedJSON): void {
-        // NOTE: this does not serialize game objects
-        //       so don't be sending cycles like other joueur clients
+    private send(event: Readonly<ClientEvent>): void {
+        if (!this.socket) {
+            throw new Error(`Tried to send ${event.event} before socket!`);
+        }
+        // NOTE: this does not serialize game objects,
+        // so don't be sending cycles like other joueur clients
         const str = JSON.stringify({
-            event: eventName,
-            sentTime: (new Date()).getTime(),
-            data,
+            ...event,
+            epoch: (new Date()).getTime(),
         });
 
         if (this.viseur.settings.printIO.get()) {
@@ -328,6 +363,6 @@ export class Joueur {
             console.log("TO SERVER --> ", str);
         }
 
-        this.socket!.send(str);
+        this.socket.send(str);
     }
 }
