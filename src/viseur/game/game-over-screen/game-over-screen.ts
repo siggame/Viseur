@@ -1,9 +1,13 @@
-import partial from "src/core/partial";
+import escape from "lodash/escape";
+import { partial } from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
-import * as utils from "src/utils";
+import { getContrastingColor } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
 import "./game-over-screen.scss";
+
+// tslint:disable-next-line:no-require-imports no-var-requires
+const itemHbs = require("./game-over-screen-item.hbs");
 
 /** A screen that overlays the renderer when the game is over */
 export class GameOverScreen extends BaseElement {
@@ -20,7 +24,7 @@ export class GameOverScreen extends BaseElement {
     private built: boolean = false;
 
     /** The items containing winners and losers */
-    private readonly items: Array<JQuery> = [];
+    private readonly items: JQuery[] = [];
 
     /**
      * Initialized the game over screen
@@ -28,8 +32,8 @@ export class GameOverScreen extends BaseElement {
      */
     constructor(args: IBaseElementArgs & {
         /** The game this will be a game over screen for */
-        game: BaseGame,
-        viseur: Viseur,
+        game: BaseGame;
+        viseur: Viseur;
     }) {
         super(args);
 
@@ -74,11 +78,12 @@ export class GameOverScreen extends BaseElement {
 
             this.items[i].find(".bg-wrapper")
                 .css("background-color", color.opaquer(0.375).hex()) // TODO: rgba seems to be dropped from color module
-                .css("color", utils.getContrastingColor(color).hex()); // same here
+                .css("color", getContrastingColor(color).hex()); // same here
         }
     }
 
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./game-over-screen.hbs");
     }
 
@@ -91,23 +96,23 @@ export class GameOverScreen extends BaseElement {
         this.losersElement.html("");
 
         this.items.length = 0; // empty array for [re]build
-        const gameState = this.game.current || this.game.next!;
+        const gameState = this.game.getCurrentMostState();
         for (const player of gameState.players) {
             const color = this.game.getPlayersColor(player);
 
             const item = {
-                name: utils.escapeHTML(player.name),
+                name: escape(player.name),
                 wonOrLost: player.won ? "Won" : "Lost",
                 reason: player.won ? player.reasonWon : player.reasonLost,
                 bgColor: color.opaquer(0.375).rgb(),
-                textColor: utils.getContrastingColor(color).rgb(),
+                textColor: getContrastingColor(color).rgb(),
             };
 
             const list = player.won
                 ? this.winnersElement
                 : this.losersElement;
 
-            this.items.push(partial(require("./game-over-screen-item.hbs"), item, list));
+            this.items.push(partial(itemHbs, item, list));
         }
 
         this.losersElement.css("display", this.losersElement.html() === ""
@@ -116,7 +121,7 @@ export class GameOverScreen extends BaseElement {
         );
 
         if (this.winnersElement.html() === "") { // then there are no winners, it's a tie
-            partial(require("./game-over-screen-item.hbs"), {
+            partial(itemHbs, {
                 name: "Game Over -",
                 wonOrLost: "Tie",
                 reason: gameState.players[0].reasonLost,

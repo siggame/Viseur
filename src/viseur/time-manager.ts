@@ -1,7 +1,7 @@
+import { IGamelog } from "cadre-ts-utils/cadre";
 import { Timer } from "src/core/timer";
 import { Viseur } from "src/viseur/";
 import { Event, events, Signal } from "ts-typed-events";
-import { IGamelog } from "./game/gamelog";
 
 /** Simple container for the current time of the time manager */
 export interface ICurrentTime {

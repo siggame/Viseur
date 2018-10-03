@@ -1,5 +1,6 @@
+import clamp from "lodash/clamp";
 import * as PIXI from "pixi.js";
-import { clamp, ColorTint, getTintFromColor } from "src/utils";
+import { ColorTint, getTintFromColor } from "src/utils";
 import { Viseur, viseurConstructed } from "src/viseur";
 import { BaseSetting } from "src/viseur/settings";
 
@@ -51,11 +52,16 @@ export class GameBar {
     private readonly max: number;
 
     /**
-     * Creates a bar to represent some game number
-     * @param parent the parent pixi object
-     * @param options options to initialize the bar
+     * Creates a bar to represent some game number.
+     *
+     * @param parent - The parent pixi object.
+     * @param options - Optional options to initialize the bar with.
      */
     constructor(parent: PIXI.Container, options: IGameBarOptions = {}) {
+        if (!viseur || !viseur.game) {
+            throw new Error("Cannot create a game bar without a game!");
+        }
+
         options.height = options.height || 0.06667;
 
         options.width = options.width || 0.9;
@@ -63,50 +69,63 @@ export class GameBar {
         this.container.setParent(parent);
         this.max = options.max || 1;
 
-        this.background = viseur!.game!.resources.blank.newSprite(this.container, options);
-        this.foreground = viseur!.game!.resources.blank.newSprite(this.container, options);
+        const { blank } = viseur.game.resources;
+        this.background = blank.newSprite(this.container, options);
+        this.foreground = blank.newSprite(this.container, options);
 
-        this.recolor(options.foregroundColor || 0x044F444, options.backgroundColor || 0x00000);
+        this.recolor(
+            options.foregroundColor || 0x044F444, // green-ish
+            options.backgroundColor || 0x00000,
+        );
 
         const widthDiff = parent.width - this.width;
         this.container.position.set(widthDiff / 2, 0);
 
         if (options.visibilitySetting) {
-            options.visibilitySetting.changed.on((newValue: any) => {
-                newValue = Boolean(newValue);
+            options.visibilitySetting.changed.on((newValue) => {
+                let val = Boolean(newValue);
                 if (options && options.invertSetting) {
-                    newValue = !newValue;
+                    val = !val;
                 }
 
-                this.setVisible(newValue);
+                this.setVisible(val);
             });
             this.setVisible(options.visibilitySetting.get());
         }
     }
 
     /**
-     * Sets if the bar is visible
-     * @param visible true if visible, false otherwise
+     * Sets if the bar is visible.
+     *
+     * @param visible - True if visible, false otherwise.
      */
     public setVisible(visible: boolean): void {
         this.container.visible = visible;
     }
 
     /**
-     * Updates the value of the bar, which will expand/contract the foreground
-     * @param value the new value to update the foreground bar to, relative to this bar's max
+     * Updates the value of the bar, which will expand/contract the foreground.
+     *
+     * @param value The new value to update the foreground bar to, relative to
+     * this bar's max.
      */
     public update(value: number): void {
-        value = clamp(value, 0, this.max);
-        this.foreground.width = this.width * (value / this.max);
+        const clamped = clamp(value, 0, this.max);
+        this.foreground.width = this.width * (clamped / this.max);
     }
 
     /**
-     * Recolors the parts of the bar
-     * @param {Color} foregroundColor the Color to recolor the foreground part of the bar to
-     * @param {Color} backgroundColor the Color to recolor the background part of the bar to
+     * Recolors the parts of the bar.
+     *
+     * @param foregroundColor - The Color to recolor the foreground part of the
+     * bar to.
+     * @param backgroundColor - The Color to recolor the background part of the
+     * bar to.
      */
-    public recolor(foregroundColor?: ColorTint, backgroundColor?: ColorTint): void {
+    public recolor(
+        foregroundColor?: ColorTint,
+        backgroundColor?: ColorTint,
+    ): void {
         if (foregroundColor !== undefined) {
             this.foreground.tint = getTintFromColor(foregroundColor);
         }

@@ -1,6 +1,6 @@
-import { ClientEvent, IDelta, IGamelog, ServerEvent } from "cadre-ts-utils/cadre";
+import { ClientEvent, IGamelog, ServerEvent } from "cadre-ts-utils/cadre";
 import * as ServerEvents from "cadre-ts-utils/cadre/events/server";
-import { UnknownObject } from "src/utils";
+import { FirstArgument, Immutable, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { IViseurGamelog } from "src/viseur/game";
 import { Event, events, Signal } from "ts-typed-events";
@@ -14,6 +14,9 @@ type OrderData = Readonly<ServerEvents.OrderEvent["data"]>;
 type OverData = Readonly<ServerEvents.OverEvent["data"]>;
 type RanData = Readonly<ServerEvents.RanEvent["data"]>;
 type StartData = Readonly<ServerEvents.StartEvent["data"]>;
+
+/** Connection arguments for a Joueur connection. */
+export type JoueurConnectionArgs = FirstArgument<Joueur["connect"]>;
 
 /** Represents an order that the game server sends game clients */
 export interface IOrder {
@@ -116,7 +119,7 @@ export class Joueur {
      *
      * @param args - The connection arguments.
      */
-    public connect(args: {
+    public connect(args: Immutable<{
         /** The name of the game to connect to */
         gameName: string;
         /** The server address */
@@ -133,7 +136,7 @@ export class Joueur {
         playerIndex?: string | number;
         /** Server-side game settings */
         gameSettings?: string;
-    }): void {
+    }>): void {
         this.gamelog.gameName = args.gameName;
 
         try {
@@ -303,7 +306,7 @@ export class Joueur {
      * @param order - The order this clioent should execute.
      */
     private autoHandleOrder(order: OrderData): void {
-        const args = serializer.deserialize(order.args);
+        const args = serializer.deserialize(order.args) as Array<unknown>;
         const { name } = order;
         if (!this.viseur.game || !this.viseur.game.humanPlayer) {
             throw new Error(`Cannot execute order ${name} without a game or human!`);

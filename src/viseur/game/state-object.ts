@@ -1,3 +1,4 @@
+import { Immutable } from "cadre-ts-utils";
 import { IDeltaReason } from "./interfaces";
 
 /* tslint:disable:no-empty-interface */
@@ -41,12 +42,12 @@ export class StateObject {
      *
      * @returns The state most current, next if there is no current.
      */
-    public getCurrentMostState(): NonNullable<this["current"]> {
+    public getCurrentMostState(): Immutable<NonNullable<this["current"]>> {
         if (!this.current || !this.next) {
             throw new Error("No game state to get!");
         }
 
-        return (this.current || this.next) as NonNullable<this["current"]>;
+        return (this.current || this.next) as Immutable<NonNullable<this["current"]>>;
     }
 
     /**
@@ -54,12 +55,12 @@ export class StateObject {
      *
      * @returns The state most next, current if there is no next.
      */
-    public getNextMostState(): NonNullable<this["current"]> {
+    public getNextMostState(): Immutable<NonNullable<this["current"]>> {
         if (!this.current || !this.next) {
             throw new Error("No game state to get!");
         }
 
-        return (this.next || this.current) as NonNullable<this["current"]>;
+        return (this.next || this.current) as Immutable<NonNullable<this["current"]>>;
     }
 
     /**

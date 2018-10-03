@@ -9,8 +9,9 @@ import { IBuildingState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
+import lowerFirst from "lodash/lowerFirst";
 import * as PIXI from "pixi.js";
-import { ease, renderSpriteBetween, unCapitalizeFirstLetter, updown } from "src/utils";
+import { ease, renderSpriteBetween, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 import { RendererResource } from "src/viseur/renderer";
 import { Player } from "./player";
@@ -115,7 +116,7 @@ export class Building extends GameObject {
         // NOTE: // this is defensive programming.
         // We don't know if it will be upper or lower case, so we make sure it
         // will always be lower case regardless
-        const base = unCapitalizeFirstLetter(state.gameObjectName);
+        const base = lowerFirst(state.gameObjectName);
 
         // the back sprite are neutral colors
         (this.game.resources[`${base}Back`] as RendererResource).newSprite(this.aliveContainer);

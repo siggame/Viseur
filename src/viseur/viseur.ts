@@ -10,7 +10,8 @@ import { BaseGame } from "./game/base-game";
 import { IBaseGameNamespace, IDeltaReason, IViseurGamelog,
        } from "./game/interfaces";
 import { GUI } from "./gui";
-import { Joueur, TournamentClient, TournamentConnnectionArgs } from "./joueur";
+import { Joueur, JoueurConnectionArgs,
+         TournamentClient, TournamentConnnectionArgs } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
 import { BaseSetting, ViseurSettings } from "./settings";
@@ -218,7 +219,9 @@ export class Viseur {
      * Connects to a game server to play a game for the human controlling this Viseur
      * @param args - The args to send to the joueur client
      */
-    public playAsHuman(args: TournamentConnnectionArgs): void {
+    public playAsHuman(
+        args: TournamentConnnectionArgs & JoueurConnectionArgs,
+    ): void {
         this.gui.modalMessage("Connecting to game server...");
 
         this.createJoueur(args);
@@ -304,7 +307,7 @@ export class Viseur {
             );
         });
 
-        this.tournamentClient.connect(server, port, playerName);
+        this.tournamentClient.connect({ server, port, playerName });
     }
 
     /**
@@ -684,7 +687,7 @@ export class Viseur {
      * Initializes the Joueur (game client)
      * @param args argus to connect with
      */
-    private createJoueur(args: IJoueurConnectionArgs): void {
+    private createJoueur(args: JoueurConnectionArgs): void {
         this.joueur = new Joueur(this);
 
         this.rawGamelog = this.joueur.getGamelog();

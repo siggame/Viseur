@@ -1,4 +1,4 @@
-import { DeltaReason, IGamelog, OrderEvent } from "cadre-ts-utils/cadre";
+import { DeltaReason, IGamelog } from "cadre-ts-utils/cadre";
 import { CheckBoxSetting, ColorSetting, IBaseSettings } from "../settings";
 import { BaseGame } from "./base-game";
 import { BaseHumanPlayer } from "./base-human-player";

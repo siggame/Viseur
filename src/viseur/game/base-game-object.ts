@@ -6,6 +6,7 @@ import { ease } from "src/utils/";
 import { Viseur } from "src/viseur";
 import { Renderer } from "src/viseur/renderer";
 import { BaseGame } from "./base-game";
+import { IDeltaReason } from "./interfaces";
 import { StateObject } from "./state-object";
 
 /** the base class all GameObjects inherit from */
@@ -233,7 +234,10 @@ export class BaseGameObject extends StateObject {
      * @returns Any array of items valid for a ContextMenu.
      */
     private getFullContextMenu(): MenuItems {
-        const menu = this.getContextMenu().concat(this.getBottomContextMenu());
+        const menu = [
+            ...this.getContextMenu(),
+            ...this.getBottomContextMenu(),
+        ];
 
         // pop items off the front that are just separators
         while (menu[0] === "---") {

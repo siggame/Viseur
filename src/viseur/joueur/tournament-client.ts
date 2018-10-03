@@ -1,4 +1,4 @@
-import { FirstArg } from "src/utils";
+import { FirstArgument, Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
 
@@ -17,9 +17,9 @@ export interface ITournamentPlayData {
 }
 
 /** The connection arguments for a tournament to connect */
-export type TournamentConnnectionArgs = Readonly<FirstArg<
+export type TournamentConnnectionArgs = FirstArgument<
     TournamentClient["connect"]
->>;
+>;
 
 /** A WS connection to a tournament server */
 export class TournamentClient {
@@ -60,19 +60,18 @@ export class TournamentClient {
     ) {}
 
     /**
-     * connects to a remote tournament server
-     * @param server the server to connection to via web sockets
-     * @param port the port for the server
-     * @param playerName the name for the human player, must match
+     * connects to a remote tournament server.
+     *
+     * @param args - The connection args.
      * exactly as the one on the tournament server.
      */
-    public connect(
-        server: string,
-        port: number,
-        playerName: string = "ReplaceMe",
-    ): void {
+    public connect(args: Immutable<{
+        server: string;
+        port: number;
+        playerName?: string;
+    }>): void {
         try {
-            this.socket = new WebSocket(`ws://${server}:${port}`);
+            this.socket = new WebSocket(`ws://${args.server}:${args.port}`);
         }
         catch (err) {
             this.events.error.emit(err);
@@ -86,7 +85,7 @@ export class TournamentClient {
 
             this.send("register", {
                 type: "Viseur",
-                name: playerName || "Human Player",
+                name: args.playerName || "Human Player",
                 password: "ReplaceMe", // yes, "ReplaceMe" is the correct value
             });
         };

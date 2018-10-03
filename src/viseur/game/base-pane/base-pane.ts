@@ -1,15 +1,20 @@
+import { IBaseGame, IBaseGameObject, IBasePlayer } from "cadre-ts-utils/cadre";
 import * as dateFormat from "dateformat";
 import * as $ from "jquery";
+import escape from "lodash/escape";
+import sum from "lodash/sum";
 import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
-import { escapeHTML, getContrastingColor, isObject, objectHasProperty, sum, UnknownObject } from "src/utils";
+import { getContrastingColor, isObject, objectHasProperty, UnknownObject,
+       } from "src/utils";
 import { Viseur } from "src/viseur";
-import { BaseGame, IBaseGameObjectState, IBaseGameState, IBasePlayerState } from "src/viseur/game";
+import { BaseGame } from "src/viseur/game";
 import "./base-pane.scss";
 
 const requireLanguageImage = require.context("../language-images/", true, /\.png$/);
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
+const NS_IN_MS = 1000000;
 
 /** The information for a stat on the pane. */
 export interface IPaneStat<T = unknown> {
@@ -41,10 +46,13 @@ export interface IStatsList<T = unknown> {
     statsToListElement: JQuery[];
 }
 
-/** the base class for all game panes, which are the HTML part of the game normally used to show player stats */
+/**
+ * The base class for all game panes, which are the HTML part of the game
+ * normally used to show player stats.
+ */
 export class BasePane<
-    G extends IBaseGameState,
-    P extends IBasePlayerState,
+    TBaseGame extends IBaseGame,
+    TBasePlayer extends IBasePlayer,
 > extends BaseElement {
     /** The game this pane represents. */
     public readonly game: BaseGame;
@@ -60,13 +68,13 @@ export class BasePane<
     /**
      * The player we are ticking for.
      */
-    private humansTickingPlayer?: IBasePlayerState;
+    private humansTickingPlayer?: IBasePlayer;
 
     /** Stats list for the game. */
-    private readonly gameStatsList: IStatsList<G>;
+    private readonly gameStatsList: IStatsList<TBaseGame>;
 
     /** Stats list for each player, indexed by their IDs. */
-    private readonly playerToStatsList = new Map<string, IStatsList<P>>();
+    private readonly playerToStatsList = new Map<string, IStatsList<TBasePlayer>>();
 
     /** Element that holds the player's stats lists. */
     private readonly playersElement: JQuery;
@@ -86,7 +94,7 @@ export class BasePane<
      * @param initialState - The initial state in the game, where all players
      * exist.
      */
-    constructor(viseur: Viseur, game: BaseGame, initialState: IBaseGameState) {
+    constructor(viseur: Viseur, game: BaseGame, initialState: IBaseGame) {
         super({
             parent: viseur.gui.gamePaneWrapper,
         });
@@ -174,7 +182,7 @@ export class BasePane<
      * reflecting.
      * @param nextState - The next state, if there is one..
      */
-    public update(currentState: IBaseGameState, nextState?: IBaseGameState): void {
+    public update(currentState: IBaseGame, nextState?: IBaseGame): void {
         const state = (this.humansTimer && nextState)
             // If we have a human player, so use the next state which is
             // actually the most current state.
@@ -194,13 +202,16 @@ export class BasePane<
             }
 
             this.updateStatsList(playerStatsList, player);
-            const backgroundImageCSS = playerStatsList.element.css("background-image");
+            const backgroundImageCSS = playerStatsList.element
+                .css("background-image");
 
             if (!backgroundImageCSS || backgroundImageCSS === "none") {
                 // then we need to load the background image of their
                 // programming language icon
 
-                const languageKey = player.clientType.replace("#", "s").toLowerCase();
+                const languageKey = player.clientType
+                    .replace("#", "s")
+                    .toLowerCase();
 
                 let languageIcon: string | undefined;
                 try {
@@ -277,11 +288,11 @@ export class BasePane<
      * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the player.
      */
-    protected getPlayerStats(state: IBaseGameState): Array<IPaneStat<P>> {
+    protected getPlayerStats(state: IBaseGame): Array<IPaneStat<TBasePlayer>> {
         return [
             {
                 title: "name",
-                get: (player) => escapeHTML(player.name),
+                get: (player) => escape(player.name),
             },
             {
                 title: TIME_REMAINING_TITLE,
@@ -298,8 +309,8 @@ export class BasePane<
      * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the game.
      */
-    protected getGameStats(state: IBaseGameState): Array<IPaneStat<G>> {
-        const list: Array<IPaneStat<G>> = [];
+    protected getGameStats(state: IBaseGame): Array<IPaneStat<TBaseGame>> {
+        const list: Array<IPaneStat<TBaseGame>> = [];
 
         if (objectHasProperty(state, "currentTurn")) {
             list.push({
@@ -320,7 +331,7 @@ export class BasePane<
      * index. Sum does not matter, it will resize dynamically.
      * If You want to display no score, return undefined or an empty array.
      */
-    protected getPlayersScores(state: IBaseGameState): number[] | undefined {
+    protected getPlayersScores(state: IBaseGame): number[] | undefined {
         // intended to be overridden and scores calculated there
         return undefined;
     }
@@ -335,7 +346,7 @@ export class BasePane<
     protected setPlayersProgresses(progresses?: number[]): void {
         let summed = 0;
         if (progresses && progresses.length === this.game.numberOfPlayers) {
-            summed = sum(...progresses);
+            summed = sum(progresses);
         }
 
         let i = 0;
@@ -364,7 +375,7 @@ export class BasePane<
     private cleanStats(
         stats: IPaneStat[],
         titlePrefix: string,
-    ): Array<IPaneStat<G | P>> {
+    ): Array<IPaneStat<TBaseGame | TBasePlayer>> {
         for (const stat of stats) {
             if (stat.label || stat.title) {
                 stat.title = `${titlePrefix}'s ${stat.label || stat.title}`;
@@ -383,9 +394,9 @@ export class BasePane<
      * @returns A container object containing all the parts of this list.
      */
     private createStatList(
-        stats: Array<IPaneStat<G | P>>,
+        stats: Array<IPaneStat<TBaseGame | TBasePlayer>>,
         parent: JQuery, classes: string = "",
-    ): IStatsList<G | P> {
+    ): IStatsList<TBaseGame | TBasePlayer> {
         const element = partial(
             // tslint:disable-next-line:no-require-imports
             require("./base-pane-stats.hbs"),
@@ -393,7 +404,7 @@ export class BasePane<
             parent,
         );
 
-        const list: IStatsList<G | P> = {
+        const list: IStatsList<TBaseGame | TBasePlayer> = {
             stats,
             element,
             statsToListElement: [],
@@ -406,7 +417,8 @@ export class BasePane<
                 .addClass("stat")
                 .addClass(`stat-${i}`)
                 .attr("title", stat.title || "")
-                .html(String(i)), // tslint:disable-line:no-inner-html - safe, it will always be a number
+                // tslint:disable-next-line:no-inner-html
+                .html(String(i)), // safe, it will always be a number
             );
 
             i++;
@@ -464,7 +476,8 @@ export class BasePane<
         const negative = timeRemaining < 0;
 
         // convert ns to ms, which is what Date() expects
-        const nsAsDate = new Date(Math.round(Math.abs(timeRemaining / 1000000)));
+        const ms = Math.round(Math.abs(timeRemaining / NS_IN_MS));
+        const nsAsDate = new Date(ms);
 
         return (negative ? "-" : "") + dateFormat(nsAsDate, "MM:ss:l");
     }
@@ -475,12 +488,14 @@ export class BasePane<
     private ticked(): void {
         if (this.humansTickingPlayer) {
             this.humansTimeRemaining = this.humansTimeRemaining || 0;
-            this.humansTimeRemaining -= (1000 * 1000000); // 1000 ms elapsed on this tick
+            this.humansTimeRemaining -= (NS_IN_MS * 1000); // 1000 ms elapsed on this tick
 
             const list = this.playerToStatsList.get(this.humansTickingPlayer.id);
 
             if (list) {
-                const index = list.stats.findIndex((s) => Boolean(s.title && s.title.includes(TIME_REMAINING_TITLE)));
+                const index = list.stats.findIndex((s) => Boolean(
+                    s.title && s.title.includes(TIME_REMAINING_TITLE)
+                ));
                 const li = list.statsToListElement[index];
                 if (li) {
                     li.html(this.formatTimeRemaining(this.humansTimeRemaining));
