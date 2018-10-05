@@ -1,6 +1,6 @@
 import clamp from "lodash/clamp";
 import * as PIXI from "pixi.js";
-import { ColorTint, getTintFromColor } from "src/utils";
+import { ColorTint, getTintFromColor, Immutable } from "src/utils";
 import { Viseur, viseurConstructed } from "src/viseur";
 import { BaseSetting } from "src/viseur/settings";
 
@@ -57,14 +57,17 @@ export class GameBar {
      * @param parent - The parent pixi object.
      * @param options - Optional options to initialize the bar with.
      */
-    constructor(parent: PIXI.Container, options: IGameBarOptions = {}) {
+    constructor(parent: PIXI.Container, opts: Immutable<IGameBarOptions> = {}) {
         if (!viseur || !viseur.game) {
             throw new Error("Cannot create a game bar without a game!");
         }
 
-        options.height = options.height || 0.06667;
+        const options = {
+            height: 0.06667,
+            width: 0.9,
+            ...opts,
+        };
 
-        options.width = options.width || 0.9;
         this.width = options.width;
         this.container.setParent(parent);
         this.max = options.max || 1;

@@ -1,3 +1,4 @@
+import { Immutable } from "src/utils";
 import { onceTransitionEnds } from "src/utils/jquery";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import "./modal.scss";
@@ -7,7 +8,12 @@ export class Modal extends BaseElement {
     /** the content of the modal */
     private readonly content: JQuery;
 
-    constructor(args: IBaseElementArgs) {
+    /**
+     * Creates a modal.
+     *
+     * @param args - The arguments for the modal.
+     */
+    constructor(args: Immutable<IBaseElementArgs>) {
         super(args);
 
         this.content = this.element.find(".modal-content");
@@ -15,10 +21,12 @@ export class Modal extends BaseElement {
     }
 
     /**
-     * Shows the modal with some element inside it
-     * @param {$|string} element - a jquery element, or a raw string to put inside this modal
-     * @param {function} [callback] - callback to execute after showing
-     * (not after animation, but after show is invoked async)
+     * Shows the modal with some element inside it.
+     *
+     * @param element - A jquery element, or a raw string to put inside this
+     * modal.
+     * @param [callback] - the optional callback to execute after showing
+     * (not after animation, but after show is invoked async).
      */
     public show(element: JQuery, callback?: () => void): void {
         this.element.removeClass("hidden");
@@ -45,7 +53,13 @@ export class Modal extends BaseElement {
         });
     }
 
+    /**
+     * Gets the template for the modal.
+     *
+     * @returns The modal handlebars template.
+     */
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./modal.hbs");
     }
 }

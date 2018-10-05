@@ -6,8 +6,8 @@ import sum from "lodash/sum";
 import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
-import { getContrastingColor, isObject, objectHasProperty, UnknownObject,
-       } from "src/utils";
+import { getContrastingColor, Immutable, isObject, objectHasProperty,
+         UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
 import "./base-pane.scss";
@@ -37,7 +37,7 @@ export interface IPaneStat<T = unknown> {
 /** The list of stats. */
 export interface IStatsList<T = unknown> {
     /** the list of stats in order to display */
-    stats: Array<IPaneStat<T>>;
+    stats: ReadonlyArray<IPaneStat<T>>;
 
     /** The container element */
     element: JQuery;
@@ -68,7 +68,7 @@ export class BasePane<
     /**
      * The player we are ticking for.
      */
-    private humansTickingPlayer?: IBasePlayer;
+    private humansTickingPlayer?: Immutable<IBasePlayer>;
 
     /** Stats list for the game. */
     private readonly gameStatsList: IStatsList<TBaseGame>;
@@ -94,7 +94,11 @@ export class BasePane<
      * @param initialState - The initial state in the game, where all players
      * exist.
      */
-    constructor(viseur: Viseur, game: BaseGame, initialState: IBaseGame) {
+    constructor(
+        viseur: Viseur,
+        game: BaseGame,
+        initialState: Immutable<IBaseGame>,
+    ) {
         super({
             parent: viseur.gui.gamePaneWrapper,
         });
@@ -182,7 +186,10 @@ export class BasePane<
      * reflecting.
      * @param nextState - The next state, if there is one..
      */
-    public update(currentState: IBaseGame, nextState?: IBaseGame): void {
+    public update(
+        currentState: Immutable<IBaseGame>,
+        nextState?: Immutable<IBaseGame>,
+    ): void {
         const state = (this.humansTimer && nextState)
             // If we have a human player, so use the next state which is
             // actually the most current state.
@@ -288,7 +295,9 @@ export class BasePane<
      * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the player.
      */
-    protected getPlayerStats(state: IBaseGame): Array<IPaneStat<TBasePlayer>> {
+    protected getPlayerStats(
+        state: Immutable<IBaseGame>,
+    ): Array<IPaneStat<TBasePlayer>> {
         return [
             {
                 title: "name",
@@ -309,7 +318,9 @@ export class BasePane<
      * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the game.
      */
-    protected getGameStats(state: IBaseGame): Array<IPaneStat<TBaseGame>> {
+    protected getGameStats(
+        state: Immutable<IBaseGame>,
+    ): Array<IPaneStat<TBaseGame>> {
         const list: Array<IPaneStat<TBaseGame>> = [];
 
         if (objectHasProperty(state, "currentTurn")) {
@@ -331,7 +342,9 @@ export class BasePane<
      * index. Sum does not matter, it will resize dynamically.
      * If You want to display no score, return undefined or an empty array.
      */
-    protected getPlayersScores(state: IBaseGame): number[] | undefined {
+    protected getPlayersScores(
+        state: Immutable<IBaseGame>,
+    ): number[] | undefined {
         // intended to be overridden and scores calculated there
         return undefined;
     }
@@ -343,7 +356,7 @@ export class BasePane<
      * (hides bars), or an array of numbers, indexed by their location in
      * game.players, with each value being [0, 1] for their progress.
      */
-    protected setPlayersProgresses(progresses?: number[]): void {
+    protected setPlayersProgresses(progresses?: Immutable<number[]>): void {
         let summed = 0;
         if (progresses && progresses.length === this.game.numberOfPlayers) {
             summed = sum(progresses);
@@ -373,9 +386,9 @@ export class BasePane<
      * @returns All the PaneStats cleaned up
      */
     private cleanStats(
-        stats: IPaneStat[],
+        stats: ReadonlyArray<IPaneStat>, // readonly but not immutable as we do mutate the pane stats.
         titlePrefix: string,
-    ): Array<IPaneStat<TBaseGame | TBasePlayer>> {
+    ): ReadonlyArray<IPaneStat<TBaseGame | TBasePlayer>> {
         for (const stat of stats) {
             if (stat.label || stat.title) {
                 stat.title = `${titlePrefix}'s ${stat.label || stat.title}`;
@@ -394,8 +407,9 @@ export class BasePane<
      * @returns A container object containing all the parts of this list.
      */
     private createStatList(
-        stats: Array<IPaneStat<TBaseGame | TBasePlayer>>,
-        parent: JQuery, classes: string = "",
+        stats: Immutable<Array<IPaneStat<TBaseGame | TBasePlayer>>>,
+        parent: JQuery,
+        classes: string = "",
     ): IStatsList<TBaseGame | TBasePlayer> {
         const element = partial(
             // tslint:disable-next-line:no-require-imports
@@ -494,7 +508,7 @@ export class BasePane<
 
             if (list) {
                 const index = list.stats.findIndex((s) => Boolean(
-                    s.title && s.title.includes(TIME_REMAINING_TITLE)
+                    s.title && s.title.includes(TIME_REMAINING_TITLE),
                 ));
                 const li = list.statsToListElement[index];
                 if (li) {

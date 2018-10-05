@@ -1,8 +1,10 @@
-import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
+import { DisableableElement, IDisableableElementArgs,
+       } from "src/core/ui/disableable-element";
+import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Field } from "../field";
 
-export interface IBaseInputArgs extends IDisableableElementArgs {
+export interface IBaseInputArgs<T> extends IDisableableElementArgs {
     /** the input type */
     type?: string;
 
@@ -16,7 +18,7 @@ export interface IBaseInputArgs extends IDisableableElementArgs {
     hint?: string;
 
     /** starting value */
-    value?: any;
+    value?: T;
 }
 
 /** The base class all input elements inherit from */
@@ -34,13 +36,11 @@ export class BaseInput<T> extends DisableableElement {
     protected actualValue: T;
 
     /**
-     * Initializes the base input settings, should be called as super
-     * @param args the initial args
+     * Initializes the base input settings, should be called as super.
+     *
+     * @param args - The initial args.s
      */
-    constructor(args: IBaseInputArgs & {
-        /** starting value */
-        value?: T;
-    }) {
+    constructor(args: Immutable<IBaseInputArgs<T>>) {
         super(args);
 
         if (args.label) {
@@ -57,14 +57,14 @@ export class BaseInput<T> extends DisableableElement {
             this.value = this.getElementValue();
         });
 
-        this.value = args.value;
-        this.actualValue = args.value;
+        this.value = args.value as T;
+        this.actualValue = args.value as T;
     }
 
     /**
-     * Sets the value of this BaseInput
+     * Sets the value of this BaseInput.
      *
-     * @param newValue the new value to set to
+     * @param newValue - The new value to set to.
      */
     public set value(newValue: T) {
         if (this.actualValue !== newValue) {
@@ -73,9 +73,10 @@ export class BaseInput<T> extends DisableableElement {
         }
 
         const elemValue = this.getElementValue();
-        let checkValue: any = this.actualValue;
+        let checkValue = this.actualValue;
         if (typeof(elemValue) === "string") {
-            checkValue = String(checkValue);
+            // tslint:disable-next-line:no-any no-unsafe-any - safe, is string
+            checkValue = String(checkValue) as any;
         }
 
         if (elemValue !== checkValue) {
@@ -84,8 +85,9 @@ export class BaseInput<T> extends DisableableElement {
     }
 
     /**
-     * Gets the value of this BaseInput
-     * @returns {*} The value of the input, depends on subclass
+     * Gets the value of this BaseInput.
+     *
+     * @returns - The value of the input, depends on subclass.
      */
     public get value(): T {
         return this.actualValue;
@@ -112,18 +114,20 @@ export class BaseInput<T> extends DisableableElement {
     }
 
     /**
-     * Gets the string used to listen to the element for events
-     * @returns the string for jquery to use
+     * Gets the string used to listen to the element for events.
+     *
+     * @returns The string for jquery to use.
      */
     protected getElementOnEventString(): string {
         return "change";
     }
 
     /**
-     * Gets the value of the DOM element
-     * @returns {*} the DOM element's current value
+     * Gets the value of the DOM element.
+     *
+     * @returns The DOM element's current value.
      */
-    protected getElementValue(): any {
+    protected getElementValue(): any { // tslint:disable-line:no-any
         return this.element.val();
     }
 
@@ -131,10 +135,11 @@ export class BaseInput<T> extends DisableableElement {
      * updates the value of the DOM element
      */
     protected updateElementValue(): void {
-        this.element.val(this.actualValue as any);
+        this.element.val(this.actualValue as any); // tslint:disable-line:no-any
     }
 
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./base-input.hbs");
     }
 }

@@ -2,7 +2,7 @@ import { IBaseGameObject } from "cadre-ts-utils/cadre";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";
-import { ease } from "src/utils/";
+import { ease, Immutable } from "src/utils/";
 import { Viseur } from "src/viseur";
 import { Renderer } from "src/viseur/renderer";
 import { BaseGame } from "./base-game";
@@ -21,8 +21,8 @@ export class BaseGameObject extends StateObject {
     public readonly game: BaseGame;
 
     /** The main container that all sprites to display this object should be put in */
-    public readonly container!: PIXI.Container;
-    // TODO: in TS 2.8 this should be conditionally set when shouldRender is true
+    public readonly container: PIXI.Container | undefined;
+    // public readonly container: this["shouldRender"] extends true ? PIXI.Container : undefined;
 
     /** The renderer that provides utility rendering functions (as well as heavy lifting for screen changes) */
     public readonly renderer: Renderer;
@@ -44,7 +44,7 @@ export class BaseGameObject extends StateObject {
      * @param initialState Fully merged delta state for this object's first existence
      * @param viseur The Viseur instance that controls this game object
      */
-    constructor(initialState: IBaseGameObject, viseur: Viseur) {
+    constructor(initialState: Immutable<IBaseGameObject>, viseur: Viseur) {
         super();
 
         this.id = initialState.id;
@@ -101,7 +101,7 @@ export class BaseGameObject extends StateObject {
      */
     public runOnServer(
         run: string,
-        args: object,
+        args: Immutable<object>,
         callback?: (returned: unknown) => void,
     ): void {
         this.viseur.runOnServer(this.id, run, args, callback);
@@ -116,10 +116,10 @@ export class BaseGameObject extends StateObject {
      * @param nextReason - the reason for the next delta
      */
     public update(
-        current?: IBaseGameObject,
-        next?: IBaseGameObject,
-        reason?: IDeltaReason,
-        nextReason?: IDeltaReason,
+        current?: Immutable<IBaseGameObject>,
+        next?: Immutable<IBaseGameObject>,
+        reason?: Immutable<IDeltaReason>,
+        nextReason?: Immutable<IDeltaReason>,
     ): void {
         super.update(current, next, reason, nextReason);
     }
@@ -139,10 +139,10 @@ export class BaseGameObject extends StateObject {
      */
     public render(
         dt: number,
-        current: IBaseGameObject,
-        next: IBaseGameObject,
-        reason: IDeltaReason,
-        nextReason: IDeltaReason,
+        current: Immutable<IBaseGameObject>,
+        next: Immutable<IBaseGameObject>,
+        reason: Immutable<IDeltaReason>,
+        nextReason: Immutable<IDeltaReason>,
     ): void {
         this.renderLogs(dt, current, next);
     }
@@ -168,10 +168,10 @@ export class BaseGameObject extends StateObject {
      * @param nextReason - The reason for the next delta.
      */
     public stateUpdated(
-        current: IBaseGameObject,
-        next: IBaseGameObject,
-        reason: IDeltaReason,
-        nextReason: IDeltaReason,
+        current: Immutable<IBaseGameObject>,
+        next: Immutable<IBaseGameObject>,
+        reason: Immutable<IDeltaReason>,
+        nextReason: Immutable<IDeltaReason>,
     ): void {
         // intended to be overridden by inheriting classes, no need to call this super
     }
@@ -282,8 +282,8 @@ export class BaseGameObject extends StateObject {
      */
     private renderLogs(
         dt: number,
-        current: IBaseGameObject,
-        next: IBaseGameObject,
+        current: Immutable<IBaseGameObject>,
+        next: Immutable<IBaseGameObject>,
     ): void {
         if (this.container && next && next.logs) {
             if (next.logs.length > 0

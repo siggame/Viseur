@@ -13,7 +13,7 @@ export interface IBaseSettingArgs<T> {
  * This is basically a wrapper around the input's interface args so that
  * we can re-use them to make settings files with compile time type checking.
  */
-export abstract class BaseSetting<T = unknown> {
+export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
     /** The index of the next new setting. */
     public static newIndex: number = 0;
 

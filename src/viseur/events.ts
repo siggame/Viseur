@@ -1,46 +1,47 @@
+import { IGamelog } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Event, events, Signal } from "ts-typed-events";
 import { BaseGame } from "./game/base-game";
-import { IGamelog } from "./game/gamelog";
 import { ICurrentTime } from "./time-manager";
 import { IViseurGameState } from "./viseur";
 
 /** The events Viseur emits */
 export const ViseurEvents = events({
     /** Triggers when the game's state changes and sends the new state */
-    stateChanged: new Event<IViseurGameState>(),
+    stateChanged: new Event<Immutable<IViseurGameState>>(),
 
     /** Triggers when a state changes, but it is just one step in a large number of changes */
-    stateChangedStep: new Event<IViseurGameState>(),
+    stateChangedStep: new Event<Immutable<IViseurGameState>>(),
 
     /** Triggers when the timer ticks */
-    timeUpdated: new Event<ICurrentTime>(),
+    timeUpdated: new Event<Immutable<ICurrentTime>>(),
 
     /** Triggers literally 1 second after the ready event */
     delayedReady: new Signal(),
 
     /** Triggers when all async events are done and we are ready to being normal operations */
-    ready: new Event<{
+    ready: new Event<Immutable<{
         game: BaseGame;
         gamelog: IGamelog;
-    }>(),
+    }>>(),
 
     /** Triggered during loading of the gamelog if the gamelog is found at a remote url */
-    gamelogIsRemote: new Event<{url?: string}>(),
+    gamelogIsRemote: new Event<Immutable<{url?: string}>>(),
 
     /** Triggered when the gamelog has been loaded */
-    gamelogLoaded: new Event<IGamelog>(),
+    gamelogLoaded: new Event<Immutable<IGamelog>>(),
 
     /** Triggers when a steaming gamelog is updated in some way, probably a new delta */
-    gamelogUpdated: new Event<IGamelog>(),
+    gamelogUpdated: new Event<Immutable<IGamelog>>(),
 
     /**
      * Triggers when a streaming gamelog is finished streaming and will no longer change.
      * In addition a url to the finalized gamelog (with other player's non obfuscated data) will be emitted
      */
-    gamelogFinalized: new Event<{
+    gamelogFinalized: new Event<Immutable<{
         gamelog: IGamelog;
         url: string;
-    }>(),
+    }>>(),
 
     // -- connection events -- \\
 
@@ -51,7 +52,7 @@ export const ViseurEvents = events({
     connectionMessage: new Event<string>(),
 
     /** Triggers when a connection that was opened is closed, including data if it closed due to a timeout */
-    connectionClosed: new Event<{timedOut: boolean}>(),
+    connectionClosed: new Event<Immutable<{ timedOut: boolean }>>(),
 
     /** Triggers when a connection encounters and error, and emits that error */
     connectionError: new Event<Error>(),

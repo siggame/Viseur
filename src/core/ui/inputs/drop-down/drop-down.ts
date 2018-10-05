@@ -1,6 +1,8 @@
-import partial from "src/core/partial";
+import { partial } from "src/core/partial";
+import { Immutable } from "src/utils";
 import { BaseInput, IBaseInputArgs } from "../base-input";
 
+/** An option on the drop down. */
 export interface IDropDownOption<T> {
     /** the display text */
     text: string;
@@ -9,7 +11,8 @@ export interface IDropDownOption<T> {
     value: T;
 }
 
-export interface IDropDownArgs<T> extends IBaseInputArgs {
+/** Initialization args for drop down inputs. */
+export interface IDropDownArgs<T> extends IBaseInputArgs<T> {
     options: Array<string | IDropDownOption<T>>;
 }
 
@@ -18,17 +21,18 @@ export class DropDown<T> extends BaseInput<T> {
     /** The options available on this drop down menu */
     private readonly options: Array<IDropDownOption<T>> = [];
 
-    constructor(args: IDropDownArgs<T>) {
+    constructor(args: Immutable<IDropDownArgs<T>>) {
         super(args);
 
         if (args.options) {
-            this.setOptions(args.options, args.value);
+            this.setOptions(args.options, args.value as T);
         }
     }
 
     /**
-     * Sets the value to an item in the drop down
-     * @param newValue the new value to set the drop down to
+     * Sets the value to an item in the drop down.
+     *
+     * @param newValue - the new value to set the drop down to.
      */
     public set value(newValue: T) {
         if (!this.options) {
@@ -39,12 +43,14 @@ export class DropDown<T> extends BaseInput<T> {
         if (!newOption) {
             throw new Error(`Cannot find ${newValue} to set for drop down.`);
         }
+
         super.value = newOption.value;
     }
 
     /**
-     * Gets the value of this BaseInput
-     * @returns {*} The value of the input, depends on subclass
+     * Gets the value of this BaseInput.
+     *
+     * @returns The value of the input, depends on subclass.
      */
     public get value(): T {
         return super.value;
@@ -52,19 +58,27 @@ export class DropDown<T> extends BaseInput<T> {
 
     /**
      * Set the options for this Drop Down. Previous options are deleted.
-     * @param options - list of options (in order) for the drop down
-     * @param defaultValue optional default value to select, defaults to the first item of options when not set
+     *
+     * @param options - The list of options (in order) for the drop down.
+     * @param defaultValue - An optional default value to select,
+     * defaults to the first item of options when not set.
      */
-    public setOptions(options: Array<string | IDropDownOption<T>>, defaultValue?: T): void {
+    public setOptions(
+        options: Immutable<Array<string | IDropDownOption<T>>>,
+        defaultValue?: T,
+    ): void {
         this.options.length = 0;
         this.element.html("");
 
-        for (let option of options) {
-            if (typeof(option) === "string") {
-                option = { text: option, value: option as any };
-            }
+        for (const option of options) {
+            this.options.push(
+                typeof option === "string"
+                // tslint:disable-next-line:no-any no-unsafe-any
+                ? { text: option, value: option as any } // T is string
+                : option,
+            );
 
-            this.options.push(option);
+            // tslint:disable-next-line:no-require-imports
             partial(require("./drop-down-option.hbs"), option, this.element);
         }
 
@@ -73,7 +87,13 @@ export class DropDown<T> extends BaseInput<T> {
             : this.options[0].value;
     }
 
+    /**
+     * Gets the template for this drop down.
+     *
+     * @returns The handlebars for this drop down.
+     */
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./drop-down.hbs");
     }
 }

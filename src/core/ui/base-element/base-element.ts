@@ -1,5 +1,6 @@
 import * as $ from "jquery";
 import { partial } from "src/core/partial";
+import { Immutable } from "src/utils";
 
 /** BaseElement constructor args */
 export interface IBaseElementArgs {
@@ -26,7 +27,7 @@ export class BaseElement {
      * Creates a new base element
      * @param args the arguments to set value(s) from
      */
-    constructor(args?: IBaseElementArgs = {}) {
+    constructor(args: Immutable<IBaseElementArgs> = {}) {
         this.id = args.id;
         if (args.parent) {
             this.parent = $(args.parent) as JQuery; // TODO: bad

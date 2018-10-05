@@ -1,3 +1,4 @@
+import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "./base-element";
 
 export interface IDisableableElementArgs extends IBaseElementArgs {
@@ -10,7 +11,7 @@ export class DisableableElement extends BaseElement {
      * Creates an element that can be disabled
      * @param args the args with a disabled flag option
      */
-    constructor(args: IDisableableElementArgs) {
+    constructor(args: Immutable<IDisableableElementArgs>) {
         super(args);
 
         if (args.disabled) {

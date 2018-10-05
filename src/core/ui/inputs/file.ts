@@ -13,13 +13,15 @@ export class FileInput extends BaseInput<undefined> {
     });
 
     /**
-     * Initializes the File Input
-     * @param args - initialization args
+     * Initializes the File Input.
+     *
+     * @param args - The initialization args.
      */
-    constructor(args: IBaseInputArgs) {
-        super(Object.assign({
+    constructor(args: IBaseInputArgs<undefined>) {
+        super({
             type: "file",
-        }, args));
+            ...args,
+        });
 
         this.element.on("change", () => {
             this.loadFile();
@@ -38,14 +40,18 @@ export class FileInput extends BaseInput<undefined> {
             this.events.loaded.emit(reader.result as string);
         };
 
-        const file = (this.element.get(0) as any).files[0];
+        const { files } = (this.element.get(0) as HTMLInputElement);
+        if (!files) {
+            throw new Error("File Input has no files on html element");
+        }
+        const file = files[0];
         reader.readAsText(file);
     }
 
     /**
-     * Does nothing (File inputs cannot be set via JavaScript)
+     * Does nothing (File inputs cannot be set via JavaScript).
      */
-    public set value(newValue: any) {
+    public set value(newValue: undefined) {
         // do nothing, disallow public set
     }
 }

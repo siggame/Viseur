@@ -28,10 +28,10 @@ export class StateObject {
      * @param nextReason - The reason for the next delta.
      */
     public update(
-        current?: IState,
-        next?: IState,
-        reason?: IDeltaReason,
-        nextReason?: IDeltaReason,
+        current?: Immutable<IState>,
+        next?: Immutable<IState>,
+        reason?: Immutable<IDeltaReason>,
+        nextReason?: Immutable<IDeltaReason>,
     ): void {
         this.current = current;
         this.next = next;

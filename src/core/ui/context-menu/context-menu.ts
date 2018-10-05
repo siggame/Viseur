@@ -1,5 +1,6 @@
 import * as $ from "jquery";
-import partial from "src/core/partial";
+import { partial } from "src/core/partial";
+import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import "./context-menu.scss";
 
@@ -14,7 +15,7 @@ export interface IMenuItem {
     icon: string;
 
     /** Callback function to invoke whenever this menu item is clicked */
-    callback: () => void;
+    callback(): void;
 }
 
 export type MenuItems = Array<"---" | IMenuItem>;
@@ -25,9 +26,9 @@ export class ContextMenu extends BaseElement {
      * Creates a context menu
      * @param args base element args with optional structure
      */
-    constructor(args: IBaseElementArgs & {
-        structure?: Array<"---" | IMenuItem>,
-    }) {
+    constructor(args: Immutable<IBaseElementArgs & {
+        structure?: Array<"---" | IMenuItem>;
+    }>) {
         super(args);
 
         this.hide();
@@ -44,11 +45,12 @@ export class ContextMenu extends BaseElement {
     }
 
     /**
-     * Sets, and rebuilds, the structure of this context menu
+     * Sets, and rebuilds, the structure of this context menu.
      *
-     * @param {Array} structure - array of the structure, in order. Can be object for items, or "---" for seperators
+     * @param structure - The array of the structure, in order.
+     * Can be object for items, or "---" for seperators.
      */
-    public setStructure(structure: MenuItems): void {
+    public setStructure(structure: Immutable<MenuItems>): void {
         this.element.html(""); // clear out any structure we had
 
         for (const item of structure) {
@@ -56,7 +58,12 @@ export class ContextMenu extends BaseElement {
                 this.element.append($("<hr>"));
             }
             else { // it's a menu item
-                const elem = partial(require("./context-menu-item.hbs"), item, this.element);
+                const elem = partial(
+                    // tslint:disable-next-line:no-require-imports
+                    require("./context-menu-item.hbs"),
+                    item,
+                    this.element,
+                );
 
                 elem.on("click", (e) => {
                     e.stopPropagation();
@@ -68,9 +75,10 @@ export class ContextMenu extends BaseElement {
     }
 
     /**
-     * Displays the context menu
-     * @param x the position of the context menu in pixels
-     * @param y the position of the context menu in pixels
+     * Displays the context menu.
+     *
+     * @param x - The position of the context menu in pixels.
+     * @param y - The position of the context menu in pixels.
      */
     public show(x: number, y: number): void {
         this.element
@@ -93,7 +101,13 @@ export class ContextMenu extends BaseElement {
         });
     }
 
+    /**
+     * Gets the template for this partial.
+     *
+     * @returns The handlebars for this element.
+     */
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./context-menu.hbs");
     }
 

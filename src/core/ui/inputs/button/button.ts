@@ -1,3 +1,4 @@
+import { Immutable } from "src/utils";
 import { events, Signal } from "ts-typed-events";
 import { DisableableElement, IDisableableElementArgs } from "../../disableable-element";
 
@@ -9,10 +10,10 @@ export class Button extends DisableableElement {
         clicked: new Signal(),
     });
 
-    constructor(args: IDisableableElementArgs & {
+    constructor(args: Immutable<IDisableableElementArgs & {
         /** text string to place on the button */
-        text?: string,
-    }) {
+        text?: string;
+    }>) {
         super(args);
 
         if (args.text) {
@@ -56,6 +57,7 @@ export class Button extends DisableableElement {
     }
 
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./button.hbs");
     }
 }

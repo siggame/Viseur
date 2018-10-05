@@ -3,7 +3,7 @@ import { BaseSetting } from "./setting";
 /** The base settings interface for viseur/game */
 export interface IBaseSettings {
     /** Name lookup for a setting */
-    [settingName: string]: BaseSetting | BaseSetting[];
+    [settingName: string]: BaseSetting | BaseSetting[] | undefined;
 }
 
 /**
@@ -18,7 +18,11 @@ export function createSettings<T extends IBaseSettings>(
     namespace: string,
     settings: T,
 ): Readonly<T> {
-    for (const obj of Object.values(settings)) {
+    for (const [ key, obj ] of Object.entries(settings)) {
+        if (!obj) {
+            throw new Error(`Setting ${key} cannot be undefined`);
+        }
+
         const someSettings = Array.isArray(obj)
             ? obj
             : [ obj ];
