@@ -2,7 +2,7 @@
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
+import { DeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
 import { IBottleState } from "./state-interfaces";
@@ -11,11 +11,15 @@ import { IBottleState } from "./state-interfaces";
 import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
+const SHOULD_RENDER = true;
+
 /**
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class Bottle extends GameObject {
+export class Bottle<TShouldRender extends boolean> extends GameObject<
+    typeof SHOULD_RENDER extends true ? true : TShouldRender
+> {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
@@ -25,11 +29,7 @@ export class Bottle extends GameObject {
      * @returns true if we should render game object classes of this instance,
      *          false otherwise which optimizes playback speed
      */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
-    }
+    public readonly shouldRender = SHOULD_RENDER;
 
     /** The instance of the game this game object is a part of */
     public readonly game!: Game; // set in super constructor
@@ -81,7 +81,7 @@ export class Bottle extends GameObject {
      * @param nextReason the reason for the next delta
      */
     public render(dt: number, current: IBottleState, next: IBottleState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
+                  reason: DeltaReason, nextReason: DeltaReason): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -108,7 +108,7 @@ export class Bottle extends GameObject {
         if (this.lastDT !== dt) {
             this.lastDT = dt;
             // rotate at a constant rate, not dependent on dt
-            this.sprite.rotation = 2 * Math.PI * new Date().getTime() / 1000;
+            this.sprite.rotation = Math.PI * new Date().getTime() * 2 / 1000;
         }
 
         this.container.position.set(
@@ -140,7 +140,7 @@ export class Bottle extends GameObject {
      * @param nextReason the reason for the next delta
      */
     public stateUpdated(current: IBottleState, next: IBottleState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
+                        reason: DeltaReason, nextReason: DeltaReason): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>

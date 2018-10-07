@@ -6,25 +6,33 @@ import { ease, Immutable } from "src/utils/";
 import { Viseur } from "src/viseur";
 import { Renderer } from "src/viseur/renderer";
 import { BaseGame } from "./base-game";
-import { IDeltaReason } from "./interfaces";
+import { DeltaReason } from "./gamelog";
 import { StateObject } from "./state-object";
 
 /** the base class all GameObjects inherit from */
-export class BaseGameObject extends StateObject {
+export class BaseGameObject<TShouldRender extends boolean> extends StateObject {
      /** The ID of this game object. It will never change. */
     public readonly id: string;
 
-    /** The class name as a string of the top level class this game object is, used primarily for reflection */
+    /**
+     * The class name as a string of the top level class this game object is,
+     * used primarily for reflection.
+     */
     public readonly gameObjectName: string;
 
     /** The instance of the game this game object is a part of */
     public readonly game: BaseGame;
 
-    /** The main container that all sprites to display this object should be put in */
-    public readonly container: PIXI.Container | undefined;
-    // public readonly container: this["shouldRender"] extends true ? PIXI.Container : undefined;
+    /** Flag for if this game object should be rendered. Set to true to render it. */
+    public readonly shouldRender!: TShouldRender;
 
-    /** The renderer that provides utility rendering functions (as well as heavy lifting for screen changes) */
+    /** The main container that all sprites to display this object should be put in. */
+    public readonly container!: TShouldRender extends true ? PIXI.Container : undefined;
+
+    /**
+     * The renderer that provides utility rendering functions (as well as
+     * all the heavy lifting for screen changes).
+     */
     public readonly renderer: Renderer;
 
     /** The current state (e.g. at delta time = 0) */
@@ -40,9 +48,11 @@ export class BaseGameObject extends StateObject {
     private loggedPixiText: PIXI.Text | undefined;
 
     /**
-     * Initializes a BaseGameObject, should be invoked by subclass
-     * @param initialState Fully merged delta state for this object's first existence
-     * @param viseur The Viseur instance that controls this game object
+     * Initializes a BaseGameObject, should be invoked by subclass.
+     *
+     * @param initialState - Fully merged delta state for this object's first
+     * existence.
+     * @param viseur - The Viseur instance that controls this game object.
      */
     constructor(initialState: Immutable<IBaseGameObject>, viseur: Viseur) {
         super();
@@ -83,15 +93,6 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * Override this return true to actually render instances of super classes
-     * @returns true if Viseur should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        return false;
-    }
-
-    /**
      * Runs some command on the server, on behalf of this object.
      *
      * @param run - The function to run.
@@ -108,20 +109,16 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * should be invoked after the game object's current and next state, prior to rendering
+     * Should be invoked after the game object's current and next state, prior to rendering.
      *
-     * @param current - the current state
-     * @param next - the next state
-     * @param reason - the reason for the current delta
-     * @param nextReason - the reason for the next delta
+     * @param current - The current state.
+     * @param next - The next state.
      */
     public update(
         current?: Immutable<IBaseGameObject>,
         next?: Immutable<IBaseGameObject>,
-        reason?: Immutable<IDeltaReason>,
-        nextReason?: Immutable<IDeltaReason>,
     ): void {
-        super.update(current, next, reason, nextReason);
+        super.update(current, next);
     }
 
     /**
@@ -141,8 +138,8 @@ export class BaseGameObject extends StateObject {
         dt: number,
         current: Immutable<IBaseGameObject>,
         next: Immutable<IBaseGameObject>,
-        reason: Immutable<IDeltaReason>,
-        nextReason: Immutable<IDeltaReason>,
+        reason: Immutable<DeltaReason>,
+        nextReason: Immutable<DeltaReason>,
     ): void {
         this.renderLogs(dt, current, next);
     }
@@ -153,7 +150,8 @@ export class BaseGameObject extends StateObject {
      * Also automatically invoked after initialization
      */
     public recolor(): void {
-        // do nothing, if a game object can be recolored, it should override this function
+        // do nothing, if a game object can be recolored, then it should
+        // override this function.
     }
 
     /**
@@ -170,10 +168,11 @@ export class BaseGameObject extends StateObject {
     public stateUpdated(
         current: Immutable<IBaseGameObject>,
         next: Immutable<IBaseGameObject>,
-        reason: Immutable<IDeltaReason>,
-        nextReason: Immutable<IDeltaReason>,
+        reason: Immutable<DeltaReason>,
+        nextReason: Immutable<DeltaReason>,
     ): void {
-        // intended to be overridden by inheriting classes, no need to call this super
+        // Intended to be overridden by inheriting classes,
+        // no need to call this super.
     }
 
     /**
@@ -253,8 +252,8 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
-     * Gets the bottom part of the context menu to be automatically appended to
-     * the regular _getContextMenu part, should be a separator + Inspect.
+     * Gets the bottom part of the context menu to be automatically appended to the regular getContextMenu part.
+     * It should be a separator + Inspect.
      *
      * @returns Any array of items valid for a ContextMenu.
      */
@@ -289,10 +288,10 @@ export class BaseGameObject extends StateObject {
             if (next.logs.length > 0
                 && this.viseur.settings.showLoggedText.get()
             ) {
-                let alpha = 1;
-                if (current.logs.length < next.logs.length) {
-                    alpha = ease(dt, "cubicInOut"); // fade it in
-                }
+                const alpha = (current.logs.length < next.logs.length)
+                    ? ease(dt, "cubicInOut") // fade it in
+                    : 1; // fully visible;
+
                 // then they logged a string, so show it above their head
                 const str = next.logs[next.logs.length - 1];
 

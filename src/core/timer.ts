@@ -94,10 +94,11 @@ export class Timer {
         }
 
         this.lastTime = new Date().getTime();
+        const nextTickMs = (1 - this.getProgress()) * this.speed;
         this.timeout = window.setTimeout(() => {
             this.pause();
             this.events.finished.emit();
-        }, (1 - this.getProgress()) * this.speed);
+        }, nextTickMs);
 
         return true;
     }

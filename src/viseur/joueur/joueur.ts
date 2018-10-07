@@ -151,6 +151,11 @@ export class Joueur {
         this.socket.onopen = () => {
             this.events.connected.emit();
 
+            const testNumber = Number(args.playerIndex);
+            const playerIndex = isNaN(testNumber)
+                ? undefined
+                : testNumber;
+
             this.send({
                 event: "play",
                 data: {
@@ -160,7 +165,7 @@ export class Joueur {
                     clientType: "Human",
                     metaDeltas: true,
                     requestedSession: args.session,
-                    playerIndex: args.playerIndex,
+                    playerIndex,
                     gameSettings: args.gameSettings,
                 },
             });
@@ -316,7 +321,7 @@ export class Joueur {
             name,
             args,
             callback: (returned: unknown) => {
-                setTimeout(() => {
+                window.setTimeout(() => {
                     this.send({
                         event: "finished",
                         data: { orderIndex: order.index, returned },

@@ -1,23 +1,26 @@
-import { DeltaReason, IGamelog } from "cadre-ts-utils/cadre";
+import { IBaseGame } from "cadre-ts-utils/cadre";
 import { CheckBoxSetting, ColorSetting, IBaseSettings } from "../settings";
 import { BaseGame } from "./base-game";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
+import { DeltaReason } from "./gamelog";
 
-/**
- * A gamelog that is streaming to us as we are conencted to the game server
- * LIVE.
- */
-export interface IViseurGamelog extends IGamelog {
-    /** if this gamelog is streaming */
-    streaming?: boolean;
+/** A game state that is used to transition a dt between the two states/reasons */
+export interface IViseurGameState {
+    /** The current game state */
+    game?: IBaseGame;
+    /** The next game state */
+    nextGame?: IBaseGame;
+    /** The current delta reason */
+    reason?: DeltaReason;
+    /** The next delta reason */
+    nextReason?: DeltaReason;
 }
 
 /** Represents the default layers in a game, extend to add your own to a game */
 export interface IGameLayers {
     /** name lookup */
-    [name: string]: PIXI.Container;
-
+    [name: string]: PIXI.Container | undefined;
     /** Bottom most layer, for background elements */
     background: PIXI.Container;
     /** Middle layer, for moving game objects */
@@ -43,12 +46,6 @@ export interface IBaseGameNamespace {
     // gameObjectClasses: IBaseGameObjectClasses;
     /* * The path to the directory this game's namespace files exist in */
     // path: string;
-}
-
-/** A simplier shorthand for why a delta occured. */
-export interface IDeltaReason extends DeltaReason {
-    /** The type of delta. */
-    type: string;
 }
 
 /** The base settings all games have */

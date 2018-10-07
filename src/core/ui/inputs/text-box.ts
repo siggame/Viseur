@@ -19,11 +19,12 @@ export class TextBox extends BaseInput<string> {
         /** the placeholder text */
         placeholder?: string;
     }) {
+        // tslint:disable-next-line:no-object-literal-type-assertion
         super({
             type: "text",
             value: "",
             ...args,
-        });
+        } as IBaseInputArgs<string>);
 
         this.element.on("keypress", (e) => {
             if (e.which === KEY_NAME_TO_CODE.enter) {

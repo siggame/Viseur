@@ -9,7 +9,13 @@ export class HelpTab extends Tab {
         return "Help";
     }
 
+    /**
+     * Gets the template for the help tab.
+     *
+     * @returns The handlebars template.
+     */
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./help-tab.hbs");
     }
 }

@@ -1,5 +1,4 @@
-import { DisableableElement, IDisableableElementArgs,
-       } from "src/core/ui/disableable-element";
+import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Field } from "../field";

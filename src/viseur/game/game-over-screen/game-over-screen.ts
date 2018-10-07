@@ -27,7 +27,8 @@ export class GameOverScreen extends BaseElement {
     private readonly items: JQuery[] = [];
 
     /**
-     * Initialized the game over screen
+     * Initialized the game over screen.
+     *
      * @param args - BaseElement init args
      */
     constructor(args: IBaseElementArgs & {
@@ -47,7 +48,7 @@ export class GameOverScreen extends BaseElement {
     }
 
     /**
-     * Shows this game over screen
+     * Shows this game over screen.
      */
     public show(): void {
         if (!this.built) {
@@ -58,27 +59,26 @@ export class GameOverScreen extends BaseElement {
     }
 
     /**
-     * Hides this game over screen
+     * Hides this game over screen.
      */
     public hide(): void {
         this.element.addClass("collapsed");
     }
 
     /**
-     * Re-colors the items in the game over screen
+     * Re-colors the items in the game over screen.
      */
     public recolor(): void {
         if (!this.built) {
             return; // nothing to recolor... yet
         }
 
-        for (let i = 0; i < this.game.players.length; i++) {
-            const player = this.game.players[i];
+        for (const [ i, player ] of this.game.players.entries()) {
             const color = this.game.getPlayersColor(player);
 
             this.items[i].find(".bg-wrapper")
-                .css("background-color", color.opaquer(0.375).hex()) // TODO: rgba seems to be dropped from color module
-                .css("color", getContrastingColor(color).hex()); // same here
+                .css("background-color", color.opaquer(0.375).string())
+                .css("color", getContrastingColor(color).string());
         }
     }
 
@@ -120,13 +120,15 @@ export class GameOverScreen extends BaseElement {
             : "block",
         );
 
-        if (this.winnersElement.html() === "") { // then there are no winners, it's a tie
+        if (this.winnersElement.html() === "") {
+            // then there are no winners, it's a tie
             partial(itemHbs, {
                 name: "Game Over -",
                 wonOrLost: "Tie",
                 reason: gameState.players[0].reasonLost,
-                // for draws all players should have the same reasonLost
-                //  so using the last one's reasonLost should be the same for any of them
+                // For draws all players should have the same reasonLost
+                //  so using the last one's reasonLost should be the same for
+                //  any of them.
             }, this.winnersElement);
         }
 

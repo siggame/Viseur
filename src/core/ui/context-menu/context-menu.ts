@@ -1,4 +1,5 @@
 import * as $ from "jquery";
+import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "../base-element";
@@ -12,7 +13,7 @@ export interface IMenuItem {
     text: string;
 
     /** the icon id from font awesome (without the "fa-" prefix) */
-    icon: string;
+    icon: FontAwesomeIds;
 
     /** Callback function to invoke whenever this menu item is clicked */
     callback(): void;

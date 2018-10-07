@@ -6,6 +6,11 @@
  */
 declare type Handlebars = (args?: {}) => string;
 
+declare module "*.ico" {
+    const _: string;
+    export = _;
+}
+
 declare module "*.hbs" {
     const _: Handlebars;
     export = _;

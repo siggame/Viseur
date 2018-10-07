@@ -1,17 +1,16 @@
-import { IBaseGame, IDelta, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
+import { Immutable } from "cadre-ts-utils";
+import { IBaseGame, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { Games } from "src/games";
-import { objectHasProperty, UnknownObject, unStringify, validateURL,
-       } from "src/utils";
+import { objectHasProperty, UnknownObject, unStringify, validateURL } from "src/utils";
 import { viseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
-import { IBaseGameNamespace, IDeltaReason, IViseurGamelog,
-       } from "./game/interfaces";
+import { IGamelogWithReverses, IViseurGamelog } from "./game/gamelog";
+import { IBaseGameNamespace, IViseurGameState } from "./game/interfaces";
 import { GUI } from "./gui";
-import { Joueur, JoueurConnectionArgs,
-         TournamentClient, TournamentConnnectionArgs } from "./joueur";
+import { Joueur, JoueurConnectionArgs, TournamentClient, TournamentConnnectionArgs } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
 import { BaseSetting, ViseurSettings } from "./settings";
@@ -20,29 +19,8 @@ import { TimeManager } from "./time-manager";
 /** The possible types a parsed query string can result in values from. */
 type QueryStringTypes = undefined | null | string | string[];
 
-/** A game state that is used to transition a dt between the two states/reasons */
-export interface IViseurGameState {
-    /** The current game state */
-    game?: IBaseGame;
-    /** The next game state */
-    nextGame?: IBaseGame;
-    /** The current delta reason */
-    reason?: IDeltaReason;
-    /** The next delta reason */
-    nextReason?: IDeltaReason;
-}
-
-/** Extends to add a reverse delta to the delta */
-export interface IReverseDelta extends IDelta {
-    /** A delta that goes BACKWARDs in state when merged */
-    reversed?: IBaseGame;
-}
-
-/** A gamelog with reverse deltas */
-export interface IGamelogWithReverses extends IViseurGamelog {
-    /** List of deltas with their reverses as options */
-    deltas: IReverseDelta[];
-}
+/** Data required to play as a human player in a game. */
+interface IPlayAsHumanData extends TournamentConnnectionArgs, JoueurConnectionArgs {}
 
 /**
  * The container for merged deltas. We only store 2 states as they get HUGE,
@@ -150,7 +128,7 @@ export class Viseur {
             if (this.game) {
                 const time = this.timeManager.getCurrentTime();
                 this.events.timeUpdated.emit(time);
-                this.game.render(time.index, time.dt);
+                this.game.render(time.dt);
             }
         });
 
@@ -184,11 +162,10 @@ export class Viseur {
     }
 
     /**
-     * Starts up "arena" mode, which grabs gamelogs from a url, then plays, it,
-     * then repeats.
+     * Starts up "arena" mode, which grabs gamelogs from a url, then plays, it, then repeats.
      *
      * @param url - The url to start grabbing arena gamelog urls from.
-     * @param presentationMode true if should auto fullscreen, false otherwise.
+     * @param presentationMode True if should auto fullscreen, false otherwise.
      */
     public startArenaMode(
         url: string,
@@ -216,12 +193,11 @@ export class Viseur {
     }
 
     /**
-     * Connects to a game server to play a game for the human controlling this Viseur
+     * Connects to a game server to play a game for the human controlling this Viseur.
+     *
      * @param args - The args to send to the joueur client
      */
-    public playAsHuman(
-        args: TournamentConnnectionArgs & JoueurConnectionArgs,
-    ): void {
+    public playAsHuman(args: Immutable<IPlayAsHumanData>): void {
         this.gui.modalMessage("Connecting to game server...");
 
         this.createJoueur(args);
@@ -230,8 +206,7 @@ export class Viseur {
     /**
      * Checks if there is currently a human playing.
      *
-     * @returns true if there is a human player, false otherwise
-     * (including spectator mode).
+     * @returns true if there is a human player, false otherwise (including spectator mode).
      */
     public hasHumanPlaying(): boolean {
         return Boolean(this.game && this.game.humanPlayer);
@@ -290,28 +265,23 @@ export class Viseur {
         });
 
         this.tournamentClient.events.closed.on(() => {
-            this.events.connectionMessage.emit(
-                "Connected to tournament server closed.",
-            );
+            this.events.connectionMessage.emit("Connected to tournament server closed.");
         });
 
         this.tournamentClient.events.playing.on(() => {
-            this.events.connectionMessage.emit(
-                `Now playing ${this.game && this.game.name}`,
-            );
+            this.events.connectionMessage.emit(`Now playing ${this.game && this.game.name}`);
         });
 
         this.tournamentClient.events.messaged.on((message) => {
-            this.events.connectionMessage.emit(
-                `Message from tournament server: '${message}'`,
-            );
+            this.events.connectionMessage.emit(`Message from tournament server: '${message}'`);
         });
 
         this.tournamentClient.connect({ server, port, playerName });
     }
 
     /**
-     * Handles an uncaught error, if this gets hit something BAD happened.
+     * Handles an uncaught error, if this gets hit something **BAD** happened.
+     *
      * @param error - The uncaught error.
      */
     public handleError(error: Error): void {
@@ -356,9 +326,7 @@ export class Viseur {
             parsed = JSON.parse(jsonGamelog) as IGamelog;
         }
         catch (err) {
-            this.gui.modalError(
-                "Error parsing gamelog - Does not appear to be valid JSON",
-            );
+            this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
 
             return;
         }
@@ -377,9 +345,7 @@ export class Viseur {
 
         // set Settings via url parameters if they are valid
         for (const key of Object.keys(this.urlParameters)) {
-            const setting = (this.settings as {
-                [key: string]: BaseSetting | undefined;
-            })[key];
+            const setting = (this.settings as { [key: string]: BaseSetting | undefined })[key];
 
             if (setting) {
                 const value = this.urlParameters[key];
@@ -429,7 +395,7 @@ export class Viseur {
             // When we finish playback (the timer reaches its end), wait 5 seconds
             //  then reload the window (which will grab a new gamelog and do all this again)
             this.timeManager.events.ended.on(() => {
-                setTimeout(() => {
+                window.setTimeout(() => {
                     location.reload();
                 }, 5000);
             });
@@ -467,8 +433,9 @@ export class Viseur {
     /**
      * Initializes the Game object for the specified gameName.
      * The class created will be the one in src/games/{gameName}/game.js
-     * @param gameName - name of the game to initialize. Must be a valid game name, or throws an error
-     * @param [playerID] - id of the player if this game has a human player
+     *
+     * @param gameName - The name of the game to initialize. Must be a valid game name, or throws an error.
+     * @param [playerID] - The id of the player if this game has a human player.
      */
     private createGame(gameName: string, playerID?: string): void {
         const gameNamespace = this.games[gameName];
@@ -550,9 +517,9 @@ export class Viseur {
             }
 
             if (d.nextState
-                && deltas[d.index]
-                && deltas[d.index + 1]
-                && !deltas[d.index + 1].reversed
+             && deltas[d.index]
+             && deltas[d.index + 1]
+             && !deltas[d.index + 1].reversed
             ) {
                 deltas[d.index + 1].reversed = this.parser.createReverseDelta(
                     d.nextState,
@@ -591,14 +558,12 @@ export class Viseur {
                 );
             }
 
-            if (r2) {
-                if (deltas[d.index + 1]) {
-                    // Then there is a next state (not at the end)
-                    d.nextState = this.parser.mergeDelta(
-                        d.nextState as IBaseGame,
-                        r2,
-                    );
-                }
+            if (r2 && deltas[d.index + 1]) {
+                // Then there is a next state (not at the end)
+                d.nextState = this.parser.mergeDelta(
+                    d.nextState as IBaseGame,
+                    r2,
+                );
             }
 
             d.index--;
@@ -628,27 +593,10 @@ export class Viseur {
 
         this.currentState.game = d.currentState;
         this.currentState.nextGame = d.nextState;
-        this.currentState.reason = this.deltaToReason(delta);
-        this.currentState.nextReason = this.deltaToReason(nextDelta);
+        this.currentState.reason = delta;
+        this.currentState.nextReason = nextDelta;
 
         this.events.stateChangedStep.emit(this.currentState);
-    }
-
-    /**
-     * Formats a delta to a simpler delta reason structure
-     *
-     * @param delta - raw delta from the gamelog to format
-     * @returns the type of delta and it's data in one object, null if no delta
-     */
-    private deltaToReason(delta: IReverseDelta): IDeltaReason | undefined {
-        if (delta) {
-            return {
-                type: delta.type,
-                ...delta.data,
-            };
-        }
-
-        return undefined;
     }
 
     /**
@@ -667,9 +615,9 @@ export class Viseur {
 
             // HACK: wait 1 second, then resize the gui because the panel
             //       sometimes (seemingly randomly) is the wrong height
-            setTimeout(() => {
+            window.setTimeout(() => {
                 this.gui.resize();
-                this.events.delayedReady.emit(); // ready but delayed so we are super ready (arena mode play)
+                this.events.delayedReady.emit(); // ready, but delayed so we are super ready (arena mode play)
             }, 1000);
         }
     }

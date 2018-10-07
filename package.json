@@ -33,7 +33,7 @@
     "@types/uuid": "3.4.4",
     "@types/webpack-env": "1.13.6",
     "babel-loader": "8.0.2",
-    "cadre-ts-utils": "github:siggame/Cadre-TS-Utils#f582f6826589fb11cc2803aa74b31f80ecbc8bea",
+    "cadre-ts-utils": "github:siggame/Cadre-TS-Utils#64cf550e2570a2f05b6173c08650100707605f66",
     "chance": "1.0.16",
     "chess.js": "0.10.2",
     "color": "3.0.0",

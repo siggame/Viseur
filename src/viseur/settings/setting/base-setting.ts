@@ -27,12 +27,16 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
     public readonly default: T;
 
     /** The namespace this setting is a part of */
-    private namespace: string; // Note, although this is private in the settings
+    private namespace: string; // Note: this is private in the settings
 
+    /**
+     * Creates a setting for a given input type.
+     *
+     * @param args - Arguments used for this setting to create a base input.
+     * @param inputClass - The class constructor for this setting's input.
+     */
     protected constructor(
-        /** Arguments used for this setting to create a base input */
-        private readonly args: IBaseSettingArgs<T> & IBaseInputArgs,
-        /** The class constructor for this setting's input */
+        private readonly args: IBaseSettingArgs<T> & IBaseInputArgs<T>,
         private readonly inputClass: { new (args: unknown): BaseInput<T> },
     ) {
         this.namespace = "";
@@ -59,8 +63,8 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
 
     /**
      * Creates an input that listens for changes for this event
-     * @param parent the parent element for this new input
-     * @returns the input for this setting
+     * @param parent - The parent element for this new input.
+     * @returns The input for this setting.
      */
     public createInput(parent: JQuery): BaseInput<T> {
         const input = new this.inputClass({
@@ -72,7 +76,8 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
         let changing = false;
         this.changed.on((value) => {
             if (changing) {
-                return; // don't start an endless cycle between these two listeners
+                // don't start an endless cycle between these two listeners
+                return;
             }
             changing = true;
             input.value = value;
@@ -80,7 +85,8 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
         });
         input.events.changed.on((value) => {
             if (changing) {
-                return; // don't start an endless cycle between these two listeners
+                // don't start an endless cycle between these two listeners
+                return;
             }
             changing = true;
             this.set(value);
@@ -91,9 +97,12 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
     }
 
     /**
-     * Get the setting at key
-     * both are basically the id so that multiple games (namespaces) can have the same settings key.
-     * @returns whatever was stored at namespace.key
+     * Get the setting at key.
+     *
+     * Both are basically the id so that multiple games (namespaces) can have
+     * the same settings keys.
+     *
+     * @returns Whatever was stored at namespace.key.
      */
     public get(): T {
         const id = this.getID();
@@ -105,7 +114,7 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
     /**
      * Set the setting at namespace.key, both are basically the id so that
      * multiple games (namespaces) can have the same settings key.
-     * @param value - the new value to store for namespace.key
+     * @param value - The new value to store for namespace.key.
      */
     public set(value: T): void {
         const id = this.getID();
@@ -122,17 +131,20 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
     }
 
     /**
-     * Optional override to transform the value
-     * @param value the value to transform
-     * @returns the value transformed
+     * Optional override to transform the value.
+     *
+     * @param value - The value to transform.
+     * @returns The value transformed.
      */
     protected transformValue(value: T): T {
         return value;
     }
 
     /**
-     * Creates a unique id for the namespace and key, basically joins them "namespace.key"
-     * @returns a unique id as a combination of all passed in args
+     * Creates a unique id for the namespace and key, basically joins them
+     * "namespace.key".
+     *
+     * @returns A unique id as a combination of all passed in args.
      */
     private getID(): string {
         return `${this.namespace}.${this.args.id}`;

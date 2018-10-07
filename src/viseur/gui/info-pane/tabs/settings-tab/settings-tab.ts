@@ -1,3 +1,4 @@
+import { Immutable } from "cadre-ts-utils";
 import { BaseInput, ITabArgs, Tab } from "src/core/ui";
 import { Viseur } from "src/viseur";
 import { BaseSetting, IBaseSettings } from "src/viseur/settings";
@@ -14,14 +15,20 @@ export class SettingsTab extends Tab {
     private readonly coreSettingsElement = this.element.find(".core-settings");
 
     /** The settings element for the game's settings */
-    private readonly gameSettingsElement = this.element.find(".game-settings").addClass("collapsed");
+    private readonly gameSettingsElement = this.element.find(".game-settings")
+        .addClass("collapsed");
 
     /** The name of the game to be replaced */
     private readonly gameNameElement = this.gameSettingsElement.find(".game-name");
 
     /** The player color picker inputs to enabled/disable */
-    private readonly customColorInputs: Array<BaseInput<any>> = [];
+    private readonly customColorInputs: Array<BaseInput<unknown>> = [];
 
+    /**
+     * Creates a new settings tab for the Viseur instance.
+     *
+     * @param args - initiailization args.
+     */
     constructor(args: ITabArgs & {
         viseur: Viseur;
     }) {
@@ -29,36 +36,38 @@ export class SettingsTab extends Tab {
 
         this.manageSettings(args.viseur.settings, this.coreSettingsElement);
 
-        args.viseur.events.ready.on((ready) => {
-            this.gameNameElement.html(ready.game.name);
+        args.viseur.events.ready.on(({ game }) => {
+            this.gameNameElement.html(game.name);
             this.gameSettingsElement.removeClass("collapsed");
 
-            this.manageSettings(ready.game.settings, this.gameSettingsElement);
+            this.manageSettings(game.settings as IBaseSettings, this.gameSettingsElement);
 
-            this.setColorInputsEnabled(ready.game.settings.customPlayerColors.get());
-            ready.game.settings.customPlayerColors.changed.on((enabled) => {
+            this.setColorInputsEnabled(game.settings.customPlayerColors.get());
+            game.settings.customPlayerColors.changed.on((enabled) => {
                 this.setColorInputsEnabled(enabled);
             });
         });
     }
 
     protected getTemplate(): Handlebars {
+        // tslint:disable-next-line:no-require-imports
         return require("./settings-tab.hbs");
     }
 
     /**
-     * Initializes the settings for a game, invoked when Viseur is ready so it has a game created to load settings from
-     * @param {Array} baseSettings the list of settings from a settings.js file
-     * @param {$} parent the jQuery parent element
+     * Initializes the settings for a game,
+     * invoked when Viseur is ready so it has a game created to load settings from.
+     *
+     * @param baseSettings - The list of settings from a settings.js file.
+     * @param parent - The jQuery parent element.
      */
-    private manageSettings(baseSettings: IBaseSettings, parent: JQuery): void {
-        const settings: Array<BaseSetting<any>> = [];
-        const playerColorSettings = new Set<BaseSetting<any>>();
-        for (const key of Object.keys(baseSettings)) {
-            let subSettings = baseSettings[key];
-            if (!Array.isArray(subSettings)) {
-                subSettings = [ subSettings ];
-            }
+    private manageSettings(baseSettings: Immutable<IBaseSettings>, parent: JQuery): void {
+        const settings: BaseSetting[] = [];
+        const playerColorSettings = new Set<BaseSetting>();
+        for (const [ key, settingOrSettings ] of Object.entries(baseSettings)) {
+            const subSettings = Array.isArray(settingOrSettings)
+                ? settingOrSettings // it's an array of settings
+                : [ settingOrSettings ]; // it's a single setting
 
             for (const setting of subSettings) {
                 settings[setting.index] = setting;
@@ -72,7 +81,7 @@ export class SettingsTab extends Tab {
         if (settings.length === 0) {
             parent.append($("<span>")
                 .addClass("no-settings")
-                .html("None"),
+                .html("None"), // tslint:disable-line:no-inner-html - safe
             );
 
             return; // no settings to add, we're done here
@@ -90,25 +99,27 @@ export class SettingsTab extends Tab {
         $("<button>")
             .appendTo(parent)
             .addClass("reset-to-defaults")
-            .html("Reset to Defaults")
+            .html("Reset to Defaults") // tslint:disable-line:no-inner-html - safe
             .on("click", () => {
                 this.resetToDefaults(settings);
             });
     }
 
     /**
-     * Resets a list of settings to the default values
-     * @param {Array} settings the list of settings from a settings.js file
+     * Resets a list of settings to the default values.
+     *
+     * @param settings - The list of settings from a settings.js file.
      */
-    private resetToDefaults(settings: Array<BaseSetting<any>>): void {
+    private resetToDefaults(settings: BaseSetting[]): void {
         for (const setting of settings) {
             setting.set(setting.default);
         }
     }
 
     /**
-     * Enabled or disables all the custom player color inputs
-     * @param enabled true if they should be enabled, false otherwise
+     * Enabled or disables all the custom player color inputs.
+     *
+     * @param enabled - True if they should be enabled, false otherwise.
      */
     private setColorInputsEnabled(enabled: boolean): void {
         for (const input of this.customColorInputs) {

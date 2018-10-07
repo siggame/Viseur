@@ -5,5 +5,6 @@ export * from "./base-game";
 export * from "./base-human-player";
 export * from "./base-player";
 export * from "./game-bar";
+export * from "./gamelog";
 export * from "./interfaces";
 export * from "./state-object";

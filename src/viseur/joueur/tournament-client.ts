@@ -180,12 +180,13 @@ export class TournamentClient {
      * @param data - The data on what game server to connect to for bridging
      * the human playable connection.
      */
-    private onPlay(data: ITournamentPlayData): void {
+    private onPlay(data: Immutable<ITournamentPlayData>): void {
         this.events.playing.emit(data);
 
+        const { game, ...args } = data;
         this.viseur.playAsHuman({
-            gameName: data.game,
-            ...data,
+            gameName: game,
+            ...args,
         });
     }
 }

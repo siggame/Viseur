@@ -51,9 +51,11 @@ export interface IPixiSpriteOptions {
 }
 
 /**
- * Gets a tint number from a color like variable
- * @param color a color like variable, can be the number (passed through), string color name, or the Color instance
- * @returns a number that represents a color tint, such as 0xFF000 for red
+ * Gets a tint number from a color like variable.
+ *
+ * @param color - A color like variable, can be the number (passed through), string color name, or the Color instance.
+ * @returns A number that represents a color tint, such as 0xFF000 for red.
+ * @example Color("red") -> 0xFF000
  */
 export function getTintFromColor(color: ColorTint): number {
     if (typeof(color) === "number") {
@@ -68,9 +70,10 @@ export function getTintFromColor(color: ColorTint): number {
 }
 
 /**
- * Sets the properties of a pixi sprite from an options interface
- * @param sprite the sprite to set properties on
- * @param options the options to set the properties from
+ * Sets the properties of a pixi sprite from an options interface.
+ *
+ * @param sprite - The sprite to set properties on.
+ * @param options - The options to set the properties from.
  */
 export function setPixiOptions(
     sprite: PIXI.Sprite,
@@ -198,11 +201,12 @@ export function setPixiOptions(
 
 /**
  * Convenience function. Takes the Container's current scale into account when setting the pivot,
- * so you don't have to have pixel values
- * @param obj the display object to set the pivot for
- * @param relativeX a scalar based on the currently scaled width, so 0.5 is the center
- * @param relativeY a scalar based on the currently scaled height, so 0.5 is the middle
- * @returns the passing obj for chaining
+ * so you don't have to have pixel values.
+ *
+ * @param obj - The display object to set the pivot for.
+ * @param relativeX - A scalar based on the currently scaled width, so 0.5 is the center.
+ * @param relativeY - A scalar based on the currently scaled height, so 0.5 is the middle.
+ * @returns The passing obj for chaining.
  */
 export function setRelativePivot(
     obj: PIXI.Container,
@@ -223,10 +227,8 @@ export function setRelativePivot(
  *
  * @param sprite - The sprite to use. Assumed to be 1x1 units by default.
  * It's width and pivot will be scaled for the stretching.
- * @param pointA - The first point, an object with an {x, y} to derive
- * coordinates from.
- * @param pointB - The second point, an object with an {x, y} to derive
- * coordinates from.
+ * @param pointA - The first point, an object with an {x, y} to derive coordinates from.
+ * @param pointB - The second point, an object with an {x, y} to derive coordinates from.
  */
 export function renderSpriteBetween(
     sprite: PIXI.Sprite,
@@ -251,10 +253,8 @@ export function renderSpriteBetween(
  *
  * @param sprite - The sprite to use. Assumed to be 1x1 units by default.
  * It's width and pivot will be scaled for the stretching.
- * @param pointA - The first point, an object with an {x, y} to derive
- * coordinates from.
- * @param pointB - The second point, an object with an {x, y} to derive
- * coordinates from.
+ * @param pointA - The first point, an object with an {x, y} to derive coordinates from.
+ * @param pointB - The second point, an object with an {x, y} to derive coordinates from.
  */
 export function renderSpriteRotatedTowards(
     sprite: PIXI.Sprite,

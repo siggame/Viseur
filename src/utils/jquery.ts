@@ -1,6 +1,4 @@
-import * as $ from "jquery";
-
-export const transitionEvents = "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend";
+const transitionEvents = "webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend";
 
 /**
  * Utility function to invoke a callback once CSS transitions end.
@@ -43,16 +41,3 @@ export function offTransitionEnds<T extends JQuery>(
 ): T {
     return element.off(transitionEvents, callback);
 }
-
-/**
- * JQuery's deep copy utility function.
- *
- * @param obj - The object to deep copy.
- * @returns A **new** object, that is a deep copy of the passed in obj.
- */
-export function deepCopy<T extends object>(obj: T): T {
-    return jQuery.extend(true, {}, obj);
-}
-
-// tslint:disable-next-line:no-any - for easy debugging
-(window as any).$ = $;

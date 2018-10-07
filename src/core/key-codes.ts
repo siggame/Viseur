@@ -128,5 +128,5 @@ export const KEY_NAME_TO_CODE = {
 };
 
 export const KEY_CODE_TO_NAME = invert(KEY_NAME_TO_CODE) as {
-    [code: number]: string;
+    [code: number]: string | undefined;
 };

@@ -1,5 +1,5 @@
 import { Immutable } from "cadre-ts-utils";
-import { IDeltaReason } from "./interfaces";
+import { DeltaReason } from "./gamelog";
 
 /* tslint:disable:no-empty-interface */
 
@@ -19,19 +19,14 @@ export class StateObject {
     public next: IState | undefined;
 
     /**
-     * Update this state object's current and next state, should call prior to
-     * rendering.
+     * Update this state object's current and next state, should call prior to rendering.
      *
      * @param current - The current state.
      * @param next - The next state.
-     * @param reason - The reason for the current delta.
-     * @param nextReason - The reason for the next delta.
      */
     public update(
         current?: Immutable<IState>,
         next?: Immutable<IState>,
-        reason?: Immutable<IDeltaReason>,
-        nextReason?: Immutable<IDeltaReason>,
     ): void {
         this.current = current;
         this.next = next;
@@ -43,11 +38,12 @@ export class StateObject {
      * @returns The state most current, next if there is no current.
      */
     public getCurrentMostState(): Immutable<NonNullable<this["current"]>> {
-        if (!this.current || !this.next) {
+        const state = this.current || this.next;
+        if (!state) {
             throw new Error("No game state to get!");
         }
 
-        return (this.current || this.next) as Immutable<NonNullable<this["current"]>>;
+        return state as Immutable<NonNullable<this["current"]>>;
     }
 
     /**
@@ -56,29 +52,28 @@ export class StateObject {
      * @returns The state most next, current if there is no next.
      */
     public getNextMostState(): Immutable<NonNullable<this["current"]>> {
-        if (!this.current || !this.next) {
+        const state = this.next || this.current;
+        if (!state) {
             throw new Error("No game state to get!");
         }
 
-        return (this.next || this.current) as Immutable<NonNullable<this["current"]>>;
+        return state as Immutable<NonNullable<this["current"]>>;
     }
 
     /**
      * Invoked when the state updates.
      * Intended to be overridden by subclass(es).
      *
-     * @param current - The current (most) game state, will be this.next if
-     * this.current is null.
-     * @param next - The next (most) game state, will be this.current if
-     * this.next is null.
+     * @param current - The current (most) game state, will be this.next if this.current is null.
+     * @param next - The next (most) game state, will be this.current if this.next is null.
      * @param reason - The reason for the current delta.
      * @param nextReason - The reason for the next delta.
      */
     protected stateUpdated(
         current: IState,
         next: IState,
-        reason: IDeltaReason,
-        nextReason: IDeltaReason,
+        reason: DeltaReason,
+        nextReason: DeltaReason,
     ): void {
         // Intended to be overridden by inheriting classes,
         // no need to call this super.

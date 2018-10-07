@@ -1,6 +1,6 @@
 /** Functions to serialize and un-serialize json communications strings. */
 
-import { isEmptyExceptFor, isObject, UnknownObject } from "src/utils";
+import { isEmptyExceptFor, isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { BaseGame } from "src/viseur/game/base-game";
 
 /**
@@ -20,7 +20,7 @@ export function isGameObjectReference(obj: object): boolean {
  * @returns true if it is serializable, false otherwise
  */
 export function isSerializable(obj: object, key: string): boolean {
-    return isObject(obj) && obj.hasOwnProperty(key);
+    return isObject(obj) && objectHasProperty(obj, key);
 }
 
 /**

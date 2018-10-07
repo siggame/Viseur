@@ -6,8 +6,7 @@ import { BaseGameObject } from "./base-game-object";
 /** The base class all HumanPlayers inherit from in each game. */
 export class BaseHumanPlayer {
     /**
-     * Checks if this human player's logic is implemented, so humans can play
-     * this game.
+     * Checks if this human player's logic is implemented, so humans can play this game.
      */
     public static get implemented(): boolean {
         return false;
@@ -17,7 +16,8 @@ export class BaseHumanPlayer {
     protected readonly game: BaseGame;
 
     /** The player that represents this human player in the game.  */
-    protected player!: BaseGameObject; // NOTE: set shortly after initialized... maybe shouldnt' be !'d
+    protected player!: BaseGameObject;
+    // NOTE: set shortly after initialized... maybe shouldnt' be !'d
 
     /** Orders we could not do until our player was hooked up. */
     private readonly backOrders: IOrder[] = [];
@@ -48,7 +48,7 @@ export class BaseHumanPlayer {
     /**
      * Order the human playing to do some logic.
      *
-     * @param order - the order details
+     * @param order - The order details.
      * @throws If the order is invalid (name can't be found as a function).
      */
     public order(order: IOrder): void {

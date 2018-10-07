@@ -14,7 +14,7 @@ import { IGameObjectState } from "./state-interfaces";
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class GameObject extends BaseGameObject {
+export class GameObject<TShouldRender extends boolean> extends BaseGameObject<TShouldRender> {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>

@@ -2,39 +2,9 @@ import * as eases from "eases";
 
 /** Useful map to look up valid easing names for the ease function */
 export type ValidEases = ValidEaseNames | ((t: number) => number);
-export type ValidEaseNames =
-    "backInOut" |
-    "backIn" |
-    "backOut" |
-    "bounceInOut" |
-    "bounceIn" |
-    "bounceOut" |
-    "circInOut" |
-    "circIn" |
-    "circOut" |
-    "cubicInOut" |
-    "cubicIn" |
-    "cubicOut" |
-    "elasticInOut" |
-    "elasticIn" |
-    "elasticOut" |
-    "expoInOut" |
-    "expoIn" |
-    "expoOut" |
-    "linear" |
-    "quadInOut" |
-    "quadIn" |
-    "quadOut" |
-    "quartInOut" |
-    "quartIn" |
-    "quartOut" |
-    "quintInOut" |
-    "quintIn" |
-    "quintOut" |
-    "sineInOut" |
-    "sineIn" |
-    "sineOut"
-;
+
+/** The names of eases. */
+export type ValidEaseNames = keyof typeof eases;
 
 /**
  * Eases a time number
@@ -96,7 +66,7 @@ export function ease(
 
     e = e || "cubicInOut";
 
-    if (typeof(e) === "string") {
+    if (typeof e === "string") {
         // we need to look up the easing function by name
         e = eases[e];
     }

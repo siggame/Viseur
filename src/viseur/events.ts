@@ -1,9 +1,9 @@
-import { IGamelog } from "cadre-ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Event, events, Signal } from "ts-typed-events";
 import { BaseGame } from "./game/base-game";
+import { IGamelogWithReverses } from "./game/gamelog";
+import { IViseurGameState } from "./game/interfaces";
 import { ICurrentTime } from "./time-manager";
-import { IViseurGameState } from "./viseur";
 
 /** The events Viseur emits */
 export const ViseurEvents = events({
@@ -20,26 +20,26 @@ export const ViseurEvents = events({
     delayedReady: new Signal(),
 
     /** Triggers when all async events are done and we are ready to being normal operations */
-    ready: new Event<Immutable<{
+    ready: new Event<Readonly<{
         game: BaseGame;
-        gamelog: IGamelog;
+        gamelog: Immutable<IGamelogWithReverses>;
     }>>(),
 
     /** Triggered during loading of the gamelog if the gamelog is found at a remote url */
-    gamelogIsRemote: new Event<Immutable<{url?: string}>>(),
+    gamelogIsRemote: new Event<Immutable<{ url?: string }>>(),
 
     /** Triggered when the gamelog has been loaded */
-    gamelogLoaded: new Event<Immutable<IGamelog>>(),
+    gamelogLoaded: new Event<Immutable<IGamelogWithReverses>>(),
 
     /** Triggers when a steaming gamelog is updated in some way, probably a new delta */
-    gamelogUpdated: new Event<Immutable<IGamelog>>(),
+    gamelogUpdated: new Event<Immutable<IGamelogWithReverses>>(),
 
     /**
      * Triggers when a streaming gamelog is finished streaming and will no longer change.
      * In addition a url to the finalized gamelog (with other player's non obfuscated data) will be emitted
      */
     gamelogFinalized: new Event<Immutable<{
-        gamelog: IGamelog;
+        gamelog: IGamelogWithReverses;
         url: string;
     }>>(),
 

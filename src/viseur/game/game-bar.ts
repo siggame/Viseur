@@ -57,43 +57,46 @@ export class GameBar {
      * @param parent - The parent pixi object.
      * @param options - Optional options to initialize the bar with.
      */
-    constructor(parent: PIXI.Container, opts: Immutable<IGameBarOptions> = {}) {
+    constructor(
+        parent: PIXI.Container,
+        options: Immutable<IGameBarOptions> = {},
+    ) {
         if (!viseur || !viseur.game) {
             throw new Error("Cannot create a game bar without a game!");
         }
 
-        const options = {
+        const opts = {
             height: 0.06667,
             width: 0.9,
-            ...opts,
+            ...options,
         };
 
-        this.width = options.width;
+        this.width = opts.width;
         this.container.setParent(parent);
-        this.max = options.max || 1;
+        this.max = opts.max || 1;
 
         const { blank } = viseur.game.resources;
-        this.background = blank.newSprite(this.container, options);
-        this.foreground = blank.newSprite(this.container, options);
+        this.background = blank.newSprite(this.container, opts);
+        this.foreground = blank.newSprite(this.container, opts);
 
         this.recolor(
-            options.foregroundColor || 0x044F444, // green-ish
-            options.backgroundColor || 0x00000,
+            opts.foregroundColor || 0x044F444, // green-ish
+            opts.backgroundColor || 0x00000,
         );
 
         const widthDiff = parent.width - this.width;
         this.container.position.set(widthDiff / 2, 0);
 
-        if (options.visibilitySetting) {
-            options.visibilitySetting.changed.on((newValue) => {
+        if (opts.visibilitySetting) {
+            opts.visibilitySetting.changed.on((newValue) => {
                 let val = Boolean(newValue);
-                if (options && options.invertSetting) {
+                if (opts && opts.invertSetting) {
                     val = !val;
                 }
 
                 this.setVisible(val);
             });
-            this.setVisible(options.visibilitySetting.get());
+            this.setVisible(opts.visibilitySetting.get());
         }
     }
 

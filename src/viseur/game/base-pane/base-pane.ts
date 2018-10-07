@@ -1,8 +1,9 @@
-import { IBaseGame, IBaseGameObject, IBasePlayer } from "cadre-ts-utils/cadre";
+import { IBaseGame, IBasePlayer } from "cadre-ts-utils/cadre";
 import * as dateFormat from "dateformat";
 import * as $ from "jquery";
 import escape from "lodash/escape";
 import sum from "lodash/sum";
+import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
@@ -12,7 +13,14 @@ import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
 import "./base-pane.scss";
 
-const requireLanguageImage = require.context("../language-images/", true, /\.png$/);
+// This tells webpack to include all files it finds that match the png regex
+// to be included in the build, that way they can be required() dynamically
+// at run time, but all assets were included at build time.
+const requireLanguageImage = require.context(
+    "../language-images/", // directory to include
+    true, // deep flag
+    /\.png$/, // match on .png extensions
+);
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 const NS_IN_MS = 1000000;
 
@@ -22,15 +30,12 @@ export interface IPaneStat<T = unknown> {
     label?: string;
 
     /** The font-awesome icon prefix (without fa-). */
-    icon?: string;
+    icon?: FontAwesomeIds;
 
     /** Title to display over this stat. */
     title?: string;
 
-    /**
-     * Callback that is send the current player/game state and should return
-     * some value to display.
-     */
+    /** Callback that is send the current player/game state and should return some value to display. */
     get(state: T): string | number;
 }
 
@@ -60,14 +65,10 @@ export class BasePane<
     /** The timer used to tick down a human player's time. */
     private readonly humansTimer: Timer | undefined;
 
-    /**
-     * When in human player mode, the time remaining from the last second tick.
-     */
+    /** When in human player mode, the time remaining from the last second tick. */
     private humansTimeRemaining: number | undefined;
 
-    /**
-     * The player we are ticking for.
-     */
+    /** The player we are ticking for. */
     private humansTickingPlayer?: Immutable<IBasePlayer>;
 
     /** Stats list for the game. */
@@ -86,13 +87,11 @@ export class BasePane<
     private readonly playerProgressBarsDiv: JQuery;
 
     /**
-     * Creates the base pane at the bottom of the viseur below the rendered
-     * graphics.
+     * Creates the base pane at the bottom of the viseur below the rendered graphics.
      *
      * @param viseur - The Viseur instance controlling the pane.
      * @param game - The game this pane is representing.
-     * @param initialState - The initial state in the game, where all players
-     * exist.
+     * @param initialState - The initial state in the game, where all players exist.
      */
     constructor(
         viseur: Viseur,
@@ -102,8 +101,6 @@ export class BasePane<
         super({
             parent: viseur.gui.gamePaneWrapper,
         });
-
-        const playerIDs = initialState.players.map((p) => p.id);
 
         this.game = game;
 
@@ -137,12 +134,11 @@ export class BasePane<
         );
 
         this.playersElement = this.element.find(".players");
-        this.playersElement.addClass(`number-of-players-${playerIDs.length}`);
+        this.playersElement.addClass(`number-of-players-${initialState.players.length}`);
 
         this.playerProgressBarsDiv = this.element.find(".player-progress-bars");
 
-        let i = 0;
-        for (const player of initialState.players) {
+        for (const [ i, player ] of initialState.players.entries()) {
             this.playerToStatsList.set(player.id, this.createStatList(
                 playerStats,
                 this.playersElement,
@@ -153,8 +149,6 @@ export class BasePane<
                 .addClass(`player-${i}-progress-bar`)
                 .appendTo(this.playerProgressBarsDiv),
             );
-
-            i++;
         }
 
         this.recolor();
@@ -182,8 +176,7 @@ export class BasePane<
     /**
      * Updates the base pane upon a new state, updating player and game stats.
      *
-     * @param currentState - The current(most) state of the game to update
-     * reflecting.
+     * @param currentState - The current(most) state of the game to update reflecting.
      * @param nextState - The next state, if there is one..
      */
     public update(
@@ -197,9 +190,9 @@ export class BasePane<
             : currentState;
 
         const currentPlayerId = objectHasProperty(state, "currentPlayer")
-                           && isObject(state.currentPlayer)
-                           && state.currentPlayer.id !== undefined
-                           && String(state.currentPlayer.id);
+                                && isObject(state.currentPlayer)
+                                && state.currentPlayer.id !== undefined
+                                && String(state.currentPlayer.id);
 
         for (const player of state.players) {
             const playerStatsList = this.playerToStatsList.get(player.id);
@@ -213,9 +206,7 @@ export class BasePane<
                 .css("background-image");
 
             if (!backgroundImageCSS || backgroundImageCSS === "none") {
-                // then we need to load the background image of their
-                // programming language icon
-
+                // Then we need to load the background image of their programming language icon.
                 const languageKey = player.clientType
                     .replace("#", "s")
                     .toLowerCase();
@@ -226,8 +217,7 @@ export class BasePane<
                     languageIcon = requireLanguageImage(`./${languageKey}.png`);
                 }
                 catch {
-                    // but if it fails we don't have an image for that icon,
-                    // so give them the unknown icon instead
+                    // But if it fails we don't have an image for that icon, so give them the unknown icon instead.
                     languageIcon = requireLanguageImage("./unknown.png");
                 }
 
@@ -289,8 +279,7 @@ export class BasePane<
     }
 
     /**
-     * Gets the stats to show on each player pane,
-     * which tracks stats for that player.
+     * Gets the stats to show on each player pane, which tracks stats for that player.
      *
      * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the player.
@@ -306,14 +295,15 @@ export class BasePane<
             {
                 title: TIME_REMAINING_TITLE,
                 icon: "clock-o",
-                get: (player) => this.formatTimeRemaining(player.timeRemaining),
+                get: (player) => (
+                    this.formatTimeRemaining(player.timeRemaining)
+                ),
             },
         ];
     }
 
     /**
-     * Gets the stats to show on the top bar of the pane,
-     * which tracks stats in the game.
+     * Gets the stats to show on the top bar of the pane, which tracks stats in the game.
      *
      * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the game.
@@ -336,10 +326,9 @@ export class BasePane<
     /**
      * Gets the stats for the players score bars.
      *
-     * @param state The current(most) state of the game to update this pane
-     * for.
-     * @returns an array of numbers, where each index is the player at that
-     * index. Sum does not matter, it will resize dynamically.
+     * @param state The current(most) state of the game to update this pane  for.
+     * @returns an array of numbers, where each index is the player at that index.
+     * The sum does not matter, it will resize dynamically.
      * If You want to display no score, return undefined or an empty array.
      */
     protected getPlayersScores(
@@ -352,24 +341,21 @@ export class BasePane<
     /**
      * Sets the progress bars to a certain percentage for each of them.
      *
-     * @param progresses - undefined/empty if they have no progress
-     * (hides bars), or an array of numbers, indexed by their location in
-     * game.players, with each value being [0, 1] for their progress.
+     * @param progresses - undefined/empty if they have no progress (hides bars),
+     * or an array of numbers, indexed by their location in game.players,
+     * with each value being [0, 1] for their progress.
      */
     protected setPlayersProgresses(progresses?: Immutable<number[]>): void {
-        let summed = 0;
-        if (progresses && progresses.length === this.game.numberOfPlayers) {
-            summed = sum(progresses);
-        }
+        const summed = (progresses && progresses.length === this.game.numberOfPlayers)
+            ? sum(progresses)
+            : 0;
 
-        let i = 0;
-        for (const player of this.game.players) {
+        for (const [ i, player ] of this.game.players.entries()) {
             const bar = this.playerProgressBars.get(player.id);
 
-            let percentage = 0;
-            if (progresses && summed > 0) {
-                percentage = progresses[i++] / summed;
-            }
+            const percentage = (progresses && summed > 0)
+                ? progresses[i] / summed
+                : 0;
 
             if (bar) {
                 bar.css("width", `${(percentage * 100)}%`);
@@ -378,15 +364,15 @@ export class BasePane<
     }
 
     /**
-     * Cleans up shorthand PaneStats to all the attributes expected by the
-     * BasePane.
+     * Cleans up shorthand PaneStats to all the attributes expected by the BasePane.
      *
      * @param stats - The stats, that can be in shorthand, to cleanup.
      * @param titlePrefix - A prefix to add to the title.
      * @returns All the PaneStats cleaned up
      */
     private cleanStats(
-        stats: ReadonlyArray<IPaneStat>, // readonly but not immutable as we do mutate the pane stats.
+        stats: ReadonlyArray<IPaneStat>, // Readonly but not immutable,
+                                         // as we do mutate the pane stats.
         titlePrefix: string,
     ): ReadonlyArray<IPaneStat<TBaseGame | TBasePlayer>> {
         for (const stat of stats) {
@@ -403,7 +389,7 @@ export class BasePane<
      *
      * @param stats - All the stats to list.
      * @param parent - jQuery parent for this list.
-     * @param [classes] - An optional classes for the html element.
+     * @param classes - An optional classes for the html element.
      * @returns A container object containing all the parts of this list.
      */
     private createStatList(
@@ -424,8 +410,7 @@ export class BasePane<
             statsToListElement: [],
         };
 
-        let i = 0;
-        for (const stat of stats) {
+        for (const [ i, stat ] of stats.entries()) {
             list.statsToListElement.push($("<li>")
                 .appendTo(list.element)
                 .addClass("stat")
@@ -434,8 +419,6 @@ export class BasePane<
                 // tslint:disable-next-line:no-inner-html
                 .html(String(i)), // safe, it will always be a number
             );
-
-            i++;
         }
 
         return list;
@@ -444,8 +427,7 @@ export class BasePane<
     /**
      * Updates a stats list based on a state.
      *
-     * @param statsList - The stats list to update each stat for from the
-     * object.
+     * @param statsList - The stats list to update each stat for from the object.
      * @param obj - The state information of the object.
      */
     private updateStatsList(statsList: IStatsList, obj: unknown): void {
@@ -463,13 +445,11 @@ export class BasePane<
             }
 
             if (stat.icon) {
-                // assume font awesome icon
-                let icon: string = `<i class=\"icon fa fa-${stat.icon}\" aria-hidden=\"true\"></i>`;
-
-                // but check to make sure it's not a Unicode icon
-                if (stat.icon.charCodeAt(0) > 255) { // then it's a Unicode character
-                    icon = `<i class=\"icon\">${stat.icon}</i>`;
-                }
+                const icon = stat.icon.charCodeAt(0) > 255
+                    // if it is a unicode character, use that as the icon
+                    ? `<i class=\"icon\">${stat.icon}</i>`
+                    // else, assume it is a font-awesome icon.
+                    : `<i class=\"icon fa fa-${stat.icon}\" aria-hidden=\"true\"></i>`;
 
                 value = `${icon} ${value}`;
             }
@@ -482,9 +462,10 @@ export class BasePane<
     }
 
     /**
-     * Formats the time remaining in min:sec:ms format
-     * @param timeRemaining - time remaining in ns
-     * @returns human readable string of the time remaining in the format min:sec:ms
+     * Formats the time remaining in min:sec:ms format.
+     *
+     * @param timeRemaining - The time remaining in ns.
+     * @returns A human readable string of the time remaining in the format min:sec:ms.
      */
     private formatTimeRemaining(timeRemaining: number): string {
         const negative = timeRemaining < 0;
@@ -502,14 +483,15 @@ export class BasePane<
     private ticked(): void {
         if (this.humansTickingPlayer) {
             this.humansTimeRemaining = this.humansTimeRemaining || 0;
-            this.humansTimeRemaining -= (NS_IN_MS * 1000); // 1000 ms elapsed on this tick
+            // 1000 ms elapsed on this tick
+            this.humansTimeRemaining -= (NS_IN_MS * 1000);
 
-            const list = this.playerToStatsList.get(this.humansTickingPlayer.id);
+            const list = this.playerToStatsList.get(
+                this.humansTickingPlayer.id,
+            );
 
             if (list) {
-                const index = list.stats.findIndex((s) => Boolean(
-                    s.title && s.title.includes(TIME_REMAINING_TITLE),
-                ));
+                const index = list.stats.findIndex((s) => Boolean(s.title && s.title.includes(TIME_REMAINING_TITLE)));
                 const li = list.statsToListElement[index];
                 if (li) {
                     li.html(this.formatTimeRemaining(this.humansTimeRemaining));
