@@ -1,11 +1,13 @@
 import * as $ from "jquery";
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
+import baseElementHbs from "./base-element.hbs";
 
 /** BaseElement constructor args */
 export interface IBaseElementArgs {
     /** id to assign to */
     id?: string;
+
     /** parent element to attach this newly constructed element to */
     parent?: HTMLElement | JQuery;
 }
@@ -13,43 +15,28 @@ export interface IBaseElementArgs {
 /**
  * A wrapper for some HTML element(s) that are instantiated via a handlebars template
  */
-export class BaseElement {
+export abstract class BaseElement {
     /** The ID of the element */
     public readonly id?: string;
 
     /** The parent element of this element */
-    public parent?: JQuery;
+    public readonly parent?: JQuery;
 
     /** The raw element this is wrapped around */
     public readonly element: JQuery;
 
     /**
-     * Creates a new base element
-     * @param args the arguments to set value(s) from
+     * Creates a new base element.
+     *
+     * @param args - The arguments to set value(s) from in the template.
+     * @param template - The handlebars template to use.
      */
-    constructor(args: Immutable<IBaseElementArgs> = {}) {
+    constructor(
+        args: Immutable<IBaseElementArgs>,
+        protected readonly template: Handlebars,
+    ) {
         this.id = args.id;
-        if (args.parent) {
-            this.parent = $(args.parent) as JQuery; // TODO: bad
-        }
-
-        this.element = partial(this.getTemplate(), args, this.parent);
-    }
-
-    /**
-     * Sets the parent of this element
-     * @param newParent the new parent to set this to
-     */
-    public setParent(newParent: JQuery | HTMLElement): void {
-        this.parent = $(newParent) as JQuery;
-    }
-
-    /**
-     * Gets the template used to create this base element
-     * @returns the handlebars template required
-     */
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./base-element.hbs");
+        this.parent = args.parent && $(args.parent) as JQuery; // TODO: bad
+        this.element = partial(this.template || baseElementHbs, args, this.parent);
     }
 }

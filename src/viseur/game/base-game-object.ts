@@ -10,7 +10,7 @@ import { DeltaReason } from "./gamelog";
 import { StateObject } from "./state-object";
 
 /** the base class all GameObjects inherit from */
-export class BaseGameObject<TShouldRender extends boolean> extends StateObject {
+export class BaseGameObject<TShouldRender extends boolean = boolean> extends StateObject {
      /** The ID of this game object. It will never change. */
     public readonly id: string;
 
@@ -66,28 +66,29 @@ export class BaseGameObject<TShouldRender extends boolean> extends StateObject {
 
         if (this.shouldRender) {
             // initialize the container that will be rendered!
-            this.container = new PIXI.Container();
+            const container = new PIXI.Container();
+            (this.container as PIXI.Container) = container;
             // add containers to the game layer by default
             // sub classes can move it if they please
-            this.container.setParent(this.game.layers.game);
+            container.setParent(this.game.layers.game);
 
             // else make the container work for clicking
-            this.container.interactive = true;
+            container.interactive = true;
 
             const onClick = (e: PIXI.interaction.InteractionEvent) => {
                 this.clicked(e);
             };
             /** spell-checker:disable */
-            this.container.on("mouseupoutside", onClick);
-            this.container.on("mouseup", onClick);
-            this.container.on("touchend", onClick);
-            this.container.on("touchendoutside", onClick);
+            container.on("mouseupoutside", onClick);
+            container.on("mouseup", onClick);
+            container.on("touchend", onClick);
+            container.on("touchendoutside", onClick);
 
             const onRightClick = (e: PIXI.interaction.InteractionEvent) => {
                 this.rightClicked(e);
             };
-            this.container.on("rightup", onRightClick);
-            this.container.on("rightupoutside", onRightClick);
+            container.on("rightup", onRightClick);
+            container.on("rightupoutside", onRightClick);
             /** spell-checker:enable */
         }
     }
@@ -298,7 +299,7 @@ export class BaseGameObject<TShouldRender extends boolean> extends StateObject {
                 if (!this.loggedPixiText) {
                     this.loggedPixiText = this.renderer.newPixiText(
                         str,
-                        this.container,
+                        this.container as PIXI.Container,
                         { fill: Color("white").hex() },
                         0.25,
                     );

@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Viseur, viseurConstructed } from "src/viseur";
 
-/** Non standard options for resources */
+/** Non standard options for resources. */
 export interface IBaseRendererResourceOptions {
     /** Set this if the path is absolute and does not need to be resolved */
     absolute?: boolean;
@@ -15,24 +15,16 @@ export interface IBaseRendererResourceOptions {
 
 /** A factory that creates PIXI.Sprites for some resource in the Renderer. */
 export abstract class BaseRendererResource {
-    /**
-     * The path to the resource in the game's textures directory.
-     */
+    /** The path to the resource in the game's textures directory. */
     public readonly path: string;
 
-    /**
-     * The required absolute path to this resource.
-     */
+    /** The required absolute path to this resource. */
     public absolutePath: string;
 
-    /**
-     * The default width (in game units) for new sprites from this resource.
-     */
+    /** The default width (in game units) for new sprites from this resource. */
     public readonly defaultWidth: number = 1;
 
-    /**
-     * The default height (in game units) for new sprites from this resource.
-     */
+    /** The default height (in game units) for new sprites from this resource. */
     public readonly defaultHeight: number = 1;
 
     /** The texture for this sprite, undefined while not loaded. */
@@ -48,8 +40,7 @@ export abstract class BaseRendererResource {
      * Creates and registers a new resource that can make sprites of it.
      *
      * @param path - The path to the resource in the game's textures directory.
-     * @param options - The optional details about the resource, such as
-     * defaults and sheet details.
+     * @param options - The optional details about the resource, such as defaults and sheet details.
      */
     constructor(path: string, options: IBaseRendererResourceOptions = {}) {
         this.path = path;
@@ -61,9 +52,9 @@ export abstract class BaseRendererResource {
 
         viseurConstructed.on((viseur) => {
             this.viseur = viseur;
-            viseur.renderer.events.texturesLoaded.on(
-                (resources) => this.onTextureLoaded(resources),
-            );
+            viseur.renderer.events.texturesLoaded.on((resources) => {
+                this.onTextureLoaded(resources);
+            });
         });
     }
 
@@ -85,14 +76,9 @@ export abstract class BaseRendererResource {
      * @param resources - All the resources loaded, to pull our texture out of.
      * @returns A boolean indicating if this resource's texture was loaded.
      */
-    protected onTextureLoaded(
-        resources: PIXI.loaders.ResourceDictionary,
-    ): boolean {
+    protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
         // if we have textures loaded, Viseur must have a game ready
-        if (!this.viseur
-         || !this.viseur.game
-         || this.viseur.game.name !== this.gameName
-        ) {
+        if (!this.viseur || !this.viseur.game || this.viseur.game.name !== this.gameName) {
             // this resource is for a different game, and will never be used
             // so we don't care if it loaded or not
             return false;

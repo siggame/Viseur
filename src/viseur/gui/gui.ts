@@ -70,7 +70,7 @@ export class GUI extends BaseElement {
     constructor(args: IBaseElementArgs & {
         viseur: Viseur;
     }) {
-        super(args);
+        super(args, guiHbs);
 
         this.infoPane = new InfoPane({
             parent: this.element,
@@ -78,12 +78,14 @@ export class GUI extends BaseElement {
             viseur: args.viseur,
         });
 
-        // add the favicon
-        const faviconLink = document.createElement("link");
-        faviconLink.href = faviconIco;
-        faviconLink.rel = "icon";
-        faviconLink.type = "image/x-icon";
-        document.head.appendChild(faviconLink);
+        if (document.head) {
+            // add the favicon
+            const faviconLink = document.createElement("link");
+            faviconLink.href = faviconIco;
+            faviconLink.rel = "icon";
+            faviconLink.type = "image/x-icon";
+            document.head.appendChild(faviconLink);
+        }
 
         this.playbackPane.events.toggleFullscreen.on(() => {
             this.goFullscreen();
@@ -224,18 +226,10 @@ export class GUI extends BaseElement {
     }
 
     /**
-     * Gets the template
+     * Resizes the visualization's wrapper.
      *
-     * @returns the handlebars partial for the gui
-     */
-    protected getTemplate(): Handlebars {
-        return guiHbs;
-    }
-
-    /**
-     * Resizes the visualization's wrapper
-     * @param width the width taken away from the info pane
-     * @param height the height taken away from the info pane
+     * @param width - The width taken away from the info pane.
+     * @param height - The height taken away from the info pane.
      */
     private resizeVisualizer(width: number, height: number): void {
         let newWidth = Number(this.element.width());

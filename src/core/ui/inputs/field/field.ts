@@ -1,5 +1,6 @@
 import { BaseElement } from "src/core/ui/base-element";
 import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
+import fieldHbs from "./field.hbs";
 import "./field.scss";
 
 /** A wrapper for an Input that gives it a label */
@@ -8,8 +9,9 @@ export class Field extends DisableableElement {
     public readonly input: BaseElement;
 
     /**
-     * Creates a field to wrap around an inputs
-     * @param args must include an input and label for the field
+     * Creates a field to wrap around an inputs.
+     *
+     * @param args - This must include an input and label for the field.
      */
     constructor(args: Readonly<IDisableableElementArgs & {
         /** the input this is a field for */
@@ -21,7 +23,7 @@ export class Field extends DisableableElement {
         /** the title for the label */
         hint?: string;
     }>) {
-        super(args);
+        super(args, fieldHbs);
 
         this.input = args.input;
 
@@ -40,15 +42,5 @@ export class Field extends DisableableElement {
      */
     public enable(): void {
         this.element.removeClass("disabled");
-    }
-
-    /**
-     * Gets the Handlebars template for the field.
-     *
-     * @returns The handlebars template function for the field.
-     */
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./field.hbs");
     }
 }

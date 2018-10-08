@@ -2,7 +2,7 @@ import * as PIXI from "pixi.js";
 import { IPixiSpriteOptions, setPixiOptions } from "src/utils";
 import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
 
-/** optional details about the sprite sheet */
+/** Optional details about the sprite sheet. */
 export interface ISheetData {
     /** Major axis to start numbering from */
     axis: "x" | "y";
@@ -14,7 +14,7 @@ export interface ISheetData {
     height: number;
 }
 
-/** A resource that is a sprite sheet */
+/** A resource that is a sprite sheet. */
 export class RendererSheetResource extends BaseRendererResource {
     /** If present this resource is a sprite sheet */
     private readonly sheet: ISheetData;
@@ -44,8 +44,7 @@ export class RendererSheetResource extends BaseRendererResource {
      * @param parentContainer - The parent container for the sprite.
      * @param index - The index of the sheet.
      * @param options - The optional options to set at init.
-     * @returns A sprite with the given texture key, added to the
-     * parentContainer.
+     * @returns A sprite with the given texture key, added to the parentContainer.
      */
     public newSprite(
         parentContainer: PIXI.Container,
@@ -67,9 +66,10 @@ export class RendererSheetResource extends BaseRendererResource {
     }
 
     /**
-     * Invoked when this texture is loaded
-     * @param resources all the resources loaded, to pull our texture out of
-     * @returns true if it loaded, false otherwise
+     * Invoked when this texture is loaded.
+     *
+     * @param resources - All the resources loaded, to pull our texture out of.
+     * @returns True if it loaded, false otherwise.
      */
     protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
         const loaded = super.onTextureLoaded(resources);

@@ -1,10 +1,11 @@
 import * as $ from "jquery";
+import clamp from "lodash/clamp";
 import * as PIXI from "pixi.js";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
-import { clamp } from "src/utils";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
+import rendererHbs from "./renderer.hbs";
 import "./renderer.scss";
 
 export interface IRendererSize {
@@ -118,7 +119,7 @@ export class Renderer extends BaseElement {
         defaultFontFamily?: string;
         viseur: Viseur;
     }) {
-        super(args);
+        super(args, rendererHbs);
 
         this.viseur = args.viseur;
         this.scene.addChild(this.gameContainer);
@@ -355,13 +356,9 @@ export class Renderer extends BaseElement {
         this.drawGrid();
     }
 
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./renderer.hbs");
-    }
-
     /**
-     * Gets the scale ratio based on available width/height to draw in
+     * Gets the scale ratio based on available width/height to draw in.
+     *
      * @param width available pixels along x
      * @param height available pixels along y
      * @returns a number to scale the width and height both by to fill them according to our aspect ratio

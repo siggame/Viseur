@@ -11,6 +11,8 @@ import { getContrastingColor, Immutable, isObject, objectHasProperty,
          UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
+import basePaneStatsHbs from "./base-pane-stats.hbs";
+import basePaneHbs from "./base-pane.hbs";
 import "./base-pane.scss";
 
 // This tells webpack to include all files it finds that match the png regex
@@ -98,9 +100,7 @@ export class BasePane<
         game: BaseGame,
         initialState: Immutable<IBaseGame>,
     ) {
-        super({
-            parent: viseur.gui.gamePaneWrapper,
-        });
+        super({ parent: viseur.gui.gamePaneWrapper }, basePaneHbs);
 
         this.game = game;
 
@@ -263,19 +263,12 @@ export class BasePane<
         }
     }
 
-    /**
-     * Stops the player timer from ticking
-     */
+    /** Stops the player timer from ticking. */
     public stopTicking(): void {
         if (this.humansTimer) {
             this.humansTimer.pause();
             this.humansTimer.setProgress(0);
         }
-    }
-
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./base-pane.hbs");
     }
 
     /**
@@ -398,8 +391,7 @@ export class BasePane<
         classes: string = "",
     ): IStatsList<TBaseGame | TBasePlayer> {
         const element = partial(
-            // tslint:disable-next-line:no-require-imports
-            require("./base-pane-stats.hbs"),
+            basePaneStatsHbs,
             { classes },
             parent,
         );

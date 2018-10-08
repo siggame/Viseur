@@ -1,6 +1,7 @@
 import { Immutable } from "src/utils";
 import { events, Signal } from "ts-typed-events";
 import { DisableableElement, IDisableableElementArgs } from "../../disableable-element";
+import buttonHbs from "./button.hbs";
 
 /** A range input for numbers */
 export class Button extends DisableableElement {
@@ -10,11 +11,16 @@ export class Button extends DisableableElement {
         clicked: new Signal(),
     });
 
+    /**
+     * Creates a new Button.
+     *
+     * @param args - Button construction args. Can include text for the button.
+     */
     constructor(args: Immutable<IDisableableElementArgs & {
         /** text string to place on the button */
         text?: string;
     }>) {
-        super(args);
+        super(args, buttonHbs);
 
         if (args.text) {
             this.setText(args.text);
@@ -25,39 +31,29 @@ export class Button extends DisableableElement {
         });
     }
 
-    /**
-     * Disables this input
-     */
+    /** Disables this input */
     public disable(): void {
         this.element.prop("disabled", true);
     }
 
-    /**
-     * Enables this input
-     */
+    /** Enables this input */
     public enable(): void {
         this.element.prop("disabled", false);
     }
 
     /**
-     * Sets the text on this button
-     * @param str the text to display on the button
+     * Sets the text on this button.
+     *
+     * @param str - The text to display on the button.
      */
     public setText(str: string): void {
         this.element.html(str);
     }
 
-    /**
-     * Force emit a 'clicked' event
-     */
+    /** Force emit a 'clicked' event. */
     public click(): void {
         if (!this.element.prop("disabled")) {
             this.events.clicked.emit();
         }
-    }
-
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./button.hbs");
     }
 }

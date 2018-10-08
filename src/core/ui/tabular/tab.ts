@@ -2,6 +2,8 @@ import { partial } from "src/core/partial";
 import { Viseur } from "src/viseur";
 import { events, Signal } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
+import tabContentHbs from "./tab-content.hbs";
+import tabHbs from "./tab.hbs";
 import { Tabular } from "./tabular";
 
 /** The interface arguments for a Tab can extend from. */
@@ -11,29 +13,33 @@ export interface ITabArgs extends IBaseElementArgs {
 
     /** The Viseur instance we are in. */
     viseur: Viseur;
+
+    /** The title of the tab. */
+    title?: string;
+
+    /** The template for the content of this tab. */
+    contentTemplate?: Handlebars;
 }
 
 /** A Tab in a Tabular */
 export class Tab extends BaseElement {
-    /** The events this class emits */
+    /** The events this class emits. */
     public readonly events = events({
-        /** Emitted when this tab's tab is selected */
+        /** Emitted when this tab's tab is selected. */
         selected: new Signal(),
     });
 
-    /** The clickable tab that shows the content in the tabular */
+    /** The clickable tab on the tabular that shows the content in the tabular. */
     public readonly tab: JQuery;
 
-    /** The content wrapper around the element */
+    /** The content wrapper around the element. */
     public readonly content: JQuery;
 
-    /** The tabular this is a part of */
+    /** The tabular this is a part of. */
     public readonly tabular: Tabular;
 
-    /** The title of the tab */
-    public get title(): string {
-        return "TAB_TITLE"; // intended to be overwritten by sub classes.
-    }
+    /** The title of this tab. */
+    public readonly title: string;
 
     /**
      * Creates a new Tab in a tabular.
@@ -41,16 +47,15 @@ export class Tab extends BaseElement {
      * @param args - The arguments to send to the Tab.
      */
     constructor(args: ITabArgs) {
-        super(args);
+        super(args, tabContentHbs);
 
         this.tabular = args.tabular;
+        this.content = partial(args.contentTemplate || tabContentHbs, this, this.element);
 
-        // tslint:disable-next-line:no-require-imports
-        this.content = partial(require("./tab-content.hbs"), this, this.parent);
-        this.content.append(this.element);
+        const title = args.title || "TAB_TITLE";
+        this.title = title;
 
-        // tslint:disable-next-line:no-require-imports
-        this.tab = partial(require("./tab.hbs"), this);
+        this.tab = partial(tabHbs, { title });
         this.tab.on("click", () => {
             this.events.selected.emit();
         });

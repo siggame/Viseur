@@ -3,8 +3,11 @@ import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "../base-element";
+import contextMenuItemHbs from "./context-menu-item.hbs";
+import contextMenuHbs from "./context-menu.hbs";
 import "./context-menu.scss";
 
+/** A menu item in a ContextMenu. */
 export interface IMenuItem {
     /** hover over title */
     description: string;
@@ -30,7 +33,7 @@ export class ContextMenu extends BaseElement {
     constructor(args: Immutable<IBaseElementArgs & {
         structure?: Array<"---" | IMenuItem>;
     }>) {
-        super(args);
+        super(args, contextMenuHbs);
 
         this.hide();
 
@@ -60,8 +63,7 @@ export class ContextMenu extends BaseElement {
             }
             else { // it's a menu item
                 const elem = partial(
-                    // tslint:disable-next-line:no-require-imports
-                    require("./context-menu-item.hbs"),
+                    contextMenuItemHbs,
                     item,
                     this.element,
                 );
@@ -100,16 +102,6 @@ export class ContextMenu extends BaseElement {
         $(document).off("click", () => {
             this.lostFocus();
         });
-    }
-
-    /**
-     * Gets the template for this partial.
-     *
-     * @returns The handlebars for this element.
-     */
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./context-menu.hbs");
     }
 
     /**

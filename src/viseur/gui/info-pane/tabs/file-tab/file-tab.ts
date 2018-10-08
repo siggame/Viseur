@@ -11,11 +11,6 @@ import "./file-tab.scss";
  * The "File" tab on the InfoPane, handles gamelog file I/O
  */
 export class FileTab extends Tab {
-    /** The title of the tab */
-    public get title(): string {
-        return "File";
-    }
-
     /** The instance of Viseur that controls everything */
     private readonly viseur: Viseur;
 
@@ -174,7 +169,11 @@ export class FileTab extends Tab {
     constructor(args: ITabArgs & {
         viseur: Viseur;
     }) {
-        super(args);
+        super({
+            contentTemplate: fileTabHbs,
+            title: "File",
+            ...args,
+        });
 
         this.viseur = args.viseur;
         this.gameNames = sortedAscending(Object.keys(this.viseur.games));
@@ -258,17 +257,10 @@ export class FileTab extends Tab {
     }
 
     /**
-     * Gets the handlebars template for the File Tab.
+     * Invoked when the gamelog type input changes values,
+     * so certain fields may need to be shown/hidden.
      *
-     * @returns The handlebars template for the File Tab
-     */
-    protected getTemplate(): Handlebars {
-        return fileTabHbs;
-    }
-
-    /**
-     * Invoked when the gamelog type input changes values, so certain fields may need to be shown/hidden
-     * @param newType the new type that it was changed to
+     * @param newType - The new type that it was changed to.
      */
     private onConnectTypeChange(newType: string): void {
         let port = Number(window.location.port);

@@ -7,13 +7,13 @@ import { Event, events, Signal } from "ts-typed-events";
 import * as serializer from "./serializer";
 
 // handy types to access the "data" property of our events
-type FatalData = Readonly<ServerEvents.FatalEvent["data"]>;
-type LobbiedData = Readonly<ServerEvents.LobbiedEvent["data"]>;
-type MetaDeltaData = Readonly<ServerEvents.MetaDeltaEvent["data"]>;
-type OrderData = Readonly<ServerEvents.OrderEvent["data"]>;
-type OverData = Readonly<ServerEvents.OverEvent["data"]>;
-type RanData = Readonly<ServerEvents.RanEvent["data"]>;
-type StartData = Readonly<ServerEvents.StartEvent["data"]>;
+type FatalData = Immutable<ServerEvents.FatalEvent["data"]>;
+type LobbiedData = Immutable<ServerEvents.LobbiedEvent["data"]>;
+type MetaDeltaData = Readonly<ServerEvents.MetaDeltaEvent["data"]>; // readonly so array methods are in deltas[]
+type OrderData = Immutable<ServerEvents.OrderEvent["data"]>;
+type OverData = Immutable<ServerEvents.OverEvent["data"]>;
+type RanData = Immutable<ServerEvents.RanEvent["data"]>;
+type StartData = Immutable<ServerEvents.StartEvent["data"]>;
 
 /** Connection arguments for a Joueur connection. */
 export type JoueurConnectionArgs = FirstArgument<Joueur["connect"]>;

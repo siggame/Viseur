@@ -1,3 +1,4 @@
+import { Constructor } from "cadre-ts-utils";
 import { BaseInput, IBaseInputArgs } from "src/core/ui/inputs/base-input";
 import * as store from "store";
 import { Event } from "ts-typed-events";
@@ -37,7 +38,7 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
      */
     protected constructor(
         private readonly args: IBaseSettingArgs<T> & IBaseInputArgs<T>,
-        private readonly inputClass: { new (args: unknown): BaseInput<T> },
+        private readonly inputClass: Constructor<BaseInput<T>>,
     ) {
         this.namespace = "";
         this.index = BaseSetting.newIndex;

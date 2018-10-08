@@ -5,6 +5,7 @@ import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
 import { GUI } from "../gui";
+import infoPaneHbs from "./info-pane.hbs";
 import "./info-pane.scss";
 import { TABS } from "./tabs";
 
@@ -69,7 +70,7 @@ export class InfoPane extends BaseElement {
         gui: GUI;
         viseur: Viseur;
     }>) {
-        super(args);
+        super(args, infoPaneHbs);
 
         this.viseur = args.viseur;
         this.gui = args.gui;
@@ -84,11 +85,11 @@ export class InfoPane extends BaseElement {
             this.onResize(downEvent);
         });
 
-        this.viseur.settings.infoPaneSide.changed.on((side) => {
+        this.viseur.settings.infoPaneSide.changed.on((side: string) => {
             this.snapTo(side);
         });
 
-        this.viseur.settings.infoPaneLength.changed.on((length) => {
+        this.viseur.settings.infoPaneLength.changed.on((length: number) => {
             this.resize(length);
         });
 
@@ -159,22 +160,12 @@ export class InfoPane extends BaseElement {
     }
 
     /**
-     * Gets the template for this info pane.
-     *
-     * @returns The handlebars template.
-     */
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./info-pane.hbs");
-    }
-
-    /**
-     * Snaps to a new side of the screen
+     * Snaps to a new side of the screen.
      *
      * @param side - The side to snap to, must be 'top', 'left', 'bottom', or 'right'.
      */
     private snapTo(side: string): void {
-        const validSide = side.toLowerCase() as Side; // untrue untill after the below check.
+        const validSide = side.toLowerCase() as Side; // untrue until after the below check.
 
         if (VALID_SIDES.indexOf(validSide) === -1) {
             throw new Error(`invalid side to snap to: '${side}'`);

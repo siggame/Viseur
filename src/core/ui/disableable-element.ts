@@ -8,11 +8,16 @@ export interface IDisableableElementArgs extends IBaseElementArgs {
 
 export class DisableableElement extends BaseElement {
     /**
-     * Creates an element that can be disabled
-     * @param args the args with a disabled flag option
+     * Creates an element that can be disabled.
+     *
+     * @param args - The args with a disabled flag option.
+     * @param template - The template to pass through the the base element.
      */
-    constructor(args: Immutable<IDisableableElementArgs>) {
-        super(args);
+    constructor(
+        args: Immutable<IDisableableElementArgs>,
+        template: Handlebars,
+    ) {
+        super(args, template);
 
         if (args.disabled) {
             this.disable();

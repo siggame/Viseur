@@ -1,21 +1,20 @@
-import { Tab } from "src/core/ui";
+import { ITabArgs, Tab } from "src/core/ui";
+import helpTabHbs from "./help-tab.hbs";
 
 /**
  * The "Help" tab on the InfoPane
  */
 export class HelpTab extends Tab {
-    /** The title of the tab */
-    public get title(): string {
-        return "Help";
-    }
-
     /**
-     * Gets the template for the help tab.
+     * Creates the Help Tab.
      *
-     * @returns The handlebars template.
+     * @param args - The arguments to create the tab.
      */
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./help-tab.hbs");
+    constructor(args: ITabArgs) {
+        super({
+            contentTemplate: helpTabHbs,
+            title: "Help",
+            ...args,
+        });
     }
 }

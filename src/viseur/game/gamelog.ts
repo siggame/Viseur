@@ -1,7 +1,7 @@
 import { Delta, IBaseGame, IGamelog } from "cadre-ts-utils/cadre";
 
 /**
- * A simplier shorthand for why a delta occured,
+ * A simplier shorthand for why a delta occurred,
  * removing delta merge properties.
  */
 export type DeltaReason

@@ -2,6 +2,7 @@ import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disable
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Field } from "../field";
+import baseInputHbs from "./base-input.hbs";
 
 export interface IBaseInputArgs<T> extends IDisableableElementArgs {
     /** the input type */
@@ -37,10 +38,14 @@ export class BaseInput<T> extends DisableableElement {
     /**
      * Initializes the base input settings, should be called as super.
      *
-     * @param args - The initial args.s
+     * @param args - The initial args for the input and field.
+     * @param template - An optional template override.
      */
-    constructor(args: Immutable<IBaseInputArgs<T>>) {
-        super(args);
+    constructor(
+        args: Immutable<IBaseInputArgs<T>>,
+        template?: Handlebars,
+    ) {
+        super(args, template || baseInputHbs);
 
         if (args.label) {
             this.field = new Field({
@@ -92,9 +97,7 @@ export class BaseInput<T> extends DisableableElement {
         return this.actualValue;
     }
 
-    /**
-     * Disables this input
-     */
+    /** Disables this input. */
     public disable(): void {
         super.disable();
         if (this.field) {
@@ -102,9 +105,7 @@ export class BaseInput<T> extends DisableableElement {
         }
     }
 
-    /**
-     * Enables this input
-     */
+    /** Enables this input. */
     public enable(): void {
         super.enable();
         if (this.field) {
@@ -135,10 +136,5 @@ export class BaseInput<T> extends DisableableElement {
      */
     protected updateElementValue(): void {
         this.element.val(this.actualValue as any); // tslint:disable-line:no-any
-    }
-
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./base-input.hbs");
     }
 }

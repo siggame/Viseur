@@ -85,7 +85,7 @@ export class PlaybackPane extends BaseElement {
     private readonly fullscreenButton: inputs.Button;
 
     constructor(args: IBaseElementArgs) {
-        super(args);
+        super(args, playbackPaneHbs);
 
         this.element.addClass("collapsed");
 
@@ -235,10 +235,6 @@ export class PlaybackPane extends BaseElement {
 
             this.updatePlaybackMode(this.viseur.settings.playbackMode.get());
         });
-    }
-
-    protected getTemplate(): Handlebars {
-        return playbackPaneHbs;
     }
 
     /**

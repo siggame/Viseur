@@ -1,4 +1,5 @@
 // This is a simple function to be used in games
+import blankPng from "src/viseur/images/blank.png";
 import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
 import { RendererResource } from "./renderer-resource";
 import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";
@@ -16,27 +17,30 @@ export interface IResourceLoadOptions extends IBaseRendererResourceOptions {
 }
 
 /**
- * Loads a resource for a game given the name of the file and some options
- * @param texture the name of the file to load
- * @param options optional object of options about the texture,
- * @returns a renderer resource which is a PIXI.Sprite factory for that resource
+ * Loads a resource for a game given the name of the file and some options.
+ *
+ * @param texture - The name of the file to load.
+ * @param options - The optional object of options about the texture.
+ * @returns A renderer resource which is a PIXI.Sprite factory for that resource.
  */
 export function load(texture: string, options?: IBaseRendererResourceOptions): RendererResource;
 
 /**
  * Loads a resource for a game given the name of the file and sheet options.
- * @param texture the name of the file to load
- * @param options optional object of options about the texture,
- *                if a sheet is present the sheet version will be returned
- * @returns a renderer resource which is a PIXI.Sprite factory for that resource
+ *
+ * @param texture - The name of the file to load.
+ * @param options - An optional object of options about the texture,
+ * if a sheet is present the sheet version will be returned.
+ * @returns A renderer resource which is a PIXI.Sprite factory for that resource.
  */
 export function load(texture: string, options: IResourceLoadOptions): RendererSheetResource;
 
 /**
- * Loads a resource for a game given the name of the file and some options
- * @param texture the name of the file to load
- * @param options optional object of options about the texture,
- *                if a sheet is present the sheet version will be returned
+ * Loads a resource for a game given the name of the file and some options.
+ *
+ * @param texture - The name of the file to load.
+ * @param options - An optional object of options about the texture,
+ * if a sheet is present the sheet version will be returned.
  * @returns a renderer resource which is a PIXI.Sprite factory for that resource
  */
 export function load(texture: string, options?: IResourceLoadOptions,
@@ -54,23 +58,18 @@ export function load(texture: string, options?: IResourceLoadOptions,
 }
 
 /**
- * Creates an object interface of resources for games
- * @param gameName the name of the game to create resources for
- * @param resources this must be a key/value list, key must be a string, value must be a RendererResource
- * @returns that same object frozen and extended with the index interface for TS
+ * Creates an object interface of resources for games.
+ *
+ * @param gameName - The name of the game to create resources for.
+ * @param resources - This must be a key/value list, key must be a string, value must be a RendererResource
+ * @returns That same object frozen and extended with the index interface for TS.
  */
-export function createResources<
-    T extends { [key: string]: BaseRendererResource | undefined }
->(
+export function createResources<T extends { [key: string]: BaseRendererResource | undefined }>(
     gameName: string,
     resources: T,
 ): Readonly<T & IRendererResources> {
     const frozen = Object.freeze({
-        blank: new RendererResource(
-            // tslint:disable-next-line:no-require-imports no-unsafe-any
-            require("src/viseur/images/blank.png"),
-            { absolute: true },
-        ),
+        blank: new RendererResource(blankPng, { absolute: true }),
         ...(resources as { [key: string]: BaseRendererResource }),
     });
 

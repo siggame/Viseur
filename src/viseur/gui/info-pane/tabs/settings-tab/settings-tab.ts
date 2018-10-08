@@ -2,15 +2,11 @@ import { Immutable } from "cadre-ts-utils";
 import { BaseInput, ITabArgs, Tab } from "src/core/ui";
 import { Viseur } from "src/viseur";
 import { BaseSetting, IBaseSettings } from "src/viseur/settings";
+import settingsTabHbs from "./settings-tab.hbs";
 import "./settings-tab.scss";
 
 /** The "Help" tab on the InfoPane, displaying settings (both for the core and by game) */
 export class SettingsTab extends Tab {
-    /** The title of the tab */
-    public get title(): string {
-        return "Settings";
-    }
-
     /** The settings element for the core viseur settings */
     private readonly coreSettingsElement = this.element.find(".core-settings");
 
@@ -27,12 +23,16 @@ export class SettingsTab extends Tab {
     /**
      * Creates a new settings tab for the Viseur instance.
      *
-     * @param args - initiailization args.
+     * @param args - Initialization args.
      */
     constructor(args: ITabArgs & {
         viseur: Viseur;
     }) {
-        super(args);
+        super({
+            contentTemplate: settingsTabHbs,
+            title: "Settings",
+            ...args,
+        });
 
         this.manageSettings(args.viseur.settings, this.coreSettingsElement);
 
@@ -47,11 +47,6 @@ export class SettingsTab extends Tab {
                 this.setColorInputsEnabled(enabled);
             });
         });
-    }
-
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./settings-tab.hbs");
     }
 
     /**

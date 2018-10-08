@@ -17,7 +17,7 @@ export function isGameObjectReference(obj: object): boolean {
  *
  * @param obj - The object to check.
  * @param key - The key to check in obj.
- * @returns true if it is serializable, false otherwise
+ * @returns True if it is serializable, false otherwise.
  */
 export function isSerializable(obj: object, key: string): boolean {
     return isObject(obj) && objectHasProperty(obj, key);
@@ -25,7 +25,7 @@ export function isSerializable(obj: object, key: string): boolean {
 
 /**
  * Takes an object and returns a clone that is safe to serialize,
- * by transforming game objects into game object references
+ * by transforming game objects into game object references.
  * NOTE: Do not send objects with cycles.
  *
  * @param data - The data to serialize.

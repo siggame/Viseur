@@ -4,10 +4,9 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { getContrastingColor } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
+import gameOverScreenItemHbs from "./game-over-screen-item.hbs";
+import gameOverScreenHbs from "./game-over-screen.hbs";
 import "./game-over-screen.scss";
-
-// tslint:disable-next-line:no-require-imports no-var-requires
-const itemHbs = require("./game-over-screen-item.hbs");
 
 /** A screen that overlays the renderer when the game is over */
 export class GameOverScreen extends BaseElement {
@@ -36,7 +35,7 @@ export class GameOverScreen extends BaseElement {
         game: BaseGame;
         viseur: Viseur;
     }) {
-        super(args);
+        super(args, gameOverScreenHbs);
 
         this.game = args.game;
 
@@ -47,9 +46,7 @@ export class GameOverScreen extends BaseElement {
         });
     }
 
-    /**
-     * Shows this game over screen.
-     */
+    /** Shows this game over screen. */
     public show(): void {
         if (!this.built) {
             this.buildItems();
@@ -58,16 +55,12 @@ export class GameOverScreen extends BaseElement {
         this.element.removeClass("collapsed");
     }
 
-    /**
-     * Hides this game over screen.
-     */
+    /** Hides this game over screen. */
     public hide(): void {
         this.element.addClass("collapsed");
     }
 
-    /**
-     * Re-colors the items in the game over screen.
-     */
+    /** Re-colors the items in the game over screen. */
     public recolor(): void {
         if (!this.built) {
             return; // nothing to recolor... yet
@@ -82,14 +75,7 @@ export class GameOverScreen extends BaseElement {
         }
     }
 
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./game-over-screen.hbs");
-    }
-
-    /**
-     * [re]builds the winners and losers containers
-     */
+    /** [re]builds the winners and losers containers. */
     private buildItems(): void {
         // empty them out in case of re-build
         this.winnersElement.html("");
@@ -112,7 +98,7 @@ export class GameOverScreen extends BaseElement {
                 ? this.winnersElement
                 : this.losersElement;
 
-            this.items.push(partial(itemHbs, item, list));
+            this.items.push(partial(gameOverScreenItemHbs, item, list));
         }
 
         this.losersElement.css("display", this.losersElement.html() === ""
@@ -122,7 +108,7 @@ export class GameOverScreen extends BaseElement {
 
         if (this.winnersElement.html() === "") {
             // then there are no winners, it's a tie
-            partial(itemHbs, {
+            partial(gameOverScreenItemHbs, {
                 name: "Game Over -",
                 wonOrLost: "Tie",
                 reason: gameState.players[0].reasonLost,

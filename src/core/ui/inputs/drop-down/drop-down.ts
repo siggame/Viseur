@@ -1,6 +1,8 @@
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import { BaseInput, IBaseInputArgs } from "../base-input";
+import dropDownOptionHbs from "./drop-down-option.hbs";
+import dropDownHbs from "./drop-down.hbs";
 
 /** An option on the drop down. */
 export interface IDropDownOption<T> {
@@ -22,7 +24,7 @@ export class DropDown<T> extends BaseInput<T> {
     private readonly options: Array<IDropDownOption<T>> = [];
 
     constructor(args: Immutable<IDropDownArgs<T>>) {
-        super(args);
+        super(args, dropDownHbs);
 
         if (args.options) {
             this.setOptions(args.options, args.value as T);
@@ -78,22 +80,11 @@ export class DropDown<T> extends BaseInput<T> {
                 : option,
             );
 
-            // tslint:disable-next-line:no-require-imports
-            partial(require("./drop-down-option.hbs"), option, this.element);
+            partial(dropDownOptionHbs, option, this.element);
         }
 
         this.value = defaultValue !== undefined
             ? defaultValue
             : this.options[0].value;
-    }
-
-    /**
-     * Gets the template for this drop down.
-     *
-     * @returns The handlebars for this drop down.
-     */
-    protected getTemplate(): Handlebars {
-        // tslint:disable-next-line:no-require-imports
-        return require("./drop-down.hbs");
     }
 }
