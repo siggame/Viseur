@@ -7,6 +7,9 @@ export type ColorTint = Color | number | string;
 
 /** Options that can be used in the create sprite util functions. */
 export interface IPixiSpriteOptions {
+    /** The container to put the sprite into. */
+    container?: PIXI.Container;
+
     /** The width to set the sprite to */
     width?: number;
 
@@ -79,8 +82,10 @@ export function setPixiOptions(
     sprite: PIXI.Sprite,
     options: Readonly<IPixiSpriteOptions>,
 ): void {
-    let x: number;
-    let y: number;
+    if (options.container) {
+        sprite.setParent(options.container);
+    }
+
     if (options.width !== undefined) {
         sprite.width = options.width;
     }
@@ -93,6 +98,8 @@ export function setPixiOptions(
         sprite.rotation = options.rotation;
     }
 
+    let x: number;
+    let y: number;
     if (options.position !== undefined) {
         if (typeof(options.position) === "number") {
             x = options.position;

@@ -4,7 +4,7 @@ import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";
 import { ease, Immutable } from "src/utils/";
 import { Viseur } from "src/viseur";
-import { Renderer } from "src/viseur/renderer";
+import { createResourcesFor, Renderer, ResourcesForGameObject } from "src/viseur/renderer";
 import { BaseGame } from "./base-game";
 import { DeltaReason } from "./gamelog";
 import { StateObject } from "./state-object";
@@ -23,16 +23,12 @@ export class BaseGameObject<TShouldRender extends boolean = boolean> extends Sta
     /** The instance of the game this game object is a part of */
     public readonly game: BaseGame;
 
-    /** Flag for if this game object should be rendered. Set to true to render it. */
-    public readonly shouldRender!: TShouldRender;
-
     /** The main container that all sprites to display this object should be put in. */
-    public readonly container!: TShouldRender extends true ? PIXI.Container : undefined;
+    public readonly container!: TShouldRender extends true
+        ? PIXI.Container
+        : undefined;
 
-    /**
-     * The renderer that provides utility rendering functions (as well as
-     * all the heavy lifting for screen changes).
-     */
+    /** The renderer does all the heavily lifting for screen changes. */
     public readonly renderer: Renderer;
 
     /** The current state (e.g. at delta time = 0) */
@@ -44,7 +40,14 @@ export class BaseGameObject<TShouldRender extends boolean = boolean> extends Sta
     /** The Viseur instance that controls this game object */
     protected readonly viseur: Viseur;
 
-    /** pixi text to display the last logged string */
+    /** Factories to create new sprites as a part of this game object's container. */
+    protected readonly addSprite: TShouldRender extends true
+        ? ResourcesForGameObject<{}>
+        : undefined = (this.shouldRender
+            ? createResourcesFor(this as BaseGameObject<true>, this.game.resources)
+            : undefined) as any; // tslint:disable-line:no-any
+
+    /** Pixi text to display the last logged string */
     private loggedPixiText: PIXI.Text | undefined;
 
     /**
@@ -53,8 +56,13 @@ export class BaseGameObject<TShouldRender extends boolean = boolean> extends Sta
      * @param initialState - Fully merged delta state for this object's first
      * existence.
      * @param viseur - The Viseur instance that controls this game object.
+     * @param shouldRender- Flag for if this game object should be rendered. Set to true to render it.
      */
-    constructor(initialState: Immutable<IBaseGameObject>, viseur: Viseur) {
+    constructor(
+        initialState: Immutable<IBaseGameObject>,
+        viseur: Viseur,
+        public readonly shouldRender: TShouldRender = false as TShouldRender,
+    ) {
         super();
 
         this.id = initialState.id;
@@ -104,7 +112,7 @@ export class BaseGameObject<TShouldRender extends boolean = boolean> extends Sta
     public runOnServer(
         run: string,
         args: Immutable<object>,
-        callback?: (returned: unknown) => void,
+        callback?: (returned: any) => void, // tslint:disable-line:no-any - any because this comes from Creer code.
     ): void {
         this.viseur.runOnServer(this.id, run, args, callback);
     }

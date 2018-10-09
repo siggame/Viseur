@@ -1,10 +1,13 @@
 // This is a class to represent the GameObject object in the game.
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { BaseGameObject, IDeltaReason } from "src/viseur/game";
+import { BaseGameObject, DeltaReason } from "src/viseur/game";
 import { Game } from "./game";
 import { IGameObjectState } from "./state-interfaces";
+
+const SHOULD_RENDER = true;
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -14,21 +17,10 @@ import { IGameObjectState } from "./state-interfaces";
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class GameObject<TShouldRender extends boolean> extends BaseGameObject<TShouldRender> {
+export class GameObject<TShouldRender extends boolean = boolean> extends BaseGameObject<TShouldRender> {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
-        // <<-- /Creer-Merge: should-render -->>
-    }
 
     /** The instance of the game this game object is a part of */
     public readonly game!: Game; // set in super constructor
@@ -48,10 +40,11 @@ export class GameObject<TShouldRender extends boolean> extends BaseGameObject<TS
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this GameObject
      * @param Visuer the Viseur instance that controls everything and contains
+     * @param shouldRender - If this game object should be rendered.
      * the game.
      */
-    constructor(state: IGameObjectState, viseur: Viseur) {
-        super(state, viseur);
+    constructor(state: Immutable<IGameObjectState>, viseur: Viseur, shouldRender?: TShouldRender) {
+        super(state, viseur, SHOULD_RENDER || shouldRender);
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new GameObject here.
@@ -70,8 +63,8 @@ export class GameObject<TShouldRender extends boolean> extends BaseGameObject<TS
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public render(dt: number, current: IGameObjectState, next: IGameObjectState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public render(dt: number, current: Immutable<IGameObjectState>, next: Immutable<IGameObjectState>,
+                  reason: Immutable<DeltaReason>, nextReason: Immutable<DeltaReason>): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -100,8 +93,8 @@ export class GameObject<TShouldRender extends boolean> extends BaseGameObject<TS
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public stateUpdated(current: IGameObjectState, next: IGameObjectState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public stateUpdated(current: Immutable<IGameObjectState>, next: Immutable<IGameObjectState>,
+                        reason: Immutable<DeltaReason>, nextReason: Immutable<DeltaReason>): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>

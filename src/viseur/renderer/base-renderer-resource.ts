@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { Immutable, IPixiSpriteOptions, setPixiOptions } from "src/utils";
 import { Viseur, viseurConstructed } from "src/viseur";
 
 /** Non standard options for resources. */
@@ -59,7 +60,7 @@ export abstract class BaseRendererResource {
     }
 
     /**
-     * Un-scales a sprite back to its' default dimensions of this resource.
+     * Un-scales a sprite back to its default dimensions of this resource.
      *
      * @param sprite - The sprite to un-scale back to 1x1.
      */
@@ -68,6 +69,25 @@ export abstract class BaseRendererResource {
             this.defaultWidth / sprite.texture.width,
             this.defaultHeight / sprite.texture.height,
         );
+    }
+
+    /**
+     * Creates and initializes a sprite for this resource.
+     *
+     * @param options - The base options for how to render this resource.
+     * @returns A sprite with the given texture key, added to the
+     * parentContainer.
+     */
+    public newSprite(options: Immutable<IPixiSpriteOptions> & Readonly<{ // to not fuck with Pixi's state
+        container: PIXI.Container;
+    }>): PIXI.Sprite {
+        const sprite = new PIXI.Sprite(this.texture);
+
+        // Now scale the sprite, as it defaults to the dimensions of its texture's pixel size.
+        this.resetScale(sprite);
+        setPixiOptions(sprite, options);
+
+        return sprite;
     }
 
     /**

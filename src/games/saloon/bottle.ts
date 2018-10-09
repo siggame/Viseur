@@ -8,7 +8,8 @@ import { GameObject } from "./game-object";
 import { IBottleState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import { ease } from "src/utils";
+import { ease, Immutable } from "src/utils";
+import { ResourcesForGameObject } from "src/viseur/renderer";
 // <<-- /Creer-Merge: imports -->>
 
 const SHOULD_RENDER = true;
@@ -17,7 +18,7 @@ const SHOULD_RENDER = true;
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class Bottle<TShouldRender extends boolean> extends GameObject<
+export class Bottle<TShouldRender extends boolean = boolean> extends GameObject<
     typeof SHOULD_RENDER extends true ? true : TShouldRender
 > {
     // <<-- Creer-Merge: static-functions -->>
@@ -40,12 +41,14 @@ export class Bottle<TShouldRender extends boolean> extends GameObject<
     /** The next state of the Bottle (dt = 1) */
     public next: IBottleState | undefined;
 
+    public addSprite!: ResourcesForGameObject<Game["resources"]>;
+
     // <<-- Creer-Merge: variables -->>
 
     /** The bottle's display as a sprite */
-    private readonly sprite = this.game.resources.bottle.newSprite(this.container, {
+    private readonly sprite = this.addSprite.bottle({
         anchor: 0.5,
-        position: {x: 0.5, y: 0.5},
+        position: { x: 0.5, y: 0.5 },
         relativeScale: 0.75,
     });
 
@@ -60,9 +63,10 @@ export class Bottle<TShouldRender extends boolean> extends GameObject<
      * @param state the initial state of this Bottle
      * @param Visuer the Viseur instance that controls everything and contains
      * the game.
+     * @param shouldRender stuff
      */
-    constructor(state: IBottleState, viseur: Viseur) {
-        super(state, viseur);
+    constructor(state: Immutable<IBottleState>, viseur: Viseur, shouldRender?: TShouldRender) {
+        super(state, viseur, SHOULD_RENDER || shouldRender);
 
         // <<-- Creer-Merge: constructor -->>
         // <<-- /Creer-Merge: constructor -->>
@@ -80,8 +84,13 @@ export class Bottle<TShouldRender extends boolean> extends GameObject<
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public render(dt: number, current: IBottleState, next: IBottleState,
-                  reason: DeltaReason, nextReason: DeltaReason): void {
+    public render(
+        dt: number,
+        current: Immutable<IBottleState>,
+        next: Immutable<IBottleState>,
+        reason: Immutable<DeltaReason>,
+        nextReason: Immutable<DeltaReason>,
+    ): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -95,7 +104,7 @@ export class Bottle<TShouldRender extends boolean> extends GameObject<
         // if for the next state it died, fade it out
         let nextTile = next.tile;
         if (next.isDestroyed) {
-            nextTile = current.tile; // it would normally be null, this way we can render it on it's tile of death
+            nextTile = current.tile; // it would normally be null, this way we can render it on its tile of death
             this.container.alpha = ease(1 - dt); // fade it out
         }
 
@@ -139,8 +148,12 @@ export class Bottle<TShouldRender extends boolean> extends GameObject<
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public stateUpdated(current: IBottleState, next: IBottleState,
-                        reason: DeltaReason, nextReason: DeltaReason): void {
+    public stateUpdated(
+        current: Immutable<IBottleState>,
+        next: Immutable<IBottleState>,
+        reason: Immutable<DeltaReason>,
+        nextReason: Immutable<DeltaReason>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>

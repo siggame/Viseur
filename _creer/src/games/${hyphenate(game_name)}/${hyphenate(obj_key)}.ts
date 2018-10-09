@@ -9,7 +9,7 @@ if len(parent_classes) == 0:
 
 imports = {
     './state-interfaces': ['I'+obj_key+'State'],
-    'src/viseur/game': ['IDeltaReason'],
+    'src/viseur/game': ['DeltaReason'],
 }
 
 if base_object:
@@ -23,6 +23,7 @@ if obj_key == 'Game':
     imports["./human-player"] = ['HumanPlayer']
 else:
     imports['./game'] = ['Game']
+    imports['src/utils'] = ['Immutable']
     imports['src/viseur'] = ['Viseur']
     imports['src/core/ui/context-menu'] = ['MenuItems']
     if not base_object:
@@ -185,8 +186,13 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    protected renderBackground(dt: number, current: IGameState, next: IGameState,
-                               reason: IDeltaReason, nextReason: IDeltaReason): void {
+    protected renderBackground(
+        dt: number,
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        reason: Immutable<IDeltaReason>,
+        nextReason: Immutable<IDeltaReason>,
+    ): void {
         super.renderBackground(dt, current, next, reason, nextReason);
 
 ${merge("        // ", "render-background", "        // update and re-render whatever you initialize in renderBackground", help=False)}
@@ -201,8 +207,12 @@ ${merge("        // ", "render-background", "        // update and re-render wha
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    protected stateUpdated(current: IGameState, next: IGameState,
-                           reason: IDeltaReason, nextReason: IDeltaReason): void {
+    protected stateUpdated(
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        reason: Immutable<IDeltaReason>,
+        nextReason: Immutable<IDeltaReason>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
 ${merge("        // ", "state-updated", "        // update the Game based on its current and next states", help=False)}
@@ -222,19 +232,23 @@ ${merge("        // ", "constructor", "        // You can initialize your new {}
     }
 
     /**
-     * Called approx 60 times a second to update and render ${obj_key}
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render ${obj_key} instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public render(dt: number, current: I${obj_key}State, next: I${obj_key}State,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public render(
+        dt: number,
+        current: Immutable<I${obj_key}State>,
+        next: Immutable<I${obj_key}State>,
+        reason: Immutable<IDeltaReason>,
+        nextReason: Immutable<IDeltaReason>,
+    ): void {
         super.render(dt, current, next, reason, nextReason);
 
 ${merge("        // ", "render", "        // render where the " + obj_key + " is", help=False)}
@@ -252,15 +266,18 @@ ${merge("        // ", "recolor", "        // replace with code to recolor sprit
 
     /**
      * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public stateUpdated(current: I${obj_key}State, next: I${obj_key}State,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public stateUpdated(
+        current: Immutable<<I${obj_key}State>,
+        next: Immutable<I${obj_key}State>,
+        reason: Immutable<IDeltaReason>,
+        nextReason: Immutable<IDeltaReason>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
 ${merge("        // ", "state-updated", "        // update the {} based off its states".format(obj_key), help=False)}

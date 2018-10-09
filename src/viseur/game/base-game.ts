@@ -59,7 +59,7 @@ export class BaseGame extends StateObject {
     public readonly renderer: Renderer;
 
     /** The settings for this game */
-    public readonly settings!: Immutable<IBaseGameSettings>; // set in Creer template
+    public readonly settings!: Readonly<IBaseGameSettings>; // set in Creer template
 
     /** The namespace this game is in */
     public namespace!: IBaseGameNamespace; // set in Creer template

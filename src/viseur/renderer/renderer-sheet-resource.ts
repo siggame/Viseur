@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { IPixiSpriteOptions, setPixiOptions } from "src/utils";
+import { FirstArgument, setPixiOptions } from "src/utils";
 import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
 
 /** Optional details about the sprite sheet. */
@@ -41,26 +41,18 @@ export class RendererSheetResource extends BaseRendererResource {
     /**
      * Creates and initializes a sprite for this resource.
      *
-     * @param parentContainer - The parent container for the sprite.
-     * @param index - The index of the sheet.
      * @param options - The optional options to set at init.
      * @returns A sprite with the given texture key, added to the parentContainer.
      */
-    public newSprite(
-        parentContainer: PIXI.Container,
-        index: number,
-        options?: IPixiSpriteOptions,
-    ): PIXI.Sprite {
-        const sprite = new PIXI.Sprite(this.sheetTextures[index]);
-        sprite.setParent(parentContainer);
+    public newSprite(options: FirstArgument<BaseRendererResource["newSprite"]> & Readonly<{
+        /** The index in the sheet to create the the sprite from. */
+        index: number;
+    }>): PIXI.Sprite {
+        const sprite = new PIXI.Sprite(this.sheetTextures[options.index]);
 
-        // Now scale the sprite, as it defaults to the dimensions of its
-        // texture's pixel size.
+        // Now scale the sprite, as it defaults to the dimensions of its texture's pixel size.
         this.resetScale(sprite);
-
-        if (options) {
-            setPixiOptions(sprite, options);
-        }
+        setPixiOptions(sprite, options);
 
         return sprite;
     }
