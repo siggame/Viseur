@@ -8,7 +8,11 @@ import { GameObject } from "./game-object";
 import { IBeaverState, ISpawnerState, ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { ease, updown } from "src/utils";
+import { GameBar } from "src/viseur/game";
+import { RendererResource } from "src/viseur/renderer";
+import { Player } from "./player";
+import { Spawner } from "./spawner";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -27,7 +31,7 @@ export class Beaver extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -41,7 +45,34 @@ export class Beaver extends GameObject {
     public next: IBeaverState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+
+    /** The owning player */
+    private readonly owner: Player;
+
+    /** The beaver this is attacking, if any */
+    private attacking?: Beaver;
+
+    /** The spawner this is harvesting, if any */
+    private harvesting?: Spawner;
+
+    /** The tail part of our sprite stack */
+    private readonly tailSprite: PIXI.Sprite;
+
+    /** Sprite indicating that we are attacking something */
+    private readonly attackingSprite: PIXI.Sprite;
+
+    /** Sprite indicating that we are getting branches */
+    private readonly gettingBranchSprite: PIXI.Sprite;
+
+    /** Sprite indicating that we are getting food */
+    private readonly gettingFoodSprite: PIXI.Sprite;
+
+    /** Sprite indicating that we are distracted */
+    private readonly distractedSprite: PIXI.Sprite;
+
+    /** The bar that displays our health */
+    private readonly healthBar: GameBar;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -55,7 +86,34 @@ export class Beaver extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Beaver here.
+
+        this.owner = this.game.gameObjects[state.owner.id] as any; // we know for certain the player will be there
+
+        // the "bottom" of the beaver, which is the body, is based on team id, either 0 or 1.
+        const bottomResource = state.owner.id === "0"
+            ? this.game.resources.beaver0
+            : this.game.resources.beaver1;
+
+        bottomResource.newSprite(this.container);
+        this.tailSprite = this.game.resources.beaverTail.newSprite(this.container);
+
+        if (state.job.title !== "Basic") {
+            const jobTitle = state.job.title.replace(" ", "");
+            const jobResource = (this.game.resources[`job${jobTitle}`] as RendererResource); // sketchy
+
+            jobResource.newSprite(this.container);
+        }
+
+        this.attackingSprite = this.game.resources.attacking.newSprite(this.container);
+        this.gettingBranchSprite = this.game.resources.gettingBranch.newSprite(this.container);
+        this.gettingFoodSprite = this.game.resources.gettingFood.newSprite(this.container);
+        this.distractedSprite = this.game.resources.distracted3.newSprite(this.container);
+
+        this.healthBar = new GameBar(this.container, {
+            max: state.job.health,
+            visibilitySetting: this.game.settings.displayHealthBars,
+        });
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -76,7 +134,73 @@ export class Beaver extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Beaver is
+
+        if (current.health === 0) {  // Then beaver is dead.
+            this.container.visible = false;
+            return; // No need to render a dead beaver.
+        }
+
+        // otherwise, we have a (maybe) happy living beaver
+        this.container.visible = true;
+
+        const currentTile = current.tile;
+        let nextTile = next.tile;
+
+        if (current.health > 0 && next.health <= 0) {
+            // The Beaver died between current and next.
+
+            // Dead beavers have no tile in their next state,
+            // so use the one they had before.
+            nextTile = currentTile;
+            this.container.alpha = ease(1 - dt, "cubicInOut"); // fade the beaver sprite
+        }
+        else {
+            this.container.alpha = 1; // ITS ALIVE
+        }
+
+        // update their health bar, if they want it to be displayed
+        this.healthBar.update(
+            ease(current.health, next.health, dt, "cubicInOut"),
+        );
+
+        // render the beaver easing the transition from their current tile to their next tile
+        this.container.x = ease(currentTile.x, nextTile.x, dt, "cubicInOut");
+        this.container.y = ease(currentTile.y, nextTile.y, dt, "cubicInOut");
+
+        // update its status bubbles
+        this.attackingSprite.visible = false;
+        this.gettingBranchSprite.visible = false;
+        this.gettingFoodSprite.visible = false;
+        this.distractedSprite.visible = current.turnsDistracted > 0;
+
+        let bumpInto: undefined | ITileState; // Find something to bump into
+
+        if (this.attacking) {
+            this.attackingSprite.visible = true;
+            bumpInto = (this.attacking.current || this.attacking.next)!.tile;
+        }
+        else if (this.harvesting) {
+            const harvesting = this.harvesting.current || this.harvesting.next!;
+            if (harvesting.type === "food") {
+                this.gettingFoodSprite.visible = true;
+            }
+            else { // tree branches
+                this.gettingBranchSprite.visible = true;
+            }
+
+            bumpInto = harvesting.tile;
+        }
+
+        // if we found something to bump into, animate it bumping into it half way
+        if (bumpInto) {
+            const d = updown(dt);
+            const dx = (bumpInto.x - current.tile.x) / 2;
+            const dy = (bumpInto.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }
+
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -88,7 +212,9 @@ export class Beaver extends GameObject {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
+        const color = this.game.getPlayersColor(this.owner);
+        this.tailSprite.tint = color.lighten(0.15).rgbNumber();
+        this.healthBar.recolor(color.lighten(0.5));
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -106,7 +232,23 @@ export class Beaver extends GameObject {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Beaver based off its states
+        this.attacking = undefined;
+        this.harvesting = undefined;
+
+        if (nextReason && nextReason.run && nextReason.run.caller.id === this.id) {
+            const run = nextReason.run;
+
+            if (run.functionName === "attack" && nextReason.returned) {
+                // This beaver gonna fite sumthin
+                this.attacking = run.args.beaver;
+            }
+
+            if (run.functionName === "harvest" && nextReason.returned) {
+                // This beaver getting some food!
+                this.harvesting = run.args.spawner;
+            }
+
+        }
         // <<-- /Creer-Merge: state-updated -->>
     }
 

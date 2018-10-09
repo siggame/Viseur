@@ -95,21 +95,6 @@ export default (
             title: "Viseur",
         }),
 
-        function StatsPlugin(): void {
-            this.plugin("done", (stats) => {
-                // Since webpack dependent Stats.js
-                // Just see the API of Stats.js
-                // You can do anything with the stats output
-                if (stats && stats.hasErrors()) {
-                    stats.toJson().errors.forEach((err) => {
-                        // tslint:disable-next-line:no-console
-                        console.error(err);
-                    });
-                    // process.exit(1);
-                }
-            });
-        },
-
         /*
         // provides a great speedup in both module use and development debugging
         // https://webpack.js.org/plugins/commons-chunk-plugin/
@@ -125,7 +110,7 @@ export default (
     devtool: options.mode === "development"
         ? "source-map"
         : false,
-    devServer: {
+    /*devServer: {
         historyApiFallback: true,
         watchOptions: { aggregateTimeout: 300, poll: 1000 },
         headers: {
@@ -133,7 +118,7 @@ export default (
             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
             "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
         },
-    },
+    },*/
     performance: {
         hints: false, // TODO: handle these warnings
     },

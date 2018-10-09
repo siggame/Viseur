@@ -8,7 +8,11 @@ import { GameObject } from "./game-object";
 import { ISpawnerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
+import { RendererResource } from "src/viseur/renderer";
+
+const STAGES = 4; // how many sprite we have for health
+
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -27,7 +31,7 @@ export class Spawner extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -41,7 +45,9 @@ export class Spawner extends GameObject {
     public next: ISpawnerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+
+    private readonly sprites: PIXI.Sprite[] = [];
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -55,7 +61,17 @@ export class Spawner extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Spawner here.
+
+        this.sprites = [];
+        for (let i = 0; i < STAGES; i++) {
+            const resource = this.game.resources[`${state.type}${i}`] as RendererResource;
+            this.sprites.push(
+                resource.newSprite(this.container),
+            );
+        }
+
+        this.container.position.set(state.tile.x, state.tile.y);
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -76,7 +92,34 @@ export class Spawner extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Spawner is
+
+        // figure out the sprite indexes to render and if they should be faded in/out
+        const maxHealth = 5; // (this.game.current || this.game.next!).maxSpawnerHealth;
+
+        const currentIndex = Math.max(0, Math.floor(STAGES * current.health / maxHealth) - 1);
+        let nextIndex = Math.max(0, Math.floor(STAGES * next.health / maxHealth) - 1);
+
+        let fade = true;
+        if (currentIndex === nextIndex) {
+            nextIndex = -1; // won't show up
+            fade = false;
+        }
+
+        // and render the appropriate sprites
+        for (let i = 0; i < this.sprites.length; i++) {
+            if (i === currentIndex) {
+                this.sprites[i].visible = true;
+                this.sprites[i].alpha = fade ? ease(1 - dt, "cubicInOut") : 1;
+            }
+            else if (i === nextIndex) { // can only occur on fade out
+                this.sprites[i].visible = true;
+                this.sprites[i].alpha = ease(dt, "cubicInOut");
+            }
+            else {
+                this.sprites[i].visible = false;
+            }
+        }
+
         // <<-- /Creer-Merge: render -->>
     }
 

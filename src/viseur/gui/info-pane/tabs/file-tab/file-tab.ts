@@ -94,7 +94,7 @@ export class FileTab extends Tab {
         id: "connect-session",
         label: "Session",
         parent: this.connectWrapper,
-        placeholder: config.session || "new",
+        placeholder: config.session || "*",
     });
 
     private readonly serverInput = new inputs.TextBox({
@@ -109,7 +109,7 @@ export class FileTab extends Tab {
         label: "Port",
         parent: this.connectWrapper,
         min: 0,
-        max: 65535, // port is an unsigned 16-bit number, so this is max
+        max: 65535, // port is an unsigned 16-bit number, so this is the max
     });
 
     private readonly nameInput = new inputs.TextBox({
@@ -117,6 +117,18 @@ export class FileTab extends Tab {
         label: "Player Name",
         parent: this.connectWrapper,
         placeholder: config.humanName || "Human",
+    });
+
+    private readonly playerIndexInput = new inputs.DropDown<string>({
+        id: "player-index-input",
+        label: "Player Index",
+        parent: this.connectWrapper,
+        hint: "Specify which player index (order) you are.",
+        options: [ // TODO: these should be filled in once we know how many player are in a game.
+            "",
+            { text: "First", value: "0" },
+            { text: "Second", value: "1" },
+        ],
     });
 
     private readonly presentationInput = new inputs.CheckBox({
@@ -188,7 +200,7 @@ export class FileTab extends Tab {
             this.connect();
         });
 
-        this.connectTypeInput.value = "Spectate";
+        this.connectTypeInput.value = "Human"; // default connection type
 
         // if in the config there is a default game
         if (config.game) {
@@ -208,7 +220,7 @@ export class FileTab extends Tab {
                 // then let them download the gamelog from memory,
                 // otherwise it is being streamed so the gamelog in memory is incomplete
                 this.gamelogDownloadLink.on("click", () => {
-                    const blob = new Blob([this.viseur.unparsedGamelog], {type: "application/json;charset=utf-8"});
+                    const blob = new Blob([this.viseur.unparsedGamelog!], {type: "application/json;charset=utf-8"});
                     fileSaver.saveAs(blob, `${data.gamelog.gameName}-${data.gamelog.gameSession}.json`);
                 });
 
@@ -235,6 +247,7 @@ export class FileTab extends Tab {
     private onConnectTypeChange(newType: string): void {
         let port = Number(window.location.port);
         let showName = false;
+        let showPlayerIndex = false;
         let showPort = true;
         let showGame = true;
         let showSession = false;
@@ -254,6 +267,7 @@ export class FileTab extends Tab {
                 humanPlayable = true;
                 showSession = true;
                 showGameSettings = true;
+                showPlayerIndex = true;
                 break;
             case "Spectate":
                 port = 3088;
@@ -279,6 +293,7 @@ export class FileTab extends Tab {
 
         this.gameInput.field!.element.toggleClass("collapsed", !showGame);
         this.gameSettingsInput.field!.element.toggleClass("collapsed", !showGameSettings);
+        this.playerIndexInput.field!.element.toggleClass("collapsed", !showPlayerIndex);
 
         this.presentationInput.field!.element.toggleClass("collapsed", !showPresentation);
     }
@@ -293,7 +308,7 @@ export class FileTab extends Tab {
         const gameName = this.gameInput.value;
         const server = this.serverInput.value;
         const port = this.portInput.value;
-        const session = this.sessionInput.value || "new";
+        const session = this.sessionInput.value || "*";
         const playerName = this.nameInput.value || "Human";
 
         this.log(`Connecting to ${server}:${port}.`);
@@ -322,14 +337,15 @@ export class FileTab extends Tab {
                 this.viseur.startArenaMode(server, this.presentationInput.value);
                 return;
             case "Human":
-                this.viseur.playAsHuman(
+                this.viseur.playAsHuman({
                     gameName,
                     server,
                     port,
                     session,
                     playerName,
-                    this.gameSettingsInput.value.trim(),
-                );
+                    playerIndex: this.playerIndexInput.value,
+                    gameSettings: this.gameSettingsInput.value.trim(),
+                });
                 return;
             case "Spectate":
                 this.viseur.spectate(server, port, gameName, session);

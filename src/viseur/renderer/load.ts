@@ -22,13 +22,13 @@ export interface IResourceLoadOptions extends IBaseRendererResourceOptions {
 export function load(texture: string, options?: IBaseRendererResourceOptions): RendererResource;
 
 /**
- * Loads a resource for a game given the name of the file and some options
+ * Loads a resource for a game given the name of the file and sheet options.
  * @param texture the name of the file to load
  * @param options optional object of options about the texture,
  *                if a sheet is present the sheet version will be returned
  * @returns a renderer resource which is a PIXI.Sprite factory for that resource
  */
-export function load(texture: string, options?: IResourceLoadOptions): RendererSheetResource;
+export function load(texture: string, options: IResourceLoadOptions): RendererSheetResource;
 
 /**
  * Loads a resource for a game given the name of the file and some options
@@ -39,6 +39,8 @@ export function load(texture: string, options?: IResourceLoadOptions): RendererS
  */
 export function load(texture: string, options?: IResourceLoadOptions,
 ): RendererResource | RendererSheetResource {
+    texture = texture.replace("./", ""); // remove un-needed dir part
+
     if (options && options.sheet) {
         const sheet = options.sheet;
         delete options.sheet;

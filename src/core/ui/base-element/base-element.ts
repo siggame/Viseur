@@ -31,7 +31,7 @@ export class BaseElement {
 
         this.id = args.id;
         if (args.parent) {
-            this.parent = $(args.parent);
+            this.parent = $(args.parent) as JQuery<HTMLElement>; // TODO: bad
         }
 
         this.element = partial(this.getTemplate(), args, this.parent);
@@ -42,7 +42,7 @@ export class BaseElement {
      * @param newParent the new parent to set this to
      */
     public setParent(newParent: JQuery<HTMLElement> | HTMLElement): void {
-        this.parent = $(newParent);
+        this.parent = $(newParent) as JQuery<HTMLElement>;
     }
 
     /**

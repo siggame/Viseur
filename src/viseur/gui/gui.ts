@@ -3,6 +3,7 @@ import * as screenfull from "screenfull";
 import partial from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
+import { PrettyPolygons } from "src/core/ui/pretty-polygons";
 import { Viseur, viseurConstructed } from "src/viseur";
 import { Event, events } from "ts-typed-events";
 import { BaseGame } from "../game";
@@ -28,6 +29,9 @@ export class GUI extends BaseElement {
 
     /** The wrapper for the visualizer's pane */
     private readonly visualizerPaneWrapper = this.element.find(".visualizer-pane-wrapper");
+
+    /** The pretty polygons we animate as a background */
+    private readonly prettyPolygons = new PrettyPolygons(this.visualizerPaneWrapper);
 
     /** The info pane part of the gui */
     private readonly infoPane: InfoPane;
@@ -76,11 +80,13 @@ export class GUI extends BaseElement {
             this.goFullscreen();
         });
 
-        screenfull.on("change", () => {
-            if (!screenfull.isFullscreen) {
-                this.exitFullscreen();
-            }
-        });
+        if (screenfull) {
+            screenfull.on("change", () => {
+                if (screenfull && !screenfull.isFullscreen) {
+                    this.exitFullscreen();
+                }
+            });
+        }
 
         this.modal = new Modal({
             id: "main-modal",
@@ -102,6 +108,7 @@ export class GUI extends BaseElement {
                 // order
                 setTimeout(() => {
                     this.resize();
+                    this.prettyPolygons.stop();
                 }, 350); // after all transitions end
             });
         });
@@ -166,7 +173,9 @@ export class GUI extends BaseElement {
     public goFullscreen(): void {
         this.element.addClass("fullscreen");
 
-        screenfull.request();
+        if (screenfull) {
+            screenfull.request();
+        }
 
         this.resizeVisualizer(0, 0); // top left now that we (should) be fullscreen
 
@@ -180,7 +189,9 @@ export class GUI extends BaseElement {
         this.element.removeClass("fullscreen");
 
         KEYS.escape.up.off(this.exitFullscreen);
-        screenfull.exit();
+        if (screenfull) {
+            screenfull.exit();
+        }
 
         setImmediate(() => { // HACK: width and height will be incorrect after going out of fullscreen, so wait a moment
             this.resize();
@@ -192,7 +203,7 @@ export class GUI extends BaseElement {
      * @returns {boolean} true if fullscreen, false otherwise
      */
     public isFullscreen(): boolean {
-        return screenfull.isFullscreen;
+        return screenfull && screenfull.isFullscreen;
     }
 
     /**

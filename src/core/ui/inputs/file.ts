@@ -34,7 +34,8 @@ export class FileInput extends BaseInput<undefined> {
 
         const reader = new FileReader();
         reader.onload = () => {
-            this.events.loaded.emit(reader.result);
+            // must be string from readAsText below
+            this.events.loaded.emit(reader.result as string);
         };
 
         const file = (this.element.get(0) as any).files[0];

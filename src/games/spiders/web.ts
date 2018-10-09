@@ -8,7 +8,7 @@ import { GameObject } from "./game-object";
 import { IWebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { ease, renderSpriteBetween } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -27,7 +27,7 @@ export class Web extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -55,7 +55,15 @@ export class Web extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Web here.
+
+        this.container.setParent(this.game.layers.webs);
+
+        renderSpriteBetween(
+            this.game.resources.webMiddle.newSprite(this.container),
+            state.nestA,
+            state.nestB,
+        );
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -76,7 +84,12 @@ export class Web extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Web is
+
+        this.container.visible = Boolean(current.nestA || next.nestA); // do not render if snapped
+        this.container.alpha = !next.nestA // then it is in the process of snapping, so fade it out
+            ? ease(1 - dt)
+            : 1;
+
         // <<-- /Creer-Merge: render -->>
     }
 

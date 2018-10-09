@@ -8,7 +8,7 @@ import { GameObject } from "./game-object";
 import { ISpiderState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { setRelativePivot } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -27,7 +27,7 @@ export class Spider extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -55,7 +55,8 @@ export class Spider extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Spider here.
+        this.container.setParent(this.game.layers.spiders);
+        setRelativePivot(this.container);
         // <<-- /Creer-Merge: constructor -->>
     }
 

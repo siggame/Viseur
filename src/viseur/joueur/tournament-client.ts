@@ -158,6 +158,8 @@ export class TournamentClient {
     private onPlay(data: ITournamentPlayData): void {
         this.events.playing.emit(data);
 
-        this.viseur.playAsHuman(data.game, data.server, data.port, data.session, data.playerName);
+        this.viseur.playAsHuman(Object.assign({
+            gameName: data.game,
+        }, data));
     }
 }

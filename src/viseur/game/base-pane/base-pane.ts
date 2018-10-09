@@ -143,9 +143,15 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
 
     /**
      * updates the base pane upon a new state, updating player and game stats
-     * @param {GameState} state - the current(most) state of the game to update reflecting
+     * @param state - The current(most) state of the game to update reflecting
+     * @param nextState - The next state, if there is one.
      */
-    public update(state: IBaseGameState): void {
+    public update(state: IBaseGameState, nextState?: IBaseGameState): void {
+        if (this.humansTimer && nextState) {
+            // we have a human player, so use the next state which is actually the most current state
+            state = nextState;
+        }
+
         const currentPlayer = ((state as any).currentPlayer as IBaseGameObjectState) || {};
 
         for (const player of state.players) {
@@ -175,10 +181,10 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
                     languageIcon = requireLanguageImage("./unknown.png");
                 }
 
-                playerStatsList.element
-                    .toggleClass("current-player", currentPlayer.id === player.id)
-                    .css("background-image", `url(${languageIcon})`);
+                playerStatsList.element.css("background-image", `url(${languageIcon})`);
             }
+
+            playerStatsList.element.toggleClass("current-player", currentPlayer.id === player.id);
         }
 
         // update games
@@ -343,6 +349,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
             list.statsToListElement.push($("<li>")
                 .appendTo(list.element)
                 .addClass("stat")
+                .addClass(`stat-${i}`)
                 .attr("title", stat.title || "")
                 .html(String(i),
             ));
@@ -416,7 +423,7 @@ export class BasePane<G extends IBaseGameState, P extends IBasePlayerState> exte
             const list = this.playerToStatsList.get(this.humansTickingPlayer.id);
 
             if (list) {
-                const index = list.stats.findIndex((s) => s.title === TIME_REMAINING_TITLE);
+                const index = list.stats.findIndex((s) => Boolean(s.title && s.title.includes(TIME_REMAINING_TITLE)));
                 const li = list.statsToListElement[index];
                 if (li) {
                     li.html(this.formatTimeRemaining(this.humansTimeRemaining));

@@ -68,7 +68,7 @@ export class GameBar {
 
         this.recolor(options.foregroundColor || 0x044F444, options.backgroundColor || 0x00000);
 
-        const widthDiff = this.container.width - this.width;
+        const widthDiff = parent.width - this.width;
         this.container.position.set(widthDiff / 2, 0);
 
         if (options.visibilitySetting) {

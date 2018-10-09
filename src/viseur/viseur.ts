@@ -96,7 +96,7 @@ export class Viseur {
     private mergedDelta!: IMergedDelta;
 
     /** Our current merged game states and reasons */
-    private currentState!: IViseurGameState;
+    private readonly currentState: IViseurGameState = {};
 
     /** The game client we will use when playing or spectating games */
     private joueur?: Joueur;
@@ -170,7 +170,7 @@ export class Viseur {
     public spectate(server: string, port: number, gameName: string, session: string): void {
         this.gui.modalMessage("Spectating game...");
 
-        this.createJoueur({server, port, gameName, session});
+        this.createJoueur({server, port, gameName, session, spectating: true});
     }
 
     /**
@@ -202,19 +202,12 @@ export class Viseur {
 
     /**
      * Connects to a game server to play a game for the human controlling this Viseur
-     * @param gameName the name of the game to spectate
-     * @param server the server is running on (without port)
-     * @param port the port the server is running on
-     * @param session the game session to play in
-     * @param playerName the name of the [human] player
-     * @param gameSettings optional game settings to use to make the game
+     * @param args - The args to send to the joueur client
      */
-    public playAsHuman(
-        gameName: string, server: string, port: number, session: string, playerName: string, gameSettings?: string,
-    ): void {
+    public playAsHuman(args: IJoueurConnectionArgs): void {
         this.gui.modalMessage("Connecting to game server...");
 
-        this.createJoueur({server, port, gameName, session, playerName, gameSettings});
+        this.createJoueur(args);
     }
 
     /**
@@ -481,12 +474,9 @@ export class Viseur {
         const deltas = this.rawGamelog.deltas;
 
         if (index < 0) {
-            this.currentState = {
-                game: d.currentState,
-                nextGame: d.nextState,
-                reason: undefined,
-                nextReason: this.deltaToReason(deltas[0]),
-            } as any;
+            this.currentState.game = d.currentState;
+            this.currentState.nextGame = d.nextState;
+            this.currentState.reason = undefined;
 
             return;
         }
@@ -513,6 +503,8 @@ export class Viseur {
             if (d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
                 d.nextState = this.parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
             }
+
+            this.updateStepped(d);
         }
 
         // if decreasing index...
@@ -531,20 +523,27 @@ export class Viseur {
             }
 
             d.index--;
+            this.updateStepped(d);
         }
+
+        if (indexChanged) {
+            this.updateStepped(d);
+            this.events.stateChanged.emit(this.currentState);
+        }
+    }
+
+    private updateStepped(d: IMergedDelta): void {
+        const deltas = this.rawGamelog!.deltas;
 
         const delta = deltas[d.index];
         const nextDelta = deltas[d.index + 1];
-        if (indexChanged) {
-            this.currentState = Object.assign({}, delta, {
-                game: d.currentState,
-                nextGame: d.nextState,
-                reason: this.deltaToReason(delta),
-                nextReason: this.deltaToReason(nextDelta),
-            });
 
-            this.events.stateChanged.emit(this.currentState);
-        }
+        this.currentState.game = d.currentState;
+        this.currentState.nextGame = d.nextState;
+        this.currentState.reason = this.deltaToReason(delta) as any;
+        this.currentState.nextReason = this.deltaToReason(nextDelta) as any;
+
+        this.events.stateChangedStep.emit(this.currentState);
     }
 
     /**

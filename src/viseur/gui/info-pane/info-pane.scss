@@ -10,6 +10,7 @@
     position: fixed;
     width: 100%;
     height: 100%;
+    box-shadow: 0 0 2em 0.5em rgba(0, 0, 0, 0.2);
     @include transition(height 0s, width 0s !important); // make it so dragging to resize is instant and not delayed
 
 

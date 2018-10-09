@@ -46,7 +46,9 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return undefined; // change to return the states scores for each player
+
+        return state.players.map((player) => player.lodges.length);
+
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -76,7 +78,10 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         const stats: Array<IPaneStat<P>> = super.getPlayerStats(state);
 
         // <<-- Creer-Merge: player-stats -->>
-        // add stats for players to show up here
+        stats.push({
+            get: (player) => player.lodges.length,
+            icon: "flag",
+        });
         // <<-- /Creer-Merge: player-stats -->>
 
         return stats;

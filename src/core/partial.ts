@@ -9,7 +9,7 @@ import * as $ from "jquery";
  */
 export default function partial(hbsTemplate: Handlebars, args?: {}, parent?: JQuery<HTMLElement>): JQuery<HTMLElement> {
     const html = hbsTemplate(args);
-    const element = $($.parseHTML(html));
+    const element: any = $($.parseHTML(html)); // any is bad
 
     if (parent) {
         element.appendTo(parent);
