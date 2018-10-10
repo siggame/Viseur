@@ -125,6 +125,11 @@ export interface IGameState extends IBaseGameState {
      */
     readonly units: IUnitState[];
 
+    /**
+     * The amount of combined heat and pressure that you need to win.
+     */
+    readonly victoryAmount: number;
+
 }
 
 /**
