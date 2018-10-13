@@ -1,7 +1,9 @@
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
+import { Delta } from "cadre-ts-utils/cadre";
 import * as Color from "color";
-import { BaseGame, IDeltaReason } from "src/viseur/game";
+import { Immutable } from "src/utils";
+import { BaseGame } from "src/viseur/game";
 import { IRendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
@@ -29,10 +31,10 @@ export class Game extends BaseGame {
     public readonly numberOfPlayers: number = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: IGameState | undefined;
+    public current: Immutable<IGameState> | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: IGameState | undefined;
+    public next: Immutable<IGameState> | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
@@ -139,7 +141,7 @@ export class Game extends BaseGame {
      * @param nextReason the reason for the next delta
      */
     protected renderBackground(dt: number, current: IGameState, next: IGameState,
-                               reason: IDeltaReason, nextReason: IDeltaReason): void {
+                               reason: DeltaReason, nextReason: DeltaReason): void {
         super.renderBackground(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render-background -->>
@@ -156,8 +158,8 @@ export class Game extends BaseGame {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    protected stateUpdated(current: IGameState, next: IGameState,
-                           reason: IDeltaReason, nextReason: IDeltaReason): void {
+    protected stateUpdated(current: Immutable<IGameState>, next: Immutable<IGameState>,
+                           reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>

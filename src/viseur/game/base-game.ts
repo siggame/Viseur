@@ -1,4 +1,4 @@
-import { IBaseGame, IBaseGameObject, IGamelog } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame, IBaseGameObject, IGamelog } from "cadre-ts-utils/cadre";
 import { Chance } from "chance";
 import * as Color from "color";
 import flatMap from "lodash/flatMap";
@@ -13,8 +13,8 @@ import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
 import { IBasePlayerInstance } from "./base-player";
 import { GameOverScreen } from "./game-over-screen";
-import { DeltaReason } from "./gamelog";
 import { IBaseGameNamespace, IBaseGameSettings, IGameLayers, IViseurGameState } from "./interfaces";
+import { RenderableGameObject } from "./make-renderable";
 import { StateObject } from "./state-object";
 
 /** The base class all games in the games/ folder inherit from */
@@ -32,19 +32,21 @@ export class BaseGame extends StateObject {
     }>; // set in Creer template
 
     /** The current state of the game (dt = 0) */
-    public current: IBaseGame | undefined;
+    public current: Immutable<IBaseGame> | undefined;
 
     /** The next state of the game (dt = 1) */
-    public next: IBaseGame | undefined;
+    public next: Immutable<IBaseGame> | undefined;
 
     /** The reason for the current state */
-    public currentReason: DeltaReason | undefined;
+    public currentDelta: Immutable<Delta> | undefined;
 
     /** The reason for the next state */
-    public nextReason: DeltaReason | undefined;
+    public nextDelta: Immutable<Delta> | undefined;
 
     /** All the game objects in the game, indexed by their ID */
-    public readonly gameObjects: {[id: string]: BaseGameObject} = {};
+    public readonly gameObjects: {
+        [id: string]: BaseGameObject | InstanceType<RenderableGameObject> | undefined;
+    } = {};
 
     /** The players in the game */
     public readonly players: BaseGameObject[] = [];
@@ -171,7 +173,7 @@ export class BaseGame extends StateObject {
             const playerInstance = this.gameObjects[id];
 
             // ensure the game object is a player
-            if (playerInstance.gameObjectName !== "Player") {
+            if (!playerInstance || playerInstance.gameObjectName !== "Player") {
                 throw new Error(`${playerInstance} is not a player to get a color for!`);
             }
 
@@ -228,14 +230,14 @@ export class BaseGame extends StateObject {
         }
 
         // call stateUpdated after the update above so they all are done.
-        const currentReason = state.reason || state.nextReason as DeltaReason;
-        const nextReason = state.nextReason || state.reason as DeltaReason;
+        const currentDelta = state.delta || state.nextDelta as Immutable<Delta>;
+        const nextDelta = state.nextDelta || state.delta as Immutable<Delta>;
         for (const gameObject of newGameObjects) {
             gameObject.stateUpdated(
                 gameObject.getCurrentMostState(),
                 gameObject.getNextMostState(),
-                currentReason,
-                nextReason,
+                currentDelta,
+                nextDelta,
             );
 
             if (newGameObjects.has(gameObject)) {
@@ -261,14 +263,14 @@ export class BaseGame extends StateObject {
         this.gameOverScreen.hide();
 
         // Save the reasons for the current and next deltas
-        const { reason , nextReason } = state as Mutable<IViseurGameState>;
-        this.currentReason = this.hookupGameObjectReferences(reason);
-        this.nextReason = this.hookupGameObjectReferences(nextReason);
+        const { delta , nextDelta } = state;
+        this.currentDelta = this.hookupGameObjectReferences(delta);
+        this.nextDelta = this.hookupGameObjectReferences(nextDelta);
 
         const currentMostState = this.getCurrentMostState();
         const nextMostState = this.getNextMostState();
-        const currentMostReason = this.getCurrentMostReason();
-        const nextMostReason = this.getNextMostReason();
+        const currentMostReason = this.getCurrentMostDelta();
+        const nextMostReason = this.getNextMostDelta();
 
         this.stateUpdated(
             currentMostState,
@@ -278,18 +280,24 @@ export class BaseGame extends StateObject {
         );
 
         // Update all the game objects now (including those we may have just created)
-        for (const id of Object.keys(this.gameObjects)) {
-            this.gameObjects[id].update(
-                this.current ? this.current.gameObjects[id] : undefined,
-                this.next ? this.next.gameObjects[id] : undefined,
-            );
+        for (const [ id, gameObject ] of Object.entries(this.gameObjects)) {
+            if (gameObject) {
+                gameObject.update(
+                    this.current ? this.current.gameObjects[id] : undefined,
+                    this.next ? this.next.gameObjects[id] : undefined,
+                );
+            }
         }
 
         // Now they are all updated, so tell them that they are all updated
-        for (const id of Object.keys(this.gameObjects)) {
-            const gameObject = this.gameObjects[id];
+        for (const [ id, gameObject ] of Object.entries(this.gameObjects)) {
 
-            if ((current && current.gameObjects.hasOwnProperty(id)) || (next && next.gameObjects.hasOwnProperty(id))) {
+            if (gameObject
+                && (
+                    (current && current.gameObjects.hasOwnProperty(id))
+                    || (next && next.gameObjects.hasOwnProperty(id))
+                )
+            ) {
                 gameObject.stateUpdated(
                     gameObject.getCurrentMostState(),
                     gameObject.getNextMostState(),
@@ -324,8 +332,8 @@ export class BaseGame extends StateObject {
 
         const current = this.getCurrentMostState();
         const next = this.getNextMostState();
-        const currentMostReason = this.getCurrentMostReason();
-        const nextMostReason = this.getNextMostReason();
+        const currentMostReason = this.getCurrentMostDelta();
+        const nextMostReason = this.getNextMostDelta();
 
         this.renderBackground(
             dt,
@@ -336,30 +344,28 @@ export class BaseGame extends StateObject {
         );
 
         for (const [ id, gameObject ] of Object.entries(this.gameObjects)) {
-            // GameObjects "exist" to be rendered if the have a next or
-            // current state,
-            // They will not exist if players go back in time to before the
-            // GameObject was created.
-            const exists = (current && current.gameObjects.hasOwnProperty(id))
-                        || (next && next.gameObjects.hasOwnProperty(id));
+            if (gameObject && (gameObject.constructor as typeof BaseGameObject).shouldRender) {
+                // GameObjects "exist" to be rendered if the have a next or
+                // current state,
+                // They will not exist if players go back in time to before the
+                // GameObject was created.
+                const exists = Boolean((current && current.gameObjects.hasOwnProperty(id))
+                                    || (next && next.gameObjects.hasOwnProperty(id)));
 
-            if (gameObject.container) {
-                // If it does not exist, no not render them;
+                // Then it does not exist, no not render them;
                 // Else make them visible, and later we'll call their render().
-                gameObject.container.visible = Boolean(exists);
-            }
+                (gameObject as InstanceType<RenderableGameObject>).container.visible = exists;
 
-            // game objects by default do not render, as many are invisible
-            // so check to make sure it exists and we should render it before
-            // waste resources rendering that game object
-            if (exists && gameObject.shouldRender) {
-                gameObject.render(
-                    dt,
-                    gameObject.getCurrentMostState(),
-                    gameObject.getNextMostState(),
-                    currentMostReason,
-                    nextMostReason,
-                );
+                if (exists) {
+                    // Then actually render it, otherwise it's invisible so why bother
+                    gameObject.render(
+                        dt,
+                        gameObject.getCurrentMostState(),
+                        gameObject.getNextMostState(),
+                        currentMostReason,
+                        nextMostReason,
+                    );
+                }
             }
         }
     }
@@ -369,12 +375,12 @@ export class BaseGame extends StateObject {
      *
      * @returns The current most delta reason.
      */
-    public getCurrentMostReason(): DeltaReason {
-        if (!this.currentReason && !this.nextReason) {
+    public getCurrentMostDelta(): Immutable<Delta> {
+        if (!this.currentDelta && !this.nextDelta) {
             throw new Error("No delta reason!");
         }
 
-        return (this.currentReason || this.nextReason) as DeltaReason;
+        return (this.currentDelta || this.nextDelta) as Immutable<Delta>;
     }
 
     /**
@@ -382,12 +388,12 @@ export class BaseGame extends StateObject {
      *
      * @returns The next most delta reason.
      */
-    public getNextMostReason(): DeltaReason {
-        if (!this.currentReason && !this.nextReason) {
+    public getNextMostDelta(): Immutable<Delta> {
+        if (!this.currentDelta && !this.nextDelta) {
             throw new Error("No delta reason!");
         }
 
-        return (this.nextReason || this.currentReason) as DeltaReason;
+        return (this.nextDelta || this.currentDelta) as Immutable<Delta>;
     }
 
     /**
@@ -410,15 +416,15 @@ export class BaseGame extends StateObject {
      * @param next - The next (most) game state, will be this.current if
      * this.next is null.
      * @param reason - The current reason for the current delta.
-     * @param nextReason - The reason for the next delta
+     * @param nextDelta - The reason for the next delta
      * (why we are transitioning dt).
      */
     protected renderBackground(
         dt: number,
         current: Immutable<IBaseGame>,
         next: Immutable<IBaseGame>,
-        reason: Immutable<DeltaReason>,
-        nextReason: Immutable<DeltaReason>,
+        reason: Immutable<Immutable<Delta>>,
+        nextDelta: Immutable<Immutable<Delta>>,
     ): void {
         // method exposed for inheriting classes
     }
@@ -452,7 +458,7 @@ export class BaseGame extends StateObject {
      * @param settings - The game's specific settings to setup.
      * @returns The game's settings extended with things!
      */
-    protected createSettings<T extends IBaseSettings>(settings: T): Readonly<T> {
+    protected createSettings<T extends IBaseSettings>(settings: T): Readonly<T & IBaseGameSettings> {
         // Because other game's settings may have changed the
         // BaseSetting.index, we need to reset it here.
         // So, find the greatest index of the settings we were passed,
@@ -538,7 +544,11 @@ export class BaseGame extends StateObject {
         this.pane.update(current, this.next);
 
         if (this.humanPlayer && this.humanPlayerID) {
-            this.humanPlayer.setPlayer(this.gameObjects[this.humanPlayerID]);
+            const player = this.gameObjects[this.humanPlayerID];
+            if (!player) {
+                throw new Error(`No player for out player ID of '${this.humanPlayerID}'.`);
+            }
+            this.humanPlayer.setPlayer(player);
             this.pane.setHumanPlayer(this.humanPlayerID);
         }
 
@@ -626,8 +636,10 @@ export class BaseGame extends StateObject {
      * Invoked when a player color changes, so all game objects have an opportunity to recolor themselves
      */
     private recolor(): void {
-        for (const id of Object.keys(this.gameObjects)) {
-            this.gameObjects[id].recolor();
+        for (const gameObject of Object.values(this.gameObjects)) {
+            if (gameObject) {
+                gameObject.recolor();
+            }
         }
 
         if (this.pane) {

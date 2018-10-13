@@ -1,4 +1,4 @@
-import { UnknownObject } from "src/utils";
+import { Immutable, UnknownObject } from "src/utils";
 import { IOrder } from "src/viseur/joueur";
 import { BaseGame } from "./base-game";
 import { BaseGameObject } from "./base-game-object";
@@ -51,7 +51,7 @@ export class BaseHumanPlayer {
      * @param order - The order details.
      * @throws If the order is invalid (name can't be found as a function).
      */
-    public order(order: IOrder): void {
+    public order(order: Immutable<IOrder>): void {
         if (!this.player) {
             // Then we have not been told our player, so back order it.
             this.backOrders.push(order);

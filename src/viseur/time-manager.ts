@@ -1,7 +1,9 @@
 import { IGamelog } from "cadre-ts-utils/cadre";
 import { Timer } from "src/core/timer";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur/";
 import { Event, events, Signal } from "ts-typed-events";
+import { IViseurGamelog } from "./game";
 
 /** Simple container for the current time of the time manager */
 export interface ICurrentTime {
@@ -35,7 +37,7 @@ export class TimeManager {
     private currentIndex: number = -1;
 
     /** The gamelog we are counting deltas for */
-    private gamelog: IGamelog | undefined;
+    private gamelog: Immutable<IViseurGamelog> | undefined;
 
     /** The timer we use to count up or down the index */
     private readonly timer: Timer;
@@ -55,8 +57,8 @@ export class TimeManager {
             this.timer.setSpeed(newSpeed);
         });
 
-        viseur.events.ready.on((data) => {
-            this.ready(data.gamelog);
+        viseur.events.ready.on(({ gamelog }) => {
+            this.ready(gamelog);
         });
     }
 
@@ -106,7 +108,7 @@ export class TimeManager {
      * Invoked when Viseur is ready
      * @param gamelog - the gamelog, may be streaming
      */
-    private ready(gamelog: IGamelog): void {
+    private ready(gamelog: Immutable<IGamelog>): void {
         this.gamelog = gamelog;
 
         this.ticked(true);
@@ -166,9 +168,12 @@ export class TimeManager {
     private ticked(start?: boolean): void {
         this.currentIndex += (start ? 0 : 1);
 
-        const gamelog = this.gamelog as IGamelog; // must exist to tick
+        if (!this.gamelog) {
+            throw new Error(`No gamelog when ticked!`);
+        }
+
         // check if we need to pause and go back a very small amount
-        const backPause = (gamelog.streaming && this.currentIndex === gamelog.deltas.length - 1);
+        const backPause = (this.gamelog.streaming && this.currentIndex === this.gamelog.deltas.length - 1);
 
         if (!backPause) {
             this.events.newIndex.emit(this.currentIndex);
@@ -181,7 +186,7 @@ export class TimeManager {
         }
 
         if (!start) {
-            if (this.currentIndex < gamelog.deltas.length) {
+            if (this.currentIndex < this.gamelog.deltas.length) {
                 this.timer.restart();
             }
             else {

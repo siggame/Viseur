@@ -2,7 +2,7 @@
 // If you want to render it in the game do so here.
 import { MenuItems } from "src/core/ui/context-menu";
 import { Viseur } from "src/viseur";
-import { DeltaReason } from "src/viseur/game";
+import { DeltaReason, makeRenderable } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
 import { IBottleState } from "./state-interfaces";
@@ -18,30 +18,16 @@ const SHOULD_RENDER = true;
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class Bottle<TShouldRender extends boolean = boolean> extends GameObject<
-    typeof SHOULD_RENDER extends true ? true : TShouldRender
-> {
+export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public readonly shouldRender = SHOULD_RENDER;
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Bottle (dt = 0) */
     public current: IBottleState | undefined;
 
     /** The next state of the Bottle (dt = 1) */
     public next: IBottleState | undefined;
-
-    public addSprite!: ResourcesForGameObject<Game["resources"]>;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -61,12 +47,10 @@ export class Bottle<TShouldRender extends boolean = boolean> extends GameObject<
      * Constructor for the Bottle with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Bottle
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
-     * @param shouldRender stuff
+     * @param Visuer the Viseur instance that controls everything and contains the game.
      */
-    constructor(state: Immutable<IBottleState>, viseur: Viseur, shouldRender?: TShouldRender) {
-        super(state, viseur, SHOULD_RENDER || shouldRender);
+    constructor(state: Immutable<IBottleState>, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // <<-- /Creer-Merge: constructor -->>

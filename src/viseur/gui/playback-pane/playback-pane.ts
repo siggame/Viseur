@@ -9,9 +9,7 @@ import { KEYS } from "../keys";
 import playbackPaneHbs from "./playback-pane.hbs";
 import "./playback-pane.scss";
 
-/**
- * Handles all the playback controls and logic for the playback part of the GUI.
- */
+/** Handles all the playback controls and logic for the playback part of the GUI. */
 export class PlaybackPane extends BaseElement {
     /** All the events this class emits */
     public readonly events = events({
@@ -78,13 +76,13 @@ export class PlaybackPane extends BaseElement {
     /** The toggle turn mode button. */
     private readonly turnsButton: inputs.Button;
 
-    /** The speed splider to control playback speed. */
+    /** The speed slider to control playback speed. */
     private readonly speedSlider: inputs.Slider;
 
     /** The fullscreen enable button. */
     private readonly fullscreenButton: inputs.Button;
 
-    constructor(args: IBaseElementArgs) {
+    constructor(args: Readonly<IBaseElementArgs>) {
         super(args, playbackPaneHbs);
 
         this.element.addClass("collapsed");

@@ -56,7 +56,7 @@ export class SettingsTab extends Tab {
      * @param baseSettings - The list of settings from a settings.js file.
      * @param parent - The jQuery parent element.
      */
-    private manageSettings(baseSettings: Immutable<IBaseSettings>, parent: JQuery): void {
+    private manageSettings(baseSettings: Readonly<IBaseSettings>, parent: JQuery): void {
         const settings: BaseSetting[] = [];
         const playerColorSettings = new Set<BaseSetting>();
         for (const [ key, settingOrSettings ] of Object.entries(baseSettings)) {
@@ -65,10 +65,12 @@ export class SettingsTab extends Tab {
                 : [ settingOrSettings ]; // it's a single setting
 
             for (const setting of subSettings) {
-                settings[setting.index] = setting;
+                if (setting) {
+                    settings[setting.index] = setting;
 
-                if (key === "playerColors") {
-                    playerColorSettings.add(setting);
+                    if (key === "playerColors") {
+                        playerColorSettings.add(setting);
+                    }
                 }
             }
         }

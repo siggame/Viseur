@@ -496,7 +496,7 @@ export class Viseur {
         if (index < 0) {
             this.currentState.game = d.currentState;
             this.currentState.nextGame = d.nextState;
-            this.currentState.reason = undefined;
+            this.currentState.delta = undefined;
 
             return;
         }
@@ -593,8 +593,8 @@ export class Viseur {
 
         this.currentState.game = d.currentState;
         this.currentState.nextGame = d.nextState;
-        this.currentState.reason = delta;
-        this.currentState.nextReason = nextDelta;
+        this.currentState.delta = delta;
+        this.currentState.nextDelta = nextDelta;
 
         this.events.stateChangedStep.emit(this.currentState);
     }

@@ -66,6 +66,7 @@ export class GameBar {
         }
 
         const opts = {
+            container: this.container,
             height: 0.06667,
             width: 0.9,
             ...options,
@@ -76,8 +77,8 @@ export class GameBar {
         this.max = opts.max || 1;
 
         const { blank } = viseur.game.resources;
-        this.background = blank.newSprite(this.container, opts);
-        this.foreground = blank.newSprite(this.container, opts);
+        this.background = blank.newSprite(opts);
+        this.foreground = blank.newSprite(opts);
 
         this.recolor(
             opts.foregroundColor || 0x044F444, // green-ish

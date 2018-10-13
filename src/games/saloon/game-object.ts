@@ -1,13 +1,11 @@
 // This is a class to represent the GameObject object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGameObject, DeltaReason } from "src/viseur/game";
+import { ResourcesForGameObject } from "src/viseur/renderer";
 import { Game } from "./game";
 import { IGameObjectState } from "./state-interfaces";
-
-const SHOULD_RENDER = true;
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -17,7 +15,7 @@ const SHOULD_RENDER = true;
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class GameObject<TShouldRender extends boolean = boolean> extends BaseGameObject<TShouldRender> {
+export class GameObject extends BaseGameObject {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
@@ -25,11 +23,14 @@ export class GameObject<TShouldRender extends boolean = boolean> extends BaseGam
     /** The instance of the game this game object is a part of */
     public readonly game!: Game; // set in super constructor
 
+    /** The factory that will build sprites for this game object */
+    public readonly addSprite!: ResourcesForGameObject<Game["resources"]>;
+
     /** The current state of the GameObject (dt = 0) */
-    public current: IGameObjectState | undefined;
+    public current: Immutable<IGameObjectState> | undefined;
 
     /** The next state of the GameObject (dt = 1) */
-    public next: IGameObjectState | undefined;
+    public next: Immutable<IGameObjectState> | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -39,12 +40,10 @@ export class GameObject<TShouldRender extends boolean = boolean> extends BaseGam
      * Constructor for the GameObject with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this GameObject
-     * @param Visuer the Viseur instance that controls everything and contains
-     * @param shouldRender - If this game object should be rendered.
-     * the game.
+     * @param viseur the Viseur instance that controls everything and contains the game.
      */
-    constructor(state: Immutable<IGameObjectState>, viseur: Viseur, shouldRender?: TShouldRender) {
-        super(state, viseur, SHOULD_RENDER || shouldRender);
+    constructor(state: Immutable<IGameObjectState>, viseur: Viseur) {
+        super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new GameObject here.
@@ -124,21 +123,6 @@ export class GameObject<TShouldRender extends boolean = boolean> extends BaseGam
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

@@ -1,9 +1,9 @@
-import { IBaseGame } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame } from "cadre-ts-utils/cadre";
 import { CheckBoxSetting, ColorSetting, IBaseSettings } from "../settings";
 import { BaseGame } from "./base-game";
+import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
-import { DeltaReason } from "./gamelog";
 
 /** A game state that is used to transition a dt between the two states/reasons */
 export interface IViseurGameState {
@@ -11,10 +11,10 @@ export interface IViseurGameState {
     game?: IBaseGame;
     /** The next game state */
     nextGame?: IBaseGame;
-    /** The current delta reason */
-    reason?: DeltaReason;
-    /** The next delta reason */
-    nextReason?: DeltaReason;
+    /** The current delta */
+    delta?: Delta;
+    /** The next delta */
+    nextDelta?: Delta;
 }
 
 /** Represents the default layers in a game, extend to add your own to a game */
@@ -55,4 +55,9 @@ export interface IBaseGameSettings extends IBaseSettings {
 
     /** An array of settings for each player's custom color */
     playerColors: ColorSetting[];
+}
+
+/** The base interface all games export for the game object classes object. */
+export interface IGameObjectClasses {
+    [gameObjectClass: string]: typeof BaseGameObject | undefined;
 }

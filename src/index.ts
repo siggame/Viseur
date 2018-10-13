@@ -15,7 +15,8 @@ $(document).ready(() => {
     const viseur = new required.Viseur();
 
     if (process.env.NODE_ENV === "development") {
+        // Globals for easier debugging.
         (window as any).viseur = viseur;
-        (window as any).$ = $; // For easier debugging the UI.
+        (window as any).$ = $;
     }
 });

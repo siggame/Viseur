@@ -6,7 +6,7 @@ import { createSettings } from "./settings";
  * The settings for the core Viseur instance
  */
 export const ViseurSettings = createSettings("viseur", {
-    infoPaneSide: new Setting.DropDownSetting<string>({
+    infoPaneSide: new Setting.DropDownSetting<"top" | "right" | "bottom" | "left">({
         id: "info-pane-side",
         label: "Docked Side",
         hint: "Which side this info pane will be snapped to.",
@@ -33,7 +33,7 @@ export const ViseurSettings = createSettings("viseur", {
         max: 1000,
         default: 200,
     }),
-    playbackMode: new Setting.DropDownSetting<string>({
+    playbackMode: new Setting.DropDownSetting<"deltas" | "turns">({
         id: "playback-mode",
         label: "Playback Mode",
         // tslint:disable:max-line-length

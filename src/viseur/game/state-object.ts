@@ -1,5 +1,5 @@
 import { Immutable } from "cadre-ts-utils";
-import { DeltaReason } from "./gamelog";
+import { Delta } from "cadre-ts-utils/cadre";
 
 /* tslint:disable:no-empty-interface */
 
@@ -13,10 +13,10 @@ export interface IState {}
  */
 export class StateObject {
     /** The current state (e.g. at delta time = 0) */
-    public current: IState | undefined;
+    public current: Immutable<IState> | undefined;
 
     /** The next state (e.g. at delta time = 1) */
-    public next: IState | undefined;
+    public next: Immutable<IState> | undefined;
 
     /**
      * Update this state object's current and next state, should call prior to rendering.
@@ -66,14 +66,14 @@ export class StateObject {
      *
      * @param current - The current (most) game state, will be this.next if this.current is null.
      * @param next - The next (most) game state, will be this.current if this.next is null.
-     * @param reason - The reason for the current delta.
-     * @param nextReason - The reason for the next delta.
+     * @param delta - The reason for the current delta.
+     * @param nextDelta - The reason for the next delta.
      */
     protected stateUpdated(
         current: IState,
         next: IState,
-        reason: DeltaReason,
-        nextReason: DeltaReason,
+        delta: Delta,
+        nextDelta: Delta,
     ): void {
         // Intended to be overridden by inheriting classes,
         // no need to call this super.

@@ -7,4 +7,6 @@ export * from "./base-player";
 export * from "./game-bar";
 export * from "./gamelog";
 export * from "./interfaces";
+export * from "./make-renderable";
 export * from "./state-object";
+export * from "./tiled";

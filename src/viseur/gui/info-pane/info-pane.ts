@@ -25,7 +25,10 @@ export class InfoPane extends BaseElement {
     /** Events this class emits */
     public readonly events = events({
         /** Emitted when this is resized (may still be resizing) */
-        resized: new Event<Immutable<{ width: number; height: number }>>(),
+        resized: new Event<Immutable<{
+            width: number;
+            height: number;
+        }>>(),
 
         /** Emitted when this starts resizing */
         resizeStart: new Signal(),

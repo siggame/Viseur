@@ -23,9 +23,11 @@ type Omit<T, K extends keyof T> = Pick<T, ({ [P in keyof T]: P }
 
 /** The resources for a given game object. */
 export type ResourcesForGameObject<T extends IBaseRendererResources> = Readonly<{
-    [K in keyof T]: (options: T[K] extends BaseRendererResource
-        ? Omit<FirstArgument<T[K]["newSprite"]>, "container"> & { container?: PIXI.Container }
-        : string,
+    [K in keyof T]: (options?: T[K] extends undefined
+        ? undefined
+        : T[K] extends BaseRendererResource
+            ? Omit<FirstArgument<T[K]["newSprite"]>, "container"> & { container?: PIXI.Container }
+            : never,
     ) => PIXI.Sprite;
 }>;
 

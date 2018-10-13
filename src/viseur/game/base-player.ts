@@ -4,8 +4,7 @@ import * as Color from "color";
 /**
  * The base functions all Players in a game share.
  *
- * Note: this is a partial class, it must be inherited with BaseGameObject for
- * GAME_NAME.Player instances.
+ * Note: this is a partial class, it must be inherited with BaseGameObject for GAME_NAME.Player instances.
  */
 export interface IBasePlayerInstance extends IBasePlayer {
     /** the index of this player in the game.players array */

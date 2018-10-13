@@ -1,8 +1,10 @@
 // This is a class to represent the Cowboy object in the game.
 // If you want to render it in the game do so here.
+import { Delta } from "cadre-ts-utils/cadre";
 import { MenuItems } from "src/core/ui/context-menu";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
+import { makeRenderable } from "src/viseur/game";
 import { Game } from "./game";
 import { GameObject } from "./game-object";
 import { ICowboyState, IFurnishingState, ITileState } from "./state-interfaces";
@@ -10,8 +12,7 @@ import { ICowboyState, IFurnishingState, ITileState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
 import { ease, updown } from "src/utils";
-import { GameBar } from "src/viseur/game";
-import { RendererResource } from "src/viseur/renderer";
+import { GameBar, getTileNeighbor } from "src/viseur/game";
 import { Furnishing } from "./furnishing";
 import { Player } from "./player";
 
@@ -19,34 +20,26 @@ const DRUNK_COLOR = Color().hsl(127, 33, 50);
 const TILE_DIRECTIONS = [ "North", "East", "South", "West" ];
 // <<-- /Creer-Merge: imports -->>
 
+const SHOULD_RENDER =
+    true;
+
 /**
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class Cowboy extends GameObject {
+export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
-    }
 
     /** The instance of the game this game object is a part of */
     public readonly game!: Game; // set in super constructor
 
     /** The current state of the Cowboy (dt = 0) */
-    public current: ICowboyState | undefined;
+    public current: Immutable<Immutable<ICowboyState>> | undefined;
 
     /** The next state of the Cowboy (dt = 1) */
-    public next: ICowboyState | undefined;
+    public next: Immutable<Immutable<ICowboyState>> | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -79,7 +72,10 @@ export class Cowboy extends GameObject {
     private readonly shotSprites = new Array<PIXI.Sprite>();
 
     /** Faded colors used to show sharpshooter's focus */
-    private readonly focusTiles = new Array<{sprite: PIXI.Sprite, fade?: "in" | "out"}>();
+    private readonly focusTiles = new Array<{
+        sprite: PIXI.Sprite;
+        fade?: "in" | "out";
+    }>();
 
     /** Focus sprites that are free to re-use */
     private readonly freeFocusSprites = new Array<PIXI.Sprite>();
@@ -101,18 +97,15 @@ export class Cowboy extends GameObject {
      * @param Visuer the Viseur instance that controls everything and contains
      * the game.
      */
-    constructor(state: ICowboyState, viseur: Viseur) {
+    constructor(state: Immutable<ICowboyState>, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.job = state.job;
         this.owner = this.game.gameObjects[state.owner.id] as Player;
 
-        this.spriteBottom = (this.game.resources[`cowboy${this.job}Bottom`] as RendererResource)
-            .newSprite(this.container);
-
-        this.spriteTop = (this.game.resources[`cowboy${this.job}Top`] as RendererResource)
-            .newSprite(this.container);
+        this.spriteBottom = this.addSprite[`cowboy${this.job}Bottom`]();
+        this.spriteTop = this.addSprite[`cowboy${this.job}Top`]();
 
         if (this.owner.id === "0") { // then they are first player, so flip them
             this.spriteBottom.scale.x *= -1;
@@ -122,16 +115,17 @@ export class Cowboy extends GameObject {
         }
 
         // hit damage animation
-        this.hitSprite = this.game.resources.hit.newSprite(this.container, {
+        this.hitSprite = this.addSprite.hit({
             anchor: 0.5,
-            position: {x: 0.5, y: 0.5},
+            position: { x: 0.5, y: 0.5 },
         });
 
         switch (this.job) {
             case "Sharpshooter":
                 // create initial shot sprites
-                this.shotSprites.push(this.game.resources.shotHead.newSprite(this.game.layers.bullets, {
+                this.shotSprites.push(this.game.resources.shotHead.newSprite({
                     anchor: 0.5,
+                    container: this.game.layers.bullets,
                 }));
 
                 this.game.settings.sharpshooterFocus.changed.on(() => {
@@ -140,13 +134,12 @@ export class Cowboy extends GameObject {
 
                 break;
             case "Brawler":
-                this.brawlerAttack = this.game.resources.brawlAttack.newSprite(this.game.layers.brawl, {
+                this.brawlerAttack = this.game.resources.brawlAttack.newSprite({
                     anchor: 0.5,
-                    visible: false,
+                    container: this.game.layers.brawl,
                     relativeScale: 2,
+                    visible: false,
                 });
-
-                break;
         }
 
         this.healthBar = new GameBar(this.container, {
@@ -169,8 +162,8 @@ export class Cowboy extends GameObject {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public render(dt: number, current: ICowboyState, next: ICowboyState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public render(dt: number, current: Immutable<ICowboyState>, next: Immutable<ICowboyState>,
+                  reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -249,7 +242,7 @@ export class Cowboy extends GameObject {
 
         // if brawler is brawling
         if (this.brawlerAttack && this.brawlerAttack.visible) {
-            this.brawlerAttack.rotation = randomRotation + 2 * Math.PI * dt;
+            this.brawlerAttack.rotation = randomRotation + Math.PI * dt * 2;
         }
 
         if (this.focusTiles.length > 0) {
@@ -307,26 +300,29 @@ export class Cowboy extends GameObject {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    public stateUpdated(current: ICowboyState, next: ICowboyState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public stateUpdated(current: Immutable<ICowboyState>, next: Immutable<ICowboyState>,
+                        reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
         this.playingPiano = undefined;
 
-        if (nextReason && nextReason.run && nextReason.run.caller === this) {
-            const run = nextReason.run;
+        // if the delta is a run that we did
+        if (nextReason.type === "ran"
+         && nextReason.data
+         && nextReason.data.run
+         && nextReason.data.run.caller.id === this.id) {
+            const { run } = nextReason.data;
             switch (this.job) {
                 case "Sharpshooter":
-                    if (run.functionName === "act" && nextReason.returned === true) { // they successfully shot
-                        this.showShot(current.tile, run.args.tile, current.focus);
+                    if (run.functionName === "act" && nextReason.data.returned === true) { // they successfully shot
+                        this.showShot(current.tile, run.args.tile as ITileState, current.focus);
                     }
-                    break;
             }
 
-            if (run.functionName === "play" && nextReason.returned === true) {
+            if (run.functionName === "play" && nextReason.data.returned === true) {
                 // then they played a piano
-                this.playingPiano = run.args.piano;
+                this.playingPiano = run.args.piano as Furnishing;
             }
         }
         else {
@@ -334,11 +330,10 @@ export class Cowboy extends GameObject {
         }
 
         if (this.job === "Brawler" && this.brawlerAttack) {
-            const attacking = Boolean(
-                nextReason &&
-                nextReason.order === "runTurn" &&
-                nextReason.player &&
-                nextReason.player.id === next.owner.id,
+            const attacking = Boolean(nextReason.type === "finished"
+                                   && nextReason.data.order.name === "runTurn"
+                                   && nextReason.data.player
+                                   && nextReason.data.player.id === next.owner.id,
             );
 
             this.brawlerAttack.visible = attacking;
@@ -360,7 +355,7 @@ export class Cowboy extends GameObject {
 
             if (current.focus > 0 || next.focus > 0) {
                 // then show its focus
-                let fade; // no change
+                let fade: "in" | "out" | undefined; // no change
                 if (current.focus > next.focus) {
                     // fade out
                     fade = "out";
@@ -379,7 +374,7 @@ export class Cowboy extends GameObject {
                     }
 
                     for (let i = 0; i < distance; i++) {
-                        const neighbor = (tile as any)["tile" + direction] as ITileState | undefined;
+                        const neighbor = getTileNeighbor(tile, direction);
 
                         if (!neighbor || neighbor.isBalcony) {
                             break; // off map
@@ -398,7 +393,7 @@ export class Cowboy extends GameObject {
 
                         this.focusTiles.push({
                             sprite,
-                            fade: thisFade as any,
+                            fade: thisFade,
                         });
                     }
                 }
@@ -484,7 +479,9 @@ export class Cowboy extends GameObject {
         }
 
         // if we got here we need to make a new sprite
-        const newSprite = this.game.resources.blank.newSprite(this.game.layers.background);
+        const newSprite = this.game.resources.blank.newSprite({
+            container: this.game.layers.background,
+        });
         this.allFocusSprites.push(newSprite);
 
         newSprite.tint = this.spriteTop.tint; // team's color matrix filter
@@ -493,7 +490,7 @@ export class Cowboy extends GameObject {
     }
 
     /**
-     * Reclaims all used focus sprites and caches them for future reuse
+     * Reclaims all used focus sprites and caches them for future reuse.
      */
     private reclaimFocusSprites(): void {
         this.freeFocusSprites.length = 0;
@@ -504,11 +501,11 @@ export class Cowboy extends GameObject {
     }
 
     /**
-     * Displays all the shot sprites or not
-     * @param show true to show, false to hide
+     * Displays all the shot sprites or not.
+     *
+     * @param show - True to show, false to hide.
      */
     private visibleShot(show: boolean): void {
-        show = Boolean(show);
         this.shotVisible = show;
 
         // hide all the shots by default
@@ -519,10 +516,11 @@ export class Cowboy extends GameObject {
     }
 
     /**
-     * Displays a shot from a starting tile to and end tile
-     * @param from the tile the shot starts from
-     * @param to the tile the shot goes to
-     * @param distance the distance between the two tiles
+     * Displays a shot from a starting tile to and end tile.
+     *
+     * @param from - The tile the shot starts from.
+     * @param to - The tile the shot goes to.
+     * @param distance - The distance between the two tiles.
      */
     private showShot(from: ITileState, to: ITileState, distance: number): void {
         this.visibleShot(true);
@@ -556,7 +554,9 @@ export class Cowboy extends GameObject {
 
             // if we didn't have one, make a new one and cache it
             if (!sprite) {
-                sprite = this.game.resources.shotBody.newSprite(this.game.layers.bullets);
+                sprite = this.game.resources.shotBody.newSprite({
+                    container: this.game.layers.bullets,
+                });
                 sprite.anchor.set(0.5);
                 this.shotSprites.push(sprite);
             }

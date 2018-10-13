@@ -15,10 +15,10 @@ export class Key {
      * @param name - The name of the key we represent.
      */
     constructor(
-        /** The keycode this Key listens for */
+        /** The keycode this Key listens for. */
         public readonly code: number,
 
-        /** The human readable name of the key */
+        /** The human readable name of the key. */
         public readonly name: string,
     ) {}
 }

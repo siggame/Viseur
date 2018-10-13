@@ -338,7 +338,7 @@ export class BasePane<
      * or an array of numbers, indexed by their location in game.players,
      * with each value being [0, 1] for their progress.
      */
-    protected setPlayersProgresses(progresses?: Immutable<number[]>): void {
+    protected setPlayersProgresses(progresses: Immutable<number[]> | undefined): void {
         const summed = (progresses && progresses.length === this.game.numberOfPlayers)
             ? sum(progresses)
             : 0;

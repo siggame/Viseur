@@ -1,15 +1,6 @@
 import { Delta, IBaseGame, IGamelog } from "cadre-ts-utils/cadre";
 
 /**
- * A simplier shorthand for why a delta occurred,
- * removing delta merge properties.
- */
-export type DeltaReason
-    = Pick<Delta, "type">
-    & Pick<Delta, "data">
-;
-
-/**
  * A gamelog that is streaming to us as we are conencted to the game server
  * LIVE.
  */
