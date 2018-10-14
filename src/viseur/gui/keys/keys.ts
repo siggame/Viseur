@@ -8,7 +8,10 @@ function createKeysFrom<T extends object>(keys: T): { [K in keyof T]: Key } {
     return mapValues(keys, (code, name) => new Key(code as any as number, name));
 }
 
+/** All keys, indexed by name, to listen to. */
 export const KEYS = createKeysFrom(KEY_NAME_TO_CODE);
+
+/** All the keys, indexed by key code, to listen to. */
 export const KEY_FROM_CODE: { [key: number]: Key | undefined } = mapKeys(KEYS, (key) => key.code);
 
 document.addEventListener("keydown", (keyboardEvent) => {

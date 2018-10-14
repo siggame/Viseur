@@ -5,6 +5,7 @@ const REFRESH_DURATION = 20000;
 // source:
 // https://www.bypeople.com/svg-low-poly-background-css-js-snippet/
 
+/** A point used for Polygon node movement calculations. */
 interface IPolyPoint {
     x: number;
     y: number;
@@ -12,8 +13,10 @@ interface IPolyPoint {
     originY: number;
 }
 
+/** A node used for polygons. */
 type PolyNode = Node & Element & { beginElement(): void };
 
+/** A Polygon element. */
 type Polygon = Element & { point1: number; point2: number; point3: number };
 
 /**

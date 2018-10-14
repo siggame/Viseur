@@ -1,13 +1,13 @@
 // This is a simple function to be used in games
 import mapValues from "lodash/mapValues";
-import { FirstArgument, IPixiSpriteOptions } from "src/utils";
-import { BaseGameObject } from "src/viseur/game";
-import blankPng from "src/viseur/images/blank.png";
+import { FirstArgument, IPixiSpriteOptions, Omit } from "src/utils";
+import { BaseGameObject, RenderableGameObjectClass } from "src/viseur/game";
+import blankPng from "src/viseur/images/blank.png"; // tslint:disable-line:match-default-export-name
 import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
 import { RendererResource } from "./renderer-resource";
 import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";
 
-/** The base interface all renderer resources impliment. */
+/** The base interface all renderer resources implement. */
 export interface IBaseRendererResources {
     [key: string]: BaseRendererResource | undefined;
 }
@@ -16,10 +16,6 @@ export interface IBaseRendererResources {
 export interface IRendererResources extends IBaseRendererResources {
     blank: RendererResource;
 }
-
-// TODO: move to utils
-type Omit<T, K extends keyof T> = Pick<T, ({ [P in keyof T]: P }
-    & { [P in K]: never } & { [x: string]: never })[keyof T]>;
 
 /** The resources for a given game object. */
 export type ResourcesForGameObject<T extends IBaseRendererResources> = Readonly<{
@@ -110,7 +106,7 @@ export function createResources<T extends IBaseRendererResources>(
  * @returns A new object of factory functions for the resources and game object.
  */
 export function createResourcesFor<T extends IBaseRendererResources>(
-    gameObject: BaseGameObject<true>,
+    gameObject: InstanceType<RenderableGameObjectClass>,
     resources: T,
 ): ResourcesForGameObject<T> {
     return mapValues(resources, (resource, key) => () => {

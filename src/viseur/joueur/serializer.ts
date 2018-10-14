@@ -64,16 +64,16 @@ export function serialize(
  * @param game - The game that contains game objects.
  * @returns A copy of an object safely deserialized.
  */
-export function deserialize(data: unknown, game?: BaseGame): unknown {
+export function deserialize<T extends unknown>(data: T, game?: BaseGame): T {
     if (isObject(data)) {
         // TODO: check for game object reference?
         const result: UnknownObject = Array.isArray(data) ? [] : {};
 
         for (const key of (Object.keys(data))) {
-            result[key] = deserialize(data[key], game);
+            result[key] = deserialize((data as UnknownObject)[key], game);
         }
 
-        return result;
+        return result as T;
     }
 
     return data;

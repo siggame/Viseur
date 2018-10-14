@@ -1,11 +1,13 @@
 import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "./base-element";
 
+/** The extra arguments for an element that can be disabled. */
 export interface IDisableableElementArgs extends IBaseElementArgs {
     /** true if it should be disabled upon initialization, false otherwise */
     disabled?: boolean;
 }
 
+/** An element that can be disabled. */
 export class DisableableElement extends BaseElement {
     /**
      * Creates an element that can be disabled.

@@ -5,9 +5,10 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
-import rendererHbs from "./renderer.hbs";
+import rendererHbs from "./renderer.hbs"; // tslint:disable-line:match-default-export-name
 import "./renderer.scss";
 
+/** The arguments used to initialize the renderer's width/height size. */
 export interface IRendererSize {
     /**  the width of the renderer */
     width: number;
@@ -206,7 +207,7 @@ export class Renderer extends BaseElement {
                 resource.absolutePath = require(
                     // tslint:disable-next-line:no-require-imports non-literal-require
                     `src/games/${this.viseur.game.name.toLowerCase()}/resources/${resource.path}`,
-                );
+                ) as string;
             }
 
             loader.add(resource.path, resource.absolutePath);

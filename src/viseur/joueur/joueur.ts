@@ -1,4 +1,4 @@
-import { ClientEvent, IGamelog, ServerEvent } from "cadre-ts-utils/cadre";
+import { ClientEvent, Delta, IGamelog, ServerEvent } from "cadre-ts-utils/cadre";
 import * as ServerEvents from "cadre-ts-utils/cadre/events/server";
 import { FirstArgument, Immutable, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
@@ -7,37 +7,39 @@ import { Event, events, Signal } from "ts-typed-events";
 import * as serializer from "./serializer";
 
 // handy types to access the "data" property of our events
+/** The data from the Fatal server event. */
 type FatalData = Immutable<ServerEvents.FatalEvent["data"]>;
+/** The data from the Lobbied server event. */
 type LobbiedData = Immutable<ServerEvents.LobbiedEvent["data"]>;
-type MetaDeltaData = Readonly<ServerEvents.MetaDeltaEvent["data"]>; // readonly so array methods are in deltas[]
+/** The data from the MetaDelta server event. */
+type MetaDeltaData = Immutable<ServerEvents.MetaDeltaEvent["data"]>; // readonly so array methods are in deltas[]
+/** The data from the Order server event. */
 type OrderData = Immutable<ServerEvents.OrderEvent["data"]>;
+/** The data from the Over server event. */
 type OverData = Immutable<ServerEvents.OverEvent["data"]>;
+/** The data from the Ran server event. */
 type RanData = Immutable<ServerEvents.RanEvent["data"]>;
+/** The data from the Start server event. */
 type StartData = Immutable<ServerEvents.StartEvent["data"]>;
 
 /** Connection arguments for a Joueur connection. */
 export type JoueurConnectionArgs = FirstArgument<Joueur["connect"]>;
 
 /** Represents an order that the game server sends game clients */
-export interface IOrder {
-    /** The name of the function to execute for said order. */
-    name: string;
-
-    /** The arguments, in order, to the function name */
-    args: ReadonlyArray<unknown>;
-
+export type JoueurOrder = OrderData & {
     /**
      * The callback that will send back the returned value as the first
      * parameter.
      */
     callback(returned: unknown): void;
-}
+};
 
 /**
  * The websocket client to a game server.
  * Handles i/o with the game server, and mostly merges delta states from it.
  */
 export class Joueur {
+    /** The events this client emits when game server stuff happens. */
     public readonly events = events({
         error: new Event<Error>(),
 
@@ -143,7 +145,7 @@ export class Joueur {
             this.socket = new WebSocket(`ws://${args.server}:${args.port}`);
         }
         catch (err) {
-            this.events.error.emit(err);
+            this.events.error.emit(err as Error);
 
             return;
         }
@@ -181,7 +183,7 @@ export class Joueur {
                 console.log("FROM SERVER <-- ", message.data);
             }
 
-            this.received(JSON.parse(message.data));
+            this.received(JSON.parse(message.data)); // tslint:disable-line:no-any no-unsafe-any
         };
 
         this.socket.onclose = () => {
@@ -231,7 +233,7 @@ export class Joueur {
      *
      * @param event - game server interchange formatted data
      */
-    private received(event: Readonly<ServerEvent>): void {
+    private received(event: Immutable<ServerEvent>): void {
         switch (event.event) {
             case "over":
                 this.autoHandleOver(event.data);
@@ -301,24 +303,25 @@ export class Joueur {
      * occurred) about what changed in the game.
      */
     private autoHandleMetaDelta(delta: MetaDeltaData): void {
-        this.gamelog.deltas.push(delta);
+        this.gamelog.deltas.push(delta as Delta);
         this.events.delta.emit(delta);
     }
 
     /**
      * Invoked to make the AI do some order.
      *
-     * @param order - The order this clioent should execute.
+     * @param order - The order this client should execute.
      */
     private autoHandleOrder(order: OrderData): void {
-        const args = serializer.deserialize(order.args) as Array<unknown>;
-        const { name } = order;
+        const args = serializer.deserialize(order.args);
+        const { name, index } = order;
         if (!this.viseur.game || !this.viseur.game.humanPlayer) {
             throw new Error(`Cannot execute order ${name} without a game or human!`);
         }
         // if we have an order to handle, then we must have a game
         this.viseur.game.humanPlayer.order({
             name,
+            index,
             args,
             callback: (returned: unknown) => {
                 window.setTimeout(() => {

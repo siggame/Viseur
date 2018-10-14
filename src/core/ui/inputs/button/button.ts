@@ -1,7 +1,7 @@
 import { Immutable } from "src/utils";
 import { events, Signal } from "ts-typed-events";
 import { DisableableElement, IDisableableElementArgs } from "../../disableable-element";
-import buttonHbs from "./button.hbs";
+import buttonHbs from "./button.hbs"; // tslint:disable-line:match-default-export-name
 
 /** A range input for numbers */
 export class Button extends DisableableElement {

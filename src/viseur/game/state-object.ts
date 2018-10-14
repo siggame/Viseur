@@ -70,10 +70,10 @@ export class StateObject {
      * @param nextDelta - The reason for the next delta.
      */
     protected stateUpdated(
-        current: IState,
-        next: IState,
-        delta: Delta,
-        nextDelta: Delta,
+        current: Immutable<IState>,
+        next: Immutable<IState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
     ): void {
         // Intended to be overridden by inheriting classes,
         // no need to call this super.

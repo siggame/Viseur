@@ -6,8 +6,15 @@ import { Constructor, ease, Immutable } from "src/utils/";
 import { createResourcesFor, ResourcesForGameObject } from "src/viseur/renderer";
 import { BaseGameObject } from "./base-game-object";
 
+/** The base constructor for any GameObject. */
 type GameObjectConstructor = Constructor<BaseGameObject>;
 
+/**
+ * Mixes a GameObject class with the Renderable class so it can be rendered.
+ *
+ * @param GameObjectClass - The class constructor to mix in with.
+ * @returns A new class, extends from the passed in class, now renderable.
+ */
 // tslint:disable-next-line:typedef - mixin return type
 export function mixRenderableGameObject<T extends GameObjectConstructor>(
     GameObjectClass: T,
@@ -32,29 +39,28 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
             super(...args);
 
             // initialize the container that will be rendered!
-            const container = new PIXI.Container();
-            (this.container as PIXI.Container) = container;
+            this.container = new PIXI.Container();
             // add containers to the game layer by default
             // sub classes can move it if they please
-            container.setParent(this.game.layers.game);
+            this.container.setParent(this.game.layers.game);
 
             // else make the container work for clicking
-            container.interactive = true;
+            this.container.interactive = true;
 
             const onClick = (e: PIXI.interaction.InteractionEvent) => {
                 this.clicked(e);
             };
             /** spell-checker:disable */
-            container.on("mouseupoutside", onClick);
-            container.on("mouseup", onClick);
-            container.on("touchend", onClick);
-            container.on("touchendoutside", onClick);
+            this.container.on("mouseupoutside", onClick);
+            this.container.on("mouseup", onClick);
+            this.container.on("touchend", onClick);
+            this.container.on("touchendoutside", onClick);
 
             const onRightClick = (e: PIXI.interaction.InteractionEvent) => {
                 this.rightClicked(e);
             };
-            container.on("rightup", onRightClick);
-            container.on("rightupoutside", onRightClick);
+            this.container.on("rightup", onRightClick);
+            this.container.on("rightupoutside", onRightClick);
             /** spell-checker:enable */
         }
 
@@ -194,7 +200,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
                 ) {
                     const alpha = (current.logs.length < next.logs.length)
                         ? ease(dt, "cubicInOut") // fade it in
-                        : 1; // fully visible;
+                        : 1; // fully visible
 
                     // then they logged a string, so show it above their head
                     const str = next.logs[next.logs.length - 1];
@@ -202,7 +208,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
                     if (!this.loggedPixiText) {
                         this.loggedPixiText = this.renderer.newPixiText(
                             str,
-                            this.container as PIXI.Container,
+                            this.container,
                             { fill: Color("white").hex() },
                             0.25,
                         );
@@ -222,16 +228,30 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
     };
 }
 
+/** A game object that has been mixed with Renderable. */
 type MixedRenderableGameObject = ReturnType<typeof mixRenderableGameObject>;
-interface IRenderableGameObject extends MixedRenderableGameObject {}
-export type RenderableGameObject<T extends GameObjectConstructor = GameObjectConstructor> = T & IRenderableGameObject;
 
+/** An interface of a game object that has been mixed with renderable. */
+interface IRenderableGameObject extends MixedRenderableGameObject {}
+
+/** A GameObject class that has been mixed the Renderable class mixin. */
+export type RenderableGameObjectClass<
+    T extends GameObjectConstructor = GameObjectConstructor
+> = T & IRenderableGameObject;
+
+/**
+ * Makes a GameObject class renderable by mixing in the renderable mixin, when set to true.
+ *
+ * @param GameObjectClass - The GameObject class constructor to use as a base.
+ * @param shouldRender - If it should be mixed.
+ * @returns When shouldRender is false, it passes base the GameObjectClass, otherwise that class is mixed and returned.
+ */
 export function makeRenderable<T extends GameObjectConstructor, B extends boolean>(
     GameObjectClass: T,
     shouldRender: B,
-): B extends true ? RenderableGameObject<T>
+): B extends true ? RenderableGameObjectClass<T>
     : T extends IRenderableGameObject
-        ? RenderableGameObject<T>
+        ? RenderableGameObjectClass<T>
         : T {
     return (shouldRender && !(GameObjectClass as unknown as typeof BaseGameObject).shouldRender
         ? mixRenderableGameObject(GameObjectClass)

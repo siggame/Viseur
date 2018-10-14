@@ -2,11 +2,12 @@ import { onceTransitionEnds } from "src/utils/jquery";
 import { Event, events } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
-import tabularHbs from "./tabular.hbs";
+import tabularHbs from "./tabular.hbs"; // tslint:disable-line:match-default-export-name
 import "./tabular.scss";
 
 /** a block of content accessed via Tabs */
 export class Tabular extends BaseElement {
+    /** The events the tabular emits about its Tabs. */
     public readonly events = events({
         /** Triggered when the active tab changes from one to another */
         tabChanged: new Event<Readonly<{

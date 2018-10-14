@@ -3,8 +3,8 @@ import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "../base-element";
-import contextMenuItemHbs from "./context-menu-item.hbs";
-import contextMenuHbs from "./context-menu.hbs";
+import contextMenuItemHbs from "./context-menu-item.hbs"; // tslint:disable-line:match-default-export-name
+import contextMenuHbs from "./context-menu.hbs"; // tslint:disable-line:match-default-export-name
 import "./context-menu.scss";
 
 /** A menu item in a ContextMenu. */
@@ -22,6 +22,7 @@ export interface IMenuItem {
     callback(): void;
 }
 
+/** An array of menu items to make a Context Menu from. */
 export type MenuItems = Array<"---" | IMenuItem>;
 
 /** A custom right click menu */

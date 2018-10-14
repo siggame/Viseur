@@ -1,8 +1,8 @@
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import { BaseInput, IBaseInputArgs } from "../base-input";
-import dropDownOptionHbs from "./drop-down-option.hbs";
-import dropDownHbs from "./drop-down.hbs";
+import dropDownOptionHbs from "./drop-down-option.hbs"; // tslint:disable-line:match-default-export-name
+import dropDownHbs from "./drop-down.hbs"; // tslint:disable-line:match-default-export-name
 
 /** An option on the drop down. */
 export interface IDropDownOption<T> {

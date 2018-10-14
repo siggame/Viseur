@@ -2,8 +2,9 @@ import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disable
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Field } from "../field";
-import baseInputHbs from "./base-input.hbs";
+import baseInputHbs from "./base-input.hbs"; // tslint:disable-line:match-default-export-name
 
+/** The base arguments for any input. */
 export interface IBaseInputArgs<T> extends IDisableableElementArgs {
     /** the input type */
     type?: string;
@@ -58,7 +59,7 @@ export class BaseInput<T> extends DisableableElement {
         }
 
         this.element.on(this.getElementOnEventString(), () => {
-            this.value = this.getElementValue();
+            this.value = this.getElementValue() as T;
         });
 
         this.value = args.value as T;

@@ -127,6 +127,7 @@ export const KEY_NAME_TO_CODE = {
     "f12": 325 as 325,
 };
 
+/** Lookup for a keycode to it's string name/ascii value */
 export const KEY_CODE_TO_NAME = invert(KEY_NAME_TO_CODE) as {
     [code: number]: string | undefined;
 };

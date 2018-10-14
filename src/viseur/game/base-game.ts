@@ -14,7 +14,7 @@ import { BasePane } from "./base-pane";
 import { IBasePlayerInstance } from "./base-player";
 import { GameOverScreen } from "./game-over-screen";
 import { IBaseGameNamespace, IBaseGameSettings, IGameLayers, IViseurGameState } from "./interfaces";
-import { RenderableGameObject } from "./make-renderable";
+import { RenderableGameObjectClass } from "./make-renderable";
 import { StateObject } from "./state-object";
 
 /** The base class all games in the games/ folder inherit from */
@@ -45,7 +45,7 @@ export class BaseGame extends StateObject {
 
     /** All the game objects in the game, indexed by their ID */
     public readonly gameObjects: {
-        [id: string]: BaseGameObject | InstanceType<RenderableGameObject> | undefined;
+        [id: string]: BaseGameObject | InstanceType<RenderableGameObjectClass> | undefined;
     } = {};
 
     /** The players in the game */
@@ -115,7 +115,7 @@ export class BaseGame extends StateObject {
      * @param gamelog - The gamelog for this game, may be a streaming gamelog.
      * @param playerID - the player id of the human player, if there is one.
      */
-    constructor(viseur: Viseur, gamelog?: IGamelog, playerID?: string) {
+    constructor(viseur: Viseur, gamelog?: Immutable<IGamelog>, playerID?: string) {
         super();
 
         this.viseur = viseur;
@@ -354,7 +354,7 @@ export class BaseGame extends StateObject {
 
                 // Then it does not exist, no not render them;
                 // Else make them visible, and later we'll call their render().
-                (gameObject as InstanceType<RenderableGameObject>).container.visible = exists;
+                (gameObject as InstanceType<RenderableGameObjectClass>).container.visible = exists;
 
                 if (exists) {
                     // Then actually render it, otherwise it's invisible so why bother

@@ -1,5 +1,5 @@
 import { Immutable } from "cadre-ts-utils";
-import { IBaseGame, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { Games } from "src/games";
@@ -7,7 +7,7 @@ import { objectHasProperty, UnknownObject, unStringify, validateURL } from "src/
 import { viseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
-import { IGamelogWithReverses, IViseurGamelog } from "./game/gamelog";
+import { IGamelogWithReverses, IViseurGamelog, ReverseDelta } from "./game/gamelog";
 import { IBaseGameNamespace, IViseurGameState } from "./game/interfaces";
 import { GUI } from "./gui";
 import { Joueur, JoueurConnectionArgs, TournamentClient, TournamentConnnectionArgs } from "./joueur";
@@ -58,7 +58,7 @@ export class Viseur {
     public unparsedGamelog?: string;
 
     /** The raw gamelog */
-    public rawGamelog?: IGamelogWithReverses;
+    public rawGamelog?: Immutable<IGamelogWithReverses>;
 
     /** All available game namespaces */
     public games: {
@@ -143,8 +143,8 @@ export class Viseur {
      * @returns The current state, which is a custom object containing
      * the current `game` state and the `nextGame` state.
      */
-    public getCurrentState(): IViseurGameState {
-        return this.currentState;
+    public getCurrentState(): Immutable<IViseurGameState> {
+        return this.currentState as Immutable<IViseurGameState>;
     }
 
     /**
@@ -321,9 +321,9 @@ export class Viseur {
     public parseGamelog(jsonGamelog: string): void {
         this.unparsedGamelog = jsonGamelog;
 
-        let parsed: IGamelog;
+        let parsed: Immutable<IGamelog>;
         try {
-            parsed = JSON.parse(jsonGamelog) as IGamelog;
+            parsed = JSON.parse(jsonGamelog); // tslint:disable-next-line:no-unsafe-any
         }
         catch (err) {
             this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
@@ -406,7 +406,7 @@ export class Viseur {
      * Called once a gamelog is loaded
      * @param gamelog the deserialized JSON object that is the FULL gamelog
      */
-    private gamelogLoaded(gamelog: IViseurGamelog): void {
+    private gamelogLoaded(gamelog: Immutable<IViseurGamelog>): void {
         this.rawGamelog = gamelog;
         this.parser.updateConstants(gamelog.constants);
 
@@ -491,7 +491,7 @@ export class Viseur {
         }
 
         const d = this.mergedDelta;
-        const deltas = this.rawGamelog.deltas;
+        const deltas = this.rawGamelog.deltas as ReverseDelta[];
 
         if (index < 0) {
             this.currentState.game = d.currentState;
@@ -572,7 +572,7 @@ export class Viseur {
 
         if (indexChanged) {
             this.updateStepped(d);
-            this.events.stateChanged.emit(this.currentState);
+            this.events.stateChanged.emit(this.currentState as Immutable<IViseurGameState>);
         }
     }
 
@@ -581,7 +581,7 @@ export class Viseur {
      *
      * @param d - The current delta states.
      */
-    private updateStepped(d: IMergedDelta): void {
+    private updateStepped(d: Immutable<IMergedDelta>): void {
         if (!this.rawGamelog) {
             return;
         }
@@ -593,10 +593,10 @@ export class Viseur {
 
         this.currentState.game = d.currentState;
         this.currentState.nextGame = d.nextState;
-        this.currentState.delta = delta;
-        this.currentState.nextDelta = nextDelta;
+        this.currentState.delta = delta as Delta;
+        this.currentState.nextDelta = nextDelta as Delta;
 
-        this.events.stateChangedStep.emit(this.currentState);
+        this.events.stateChangedStep.emit(this.currentState as Immutable<IViseurGameState>);
     }
 
     /**
@@ -610,7 +610,7 @@ export class Viseur {
             this.gui.hideModal();
             this.events.ready.emit({
                 game: this.game as BaseGame,
-                gamelog: this.rawGamelog as IGamelog,
+                gamelog: this.rawGamelog as Immutable<IGamelog>,
             });
 
             // HACK: wait 1 second, then resize the gui because the panel
@@ -638,7 +638,7 @@ export class Viseur {
     private createJoueur(args: JoueurConnectionArgs): void {
         this.joueur = new Joueur(this);
 
-        this.rawGamelog = this.joueur.getGamelog();
+        this.rawGamelog = this.joueur.getGamelog() as Immutable<IGamelog>;
 
         this.joueur.events.connected.on(() => {
             this.gui.modalMessage("Awaiting game to start...");
@@ -676,15 +676,15 @@ export class Viseur {
 
         this.joueur.events.delta.on(() => {
             if (this.rawGamelog && this.rawGamelog.deltas.length === 1) {
-                this.gamelogLoaded(this.rawGamelog);
+                this.gamelogLoaded(this.rawGamelog as Immutable<IGamelog>);
             }
 
-            this.events.gamelogUpdated.emit(this.rawGamelog as IGamelog);
+            this.events.gamelogUpdated.emit(this.rawGamelog as Immutable<IGamelog>);
         });
 
         this.joueur.events.over.on((data) => {
             this.events.gamelogFinalized.emit({
-                gamelog: this.rawGamelog as IGamelog,
+                gamelog: this.rawGamelog as Immutable<IGamelog>,
                 url: data.gamelogURL,
             });
         });

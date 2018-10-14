@@ -7,12 +7,11 @@ import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
-import { getContrastingColor, Immutable, isObject, objectHasProperty,
-         UnknownObject } from "src/utils";
+import { getContrastingColor, Immutable, isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
-import basePaneStatsHbs from "./base-pane-stats.hbs";
-import basePaneHbs from "./base-pane.hbs";
+import basePaneStatsHbs from "./base-pane-stats.hbs"; // tslint:disable-line:match-default-export-name
+import basePaneHbs from "./base-pane.hbs"; // tslint:disable-line:match-default-export-name
 import "./base-pane.scss";
 
 // This tells webpack to include all files it finds that match the png regex
@@ -22,7 +21,7 @@ const requireLanguageImage = require.context(
     "../language-images/", // directory to include
     true, // deep flag
     /\.png$/, // match on .png extensions
-);
+) as (path: string) => string;
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 const NS_IN_MS = 1000000;
 
@@ -386,7 +385,7 @@ export class BasePane<
      * @returns A container object containing all the parts of this list.
      */
     private createStatList(
-        stats: Immutable<Array<IPaneStat<TBaseGame | TBasePlayer>>>,
+        stats: ReadonlyArray<IPaneStat<TBaseGame | TBasePlayer>>,
         parent: JQuery,
         classes: string = "",
     ): IStatsList<TBaseGame | TBasePlayer> {

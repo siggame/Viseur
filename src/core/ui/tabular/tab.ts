@@ -2,8 +2,8 @@ import { partial } from "src/core/partial";
 import { Viseur } from "src/viseur";
 import { events, Signal } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
-import tabContentHbs from "./tab-content.hbs";
-import tabHbs from "./tab.hbs";
+import tabContentHbs from "./tab-content.hbs"; // tslint:disable-line:match-default-export-name
+import tabHbs from "./tab.hbs"; // tslint:disable-line:match-default-export-name
 import { Tabular } from "./tabular";
 
 /** The interface arguments for a Tab can extend from. */

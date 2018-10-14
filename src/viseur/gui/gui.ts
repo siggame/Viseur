@@ -8,12 +8,12 @@ import { PrettyPolygons } from "src/core/ui/pretty-polygons";
 import { Viseur, viseurConstructed } from "src/viseur";
 import { Event, events } from "ts-typed-events";
 import { BaseGame } from "../game";
-import faviconIco from "../images/favicon.ico";
-import guiHbs from "./gui.hbs";
+import faviconIco from "../images/favicon.ico"; // tslint:disable-line:match-default-export-name
+import guiHbs from "./gui.hbs"; // tslint:disable-line:match-default-export-name
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
 import { KEYS } from "./keys";
-import loadingMessageHbs from "./loading-message/loading-message.hbs";
+import loadingMessageHbs from "./loading-message/loading-message.hbs"; // tslint:disable-line:match-default-export-name
 import "./loading-message/loading-message.scss";
 import { PlaybackPane } from "./playback-pane";
 
@@ -48,7 +48,7 @@ export class GUI extends BaseElement {
     /** The modal [re]used to display loading and error messages */
     private readonly modal: Modal;
 
-    // the game (for resizing purposes)
+    /** the game (for resizing purposes) */
     private game: BaseGame | undefined;
 
     /** All the events this GUI emits */

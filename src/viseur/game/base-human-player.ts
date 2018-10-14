@@ -1,5 +1,5 @@
 import { Immutable, UnknownObject } from "src/utils";
-import { IOrder } from "src/viseur/joueur";
+import { JoueurOrder } from "src/viseur/joueur";
 import { BaseGame } from "./base-game";
 import { BaseGameObject } from "./base-game-object";
 
@@ -20,7 +20,7 @@ export class BaseHumanPlayer {
     // NOTE: set shortly after initialized... maybe shouldnt' be !'d
 
     /** Orders we could not do until our player was hooked up. */
-    private readonly backOrders: IOrder[] = [];
+    private readonly backOrders: JoueurOrder[] = [];
 
     /**
      * Creates a base human player for a game.
@@ -51,7 +51,7 @@ export class BaseHumanPlayer {
      * @param order - The order details.
      * @throws If the order is invalid (name can't be found as a function).
      */
-    public order(order: Immutable<IOrder>): void {
+    public order(order: Immutable<JoueurOrder>): void {
         if (!this.player) {
             // Then we have not been told our player, so back order it.
             this.backOrders.push(order);

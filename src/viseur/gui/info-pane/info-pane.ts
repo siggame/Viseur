@@ -5,7 +5,7 @@ import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
 import { GUI } from "../gui";
-import infoPaneHbs from "./info-pane.hbs";
+import infoPaneHbs from "./info-pane.hbs"; // tslint:disable-line:match-default-export-name
 import "./info-pane.scss";
 import { TABS } from "./tabs";
 
@@ -198,7 +198,7 @@ export class InfoPane extends BaseElement {
      *
      * @param downEvent - The event generated from dragging the info pane.
      */
-    private onResize(downEvent: JQuery.Event<HTMLElement, null>): void {
+    private onResize(downEvent: JQuery.Event): void {
         let x = downEvent.pageX;
         let y = downEvent.pageY;
         let width = Number(this.element.width());

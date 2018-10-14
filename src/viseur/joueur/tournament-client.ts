@@ -1,4 +1,4 @@
-import { FirstArgument, Immutable } from "src/utils";
+import { FirstArgument, Immutable, isObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
 
@@ -23,6 +23,7 @@ export type TournamentConnnectionArgs = FirstArgument<
 
 /** A WS connection to a tournament server */
 export class TournamentClient {
+    /** Events emitted but this tournament client.  */
     public readonly events = events({
         /** Emitted when an error is encountered by the socket */
         error: new Event<Error>(),
@@ -74,7 +75,7 @@ export class TournamentClient {
             this.socket = new WebSocket(`ws://${args.server}:${args.port}`);
         }
         catch (err) {
-            this.events.error.emit(err);
+            this.events.error.emit(err as Error);
 
             return;
         }
@@ -100,7 +101,12 @@ export class TournamentClient {
                 console.log("FROM TOURNAMENT <-- ", message.data);
             }
 
-            this.received(JSON.parse(message.data));
+            const data = JSON.parse(message.data as string) as unknown;
+            if (!isObject(data)) {
+                throw new Error("Received non object from tournament server.");
+            }
+
+            this.received(data as FirstArgument<TournamentClient["received"]>);
         };
 
         this.socket.onclose = () => {
@@ -109,7 +115,7 @@ export class TournamentClient {
     }
 
     /**
-     * Force closes the websocket connection
+     * Force closes the websocket connection.
      */
     public close(): void {
         if (this.socket) {
@@ -118,10 +124,10 @@ export class TournamentClient {
     }
 
     /**
-     * sends an event to the server
+     * Sends an event to the server.
      *
-     * @param eventName - name of the event
-     * @param data - data about the event
+     * @param eventName - The name of the event.
+     * @param data - The data about the event.
      */
     private send(eventName: string, data: object): void {
         if (!this.socket) {
@@ -155,7 +161,7 @@ export class TournamentClient {
                 this.onMessage(String(data.data));
                 break;
             case "play":
-                // TODO: verify this impliments said interface.
+                // TODO: verify this implements said interface.
                 this.onPlay(data.data as ITournamentPlayData);
                 break;
             default:

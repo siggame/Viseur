@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
-import baseElementHbs from "./base-element.hbs";
+import baseElementHbs from "./base-element.hbs"; // tslint:disable-line:match-default-export-name
 
 /** BaseElement constructor args */
 export interface IBaseElementArgs {
