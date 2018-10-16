@@ -58,6 +58,7 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),
+
         /** Middle layer, for moving game objects */
         game: this.createLayer(),
 
@@ -120,7 +121,7 @@ export class Game extends BaseGame {
      * initializes the background. It is drawn once automatically after this step.
      * @param state the initial state to use the render the background
      */
-    protected createBackground(state: IGameState): void {
+    protected createBackground(state: Immutable<IGameState>): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
@@ -140,8 +141,8 @@ export class Game extends BaseGame {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    protected renderBackground(dt: number, current: IGameState, next: IGameState,
-                               reason: DeltaReason, nextReason: DeltaReason): void {
+    protected renderBackground(dt: number, current: Immutable<IGameState>, next: Immutable<IGameState>,
+                               reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
         super.renderBackground(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render-background -->>

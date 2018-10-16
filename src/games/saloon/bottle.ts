@@ -1,15 +1,14 @@
 // This is a class to represent the Bottle object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { DeltaReason, makeRenderable } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { IBottleState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import { ease, Immutable } from "src/utils";
-import { ResourcesForGameObject } from "src/viseur/renderer";
+import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 const SHOULD_RENDER = true;
@@ -24,10 +23,10 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Bottle (dt = 0) */
-    public current: IBottleState | undefined;
+    public current: Immutable<IBottleState> | undefined;
 
     /** The next state of the Bottle (dt = 1) */
-    public next: IBottleState | undefined;
+    public next: Immutable<IBottleState> | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -47,7 +46,7 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
      * Constructor for the Bottle with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      * @param state the initial state of this Bottle
-     * @param Visuer the Viseur instance that controls everything and contains the game.
+     * @param viesuer the Viseur instance that controls everything and contains the game.
      */
     constructor(state: Immutable<IBottleState>, viseur: Viseur) {
         super(state, viseur);
@@ -72,8 +71,8 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IBottleState>,
         next: Immutable<IBottleState>,
-        reason: Immutable<DeltaReason>,
-        nextReason: Immutable<DeltaReason>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
     ): void {
         super.render(dt, current, next, reason, nextReason);
 
@@ -135,8 +134,8 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IBottleState>,
         next: Immutable<IBottleState>,
-        reason: Immutable<DeltaReason>,
-        nextReason: Immutable<DeltaReason>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
     ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
@@ -152,21 +151,6 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     // NOTE: past this block are functions only used 99% of the time if
     //       the game supports human playable clients (like Chess).
     //       If it does not, feel free to ignore everything past here.
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

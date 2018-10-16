@@ -2,6 +2,7 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "commonjs",
+        "importHelpers": true,
         "lib": [
             "dom", "es5", "es6", "esnext"
         ],

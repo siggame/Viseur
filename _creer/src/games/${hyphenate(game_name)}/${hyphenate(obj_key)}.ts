@@ -9,8 +9,13 @@ if len(parent_classes) == 0:
 
 imports = {
     './state-interfaces': ['I'+obj_key+'State'],
-    'src/viseur/game': ['DeltaReason'],
+    'cadre-ts-utils/cadre': ['Delta'],
+    'src/utils': ['Immutable'],
+    'src/viseur/game': [],
 }
+
+if obj_key == 'GameObject':
+    imports["src/viseur/renderer"] = ['ResourcesForGameObject']
 
 if base_object:
     imports['src/viseur/game'].append(parent_classes[0])
@@ -19,13 +24,12 @@ if obj_key == 'Game':
     imports['./settings'] = ['GameSettings']
     imports['./resources'] = ['GameResources']
     imports['./game-object-classes'] = ['GameObjectClasses']
-    imports['src/viseur/renderer'] = ['IRendererSize']
     imports["./human-player"] = ['HumanPlayer']
+    imports['src/viseur/renderer'] = ['IRendererSize']
 else:
     imports['./game'] = ['Game']
-    imports['src/utils'] = ['Immutable']
     imports['src/viseur'] = ['Viseur']
-    imports['src/core/ui/context-menu'] = ['MenuItems']
+    imports["src/viseur/game"].append('makeRenderable')
     if not base_object:
         imports['./'+hyphenate(parent_classes[0])] = [parent_classes[0]]
 
@@ -50,11 +54,14 @@ import * as Color from "color";
 ${shared['vis']['imports'](imports)}
 ${merge("// ", "imports", "// any additional imports you want can be added here safely between Creer runs", help=False)}
 
+${merge("// ", "should-render", '''// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = undefined;
+''', help=False)}
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class ${obj_key} extends ${parent_classes[0]} {
+export class ${obj_key} extends ${parent_classes[0] if obj_key == 'Game' else 'makeRenderable({}, SHOULD_RENDER)'.format(parent_classes[0])} {
 ${merge("    // ", "static-functions", "    // you can add static functions here", help=False)}
 
 % if obj_key == 'Game':
@@ -62,20 +69,14 @@ ${merge("    // ", "static-functions", "    // you can add static functions here
     public static readonly gameName: string = "${obj['name']}";
 
     /** The number of players in this game. the players array should be this same size */
-    public readonly numberOfPlayers: number = ${obj['numberOfPlayers']};
+    public static readonly numberOfPlayers: number = ${obj['numberOfPlayers']};
 
-% else:
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-${merge("        // ", "should-render", "        return super.shouldRender; // change this to true to render all instances of this class", help=False)}
-    }
-
+% elif obj_key == 'GameObject':
     /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
+    public readonly game!: Game;
+
+    /** The factory that will build sprites for this game object */
+    public readonly addSprite!: ResourcesForGameObject${'<'}Game["resources"]> | undefined;
 
 % endif
     /** The current state of the ${obj_key} (dt = 0) */
@@ -221,9 +222,9 @@ ${merge("        // ", "state-updated", "        // update the Game based on its
     /**
      * Constructor for the ${obj_key} with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this ${obj_key}
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this ${obj_key}.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: I${obj_key}State, viseur: Viseur) {
         super(state, viseur);
@@ -338,18 +339,6 @@ ${formatted_args}): void {
     // </Joueur functions>
 
 % endif
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-${merge("        // ", "get-context-menu", "        // add context items to the menu here", help=False)}
-
-        return menu;
-    }
 % endif
 
 ${merge("    // ", "protected-private-functions", "    // You can add additional protected/private functions here", help=False)}

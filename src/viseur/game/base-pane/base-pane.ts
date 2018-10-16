@@ -57,8 +57,8 @@ export interface IStatsList<T = unknown> {
  * normally used to show player stats.
  */
 export class BasePane<
-    TBaseGame extends IBaseGame,
-    TBasePlayer extends IBasePlayer,
+    TBaseGameState extends IBaseGame,
+    TBasePlayerState extends IBasePlayer,
 > extends BaseElement {
     /** The game this pane represents. */
     public readonly game: BaseGame;
@@ -73,10 +73,10 @@ export class BasePane<
     private humansTickingPlayer?: Immutable<IBasePlayer>;
 
     /** Stats list for the game. */
-    private readonly gameStatsList: IStatsList<TBaseGame>;
+    private readonly gameStatsList: IStatsList<TBaseGameState>;
 
     /** Stats list for each player, indexed by their IDs. */
-    private readonly playerToStatsList = new Map<string, IStatsList<TBasePlayer>>();
+    private readonly playerToStatsList = new Map<string, IStatsList<TBasePlayerState>>();
 
     /** Element that holds the player's stats lists. */
     private readonly playersElement: JQuery;
@@ -278,7 +278,7 @@ export class BasePane<
      */
     protected getPlayerStats(
         state: Immutable<IBaseGame>,
-    ): Array<IPaneStat<TBasePlayer>> {
+    ): Array<IPaneStat<TBasePlayerState>> {
         return [
             {
                 title: "name",
@@ -302,8 +302,8 @@ export class BasePane<
      */
     protected getGameStats(
         state: Immutable<IBaseGame>,
-    ): Array<IPaneStat<TBaseGame>> {
-        const list: Array<IPaneStat<TBaseGame>> = [];
+    ): Array<IPaneStat<TBaseGameState>> {
+        const list: Array<IPaneStat<TBaseGameState>> = [];
 
         if (objectHasProperty(state, "currentTurn")) {
             list.push({
@@ -366,7 +366,7 @@ export class BasePane<
         stats: ReadonlyArray<IPaneStat>, // Readonly but not immutable,
                                          // as we do mutate the pane stats.
         titlePrefix: string,
-    ): ReadonlyArray<IPaneStat<TBaseGame | TBasePlayer>> {
+    ): ReadonlyArray<IPaneStat<TBaseGameState | TBasePlayerState>> {
         for (const stat of stats) {
             if (stat.label || stat.title) {
                 stat.title = `${titlePrefix}'s ${stat.label || stat.title}`;
@@ -385,17 +385,17 @@ export class BasePane<
      * @returns A container object containing all the parts of this list.
      */
     private createStatList(
-        stats: ReadonlyArray<IPaneStat<TBaseGame | TBasePlayer>>,
+        stats: ReadonlyArray<IPaneStat<TBaseGameState | TBasePlayerState>>,
         parent: JQuery,
         classes: string = "",
-    ): IStatsList<TBaseGame | TBasePlayer> {
+    ): IStatsList<TBaseGameState | TBasePlayerState> {
         const element = partial(
             basePaneStatsHbs,
             { classes },
             parent,
         );
 
-        const list: IStatsList<TBaseGame | TBasePlayer> = {
+        const list: IStatsList<TBaseGameState | TBasePlayerState> = {
             stats,
             element,
             statsToListElement: [],

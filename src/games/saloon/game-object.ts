@@ -1,8 +1,9 @@
 // This is a class to represent the GameObject object in the game.
 // If you want to render it in the game do so here.
+import { Delta } from "cadre-ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { BaseGameObject, DeltaReason } from "src/viseur/game";
+import { BaseGameObject, makeRenderable } from "src/viseur/game";
 import { ResourcesForGameObject } from "src/viseur/renderer";
 import { Game } from "./game";
 import { IGameObjectState } from "./state-interfaces";
@@ -11,11 +12,13 @@ import { IGameObjectState } from "./state-interfaces";
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
+const SHOULD_RENDER = undefined;
+
 /**
  * An object in the game. The most basic class that all game classes should
  * inherit from automatically.
  */
-export class GameObject extends BaseGameObject {
+export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
@@ -24,7 +27,7 @@ export class GameObject extends BaseGameObject {
     public readonly game!: Game; // set in super constructor
 
     /** The factory that will build sprites for this game object */
-    public readonly addSprite!: ResourcesForGameObject<Game["resources"]>;
+    public readonly addSprite!: ResourcesForGameObject<Game["resources"]> | undefined;
 
     /** The current state of the GameObject (dt = 0) */
     public current: Immutable<IGameObjectState> | undefined;
@@ -63,7 +66,7 @@ export class GameObject extends BaseGameObject {
      * @param nextReason the reason for the next delta
      */
     public render(dt: number, current: Immutable<IGameObjectState>, next: Immutable<IGameObjectState>,
-                  reason: Immutable<DeltaReason>, nextReason: Immutable<DeltaReason>): void {
+                  reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -93,7 +96,7 @@ export class GameObject extends BaseGameObject {
      * @param nextReason the reason for the next delta
      */
     public stateUpdated(current: Immutable<IGameObjectState>, next: Immutable<IGameObjectState>,
-                        reason: Immutable<DeltaReason>, nextReason: Immutable<DeltaReason>): void {
+                        reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>

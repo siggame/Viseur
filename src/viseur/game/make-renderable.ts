@@ -246,7 +246,7 @@ export type RenderableGameObjectClass<
  * @param shouldRender - If it should be mixed.
  * @returns When shouldRender is false, it passes base the GameObjectClass, otherwise that class is mixed and returned.
  */
-export function makeRenderable<T extends GameObjectConstructor, B extends boolean>(
+export function makeRenderable<T extends GameObjectConstructor, B extends boolean | undefined>(
     GameObjectClass: T,
     shouldRender: B,
 ): B extends true ? RenderableGameObjectClass<T>

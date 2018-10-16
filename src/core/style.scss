@@ -2,8 +2,8 @@
 @import "./fonts";
 @import "./colors";
 
-@import url(http://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
-@import url(http://fonts.googleapis.com/css?family=Inconsolata:400,700);
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
+@import url(https://fonts.googleapis.com/css?family=Inconsolata:400,700);
 
 *, *:before, *:after {
     @include transition(all 0.35s ease-in-out);
