@@ -30,15 +30,19 @@ export interface IGameLayers {
 }
 
 /** The namespace for a specific game so we can initialize it */
-export interface IBaseGameNamespace {
+export interface IBaseGameNamespace<
+    G extends typeof BaseGame = typeof BaseGame,
+    P extends typeof BasePane = typeof BasePane,
+    H extends typeof BaseHumanPlayer = typeof BaseHumanPlayer,
+> {
     /** The class constructor of the game for this namespace */
-    Game: typeof BaseGame;
+    Game: G;
 
     /** The class constructor of the pane for this game */
-    Pane: typeof BasePane;
+    Pane: P;
 
     /** The class constructor of the human player for this game */
-    HumanPlayer: typeof BaseHumanPlayer;
+    HumanPlayer: H;
 
     /* * The list of settings for this game */
     // settings: {[key: string]: BaseSetting};

@@ -1,9 +1,9 @@
 // This is a class to represent the YoungGun object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ICowboyState, IYoungGunState } from "./state-interfaces";
 
@@ -12,28 +12,17 @@ import { ease } from "src/utils";
 import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class YoungGun extends GameObject {
+export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the YoungGun (dt = 0) */
     public current: IYoungGunState | undefined;
@@ -47,19 +36,19 @@ export class YoungGun extends GameObject {
     private readonly owner: Player;
 
     /** The top part of the sprite (that is NOT colored) */
-    private readonly spriteBottom = this.game.resources.youngGunBottom.newSprite(this.container);
+    private readonly spriteBottom = this.addSprite.youngGunBottom();
 
     /** The top part of the sprite (that is colored) */
-    private readonly spriteTop = this.game.resources.youngGunTop.newSprite(this.container);
+    private readonly spriteTop = this.addSprite.youngGunTop();
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
      * Constructor for the YoungGun with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this YoungGun
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this YoungGun.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IYoungGunState, viseur: Viseur) {
         super(state, viseur);
@@ -79,19 +68,23 @@ export class YoungGun extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render YoungGun
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render YoungGun instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public render(dt: number, current: IYoungGunState, next: IYoungGunState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public render(
+        dt: number,
+        current: Immutable<IYoungGunState>,
+        next: Immutable<IYoungGunState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -116,15 +109,18 @@ export class YoungGun extends GameObject {
 
     /**
      * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public stateUpdated(current: IYoungGunState, next: IYoungGunState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public stateUpdated(
+        current: Immutable<IYoungGunState>,
+        next: Immutable<IYoungGunState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
@@ -141,11 +137,9 @@ export class YoungGun extends GameObject {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Tells the YoungGun to call in a new Cowboy of the given job to the open
@@ -161,21 +155,6 @@ export class YoungGun extends GameObject {
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

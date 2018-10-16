@@ -16,8 +16,7 @@ import { IGameState } from "./state-interfaces";
 // <<-- /Creer-Merge: imports -->>
 
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
 export class Game extends BaseGame {
     // <<-- Creer-Merge: static-functions -->>
@@ -25,16 +24,16 @@ export class Game extends BaseGame {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The static name of this game. */
-    public static readonly gameName: string = "Saloon";
+    public static readonly gameName = "Saloon";
 
     /** The number of players in this game. the players array should be this same size */
-    public readonly numberOfPlayers: number = 2;
+    public static readonly numberOfPlayers = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: Immutable<IGameState> | undefined;
+    public current: IGameState | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: Immutable<IGameState> | undefined;
+    public next: IGameState | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
@@ -121,7 +120,7 @@ export class Game extends BaseGame {
      * initializes the background. It is drawn once automatically after this step.
      * @param state the initial state to use the render the background
      */
-    protected createBackground(state: Immutable<IGameState>): void {
+    protected createBackground(state: IGameState): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
@@ -141,8 +140,13 @@ export class Game extends BaseGame {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    protected renderBackground(dt: number, current: Immutable<IGameState>, next: Immutable<IGameState>,
-                               reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
+    protected renderBackground(
+        dt: number,
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.renderBackground(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render-background -->>
@@ -159,15 +163,18 @@ export class Game extends BaseGame {
      * @param reason the reason for the current delta
      * @param nextReason the reason for the next delta
      */
-    protected stateUpdated(current: Immutable<IGameState>, next: Immutable<IGameState>,
-                           reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
+    protected stateUpdated(
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Game based on its current and next states
         // <<-- /Creer-Merge: state-updated -->>
     }
-
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
     // <<-- /Creer-Merge: protected-private-functions -->>

@@ -15,6 +15,7 @@ imports = {
 }
 
 if obj_key == 'GameObject':
+    imports['./game'] = ['Game']
     imports["src/viseur/renderer"] = ['ResourcesForGameObject']
 
 if base_object:
@@ -24,10 +25,10 @@ if obj_key == 'Game':
     imports['./settings'] = ['GameSettings']
     imports['./resources'] = ['GameResources']
     imports['./game-object-classes'] = ['GameObjectClasses']
-    imports["./human-player"] = ['HumanPlayer']
+    imports['./human-player'] = ['HumanPlayer']
+    imports['color'] = [ '* as Color' ]
     imports['src/viseur/renderer'] = ['IRendererSize']
 else:
-    imports['./game'] = ['Game']
     imports['src/viseur'] = ['Viseur']
     imports["src/viseur/game"].append('makeRenderable')
     if not base_object:
@@ -48,16 +49,15 @@ if obj['functions']:
                     imports['./state-interfaces'].append(return_type)
 
 %>
-% if obj_key == 'Game':
-import * as Color from "color";
-% endif
 ${shared['vis']['imports'](imports)}
 ${merge("// ", "imports", "// any additional imports you want can be added here safely between Creer runs", help=False)}
 
+% if obj_key != 'Game':
 ${merge("// ", "should-render", '''// Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = undefined;
 ''', help=False)}
 
+% endif
 /**
  * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
@@ -66,10 +66,10 @@ ${merge("    // ", "static-functions", "    // you can add static functions here
 
 % if obj_key == 'Game':
     /** The static name of this game. */
-    public static readonly gameName: string = "${obj['name']}";
+    public static readonly gameName = "${obj['name']}";
 
     /** The number of players in this game. the players array should be this same size */
-    public static readonly numberOfPlayers: number = ${obj['numberOfPlayers']};
+    public static readonly numberOfPlayers = ${obj['numberOfPlayers']};
 
 % elif obj_key == 'GameObject':
     /** The instance of the game this game object is a part of */
@@ -191,8 +191,8 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
         dt: number,
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        reason: Immutable<IDeltaReason>,
-        nextReason: Immutable<IDeltaReason>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
     ): void {
         super.renderBackground(dt, current, next, reason, nextReason);
 
@@ -211,8 +211,8 @@ ${merge("        // ", "render-background", "        // update and re-render wha
     protected stateUpdated(
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        reason: Immutable<IDeltaReason>,
-        nextReason: Immutable<IDeltaReason>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
     ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
@@ -247,8 +247,8 @@ ${merge("        // ", "constructor", "        // You can initialize your new {}
         dt: number,
         current: Immutable<I${obj_key}State>,
         next: Immutable<I${obj_key}State>,
-        reason: Immutable<IDeltaReason>,
-        nextReason: Immutable<IDeltaReason>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
     ): void {
         super.render(dt, current, next, reason, nextReason);
 
@@ -274,10 +274,10 @@ ${merge("        // ", "recolor", "        // replace with code to recolor sprit
      * @param nextReason - The next (most) reason for the next delta.
      */
     public stateUpdated(
-        current: Immutable<<I${obj_key}State>,
+        current: Immutable<I${obj_key}State>,
         next: Immutable<I${obj_key}State>,
-        reason: Immutable<IDeltaReason>,
-        nextReason: Immutable<IDeltaReason>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
     ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
@@ -286,12 +286,10 @@ ${merge("        // ", "state-updated", "        // update the {} based off its 
 
 ${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
 % if len(obj['function_names']) > 0:
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
 % for function_name in obj['function_names']:
 <%
@@ -340,6 +338,5 @@ ${formatted_args}): void {
 
 % endif
 % endif
-
 ${merge("    // ", "protected-private-functions", "    // You can add additional protected/private functions here", help=False)}
 }

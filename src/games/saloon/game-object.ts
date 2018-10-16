@@ -12,11 +12,13 @@ import { IGameObjectState } from "./state-interfaces";
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+// Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = undefined;
+// <<-- /Creer-Merge: should-render -->>
 
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
 export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
@@ -24,16 +26,16 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
+    public readonly game!: Game;
 
     /** The factory that will build sprites for this game object */
     public readonly addSprite!: ResourcesForGameObject<Game["resources"]> | undefined;
 
     /** The current state of the GameObject (dt = 0) */
-    public current: Immutable<IGameObjectState> | undefined;
+    public current: IGameObjectState | undefined;
 
     /** The next state of the GameObject (dt = 1) */
-    public next: Immutable<IGameObjectState> | undefined;
+    public next: IGameObjectState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -42,10 +44,11 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     /**
      * Constructor for the GameObject with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this GameObject
-     * @param viseur the Viseur instance that controls everything and contains the game.
+     *
+     * @param state - The initial state of this GameObject.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: Immutable<IGameObjectState>, viseur: Viseur) {
+    constructor(state: IGameObjectState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -54,19 +57,23 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render GameObject
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render GameObject instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public render(dt: number, current: Immutable<IGameObjectState>, next: Immutable<IGameObjectState>,
-                  reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
+    public render(
+        dt: number,
+        current: Immutable<IGameObjectState>,
+        next: Immutable<IGameObjectState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -88,15 +95,18 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
 
     /**
      * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public stateUpdated(current: Immutable<IGameObjectState>, next: Immutable<IGameObjectState>,
-                        reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
+    public stateUpdated(
+        current: Immutable<IGameObjectState>,
+        next: Immutable<IGameObjectState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
@@ -108,11 +118,9 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Adds a message to this GameObject's logs. Intended for your own debugging

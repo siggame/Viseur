@@ -112,6 +112,12 @@ export interface IGameState extends IBaseGame {
     tiles: ITileState[];
 
     /**
+     * The amount of time (in nano-seconds) added after each player performs a
+     * turn.
+     */
+    timeAddedPerTurn: number;
+
+    /**
      * How many turns a Cowboy will be drunk for if a bottle breaks on it.
      */
     turnsDrunk: number;
@@ -355,7 +361,7 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
  */
 export interface ITileState extends IGameObjectState {
     /**
-     * The beer Bottle currently flying over this Tile.
+     * The beer Bottle currently flying over this Tile, null otherwise.
      */
     bottle: IBottleState;
 

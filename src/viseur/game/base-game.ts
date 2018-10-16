@@ -1,17 +1,16 @@
-import { Delta, IBaseGame, IBaseGameObject, IGamelog } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame, IBaseGameObject, IBasePlayer, IGamelog } from "cadre-ts-utils/cadre";
 import { Chance } from "chance";
 import * as Color from "color";
 import flatMap from "lodash/flatMap";
 import range from "lodash/range";
 import * as PIXI from "pixi.js";
-import { Immutable, isObject, Mutable, objectHasProperty, UnknownObject } from "src/utils";
+import { Immutable, isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { IRendererResources, IRendererSize, Renderer } from "src/viseur/renderer";
 import { BaseSetting, CheckBoxSetting, ColorSetting, createSettings, IBaseSettings } from "src/viseur/settings";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
-import { IBasePlayerInstance } from "./base-player";
 import { GameOverScreen } from "./game-over-screen";
 import { IBaseGameNamespace, IBaseGameSettings, IGameLayers, IViseurGameState } from "./interfaces";
 import { RenderableGameObjectClass } from "./make-renderable";
@@ -55,7 +54,7 @@ export class BaseGame extends StateObject {
     public readonly humanPlayer: BaseHumanPlayer | undefined;
 
     /** The pane that displays information about this game */
-    public pane: BasePane<IBaseGame, IBasePlayerInstance> | undefined;
+    public pane: BasePane<IBaseGame, IBasePlayer> | undefined;
 
     /** The renderer that provides utility rendering functions (as well as heavy lifting for screen changes) */
     public readonly renderer: Renderer;

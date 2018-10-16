@@ -5,7 +5,7 @@ import { Pane } from "./pane";
 
 Game.prototype.namespace = {
     Game,
-    Pane,
+    Pane: Pane as any, // tslint:disable-line:no-any
     HumanPlayer,
 };
 

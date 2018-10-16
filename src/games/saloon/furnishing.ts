@@ -1,9 +1,9 @@
 // This is a class to represent the Furnishing object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { IFurnishingState } from "./state-interfaces";
 
@@ -12,28 +12,17 @@ import { ease } from "src/utils";
 import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Furnishing extends GameObject {
+export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Furnishing (dt = 0) */
     public current: IFurnishingState | undefined;
@@ -62,9 +51,9 @@ export class Furnishing extends GameObject {
     /**
      * Constructor for the Furnishing with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Furnishing
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Furnishing.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IFurnishingState, viseur: Viseur) {
         super(state, viseur);
@@ -82,12 +71,13 @@ export class Furnishing extends GameObject {
         });
 
         state.isPiano
-            ? this.game.resources.piano.newSprite(this.container)
-            : this.game.resources.furnishing.newSprite(this.container);
+            ? this.addSprite.piano()
+            : this.addSprite.furnishing();
 
         if (state.isPiano) {
             // then it needs music sprites too
-            this.musicSprite = this.game.resources.music.newSprite(this.game.layers.music, {
+            this.musicSprite = this.addSprite.music({
+                container: this.game.layers.music,
                 position: {x, y: 0},
             });
         }
@@ -95,7 +85,7 @@ export class Furnishing extends GameObject {
         this.container.position.set(x, y);
 
         // hit sprite
-        this.hitSprite = this.game.resources.hit.newSprite(this.container, {
+        this.hitSprite = this.addSprite.hit({
             anchor: 0.5,
             position: 0.5,
         });
@@ -103,19 +93,23 @@ export class Furnishing extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render Furnishing
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Furnishing instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public render(dt: number, current: IFurnishingState, next: IFurnishingState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public render(
+        dt: number,
+        current: Immutable<IFurnishingState>,
+        next: Immutable<IFurnishingState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -148,12 +142,9 @@ export class Furnishing extends GameObject {
         }
 
         // fade out if destroyed next turn
-        if (next.isDestroyed) {
-            this.container.alpha = ease(1 - dt, "cubicInOut");
-        }
-        else {
-            this.container.alpha = 1;
-        }
+        this.container.alpha = next.isDestroyed
+            ? ease(1 - dt, "cubicInOut")
+            : 1;
 
         if (this.musicSprite) {
             if (current.isPlaying || next.isPlaying) {
@@ -198,15 +189,18 @@ export class Furnishing extends GameObject {
 
     /**
      * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public stateUpdated(current: IFurnishingState, next: IFurnishingState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
+    public stateUpdated(
+        current: Immutable<IFurnishingState>,
+        next: Immutable<IFurnishingState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
@@ -217,25 +211,6 @@ export class Furnishing extends GameObject {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
-
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

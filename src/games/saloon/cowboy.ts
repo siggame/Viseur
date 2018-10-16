@@ -1,11 +1,9 @@
 // This is a class to represent the Cowboy object in the game.
 // If you want to render it in the game do so here.
 import { Delta } from "cadre-ts-utils/cadre";
-import { MenuItems } from "src/core/ui/context-menu";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
-import { Game } from "./game";
 import { GameObject } from "./game-object";
 import { ICowboyState, IFurnishingState, ITileState } from "./state-interfaces";
 
@@ -14,40 +12,36 @@ import * as Color from "color";
 import { ease, updown } from "src/utils";
 import { GameBar, getTileNeighbor } from "src/viseur/game";
 import { Furnishing } from "./furnishing";
-import { Player } from "./player";
 
 const DRUNK_COLOR = Color().hsl(127, 33, 50);
 const TILE_DIRECTIONS = [ "North", "East", "South", "West" ];
 // <<-- /Creer-Merge: imports -->>
 
-const SHOULD_RENDER =
-    true;
+// <<-- Creer-Merge: should-render -->>
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
 
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
 export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
-
     /** The current state of the Cowboy (dt = 0) */
-    public current: Immutable<Immutable<ICowboyState>> | undefined;
+    public current: ICowboyState | undefined;
 
     /** The next state of the Cowboy (dt = 1) */
-    public next: Immutable<Immutable<ICowboyState>> | undefined;
+    public next: ICowboyState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
     /** This cowboy's job */
     private readonly job: string;
 
-    /** The player that owns this cowboy */
-    private readonly owner: Player;
+    /** The id of the player that owns this cowboy */
+    private readonly ownerID: string;
 
     /** The bar that display's this cowboy's health */
     private readonly healthBar: GameBar;
@@ -93,21 +87,21 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Constructor for the Cowboy with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Cowboy
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Cowboy.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: Immutable<ICowboyState>, viseur: Viseur) {
+    constructor(state: ICowboyState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.job = state.job;
-        this.owner = this.game.gameObjects[state.owner.id] as Player;
+        this.ownerID = state.owner.id;
 
         this.spriteBottom = this.addSprite[`cowboy${this.job}Bottom`]();
         this.spriteTop = this.addSprite[`cowboy${this.job}Top`]();
 
-        if (this.owner.id === "0") { // then they are first player, so flip them
+        if (this.ownerID === "0") { // then they are first player, so flip them
             this.spriteBottom.scale.x *= -1;
             this.spriteBottom.anchor.x += 1;
             this.spriteTop.scale.x *= -1;
@@ -151,19 +145,23 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Cowboy
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Cowboy instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public render(dt: number, current: Immutable<ICowboyState>, next: Immutable<ICowboyState>,
-                  reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
+    public render(
+        dt: number,
+        current: Immutable<ICowboyState>,
+        next: Immutable<ICowboyState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
@@ -280,7 +278,7 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: recolor -->>
 
         // color the top of the sprite as the player's color
-        const ownerColor = this.game.getPlayersColor(this.owner);
+        const ownerColor = this.game.getPlayersColor(this.ownerID);
         this.spriteTop.tint = ownerColor.rgbNumber();
         this.healthBar.recolor(ownerColor.lighten(0.25));
 
@@ -293,15 +291,18 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /**
      * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param reason - The current (most) reason for the current delta.
+     * @param nextReason - The next (most) reason for the next delta.
      */
-    public stateUpdated(current: Immutable<ICowboyState>, next: Immutable<ICowboyState>,
-                        reason: Immutable<Delta>, nextReason: Immutable<Delta>): void {
+    public stateUpdated(
+        current: Immutable<ICowboyState>,
+        next: Immutable<ICowboyState>,
+        reason: Immutable<Delta>,
+        nextReason: Immutable<Delta>,
+    ): void {
         super.stateUpdated(current, next, reason, nextReason);
 
         // <<-- Creer-Merge: state-updated -->>
@@ -406,11 +407,9 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Does their job's action on a Tile.
@@ -450,21 +449,6 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
 
@@ -522,7 +506,11 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param to - The tile the shot goes to.
      * @param distance - The distance between the two tiles.
      */
-    private showShot(from: ITileState, to: ITileState, distance: number): void {
+    private showShot(
+        from: Immutable<ITileState>,
+        to: Immutable<ITileState>,
+        distance: number,
+    ): void {
         this.visibleShot(true);
 
         let dx = -(from.x - to.x);

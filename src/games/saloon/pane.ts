@@ -13,16 +13,16 @@ import { IGameState, IPlayerState } from "./state-interfaces";
  * each player
  */
 export class Pane extends BasePane<IGameState, IPlayerState> {
-    public readonly game!: Game; // set in constructor
     // <<-- Creer-Merge: variables -->>
     // if you need add more member class variables, do so here
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Creates the pane
-     * @param viseur the Viseur instance controlling the pane
-     * @param game the game this pane is displaying stats for
-     * @param state the initial state of the game
+     * Creates the pane for the Saloon game.
+     *
+     * @param viseur - The Viseur instance controlling the pane.
+     * @param game - The game this pane is displaying stats for.
+     * @param state - The initial state of the game.
      */
     constructor(viseur: Viseur, game: Game, state: Immutable<IGameState>) {
         super(viseur, game, state);
