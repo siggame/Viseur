@@ -1,38 +1,27 @@
 // This is a class to represent the FireDepartment object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
+import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { Game } from "./game";
 import { IBuildingState, IFireDepartmentState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+        return super.shouldRender; // change this to true to render all instances of this class
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class FireDepartment extends Building {
+export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the FireDepartment (dt = 0) */
     public current: IFireDepartmentState | undefined;
@@ -50,9 +39,9 @@ export class FireDepartment extends Building {
     /**
      * Constructor for the FireDepartment with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this FireDepartment
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this FireDepartment.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IFireDepartmentState, viseur: Viseur) {
         super(state, viseur);
@@ -63,20 +52,24 @@ export class FireDepartment extends Building {
     }
 
     /**
-     * Called approx 60 times a second to update and render FireDepartment
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render FireDepartment instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: IFireDepartmentState, next: IFireDepartmentState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<IFireDepartmentState>,
+        next: Immutable<IFireDepartmentState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
         // render where the FireDepartment is
@@ -97,16 +90,19 @@ export class FireDepartment extends Building {
 
     /**
      * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public stateUpdated(current: IFireDepartmentState, next: IFireDepartmentState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public stateUpdated(
+        current: Immutable<IFireDepartmentState>,
+        next: Immutable<IFireDepartmentState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         // update the FireDepartment based on its current and next states
@@ -117,11 +113,9 @@ export class FireDepartment extends Building {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Bribes this FireDepartment to extinguish the some of the fire in a
@@ -138,21 +132,6 @@ export class FireDepartment extends Building {
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

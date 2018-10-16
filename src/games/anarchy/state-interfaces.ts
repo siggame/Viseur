@@ -46,7 +46,7 @@ export interface IGameState extends IBaseGame {
      * A mapping of every game object's ID to the actual game object. Primarily
      * used by the server and client to easily refer to the game objects via ID.
      */
-    gameObjects: {[id: string]: IBaseGameObject};
+    gameObjects: {[id: string]: IGameObjectState};
 
     /**
      * The width of the entire map along the vertical (y) axis.
@@ -88,6 +88,12 @@ export interface IGameState extends IBaseGame {
      * A unique identifier for the game instance that is being played.
      */
     session: string;
+
+    /**
+     * The amount of time (in nano-seconds) added after each player performs a
+     * turn.
+     */
+    timeAddedPerTurn: number;
 
 }
 
