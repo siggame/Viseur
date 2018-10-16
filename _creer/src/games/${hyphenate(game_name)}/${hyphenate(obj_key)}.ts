@@ -125,9 +125,10 @@ ${merge("    // ", "variables", "    // You can add additional member variables 
 ${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
 
     /**
-     * Invoked when the first game state is ready to setup the size of the renderer
-     * @param state the initialize state of the game
-     * @returns the {height, width} you for the game's size.
+     * Invoked when the first game state is ready to setup the size of the renderer.
+     *
+     * @param state - The initialize state of the game.
+     * @returns The {height, width} you for the game's size.
      */
     protected getSize(state: IGameState): IRendererSize {
         return {
@@ -138,8 +139,9 @@ ${merge("            // ", "get-size", """            width: 10, // Change these
 
     /**
      * Called when Viseur is ready and wants to start rendering the game.
-     * This is where you should initialize stuff.
-     * @param state the initialize state of the game
+     * This is where you should initialize your state variables that rely on game data.
+     *
+     * @param state - The initialize state of the game.
      */
     protected start(state: IGameState): void {
         super.start(state);
@@ -148,8 +150,9 @@ ${merge("        // ", "start", "        // Initialize your variables here", hel
     }
 
     /**
-     * initializes the background. It is drawn once automatically after this step.
-     * @param state the initial state to use the render the background
+     * Initializes the background. It is drawn once automatically after this step.
+     *
+     * @param state - The initial state to use the render the background.
      */
     protected createBackground(state: IGameState): void {
         super.createBackground(state);
@@ -178,43 +181,40 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
     /**
      * Called approx 60 times a second to update and render the background.
      * Leave empty if the background is static.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) game state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into the next turn to render at.
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     protected renderBackground(
         dt: number,
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        reason: Immutable<Delta>,
-        nextReason: Immutable<Delta>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
     ): void {
-        super.renderBackground(dt, current, next, reason, nextReason);
+        super.renderBackground(dt, current, next, delta, nextDelta);
 
 ${merge("        // ", "render-background", "        // update and re-render whatever you initialize in renderBackground", help=False)}
     }
 
     /**
      * Invoked when the game state updates.
-     * @param current the current (most) game state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     protected stateUpdated(
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        reason: Immutable<Delta>,
-        nextReason: Immutable<Delta>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
     ): void {
-        super.stateUpdated(current, next, reason, nextReason);
+        super.stateUpdated(current, next, delta, nextDelta);
 
 ${merge("        // ", "state-updated", "        // update the Game based on its current and next states", help=False)}
     }
@@ -238,19 +238,19 @@ ${merge("        // ", "constructor", "        // You can initialize your new {}
      *
      * @param dt - A floating point number [0, 1) which represents how far into
      * the next turn that current turn we are rendering is at
-     * @param current - The current (most) state, will be this.next if this.current is undefined.
-     * @param next - The next (most) state, will be this.current if this.next is undefined.
-     * @param reason - The current (most) reason for the current delta.
-     * @param nextReason - The next (most) reason for the next delta.
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public render(
         dt: number,
         current: Immutable<I${obj_key}State>,
         next: Immutable<I${obj_key}State>,
-        reason: Immutable<Delta>,
-        nextReason: Immutable<Delta>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
     ): void {
-        super.render(dt, current, next, reason, nextReason);
+        super.render(dt, current, next, delta, nextDelta);
 
 ${merge("        // ", "render", "        // render where the " + obj_key + " is", help=False)}
     }
@@ -268,18 +268,18 @@ ${merge("        // ", "recolor", "        // replace with code to recolor sprit
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
      * @param next - The next (most) game state, will be this.current if this.next is undefined.
-     * @param reason - The current (most) reason for the current delta.
-     * @param nextReason - The next (most) reason for the next delta.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
         current: Immutable<I${obj_key}State>,
         next: Immutable<I${obj_key}State>,
-        reason: Immutable<Delta>,
-        nextReason: Immutable<Delta>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
     ): void {
-        super.stateUpdated(current, next, reason, nextReason);
+        super.stateUpdated(current, next, delta, nextDelta);
 
 ${merge("        // ", "state-updated", "        // update the {} based off its states".format(obj_key), help=False)}
     }

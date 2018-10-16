@@ -150,19 +150,19 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      *
      * @param dt - A floating point number [0, 1) which represents how far into
      * the next turn that current turn we are rendering is at
-     * @param current - The current (most) state, will be this.next if this.current is undefined.
-     * @param next - The next (most) state, will be this.current if this.next is undefined.
-     * @param reason - The current (most) reason for the current delta.
-     * @param nextReason - The next (most) reason for the next delta.
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public render(
         dt: number,
         current: Immutable<ICowboyState>,
         next: Immutable<ICowboyState>,
-        reason: Immutable<Delta>,
-        nextReason: Immutable<Delta>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
     ): void {
-        super.render(dt, current, next, reason, nextReason);
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
         this.container.visible = !current.isDead;
@@ -292,36 +292,36 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) state, will be this.next if this.current is undefined.
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
      * @param next - The next (most) game state, will be this.current if this.next is undefined.
-     * @param reason - The current (most) reason for the current delta.
-     * @param nextReason - The next (most) reason for the next delta.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
         current: Immutable<ICowboyState>,
         next: Immutable<ICowboyState>,
-        reason: Immutable<Delta>,
-        nextReason: Immutable<Delta>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
     ): void {
-        super.stateUpdated(current, next, reason, nextReason);
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         this.playingPiano = undefined;
 
         // if the delta is a run that we did
-        if (nextReason.type === "ran"
-         && nextReason.data
-         && nextReason.data.run
-         && nextReason.data.run.caller.id === this.id) {
-            const { run } = nextReason.data;
+        if (nextDelta.type === "ran"
+         && nextDelta.data
+         && nextDelta.data.run
+         && nextDelta.data.run.caller.id === this.id) {
+            const { run } = nextDelta.data;
             switch (this.job) {
                 case "Sharpshooter":
-                    if (run.functionName === "act" && nextReason.data.returned === true) { // they successfully shot
+                    if (run.functionName === "act" && nextDelta.data.returned === true) { // they successfully shot
                         this.showShot(current.tile, run.args.tile as ITileState, current.focus);
                     }
             }
 
-            if (run.functionName === "play" && nextReason.data.returned === true) {
+            if (run.functionName === "play" && nextDelta.data.returned === true) {
                 // then they played a piano
                 this.playingPiano = run.args.piano as Furnishing;
             }
@@ -331,10 +331,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
 
         if (this.job === "Brawler" && this.brawlerAttack) {
-            const attacking = Boolean(nextReason.type === "finished"
-                                   && nextReason.data.order.name === "runTurn"
-                                   && nextReason.data.player
-                                   && nextReason.data.player.id === next.owner.id,
+            const attacking = Boolean(nextDelta.type === "finished"
+                                   && nextDelta.data.order.name === "runTurn"
+                                   && nextDelta.data.player
+                                   && nextDelta.data.player.id === next.owner.id,
             );
 
             this.brawlerAttack.visible = attacking;
