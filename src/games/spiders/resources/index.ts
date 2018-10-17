@@ -1,5 +1,6 @@
 import { createResources, load } from "src/viseur/renderer";
 
+/** These are the resources (sprites) that are loaded and usable by game objects in Spiders. */
 export const GameResources = createResources("Spiders", {
     // <<-- Creer-Merge: resources -->>
     background: load("background.jpg", {
