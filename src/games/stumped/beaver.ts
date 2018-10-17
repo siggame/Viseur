@@ -8,7 +8,7 @@ import { GameObject } from "./game-object";
 import { IBeaverState, ISpawnerState, ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import { ease, isObject, updown } from "src/utils";
+import { ease, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 import { Spawner } from "./spawner";
 // <<-- /Creer-Merge: imports -->>
@@ -232,24 +232,14 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
             const { run } = nextDelta.data;
 
-            if (run.functionName === "attack"
-             && nextDelta.data.returned
-             && isObject(run.args.beaver)
-             && run.args.beaver
-             && typeof run.args.beaver.id === "string"
-            ) {
+            if (run.functionName === "attack" && nextDelta.data.returned) {
                 // This beaver gonna fite sumthin
-                this.attacking = this.game.gameObjects[run.args.beaver.id] as Beaver | undefined; // TODO: better way?
+                this.attacking = this.game.getGameObject(run.args.beaver, Beaver);
             }
 
-            if (run.functionName === "harvest"
-             && nextDelta.data.returned
-             && isObject(run.args.spawner)
-             && run.args.spawner
-             && typeof run.args.spawner.id === "string"
-            ) {
+            if (run.functionName === "harvest" && nextDelta.data.returned) {
                 // This beaver getting some food!
-                this.harvesting = this.game.gameObjects[run.args.spawner.id] as Spawner | undefined;
+                this.harvesting = this.game.getGameObject(run.args.spawner, Spawner);
             }
 
         }

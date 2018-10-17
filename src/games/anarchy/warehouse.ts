@@ -12,7 +12,8 @@ import { IBuildingState, IWarehouseState } from "./state-interfaces";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = undefined;
 // <<-- /Creer-Merge: should-render -->>
 
 /**

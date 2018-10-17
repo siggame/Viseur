@@ -136,7 +136,7 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
 
         if (nextDelta.type === "ran"
          && nextDelta.data.run.caller.id === this.id
-         && nextDelta.data.returned === true
+         && nextDelta.data.returned
         ) {
             if (nextDelta.data.run.functionName === "rotate") {
                 this.rotationSprite.visible = true;

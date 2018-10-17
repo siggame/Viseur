@@ -150,6 +150,25 @@ export class BaseGame extends StateObject {
     }
 
     /**
+     * Gets a game object in an object or with a given id and ensures it is of a given class instance.
+     *
+     * @param from - Either the ID of instance, or an object with the `id` property.
+     * @param Class - The game object Class constructor
+     * @returns The game object if found correctly, undefined otherwise.
+     */
+    public getGameObject<T extends typeof BaseGameObject>(from: unknown, Class: T): InstanceType<T> | undefined {
+        const id = String(isObject(from)
+            ? from.id
+            : from,
+        );
+        const gameObject = this.gameObjects[id];
+
+        return gameObject instanceof Class
+            ? gameObject as InstanceType<T>
+            : undefined;
+    }
+
+    /**
      * Gets the current color for a given player, including setting overrides.
      *
      * @param player - The player to get the color for, can be the class instance, state, or its id.
