@@ -34,6 +34,9 @@ export interface IPixiSpriteOptions {
     /** The relative pivot as either a single number used for the x and y, or the tuple */
     relativePivot?: number | IPoint;
 
+    /** Sets the blend mode */
+    blendMode?: number;
+
     /** The alpha value (opacity) of the sprite */
     alpha?: number;
 
@@ -154,6 +157,10 @@ export function setPixiOptions(
             y = options.relativePivot.y;
         }
         setRelativePivot(sprite, x, y);
+    }
+
+    if (options.blendMode !== undefined) {
+        sprite.blendMode = options.blendMode;
     }
 
     if (options.alpha !== undefined) {
