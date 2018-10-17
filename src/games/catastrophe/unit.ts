@@ -10,7 +10,7 @@ import { ITileState, IUnitState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 import * as Color from "color";
-import { ease, isObject, updown } from "src/utils"; // updown
+import { ease, updown } from "src/utils"; // updown
 import { GameBar } from "src/viseur/game";
 import { Tile } from "./tile";
 // <<-- /Creer-Merge: imports -->>

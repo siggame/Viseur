@@ -44,5 +44,16 @@ export function getTileNeighbor<T extends IBaseTile>(state: Immutable<T>, direct
  * @returns The neighbor tile state if present in that direction, undefined otherwise.
  */
 export function getTileNeighbor<T extends IBaseTile>(state: Immutable<T>, direction: string): T | undefined {
-    return (state as { [key: string]: T | undefined })[`tile${direction}`];
+    // return (state as { [key: string]: T | undefined })[`tile${direction}`];
+
+    switch (direction.toLowerCase()) {
+        case "north":
+            return state.tileNorth as T;
+        case "east":
+            return state.tileEast as T;
+        case "south":
+            return state.tileSouth as T;
+        case "west":
+            return state.tileWest as T;
+    }
 }

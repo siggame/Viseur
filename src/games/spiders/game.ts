@@ -121,7 +121,8 @@ export class Game extends BaseGame {
 
         // <<-- Creer-Merge: create-background -->>
 
-        this.resources.background.newSprite(this.layers.background, {
+        this.resources.background.newSprite({
+            container: this.layers.background,
             width: this.renderer.width,
             height: this.renderer.height,
         });

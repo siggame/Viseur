@@ -2,7 +2,7 @@ import * as HtmlWebpackPlugin from "html-webpack-plugin";
 import { join, resolve } from "path";
 import * as webpack from "webpack";
 
-export default (
+export default (// tslint:disable-line:no-default-export
     env: undefined,
     options: webpack.Configuration,
 ): webpack.Configuration => ({
@@ -31,23 +31,13 @@ export default (
                     {
                         loader: "babel-loader",
                         options: {
-                            presets: ["@babel/preset-env"],
+                            babelrc: true, // join(process.cwd(), "./babelrc"),
                         },
                     },
                     {
                         loader: "ts-loader",
                     },
                 ],
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: ["@babel/preset-env"],
-                    },
-                },
             },
             {
                 test: /\.(jpe?g|png|gif|ico|svg|ttf|otf|eot|woff|woff2)$/i,
