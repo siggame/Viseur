@@ -9,5 +9,6 @@ Game.prototype.namespace = {
     HumanPlayer,
 };
 
+/** The namespace variable expected by all games for this ${game_name} game. */
 export const Namespace = Game.prototype.namespace;
 module.exports = Namespace;

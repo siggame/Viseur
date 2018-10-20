@@ -9,5 +9,6 @@ Game.prototype.namespace = {
     HumanPlayer,
 };
 
+/** The namespace variable expected by all games for this Stumped game. */
 export const Namespace = Game.prototype.namespace;
 module.exports = Namespace;

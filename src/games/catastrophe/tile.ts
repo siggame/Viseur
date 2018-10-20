@@ -31,10 +31,13 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+    /** The grass sprite for this Tile. */
     public grass: PIXI.Sprite;
 
+    /** The bush sprite for this Tile, if it is a bush. */
     public bush: PIXI.Sprite | undefined;
 
+    /** The berry sprite for this Tile, if it has them. */
     public berry: PIXI.Sprite | undefined;
 
     // <<-- /Creer-Merge: variables -->>

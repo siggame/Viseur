@@ -33,6 +33,7 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
 
+    /** Our sprite. */
     public sprite: PIXI.Sprite;
     // <<-- /Creer-Merge: variables -->>
 

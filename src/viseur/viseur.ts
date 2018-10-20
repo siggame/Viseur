@@ -7,7 +7,7 @@ import { objectHasProperty, UnknownObject, unStringify, validateURL } from "src/
 import { viseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
-import { IGamelogWithReverses, IViseurGamelog, ReverseDelta } from "./game/gamelog";
+import { IGamelogWithReverses, IViseurGamelog } from "./game/gamelog";
 import { IBaseGameNamespace, IViseurGameState } from "./game/interfaces";
 import { GUI } from "./gui";
 import { Joueur, JoueurConnectionArgs, TournamentClient, TournamentConnnectionArgs } from "./joueur";
@@ -323,7 +323,7 @@ export class Viseur {
 
         let parsed: Immutable<IGamelog>;
         try {
-            parsed = JSON.parse(jsonGamelog); // tslint:disable-next-line:no-unsafe-any
+            parsed = JSON.parse(jsonGamelog) as IGamelog; // tslint:disable-next-line:no-unsafe-any
         }
         catch (err) {
             this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
@@ -491,7 +491,7 @@ export class Viseur {
         }
 
         const d = this.mergedDelta;
-        const deltas = this.rawGamelog.deltas as ReverseDelta[];
+        const deltas = this.rawGamelog.deltas;
 
         if (index < 0) {
             this.currentState.game = d.currentState;

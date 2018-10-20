@@ -8,7 +8,11 @@
 // tslint:disable:no-import-side-effect no-any no-unsafe-any no-require-imports
 import "font-awesome-sass-loader";
 import * as $ from "jquery";
+import * as PIXI from "pixi.js";
 import "./core/";
+
+// Skips the hello message being printed to the console.
+PIXI.utils.skipHello();
 
 $(document).ready(() => {
     const required = require("./viseur");

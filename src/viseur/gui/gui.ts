@@ -13,7 +13,7 @@ import * as guiHbs from "./gui.hbs"; // tslint:disable-line:match-default-export
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
 import { KEYS } from "./keys";
-import * as loadingMessageHbs from "./loading-message/loading-message.hbs"; // tslint:disable-line:match-default-export-name
+import * as loadingMessageHbs from "./loading-message/loading-message.hbs";
 import "./loading-message/loading-message.scss";
 import { PlaybackPane } from "./playback-pane";
 

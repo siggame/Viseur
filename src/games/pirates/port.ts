@@ -31,13 +31,19 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IPortState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+
+    /** The id of our owner, if we have one. */
     public ownerID?: string;
 
+    /** The sprite. */
     public sprite: PIXI.Sprite;
+    /** Sprite for rotation animation. */
     public rotatedSprite: PIXI.Sprite;
+    /** The color of our port. */
     public portColor: PIXI.Sprite;
+    /** The roated port color animation. */
     public rotatedPortColor: PIXI.Sprite;
-    // You can add additional member variables here
+
     // <<-- /Creer-Merge: variables -->>
 
     /**

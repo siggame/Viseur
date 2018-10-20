@@ -32,6 +32,7 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
 
+    /** Our sprites, in order of stage based on growth. */
     private readonly sprites: PIXI.Sprite[] = [];
 
     // <<-- /Creer-Merge: variables -->>

@@ -12,6 +12,7 @@ import { ITileState, IUnitState } from "./state-interfaces";
 import * as Color from "color";
 import { ease, updown } from "src/utils"; // updown
 import { GameBar } from "src/viseur/game";
+import { IJobState } from "./state-interfaces";
 import { Tile } from "./tile";
 // <<-- /Creer-Merge: imports -->>
 
@@ -35,34 +36,50 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IUnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
-    // Owner of the unit
+    /** The id of the owner of the unit */
     public ownerID?: string;
-    public job: string;
+
+    /** Our job */
+    public job: IJobState["title"];
 
     // Base sprite of the unit
+    /** The cat sprite. */
     public catSprite: PIXI.Sprite;
+    /** The human sprite. */
     public humanSprite: PIXI.Sprite;
+    /** The builder sprite. */
     public builderSprite: PIXI.Sprite;
+    /** The soldier sprite. */
     public soldierSprite: PIXI.Sprite;
+    /** The gatherer sprite. */
     public gathererSprite: PIXI.Sprite;
+    /** The converter sprite. */
     public converterSprite: PIXI.Sprite;
 
+    /** The sprite we are using from the above. */
     public spriteInUse: PIXI.Sprite | undefined;
 
+    /** An indicator sprite. */
     public indicatorSprite: PIXI.Sprite;
 
     // State Change Variables
+    /** The tile we are attacking, if we are. */
     public attackingTile?: ITileState;
+    /** The tile we are harvesting from, if we are. */
     public harvestTile?: ITileState;
+    /** the job we changed to, if we did. */
     public jobChanged?: string;
+    /** The id of the player we are changing to, if we are. */
     public playerChange?: string;
-    public facing: string;
+    /** The direction we are facing. */
+    public facing: "left" | "right";
 
-    // "Drop shadow" sprite
+    /** "Drop shadow" sprite */
     public dropShadow: PIXI.Sprite;
 
+    /** The maximum amount of energy we can have. */
     public maxEnergy: number;
+
     /** The bar that display's this unit's health */
     private readonly healthBar: GameBar;
 
@@ -98,7 +115,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.humanSprite = this.addSprite.freshHuman(hide);
         this.indicatorSprite = this.addSprite.indicator(hide);
 
-        this.set_job(this.job);
+        this.setJob(this.job);
 
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
@@ -187,12 +204,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         if (this.jobChanged) { // If Job Changed called by player and returned true
             if (this.jobChanged !== this.job) {
-                this.set_job(this.jobChanged);
+                this.setJob(this.jobChanged);
             }
         }
         else { // This would be a unit losing loyalty/ or the game state jumps
             if (this.job !== next.job.title) {
-                this.set_job(next.job.title);
+                this.setJob(next.job.title);
             }
         }
 
@@ -322,7 +339,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
 
-    public set_job(job: string): void {
+    /**
+     * Sets our current job for rendering, which will change our sprites visible state(s).
+     *
+     * @param job - The title of the job we now have.
+     */
+    public setJob(job: IJobState["title"]): void {
         if (this.spriteInUse) {
             this.spriteInUse.visible = false;
         }

@@ -33,13 +33,22 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
 
+    /** If we have an owner, it's ID. */
     public ownerID?: string;
 
+    /** The sprite of the ship, if we are that. */
     public shipSprite: PIXI.Sprite;
+
+    /** The sprite of the pirate, if we are one. */
     public pirateSprite: PIXI.Sprite;
+
+    /** The drop shadow effect. */
     public dropShadow: PIXI.Sprite;
 
+    /** Our shirt to recolor. */
     public shirt: PIXI.Sprite;
+
+    /** Our pirate ship flag to recolor. */
     public flag: PIXI.Sprite;
 
     // private readonly healthBar: GameBar;

@@ -30,10 +30,6 @@ export interface IRendererSize {
 
 }
 
-// Skips the hello message being printed to the console.
-// This should be the first instance of pixi being imported in viseur.
-PIXI.utils.skipHello();
-
 /** A singleton that handles rendering (visualizing) the game */
 export class Renderer extends BaseElement {
     /** The in game width, e.g. for chess this would be 8 */
@@ -225,8 +221,9 @@ export class Renderer extends BaseElement {
     /**
      * Sets the size of the Renderer, not in pixels but some abstract size.
      * Basically the size of the map. So for example in chess it would be 8x8,
-     * and the actual size in pixels will be calculated by the Renderer, regardless of screen size
-     * @param size the size, must contain a with and height, and can have optional offsets
+     * and the actual size in pixels will be calculated by the Renderer, regardless of screen size.
+     *
+     * @param size the size, must contain a with and height, and can have optional offsets.
      */
     public setSize(size: IRendererSize): void {
         this.width = Math.abs(size.width);

@@ -31,20 +31,33 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+
+    /** The sprite for our water. */
     public water: PIXI.Sprite;
 
+    /** The sprite for our land. */
     public land: PIXI.Sprite;
+    /** Sprite for gold on land. */
     public goldLand: PIXI.Sprite;
 
+    /** Grass sprite for land deep in the island. */
     public grass: PIXI.Sprite;
+    /** Tree decoration sprite. */
     public tree: PIXI.Sprite;
+    /** Alternative water sprite. */
     public water2: PIXI.Sprite;
+    /** Plants decoration sprite. */
     public plants: PIXI.Sprite;
 
+    /** If this tile has water. */
     public isWater: boolean;
+    /** If this tile has a decoration. */
     public isDecoration: boolean;
 
+    /** If this tile has a tree on it */
     public isTree: boolean;
+
+    /** If this tile has plants on it. */
     public isPlants: boolean;
     // <<-- /Creer-Merge: variables -->>
 
