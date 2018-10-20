@@ -82,7 +82,22 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
             delta: Immutable<Delta>,
             nextDelta: Immutable<Delta>,
         ): void {
+            super.render(dt, current, next, delta, nextDelta);
+
+            this.container.visible = true;
             this.renderLogs(dt, current, next);
+        }
+
+        /**
+         * Invoked when this game object should not be rendered, such as going back in time before it existed.
+         *
+         * By default hides the container. If your sub class adds extra PIXI objects outside the container you
+         * should hide those too.
+         */
+        public hideRender(): void {
+            super.hideRender();
+
+            this.container.visible = false;
         }
 
         /**

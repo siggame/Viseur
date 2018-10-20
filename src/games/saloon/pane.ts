@@ -81,20 +81,23 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         stats.push(
             {
                 icon: "music",
+                title: "score",
                 get: (p) => p.score,
             },
             {
                 icon: "times",
+                title: "kills",
                 get: (p) => p.kills,
             },
             {
                 icon: "beer",
+                title: "rowdiness",
                 get: (p) => p.rowdiness,
             },
             {
-                title: "Number of turns remaining for the Player's siesta to end",
+                title: "number of turns remaining for the Player's siesta to end",
                 icon: "bed",
-                get: (p) => p.siesta,
+                get: (p) => p.siesta || "-",
             },
         );
         // <<-- /Creer-Merge: player-stats -->>

@@ -257,13 +257,26 @@ ${merge("        // ", "render", "        // render where the " + obj_key + " is
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this ${obj_key}'s sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this ${obj_key}'s sprites.
      */
     public recolor(): void {
         super.recolor();
 
 ${merge("        // ", "recolor", "        // replace with code to recolor sprites based on player color", help=False)}
+    }
+
+    /**
+     * Invoked when this ${obj_key} instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     */
+    public hideRender(): void {
+        super.hideRender();
+
+${merge("        // ", "hide-render", "        // hide anything outside of `this.container`.", help=False)}
     }
 
     /**

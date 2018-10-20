@@ -14,6 +14,8 @@ import { ease, updown } from "src/utils"; // updown
 import { GameBar } from "src/viseur/game";
 import { IJobState } from "./state-interfaces";
 import { Tile } from "./tile";
+
+const WHITE_COLOR = Color("white").rgbNumber();
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -273,23 +275,32 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Unit's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Unit's sprites.
      */
     public recolor(): void {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
-        if (this.ownerID === undefined) {
-            const white = Color("white");
-            this.dropShadow.tint = white.rgbNumber();
-
-            return;
-        }
-        const ownerColor = this.game.getPlayersColor(this.ownerID);
-        this.dropShadow.tint = ownerColor.rgbNumber();
+        this.dropShadow.tint = this.ownerID === undefined
+            ? WHITE_COLOR
+            : this.game.getPlayersColor(this.ownerID).rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
+    }
+
+    /**
+     * Invoked when this Unit instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     */
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
     }
 
     /**

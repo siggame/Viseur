@@ -269,8 +269,8 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Cowboy's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Cowboy's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -287,6 +287,31 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
 
         // <<-- /Creer-Merge: recolor -->>
+    }
+
+    /**
+     * Invoked when this Cowboy instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     */
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        for (const shotSprite of this.shotSprites) {
+            shotSprite.visible = false;
+        }
+
+        for (const focusSprite of this.allFocusSprites) {
+            focusSprite.visible = false;
+        }
+
+        if (this.brawlerAttack) {
+            this.brawlerAttack.visible = false;
+        }
+        // <<-- /Creer-Merge: hide-render -->>
     }
 
     /**

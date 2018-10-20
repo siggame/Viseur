@@ -108,6 +108,13 @@ export class BaseGameObject extends StateObject {
     }
 
     /**
+     * Intended to be overriden by classes so they can hide everything when this game object should not be rendered.
+     */
+    public hideRender(): void {
+        // intended to be overridden.
+    }
+
+    /**
      * Invoked when the state updates. Intended to be overridden by
      * subclass(es).
      *

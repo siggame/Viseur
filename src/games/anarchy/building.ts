@@ -255,8 +255,8 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Building's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Building's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -268,6 +268,21 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.buildingSpriteFront.tint = color.lighten(0.15).rgbNumber();
         this.healthBar.recolor(color.lighten(0.5));
         // <<-- /Creer-Merge: recolor -->>
+    }
+
+    /**
+     * Invoked when this Building instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     */
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
     }
 
     /**

@@ -362,14 +362,9 @@ export class BaseGame extends StateObject {
                 // current state,
                 // They will not exist if players go back in time to before the
                 // GameObject was created.
-                const exists = Boolean((current && current.gameObjects.hasOwnProperty(id))
-                                    || (next && next.gameObjects.hasOwnProperty(id)));
-
-                // Then it does not exist, no not render them;
-                // Else make them visible, and later we'll call their render().
-                (gameObject as InstanceType<RenderableGameObjectClass>).container.visible = exists;
-
-                if (exists) {
+                if ((current && current.gameObjects.hasOwnProperty(id))
+                 || (next && next.gameObjects.hasOwnProperty(id))
+                ) {
                     // Then actually render it, otherwise it's invisible so why bother
                     gameObject.render(
                         dt,
@@ -378,6 +373,10 @@ export class BaseGame extends StateObject {
                         currentMostReason,
                         nextMostReason,
                     );
+                }
+                else {
+                    // else it does not exist currently, so hide it from rendering.
+                    gameObject.hideRender();
                 }
             }
         }
