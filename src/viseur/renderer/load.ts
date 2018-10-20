@@ -109,7 +109,7 @@ export function createResourcesFor<T extends IBaseRendererResources>(
     gameObject: InstanceType<RenderableGameObjectClass>,
     resources: T,
 ): ResourcesForGameObject<T> {
-    return mapValues(resources, (resource, key) => () => {
+    return mapValues(resources, (resource, key) => {
         if (!(resource instanceof BaseRendererResource)) {
             throw new Error(`Resource with key ${key} cannot be undefined`);
         }

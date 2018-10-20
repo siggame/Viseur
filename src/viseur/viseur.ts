@@ -1,5 +1,5 @@
 import { Immutable } from "cadre-ts-utils";
-import { Delta, IBaseGame, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
+import { IBaseGame, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { Games } from "src/games";
@@ -487,7 +487,7 @@ export class Viseur {
      */
     private updateCurrentState(index: number): void {
         if (!this.rawGamelog) {
-            throw new Error("cannot update state deltas without a gamelog");
+            throw new Error("cannot update current state deltas without a gamelog");
         }
 
         const d = this.mergedDelta;
@@ -502,44 +502,26 @@ export class Viseur {
         }
 
         const indexChanged = (index !== d.index);
-        // tslint:disable-next-line:no-any no-unsafe-any
-        d.currentState = (d.currentState || {} as any);
+        d.currentState = (d.currentState || {}) as IBaseGame;
 
         // if increasing index...
         while (index > d.index) {
             d.index++;
 
             if (deltas[d.index] && !deltas[d.index].reversed) {
-                deltas[d.index].reversed = this.parser.createReverseDelta(
-                    d.currentState as IBaseGame,
-                    deltas[d.index].game,
-                );
+                deltas[d.index].reversed = this.parser.createReverseDelta(d.currentState, deltas[d.index].game);
             }
 
-            if (d.nextState
-             && deltas[d.index]
-             && deltas[d.index + 1]
-             && !deltas[d.index + 1].reversed
-            ) {
-                deltas[d.index + 1].reversed = this.parser.createReverseDelta(
-                    d.nextState,
-                    deltas[d.index + 1].game,
-                );
+            if (d.nextState && deltas[d.index] && deltas[d.index + 1] && !deltas[d.index + 1].reversed) {
+                deltas[d.index + 1].reversed = this.parser.createReverseDelta(d.nextState, deltas[d.index + 1].game);
             }
 
             if (deltas[d.index]) {
-                d.currentState = this.parser.mergeDelta(
-                    d.currentState as IBaseGame,
-                    deltas[d.index].game,
-                );
+                d.currentState = this.parser.mergeDelta(d.currentState, deltas[d.index].game);
             }
 
-            if (d.nextState && deltas[d.index + 1]) {
-                // then there is a next state (not at the end)
-                d.nextState = this.parser.mergeDelta(
-                    d.nextState,
-                    deltas[d.index + 1].game,
-                );
+            if (d.nextState && deltas[d.index + 1]) { // if there is a next state (not at the end)
+                d.nextState = this.parser.mergeDelta(d.nextState, deltas[d.index + 1].game);
             }
 
             this.updateStepped(d);
@@ -548,22 +530,16 @@ export class Viseur {
         // if decreasing index...
         while (index < d.index) {
             const r = deltas[d.index] && deltas[d.index].reversed;
-            const r2 = d.nextState && deltas[d.index + 1]
-                   && deltas[d.index + 1].reversed;
+            const r2 = d.nextState && deltas[d.index + 1] && deltas[d.index + 1].reversed;
 
             if (r) {
-                d.currentState = this.parser.mergeDelta(
-                    d.currentState as IBaseGame,
-                    r,
-                );
+                d.currentState = this.parser.mergeDelta(d.currentState, r);
             }
 
-            if (r2 && deltas[d.index + 1]) {
-                // Then there is a next state (not at the end)
-                d.nextState = this.parser.mergeDelta(
-                    d.nextState as IBaseGame,
-                    r2,
-                );
+            if (r2) {
+                if (deltas[d.index + 1]) { // if there is a next state (not at the end)
+                    d.nextState = this.parser.mergeDelta(d.nextState as IBaseGame, r2);
+                }
             }
 
             d.index--;
@@ -572,7 +548,7 @@ export class Viseur {
 
         if (indexChanged) {
             this.updateStepped(d);
-            this.events.stateChanged.emit(this.currentState as Immutable<IViseurGameState>);
+            this.events.stateChanged.emit(this.currentState);
         }
     }
 
@@ -593,8 +569,8 @@ export class Viseur {
 
         this.currentState.game = d.currentState;
         this.currentState.nextGame = d.nextState;
-        this.currentState.delta = delta as Delta;
-        this.currentState.nextDelta = nextDelta as Delta;
+        this.currentState.delta = delta;
+        this.currentState.nextDelta = nextDelta;
 
         this.events.stateChangedStep.emit(this.currentState as Immutable<IViseurGameState>);
     }

@@ -45,15 +45,15 @@ export class Parser {
         reverse: Delta["game"] = {},
     ): IBaseGame {
         for (const key of Object.keys(delta)) {
-            const deltaValue = delta[key];
-            const stateValue = state[key];
+            const deltaValue = delta && delta[key];
+            const stateValue = state && state[key];
 
             if (key === this.constants.DELTA_LIST_LENGTH) {
                 reverse[this.constants.DELTA_LIST_LENGTH] = state.length;
                 continue;
             }
 
-            if (!state.hasOwnProperty(key) || stateValue === undefined) {
+            if (!state.hasOwnProperty(key) || stateValue === undefined || stateValue === null) {
                 reverse[key] = this.constants.DELTA_REMOVED;
                 continue;
             }
