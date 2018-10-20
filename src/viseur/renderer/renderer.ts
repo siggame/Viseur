@@ -1,11 +1,11 @@
 import * as $ from "jquery";
-import clamp from "lodash/clamp";
+import { clamp } from "lodash";
 import * as PIXI from "pixi.js";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
-import rendererHbs from "./renderer.hbs"; // tslint:disable-line:match-default-export-name
+import * as rendererHbs from "./renderer.hbs"; // tslint:disable-line:match-default-export-name
 import "./renderer.scss";
 
 /** The arguments used to initialize the renderer's width/height size. */

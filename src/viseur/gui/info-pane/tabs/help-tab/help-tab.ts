@@ -1,5 +1,5 @@
 import { ITabArgs, Tab } from "src/core/ui";
-import helpTabHbs from "./help-tab.hbs"; // tslint:disable-line:match-default-export-name
+import * as helpTabHbs from "./help-tab.hbs"; // tslint:disable-line:match-default-export-name
 
 /**
  * The "Help" tab on the InfoPane

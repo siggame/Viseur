@@ -1,4 +1,4 @@
-import clamp from "lodash/clamp";
+import { clamp } from "lodash";
 import * as PIXI from "pixi.js";
 import { ColorTint, getTintFromColor, Immutable } from "src/utils";
 import { Viseur, viseurConstructed } from "src/viseur";

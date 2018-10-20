@@ -1,11 +1,11 @@
-import escape from "lodash/escape";
+import { escape } from "lodash";
 import { partial } from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { getContrastingColor, Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
-import gameOverScreenItemHbs from "./game-over-screen-item.hbs"; // tslint:disable-line:match-default-export-name
-import gameOverScreenHbs from "./game-over-screen.hbs"; // tslint:disable-line:match-default-export-name
+import * as gameOverScreenItemHbs from "./game-over-screen-item.hbs"; // tslint:disable-line:match-default-export-name
+import * as gameOverScreenHbs from "./game-over-screen.hbs"; // tslint:disable-line:match-default-export-name
 import "./game-over-screen.scss";
 
 /** A screen that overlays the renderer when the game is over */

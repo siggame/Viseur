@@ -9,7 +9,7 @@ import { IBuildingState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
-import lowerFirst from "lodash/lowerFirst";
+import { lowerFirst } from "lodash";
 import * as PIXI from "pixi.js";
 import { ease, renderSpriteBetween, updown } from "src/utils";
 import { hasGameObjectWithID, isObject, objectHasProperty } from "src/utils";

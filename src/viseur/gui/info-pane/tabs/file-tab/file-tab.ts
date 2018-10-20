@@ -1,13 +1,11 @@
 import * as fileSaver from "file-saver";
-import capitalize from "lodash/capitalize";
-import escape from "lodash/escape";
-import range from "lodash/range";
-import { toWords } from "number-to-words";
+import { capitalize, escape, range } from "lodash";
+import { toWordsOrdinal } from "number-to-words";
 import { Config } from "src/core/config";
 import { Button, CheckBox, DropDown, FileInput, ITabArgs, NumberInput, Tab, TextBox } from "src/core/ui";
 import { sortedAscending } from "src/utils";
 import { Viseur } from "src/viseur";
-import fileTabHbs from "./file-tab.hbs"; // tslint:disable-line:match-default-export-name
+import * as fileTabHbs from "./file-tab.hbs"; // tslint:disable-line:match-default-export-name
 import "./file-tab.scss";
 
 /**
@@ -15,12 +13,12 @@ import "./file-tab.scss";
  *
  * @param num - The number to use.
  * @returns The human readable string version.
- * @example 1 -> "first"
+ * @example 1 -> "First"
  */
 function numberToWords(num: number): string {
-    return toWords(num)
-        .split(" ").map(capitalize).join(" ") // capitalize each word in between spaces
-        .split("-").map(capitalize).join("-"); // ^ and dashes
+    return toWordsOrdinal(num)
+        .split(" ").map(capitalize).join(" ") // capitalize each word in between spaces,
+        .split("-").map(capitalize).join("-"); // and dashes
 }
 
 /**
@@ -140,7 +138,7 @@ export class FileTab extends Tab {
     });
 
     /** The requested player's index field. */
-    private readonly playerIndexInput = new DropDown<number>({
+    private readonly playerIndexInput = new DropDown<number | undefined>({
         id: "player-index-input",
         label: "Player Index",
         parent: this.connectWrapper,
@@ -341,8 +339,11 @@ export class FileTab extends Tab {
     private onGameChange(gameName: string): void {
         const namespace = this.viseur.games[gameName];
 
-        const n = 2; // namespace.Game.numberOfPlayers
-        this.playerIndexInput.setOptions(["", ...(namespace
+        const n = namespace
+            ? namespace.Game.numberOfPlayers
+            : 2;
+
+        this.playerIndexInput.setOptions([{ text: "Any", value: undefined }, ...(namespace
             ? range(n).map((i) => (
                 { text: numberToWords(i + 1), value: i }
             ))

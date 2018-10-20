@@ -1,5 +1,5 @@
 import { BaseElement, IBaseElementArgs } from "../base-element";
-import treeViewHbs from "./tree-view.hbs"; // tslint:disable-line:match-default-export-name
+import * as treeViewHbs from "./tree-view.hbs"; // tslint:disable-line:match-default-export-name
 import "./treeView.scss";
 
 /** a multi-level tree of expandable lists */

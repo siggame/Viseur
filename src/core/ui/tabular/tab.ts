@@ -2,8 +2,8 @@ import { partial } from "src/core/partial";
 import { Viseur } from "src/viseur";
 import { events, Signal } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
-import tabContentHbs from "./tab-content.hbs"; // tslint:disable-line:match-default-export-name
-import tabHbs from "./tab.hbs"; // tslint:disable-line:match-default-export-name
+import * as tabContentHbs from "./tab-content.hbs"; // tslint:disable-line:match-default-export-name
+import * as tabHbs from "./tab.hbs"; // tslint:disable-line:match-default-export-name
 import { Tabular } from "./tabular";
 
 /** The interface arguments for a Tab can extend from. */
@@ -50,7 +50,7 @@ export class Tab extends BaseElement {
         super(args, tabContentHbs);
 
         this.tabular = args.tabular;
-        this.content = partial(args.contentTemplate || tabContentHbs, this, this.element);
+        this.content = partial(args.contentTemplate || tabContentHbs, args, this.element);
 
         const title = args.title || "TAB_TITLE";
         this.title = title;

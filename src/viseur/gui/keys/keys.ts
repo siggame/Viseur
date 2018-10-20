@@ -1,5 +1,4 @@
-import mapKeys from "lodash/mapKeys";
-import mapValues from "lodash/mapValues";
+import { mapKeys, mapValues } from "lodash";
 import { KEY_NAME_TO_CODE } from "src/core/key-codes";
 import { Key } from "./key";
 

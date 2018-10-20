@@ -3,8 +3,8 @@ import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "../base-element";
-import contextMenuItemHbs from "./context-menu-item.hbs"; // tslint:disable-line:match-default-export-name
-import contextMenuHbs from "./context-menu.hbs"; // tslint:disable-line:match-default-export-name
+import * as contextMenuItemHbs from "./context-menu-item.hbs"; // tslint:disable-line:match-default-export-name
+import * as contextMenuHbs from "./context-menu.hbs"; // tslint:disable-line:match-default-export-name
 import "./context-menu.scss";
 
 /** A menu item in a ContextMenu. */

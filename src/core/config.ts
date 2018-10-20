@@ -1,4 +1,4 @@
-import mapValues from "lodash/mapValues";
+import { mapValues } from "lodash";
 import * as config from "src/../config.json";
 
 const defaults = {

@@ -1,4 +1,4 @@
-import clamp from "lodash/clamp";
+import { clamp } from "lodash";
 import { events, Signal } from "ts-typed-events";
 
 /** Ticks at a custom rate to a number of steps. */

@@ -1,7 +1,7 @@
 import { Immutable } from "src/utils";
 import { onceTransitionEnds } from "src/utils/jquery";
 import { BaseElement, IBaseElementArgs } from "../base-element";
-import modalHbs from "./modal.hbs"; // tslint:disable-line:match-default-export-name
+import * as modalHbs from "./modal.hbs"; // tslint:disable-line:match-default-export-name
 import "./modal.scss";
 
 /** A modal that floats above the screen and blocks out all other input */

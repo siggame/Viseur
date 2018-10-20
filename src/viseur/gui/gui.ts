@@ -8,12 +8,12 @@ import { PrettyPolygons } from "src/core/ui/pretty-polygons";
 import { Viseur, viseurConstructed } from "src/viseur";
 import { Event, events } from "ts-typed-events";
 import { BaseGame } from "../game";
-import faviconIco from "../images/favicon.ico"; // tslint:disable-line:match-default-export-name
-import guiHbs from "./gui.hbs"; // tslint:disable-line:match-default-export-name
+import * as faviconIco from "../images/favicon.ico"; // tslint:disable-line:match-default-export-name
+import * as guiHbs from "./gui.hbs"; // tslint:disable-line:match-default-export-name
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
 import { KEYS } from "./keys";
-import loadingMessageHbs from "./loading-message/loading-message.hbs"; // tslint:disable-line:match-default-export-name
+import * as loadingMessageHbs from "./loading-message/loading-message.hbs"; // tslint:disable-line:match-default-export-name
 import "./loading-message/loading-message.scss";
 import { PlaybackPane } from "./playback-pane";
 

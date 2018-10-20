@@ -2,7 +2,7 @@ import { onceTransitionEnds } from "src/utils/jquery";
 import { Event, events } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
-import tabularHbs from "./tabular.hbs"; // tslint:disable-line:match-default-export-name
+import * as tabularHbs from "./tabular.hbs"; // tslint:disable-line:match-default-export-name
 import "./tabular.scss";
 
 /** a block of content accessed via Tabs */
@@ -48,7 +48,7 @@ export class Tabular extends BaseElement {
     public attachTabs(tabs: Tab[]): void {
         for (const tab of tabs) {
             this.tabsElement.append(tab.tab);
-            this.contentsElement.append(tab.content);
+            this.contentsElement.append(tab.element);
 
             this.tabs.push(tab);
 
@@ -79,7 +79,7 @@ export class Tabular extends BaseElement {
         }
 
         if (!this.activeTab) {
-            activeTab.content.addClass("active");
+            activeTab.element.addClass("active");
         }
 
         if (activeTab === this.activeTab) {
@@ -97,7 +97,7 @@ export class Tabular extends BaseElement {
                     this.fadeTab(tab);
                 }
                 else {
-                    tab.content
+                    tab.element
                         .removeClass("active opaque")
                         .addClass("hidden");
                 }
@@ -120,13 +120,13 @@ export class Tabular extends BaseElement {
     private fadeTab(tab: Tab): void {
         this.fading = true;
 
-        onceTransitionEnds(tab.content.removeClass("active"), () => {
-            tab.content.addClass("hidden");
+        onceTransitionEnds(tab.element.removeClass("active"), () => {
+            tab.element.addClass("hidden");
 
-            this.activeTab.content.removeClass("hidden");
+            this.activeTab.element.removeClass("hidden");
 
             setImmediate(() => { // HACK: to get the fading between tabs to work
-                this.activeTab.content.addClass("active");
+                this.activeTab.element.addClass("active");
                 this.fading = false;
             });
         });

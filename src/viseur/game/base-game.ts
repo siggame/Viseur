@@ -1,8 +1,7 @@
 import { Delta, IBaseGame, IBaseGameObject, IBasePlayer, IGamelog } from "cadre-ts-utils/cadre";
 import { Chance } from "chance";
 import * as Color from "color";
-import flatMap from "lodash/flatMap";
-import range from "lodash/range";
+import { flatMap, range } from "lodash";
 import * as PIXI from "pixi.js";
 import { Immutable, isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
@@ -22,7 +21,7 @@ export class BaseGame extends StateObject {
     public static readonly gameName: string = "Base Game";
 
     /** The number of players in this game. the players array should be this same size. */
-    public readonly numberOfPlayers: number = 2;
+    public static readonly numberOfPlayers: number = 2;
 
     /** Mapping of the class names to their class for all sub GameObject classes. */
     public readonly gameObjectClasses!: Readonly<{
@@ -100,8 +99,7 @@ export class BaseGame extends StateObject {
     public get name(): string {
         // because inheriting games will override their static game name,
         // we'll get the top level class constructor's static game name here
-        // tslint:disable-next-line:no-any no-unsafe-any
-        return (this.constructor as any).gameName;
+        return (this.constructor as typeof BaseGame).gameName;
     }
 
     /** The order of containers, with the last element being the top most layer. */
@@ -495,7 +493,7 @@ export class BaseGame extends StateObject {
                 hint: "Use your custom player colors defined below.",
                 default: false,
             }),
-            playerColors: range(this.numberOfPlayers).map((i) => new ColorSetting({
+            playerColors: range((this.constructor as typeof BaseGame).numberOfPlayers).map((i) => new ColorSetting({
                 id: `player-color-${i}`,
                 label: `Player ${i} Color`,
                 hint: `Overrides the color for Player ${i}`,

@@ -1,6 +1,6 @@
 import { BaseElement } from "src/core/ui/base-element";
 import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
-import fieldHbs from "./field.hbs"; // tslint:disable-line:match-default-export-name
+import * as fieldHbs from "./field.hbs"; // tslint:disable-line:match-default-export-name
 import "./field.scss";
 
 /** A wrapper for an Input that gives it a label */

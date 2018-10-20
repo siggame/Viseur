@@ -5,7 +5,7 @@ import { Game } from "./game";
 import { IGameState, IPlayerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import clamp from "lodash/clamp";
+import { clamp } from "lodash";
 // <<-- /Creer-Merge: imports -->>
 
 /**

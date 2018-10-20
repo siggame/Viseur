@@ -1,6 +1,6 @@
 // these are keycodes, that code for keyCodes to human readable strings
 
-import invert from "lodash/invert";
+import { invert } from "lodash";
 
 /** The key code number to the name of the key as a string. */
 export const KEY_NAME_TO_CODE = {

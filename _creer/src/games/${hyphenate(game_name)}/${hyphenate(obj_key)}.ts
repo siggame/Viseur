@@ -161,7 +161,8 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
 
         // this is an example of how to render a sprite. You'll probably want
         // to remove this code and the test sprite once actually doing things
-        this.resources.test.newSprite(this.layers.background, {
+        this.resources.test.newSprite({
+            container: this.layers.background,
             position: {x: 5, y: 5},
         });
 

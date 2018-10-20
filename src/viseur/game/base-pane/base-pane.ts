@@ -1,8 +1,7 @@
 import { IBaseGame, IBasePlayer } from "cadre-ts-utils/cadre";
 import * as dateFormat from "dateformat";
 import * as $ from "jquery";
-import escape from "lodash/escape";
-import sum from "lodash/sum";
+import { escape, sum } from "lodash";
 import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
@@ -10,8 +9,8 @@ import { BaseElement } from "src/core/ui/base-element";
 import { getContrastingColor, Immutable, isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
-import basePaneStatsHbs from "./base-pane-stats.hbs"; // tslint:disable-line:match-default-export-name
-import basePaneHbs from "./base-pane.hbs"; // tslint:disable-line:match-default-export-name
+import * as basePaneStatsHbs from "./base-pane-stats.hbs"; // tslint:disable-line:match-default-export-name
+import * as basePaneHbs from "./base-pane.hbs"; // tslint:disable-line:match-default-export-name
 import "./base-pane.scss";
 
 // This tells webpack to include all files it finds that match the png regex
@@ -338,7 +337,7 @@ export class BasePane<
      * with each value being [0, 1] for their progress.
      */
     protected setPlayersProgresses(progresses: Immutable<number[]> | undefined): void {
-        const summed = (progresses && progresses.length === this.game.numberOfPlayers)
+        const summed = (progresses && progresses.length === (this.game.constructor as typeof BaseGame).numberOfPlayers)
             ? sum(progresses)
             : 0;
 

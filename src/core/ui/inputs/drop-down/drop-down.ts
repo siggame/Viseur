@@ -1,8 +1,8 @@
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import { BaseInput, IBaseInputArgs } from "../base-input";
-import dropDownOptionHbs from "./drop-down-option.hbs"; // tslint:disable-line:match-default-export-name
-import dropDownHbs from "./drop-down.hbs"; // tslint:disable-line:match-default-export-name
+import * as dropDownOptionHbs from "./drop-down-option.hbs"; // tslint:disable-line:match-default-export-name
+import * as dropDownHbs from "./drop-down.hbs"; // tslint:disable-line:match-default-export-name
 
 /** An option on the drop down. */
 export interface IDropDownOption<T> {
@@ -73,18 +73,20 @@ export class DropDown<T> extends BaseInput<T> {
         this.element.html("");
 
         for (const option of options) {
-            this.options.push(
-                typeof option === "string"
+            const opt = typeof option === "string"
                 // tslint:disable-next-line:no-any no-unsafe-any
                 ? { text: option, value: option as any } // T is string
-                : option,
-            );
+                : option;
 
-            partial(dropDownOptionHbs, option, this.element);
+            this.options.push(opt);
+            partial(dropDownOptionHbs, opt, this.element);
         }
 
-        this.value = defaultValue !== undefined
-            ? defaultValue
-            : this.options[0].value;
+        if (defaultValue !== undefined) {
+            this.value = defaultValue;
+        }
+        else if (this.options[0]) {
+            this.value = this.options[0].value;
+        }
     }
 }
