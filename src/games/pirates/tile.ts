@@ -85,9 +85,9 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.grass = this.addSprite.grass(hide);
         this.isDecoration = state.decoration;
 
-        this.isTree = this.game.chance.floating({ min: 0, max: 1 }) < .03;
+        this.isTree = this.game.random() < .03;
         this.tree = this.addSprite.tree(hide);
-        this.isPlants = this.game.chance.floating({ min: 0, max: 1 }) > .97;
+        this.isPlants = this.game.random() > .97;
         this.plants = this.addSprite.plants(hide);
 
         this.container.position.set(state.x, state.y);

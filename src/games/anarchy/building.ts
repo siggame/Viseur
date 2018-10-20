@@ -73,10 +73,10 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     private readonly fireSprites: PIXI.Sprite[] = [];
 
     /** Random X number used to animate fire */
-    private readonly randomX = this.game.chance.floating({ min: 0, max: 1 }) * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    private readonly randomX = this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     /** Random Y number used to animate fire */
-    private readonly randomY = this.game.chance.floating({ min: 0, max: 1 }) * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    private readonly randomY = this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     // <<-- /Creer-Merge: variables -->>
 

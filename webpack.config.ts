@@ -7,7 +7,7 @@ export default (// tslint:disable-line:no-default-export
     options: webpack.Configuration,
 ): webpack.Configuration => ({
     entry: [
-        "@babel/polyfill/dist/polyfill.js", // polyfill new es functions for babel
+        "@babel/polyfill/dist/polyfill.js", // polyfill new ES functions for babel
         "font-awesome/scss/font-awesome.scss", // font-awesome icons injection
         "src/index.ts", // our actual starting file now that stuff is ready
     ],
@@ -20,7 +20,6 @@ export default (// tslint:disable-line:no-default-export
     output: {
         filename: "js/[name].js",
         path: resolve(__dirname, "dist"),
-        // publicPath: "dist/",
     },
     module: {
         rules: [
@@ -31,7 +30,7 @@ export default (// tslint:disable-line:no-default-export
                     {
                         loader: "babel-loader",
                         options: {
-                            babelrc: true, // join(process.cwd(), "./babelrc"),
+                            babelrc: true,
                         },
                     },
                     {
@@ -87,31 +86,10 @@ export default (// tslint:disable-line:no-default-export
                 collapseWhitespace: true,
             },
         }),
-
-        /*
-        // provides a great speedup in both module use and development debugging
-        // https://webpack.js.org/plugins/commons-chunk-plugin/
-        new webpack.optimize.CommonsChunkPlugin({
-            names: ["node_modules"],
-            minChunks: (module, count) => {
-                // creates a common vendor js file for libraries in node_modules
-                return isNodeModule(module);
-            },
-        }),
-        */
     ],
     devtool: options.mode === "development"
         ? "source-map"
         : false,
-    /*devServer: {
-        historyApiFallback: true,
-        watchOptions: { aggregateTimeout: 300, poll: 1000 },
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
-        },
-    },*/
     performance: {
         hints: false, // TODO: handle these warnings
     },

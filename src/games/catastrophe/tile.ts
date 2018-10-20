@@ -57,23 +57,15 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // Set the parent of the tile container as the background layer
         this.container.setParent(this.game.layers.background);
         // Set the container's sprite as the ground tile Sprite
-        const r = Math.floor(this.game.chance.floating({ min: 0, max: 1 }) * 3) + 1;
-        if (r === 1) {
-            this.grass = this.addSprite.grass1();
-        }
-        else if (r === 2) {
-            this.grass = this.addSprite.grass2();
-        }
-        else { // r === 3
-            this.grass = this.addSprite.grass3();
-        }
+        const grassSpriteName = `grass${Math.abs(this.game.random.int32() % 3) + 1}` as "grass1" | "grass2" | "grass3";
+        this.grass = this.addSprite[grassSpriteName]();
 
         // Change the resource here
         if (state.harvestRate > 0) {
             this.bush = this.addSprite.bush();
             this.berry = this.addSprite.berry();
             const colors = [Color("purple"), Color("yellow"), Color("red"), Color("blue")]; // by ptm
-            const i = Math.floor(this.game.chance.floating({ min: 0, max: 1 }) * (colors.length));
+            const i = Math.abs(this.game.random.int32() % colors.length);
             this.berry.tint = colors[i].rgbNumber();
             // this.berry.tint = Color("blue").rgbNumber();
         } /** */

@@ -2,7 +2,7 @@
 import { mapValues } from "lodash";
 import { FirstArgument, IPixiSpriteOptions, Omit } from "src/utils";
 import { RenderableGameObjectClass } from "src/viseur/game";
-import blankPng from "src/viseur/images/blank.png"; // tslint:disable-line:match-default-export-name
+import * as blankPng from "src/viseur/images/blank.png";
 import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
 import { RendererResource } from "./renderer-resource";
 import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";

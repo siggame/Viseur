@@ -1,8 +1,8 @@
 import { Delta, IBaseGame, IBaseGameObject, IBasePlayer, IGamelog } from "cadre-ts-utils/cadre";
-import { Chance } from "chance";
 import * as Color from "color";
 import { flatMap, range } from "lodash";
 import * as PIXI from "pixi.js";
+import * as seedrandom from "seedrandom";
 import { Immutable, isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { IRendererResources, IRendererSize, Renderer } from "src/viseur/renderer";
@@ -65,7 +65,7 @@ export class BaseGame extends StateObject {
     public namespace!: IBaseGameNamespace; // set in Creer template
 
     /** The random number generator we use */
-    public readonly chance: Chance.Chance;
+    public readonly random: seedrandom.prng;
 
     /** The layers in the game */
     public readonly layers!: IGameLayers; // set in Creer template
@@ -118,10 +118,7 @@ export class BaseGame extends StateObject {
         this.viseur = viseur;
         this.renderer = viseur.renderer;
 
-        this.chance = new Chance(gamelog
-            ? gamelog.settings.randomSeed
-            : "",
-        );
+        this.random = seedrandom(gamelog && gamelog.settings.randomSeed || undefined);
 
         viseur.events.ready.on(() => {
             this.ready();

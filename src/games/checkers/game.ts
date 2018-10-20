@@ -116,7 +116,7 @@ export class Game extends BaseGame {
         // generate a random color based on the game's random seed so each
         // background color for each game has a slight different hue
         const randomColor = Color().hsl(
-            this.chance.floating({min: 0, max: 360}), // hue, random number 0 to 360
+            this.random() * 360, // hue, random number 0 to 360
             60, // saturation
             40, // luminosity
         ).whiten(1.5);
