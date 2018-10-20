@@ -5,7 +5,7 @@ import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
 import { GUI } from "../gui";
-import * as infoPaneHbs from "./info-pane.hbs"; // tslint:disable-line:match-default-export-name
+import * as infoPaneHbs from "./info-pane.hbs";
 import "./info-pane.scss";
 import { TABS } from "./tabs";
 

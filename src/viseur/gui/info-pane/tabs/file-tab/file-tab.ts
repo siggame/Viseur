@@ -5,7 +5,7 @@ import { Config } from "src/core/config";
 import { Button, CheckBox, DropDown, FileInput, ITabArgs, NumberInput, Tab, TextBox } from "src/core/ui";
 import { sortedAscending } from "src/utils";
 import { Viseur } from "src/viseur";
-import * as fileTabHbs from "./file-tab.hbs"; // tslint:disable-line:match-default-export-name
+import * as fileTabHbs from "./file-tab.hbs";
 import "./file-tab.scss";
 
 /**

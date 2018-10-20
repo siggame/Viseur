@@ -6,7 +6,7 @@ import { Viseur, viseurConstructed } from "src/viseur";
 import { IGamelogWithReverses } from "src/viseur/game/gamelog";
 import { Event, events, Signal } from "ts-typed-events";
 import { KEYS } from "../keys";
-import * as playbackPaneHbs from "./playback-pane.hbs"; // tslint:disable-line:match-default-export-name
+import * as playbackPaneHbs from "./playback-pane.hbs";
 import "./playback-pane.scss";
 
 /** Handles all the playback controls and logic for the playback part of the GUI. */

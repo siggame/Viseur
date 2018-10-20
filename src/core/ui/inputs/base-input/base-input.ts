@@ -2,7 +2,7 @@ import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disable
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Field } from "../field";
-import * as baseInputHbs from "./base-input.hbs"; // tslint:disable-line:match-default-export-name
+import * as baseInputHbs from "./base-input.hbs";
 
 /** The base arguments for any input. */
 export interface IBaseInputArgs<T> extends IDisableableElementArgs {

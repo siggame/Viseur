@@ -9,8 +9,8 @@ import { BaseElement } from "src/core/ui/base-element";
 import { getContrastingColor, Immutable, isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
-import * as basePaneStatsHbs from "./base-pane-stats.hbs"; // tslint:disable-line:match-default-export-name
-import * as basePaneHbs from "./base-pane.hbs"; // tslint:disable-line:match-default-export-name
+import * as basePaneStatsHbs from "./base-pane-stats.hbs";
+import * as basePaneHbs from "./base-pane.hbs";
 import "./base-pane.scss";
 
 // This tells webpack to include all files it finds that match the png regex

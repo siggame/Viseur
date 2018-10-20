@@ -2,7 +2,7 @@ import { onceTransitionEnds } from "src/utils/jquery";
 import { Event, events } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
-import * as tabularHbs from "./tabular.hbs"; // tslint:disable-line:match-default-export-name
+import * as tabularHbs from "./tabular.hbs";
 import "./tabular.scss";
 
 /** a block of content accessed via Tabs */

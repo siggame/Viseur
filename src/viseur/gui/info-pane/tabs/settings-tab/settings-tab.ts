@@ -2,7 +2,7 @@ import * as $ from "jquery";
 import { BaseInput, ITabArgs, Tab } from "src/core/ui";
 import { Viseur } from "src/viseur";
 import { BaseSetting, IBaseSettings } from "src/viseur/settings";
-import * as settingsTabHbs from "./settings-tab.hbs"; // tslint:disable-line:match-default-export-name
+import * as settingsTabHbs from "./settings-tab.hbs";
 import "./settings-tab.scss";
 
 /** The "Help" tab on the InfoPane, displaying settings (both for the core and by game) */

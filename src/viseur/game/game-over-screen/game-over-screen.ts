@@ -4,8 +4,8 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { getContrastingColor, Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
-import * as gameOverScreenItemHbs from "./game-over-screen-item.hbs"; // tslint:disable-line:match-default-export-name
-import * as gameOverScreenHbs from "./game-over-screen.hbs"; // tslint:disable-line:match-default-export-name
+import * as gameOverScreenItemHbs from "./game-over-screen-item.hbs";
+import * as gameOverScreenHbs from "./game-over-screen.hbs";
 import "./game-over-screen.scss";
 
 /** A screen that overlays the renderer when the game is over */
