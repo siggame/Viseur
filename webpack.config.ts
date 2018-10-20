@@ -83,6 +83,9 @@ export default (// tslint:disable-line:no-default-export
         // generate for us our index.html page
         new HtmlWebpackPlugin({
             title: "Viseur",
+            minify: {
+                collapseWhitespace: true,
+            },
         }),
 
         /*
