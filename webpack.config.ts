@@ -87,6 +87,10 @@ export default (// tslint:disable-line:no-default-export
             },
         }),
     ],
+    optimization: {
+        sideEffects: true,
+        usedExports: true,
+    },
     devtool: options.mode === "development"
         ? "source-map"
         : false,
