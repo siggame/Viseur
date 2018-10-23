@@ -11,4 +11,3 @@ Game.prototype.namespace = {
 
 /** The namespace variable expected by all games for this Chess game. */
 export const Namespace = Game.prototype.namespace;
-module.exports = Namespace;

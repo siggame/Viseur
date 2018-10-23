@@ -2,10 +2,9 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "commonjs",
+        "moduleResolution": "node",
         "importHelpers": true,
-        "lib": [
-            "dom", "es5", "es6", "esnext"
-        ],
+        "lib": [ "dom", "es5", "es6", "esnext" ],
 
         "sourceMap": true,
         "removeComments": true,

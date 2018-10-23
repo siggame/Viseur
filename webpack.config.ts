@@ -35,6 +35,14 @@ export default (// tslint:disable-line:no-default-export
                     },
                     {
                         loader: "ts-loader",
+                        options: {
+                            compilerOptions: {
+                                // Keep es6+ imports in place for babel to handle.
+                                // This allows the lodash treeshakers to work.
+                                // This also means we are relying fully on babel for ESNext --> ES5 (or lower)
+                                module: "esnext",
+                            },
+                        },
                     },
                 ],
             },
@@ -92,7 +100,7 @@ export default (// tslint:disable-line:no-default-export
         usedExports: true,
     },
     devtool: options.mode === "development"
-        ? "source-map"
+        ? "inline-source-map"
         : false,
     performance: {
         hints: false, // TODO: handle these warnings
