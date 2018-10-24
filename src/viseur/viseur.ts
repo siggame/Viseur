@@ -2,7 +2,7 @@ import { Immutable } from "cadre-ts-utils";
 import { IBaseGame, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
-import { Games } from "src/games";
+import { GAMES } from "src/games";
 import { objectHasProperty, UnknownObject, unStringify, validateURL } from "src/utils";
 import { viseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
@@ -95,7 +95,7 @@ export class Viseur {
 
     /** Creates the singleton viseur instance */
     public constructor() {
-        this.games = Games;
+        this.games = GAMES;
 
         window.onerror = (message, source, lineno, colno, error) => {
             this.handleError(error || new Error(message instanceof Event

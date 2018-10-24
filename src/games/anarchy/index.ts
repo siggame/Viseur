@@ -10,4 +10,4 @@ Game.prototype.namespace = {
 };
 
 /** The namespace variable expected by all games for this Anarchy game. */
-export const Namespace = Game.prototype.namespace;
+export const namespace = Game.prototype.namespace;

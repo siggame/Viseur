@@ -3,7 +3,7 @@ import { IBaseGameNamespace } from "src/viseur/game/interfaces";
 
 /** The expected interface all games must export from their interface. */
 interface IGameExport {
-    Namespace: IBaseGameNamespace;
+    namespace: IBaseGameNamespace;
 }
 
 // require all images in the build
@@ -13,23 +13,20 @@ for (const key of requireGameResource.keys()) {
     requireGameResource(key);
 }
 
-/** All the game namespaces that can be loaded by this instance */
-export const Games: {[gameName: string]: IBaseGameNamespace | undefined} = {};
-
-const req = require.context("./", true, /\.\/(?:(?!resources).)*?\/index\.ts/im); // TODO: remove need for deep search
+const games: {[gameName: string]: IBaseGameNamespace | undefined} = {};
+const req = require.context("./", true, /\.\/([^\/]+)\/index.ts/); // match ./*/index.ts, but only 1 directory.
 
 for (const key of req.keys()) {
-    if (key === "./index.ts") {
-        continue;
-    }
-
     const required = req(key) as IGameExport;
-    if (!required || !isObject(required) || !isObject(required.Namespace)) {
+    if (!required || !isObject(required) || !isObject(required.namespace)) {
         throw new Error(`Game "${key}" does not export the expected interface!`);
     }
 
-    const { Namespace } = required;
-    if (Namespace.Game) {
-        Games[Namespace.Game.gameName] = Namespace;
+    const { namespace } = required;
+    if (namespace.Game) {
+        games[namespace.Game.gameName] = namespace;
     }
 }
+
+/** All the game namespaces that can be loaded by this instance */
+export const GAMES = Object.freeze(games);
