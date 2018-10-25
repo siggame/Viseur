@@ -9,6 +9,10 @@ import { ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+// import * as Color from "color";
+// import { ease, updown } from "src/utils"; // updown
+// import { GameBar } from "src/viseur/game";
+import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -42,6 +46,18 @@ export class Unit extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+    public owner?: Player;
+    // Job of unit. contains the string of their job title.
+    public job: string;
+    /*
+
+    public internSprite: PIXI.Sprite;
+    public managerSprite: PIXI.Sprite;
+    public physicistSprite: PIXI.Sprite;
+
+    public maxHeath: number;
+    public readonly healthBar: GameBar;
+    */
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -56,6 +72,30 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Unit here.
+        this.owner = this.game.gameObjects[state.owner.id] as Player;
+        this.job = state.job.title;
+        this.container.setParent(this.game.layers.game);
+
+        /*
+
+        this.internSprite = this.game.resources.intern.newSprite(this.container);
+        this.internSprite.visible = false;
+        this.physicistSprite = this.game.resources.physicist.newSprite(this.container);
+        this.physicistSprite.visible = false;
+        this.managerSprite = this.game.resources.manager.newSprite(this.container);
+        this.managerSprite.visible = false;
+        if (state.tile) {
+            this.container.position.set(state.tile.x, state.tile.y);
+            this.container.visible = true;
+        }
+        else {
+            this.container.position.set(-1, -1);
+            this.container.visible = false;
+        }
+        this.recolor();
+        this.maxHeath = state.job.health;
+        this.healthBar = new GameBar(this.container);
+      */
         // <<-- /Creer-Merge: constructor -->>
     }
 
