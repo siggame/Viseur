@@ -8,6 +8,8 @@ import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+//import * as Color from "color";
+import { Player } from "./player";
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
@@ -27,7 +29,8 @@ export class Tile extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        //return super.shouldRender; // change this to true to render all instances of this class
+        return true;
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -41,6 +44,19 @@ export class Tile extends GameObject {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+    public floor: PIXI.Sprite;
+
+    public wall: PIXI.Sprite;
+
+    public genRoom: PIXI.Sprite;
+
+    public conveyor: PIXI.Sprite;
+
+    public owner?: Player;
+    public spawn: PIXI.Sprite;
+
+    public isGen: boolean; 
+    public isCon: boolean;
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
@@ -55,6 +71,34 @@ export class Tile extends GameObject {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
+        
+        if (state.owner) {
+            this.owner = this.game.gameObjects[state.owner.id] as Player;
+        }
+        
+        // Initialize if it is a Generator Tile.
+        this.isGen = state.type === "generator" ? true : false;
+        this.isCon = state.type === "conveyor"  ? true : false;
+        
+        this.container.setParent(this.game.layers.background);
+
+        this.spawn = this.game.resources.spawn.newSprite(this.container);
+        this.spawn.visible = false;
+        
+        
+        this.floor = this.game.resources.floor.newSprite(this.container);
+        this.floor.visible = false;
+        this.wall = this.game.resources.wall.newSprite(this.container);
+        this.wall.visible = false;
+        this.genRoom = this.game.resources.genRoom.newSprite(this.container);
+        this.genRoom.visible = false;
+        this.conveyor = this.game.resources.conveyor.newSprite(this.container);
+        this.conveyor.visible = false;
+                
+
+        this.container.position.set(state.x, state.y);
+
+        this.recolor();
         // You can initialize your new Tile here.
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -76,6 +120,25 @@ export class Tile extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
+
+
+        if(current.isWall) {
+            this.wall.visible = true;
+        }
+        else if(this.owner) {
+            if(this.isGen) {
+                this.genRoom.visible = true;
+            } 
+            else{
+                this.spawn.visible = true;
+            }
+        }
+        else if(this.isCon) {
+            this.conveyor.visible = true;
+        }
+        else{
+            this.floor.visible = true;
+        }
         // render where the Tile is
         // <<-- /Creer-Merge: render -->>
     }
@@ -88,6 +151,11 @@ export class Tile extends GameObject {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
+        if(this.owner){
+            const ownerColor = this.game.getPlayersColor(this.owner);
+            this.spawn.tint = ownerColor.rgbNumber();
+            this.genRoom.tint = ownerColor.rgbNumber();
+        }
         // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
     }
