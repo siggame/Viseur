@@ -1,10 +1,10 @@
 // This is a class to represent the WeatherStation object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
+import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { Game } from "./game";
 import { IWeatherStationState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
@@ -12,28 +12,18 @@ import * as PIXI from "pixi.js";
 import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = undefined;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class WeatherStation extends Building {
+export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the WeatherStation (dt = 0) */
     public current: IWeatherStationState | undefined;
@@ -54,20 +44,22 @@ export class WeatherStation extends Building {
     /**
      * Constructor for the WeatherStation with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this WeatherStation
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this WeatherStation.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IWeatherStationState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        this.intensitySprite = this.game.resources.arrow.newSprite(this.game.layers.beams, {
+        this.intensitySprite = this.addSprite.arrow({
+            container: this.game.layers.beams,
             relativePivot: 0.5,
             position: {x: state.x + 0.5, y: state.y + 0.5},
         });
 
-        this.rotationSprite = this.game.resources.rotation.newSprite(this.game.layers.beams, {
+        this.rotationSprite = this.addSprite.rotation({
+            container: this.game.layers.beams,
             relativePivot: 0.5,
             position: {x: state.x + 0.5, y: state.y + 0.5},
         });
@@ -75,20 +67,24 @@ export class WeatherStation extends Building {
     }
 
     /**
-     * Called approx 60 times a second to update and render WeatherStation
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render WeatherStation instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: IWeatherStationState, next: IWeatherStationState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<IWeatherStationState>,
+        next: Immutable<IWeatherStationState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
         if (this.rotationSprite.visible) {
@@ -104,8 +100,8 @@ export class WeatherStation extends Building {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this WeatherStation's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this WeatherStation's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -116,17 +112,35 @@ export class WeatherStation extends Building {
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this WeatherStation instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: IWeatherStationState, next: IWeatherStationState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<IWeatherStationState>,
+        next: Immutable<IWeatherStationState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         this.rotationSprite.visible = false;
@@ -135,14 +149,17 @@ export class WeatherStation extends Building {
         this.intensitySprite.visible = false;
         this.intensitySprite.rotation = 0;
 
-        if (nextReason && nextReason.run && nextReason.run.caller === this && nextReason.returned === true) {
-            if (nextReason.run.functionName === "rotate") {
+        if (nextDelta.type === "ran"
+         && nextDelta.data.run.caller.id === this.id
+         && nextDelta.data.returned
+        ) {
+            if (nextDelta.data.run.functionName === "rotate") {
                 this.rotationSprite.visible = true;
-                this.rotationSprite.scale.x *= nextReason.run.args.counterclockwise ? -1 : 1;
+                this.rotationSprite.scale.x *= nextDelta.data.run.args.counterclockwise ? -1 : 1;
             }
-            else { // "intensify"
+            else { // functionName === "intensify"
                 this.intensitySprite.visible = true;
-                const negative = nextReason.run.args.negative;
+                const negative = nextDelta.data.run.args.negative;
                 // rotate the arrow 180 degrees, so flip is basically
                 this.intensitySprite.rotation = negative ? Math.PI : 0;
             }
@@ -154,11 +171,9 @@ export class WeatherStation extends Building {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Bribe the weathermen to intensity the next Forecast by 1 or -1
@@ -189,21 +204,6 @@ export class WeatherStation extends Building {
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

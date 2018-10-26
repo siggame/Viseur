@@ -1,9 +1,9 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
@@ -11,28 +11,18 @@ import { ITileState } from "./state-interfaces";
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Tile extends GameObject {
+export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true; // change this to true to render all instances of this class
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Tile (dt = 0) */
     public current: ITileState | undefined;
@@ -41,29 +31,42 @@ export class Tile extends GameObject {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+
+    /** The sprite for our water. */
     public water: PIXI.Sprite;
 
+    /** The sprite for our land. */
     public land: PIXI.Sprite;
+    /** Sprite for gold on land. */
     public goldLand: PIXI.Sprite;
 
+    /** Grass sprite for land deep in the island. */
     public grass: PIXI.Sprite;
+    /** Tree decoration sprite. */
     public tree: PIXI.Sprite;
+    /** Alternative water sprite. */
     public water2: PIXI.Sprite;
+    /** Plants decoration sprite. */
     public plants: PIXI.Sprite;
 
+    /** If this tile has water. */
     public isWater: boolean;
+    /** If this tile has a decoration. */
     public isDecoration: boolean;
 
+    /** If this tile has a tree on it */
     public isTree: boolean;
+
+    /** If this tile has plants on it. */
     public isPlants: boolean;
     // <<-- /Creer-Merge: variables -->>
 
     /**
      * Constructor for the Tile with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Tile
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Tile.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: ITileState, viseur: Viseur) {
         super(state, viseur);
@@ -72,26 +75,20 @@ export class Tile extends GameObject {
 
         this.container.setParent(this.game.layers.background);
 
-        this.water = this.game.resources.water.newSprite(this.container);
-        this.water.visible = false;
-        this.land = this.game.resources.land.newSprite(this.container);
-        this.land.visible = false;
-        this.goldLand = this.game.resources.gold.newSprite(this.container);
-        this.goldLand.visible = false;
-        this.isWater = (state.type === "water");
+        const hide = { visible: true };
+        this.water = this.addSprite.water(hide);
+        this.land = this.addSprite.land(hide);
+        this.goldLand = this.addSprite.gold(hide);
+        this.isWater = state.type === "water";
 
-        this.water2 = this.game.resources.water2.newSprite(this.container);
-        this.water2.visible = false;
-        this.grass = this.game.resources.grass.newSprite(this.container);
-        this.grass.visible = false;
+        this.water2 = this.addSprite.water2(hide);
+        this.grass = this.addSprite.grass(hide);
         this.isDecoration = state.decoration;
 
-        this.isTree = (Math.random() < .03);
-        this.tree = this.game.resources.tree.newSprite(this.container);
-        this.tree.visible = false;
-        this.isPlants = (Math.random() > .97);
-        this.plants = this.game.resources.plants.newSprite(this.container);
-        this.plants.visible = false;
+        this.isTree = this.game.random() < .03;
+        this.tree = this.addSprite.tree(hide);
+        this.isPlants = this.game.random() > .97;
+        this.plants = this.addSprite.plants(hide);
 
         this.container.position.set(state.x, state.y);
         // You can initialize your new Tile here.
@@ -99,36 +96,32 @@ export class Tile extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render Tile
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Tile instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: ITileState, next: ITileState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<ITileState>,
+        next: Immutable<ITileState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        if (this.current && this.current.gold > 0) {
-            this.goldLand.visible = true;
-        }
-        else {
-            this.goldLand.visible = false;
-        }
+        this.goldLand.visible = Boolean(this.current && this.current.gold > 0);
 
         if (this.isWater) {
-            if (this.isDecoration) {
-                this.water2.visible = true;
-            }
-            else {
-                this.water.visible = true;
-            }
+            (this.isDecoration
+                ? this.water2
+                : this.water).visible = true;
         }
         else {
             // if (this.isDecoration) {
@@ -148,8 +141,8 @@ export class Tile extends GameObject {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Tile's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Tile's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -160,17 +153,35 @@ export class Tile extends GameObject {
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this Tile instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: ITileState, next: ITileState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<ITileState>,
+        next: Immutable<ITileState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Tile based off its states
@@ -180,25 +191,6 @@ export class Tile extends GameObject {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
-
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

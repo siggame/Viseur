@@ -1,42 +1,29 @@
 // This is a class to represent the Beaver object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { IBeaverState, ISpawnerState, ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
-import { RendererResource } from "src/viseur/renderer";
-import { Player } from "./player";
 import { Spawner } from "./spawner";
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Beaver extends GameObject {
+export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Beaver (dt = 0) */
     public current: IBeaverState | undefined;
@@ -47,7 +34,7 @@ export class Beaver extends GameObject {
     // <<-- Creer-Merge: variables -->>
 
     /** The owning player */
-    private readonly owner: Player;
+    private readonly ownerID: string;
 
     /** The beaver this is attacking, if any */
     private attacking?: Beaver;
@@ -78,36 +65,35 @@ export class Beaver extends GameObject {
     /**
      * Constructor for the Beaver with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Beaver
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Beaver.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IBeaverState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
 
-        this.owner = this.game.gameObjects[state.owner.id] as any; // we know for certain the player will be there
+        this.ownerID = state.owner.id;
 
         // the "bottom" of the beaver, which is the body, is based on team id, either 0 or 1.
-        const bottomResource = state.owner.id === "0"
-            ? this.game.resources.beaver0
-            : this.game.resources.beaver1;
+        (state.owner.id === "0"
+            ? this.addSprite.beaver0
+            : this.addSprite.beaver1)();
 
-        bottomResource.newSprite(this.container);
-        this.tailSprite = this.game.resources.beaverTail.newSprite(this.container);
+        this.tailSprite = this.addSprite.beaverTail();
 
         if (state.job.title !== "Basic") {
             const jobTitle = state.job.title.replace(" ", "");
-            const jobResource = (this.game.resources[`job${jobTitle}`] as RendererResource); // sketchy
+            const jobResource = (this.addSprite[`job${jobTitle}` as "jobBuilder"]); // sketchy
 
-            jobResource.newSprite(this.container);
+            jobResource();
         }
 
-        this.attackingSprite = this.game.resources.attacking.newSprite(this.container);
-        this.gettingBranchSprite = this.game.resources.gettingBranch.newSprite(this.container);
-        this.gettingFoodSprite = this.game.resources.gettingFood.newSprite(this.container);
-        this.distractedSprite = this.game.resources.distracted3.newSprite(this.container);
+        this.attackingSprite = this.addSprite.attacking();
+        this.gettingBranchSprite = this.addSprite.gettingBranch();
+        this.gettingFoodSprite = this.addSprite.gettingFood();
+        this.distractedSprite = this.addSprite.distracted3();
 
         this.healthBar = new GameBar(this.container, {
             max: state.job.health,
@@ -118,25 +104,30 @@ export class Beaver extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render Beaver
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Beaver instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: IBeaverState, next: IBeaverState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<IBeaverState>,
+        next: Immutable<IBeaverState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
 
         if (current.health === 0) {  // Then beaver is dead.
             this.container.visible = false;
+
             return; // No need to render a dead beaver.
         }
 
@@ -177,10 +168,10 @@ export class Beaver extends GameObject {
 
         if (this.attacking) {
             this.attackingSprite.visible = true;
-            bumpInto = (this.attacking.current || this.attacking.next)!.tile;
+            bumpInto = this.attacking.getCurrentMostState().tile;
         }
         else if (this.harvesting) {
-            const harvesting = this.harvesting.current || this.harvesting.next!;
+            const harvesting = this.harvesting.getCurrentMostState();
             if (harvesting.type === "food") {
                 this.gettingFoodSprite.visible = true;
             }
@@ -205,47 +196,65 @@ export class Beaver extends GameObject {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Beaver's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Beaver's sprites.
      */
     public recolor(): void {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        const color = this.game.getPlayersColor(this.owner);
+        const color = this.game.getPlayersColor(this.ownerID);
         this.tailSprite.tint = color.lighten(0.15).rgbNumber();
         this.healthBar.recolor(color.lighten(0.5));
         // <<-- /Creer-Merge: recolor -->>
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this Beaver instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: IBeaverState, next: IBeaverState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<IBeaverState>,
+        next: Immutable<IBeaverState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         this.attacking = undefined;
         this.harvesting = undefined;
 
-        if (nextReason && nextReason.run && nextReason.run.caller.id === this.id) {
-            const run = nextReason.run;
+        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+            const { run } = nextDelta.data;
 
-            if (run.functionName === "attack" && nextReason.returned) {
+            if (run.functionName === "attack" && nextDelta.data.returned) {
                 // This beaver gonna fite sumthin
-                this.attacking = run.args.beaver;
+                this.attacking = this.game.getGameObject(run.args.beaver, Beaver);
             }
 
-            if (run.functionName === "harvest" && nextReason.returned) {
+            if (run.functionName === "harvest" && nextDelta.data.returned) {
                 // This beaver getting some food!
-                this.harvesting = run.args.spawner;
+                this.harvesting = this.game.getGameObject(run.args.spawner, Spawner);
             }
 
         }
@@ -256,11 +265,9 @@ export class Beaver extends GameObject {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks another adjacent beaver.
@@ -287,7 +294,7 @@ export class Beaver extends GameObject {
      * Drops some of the given resource on the beaver's Tile.
      * @param tile The Tile to drop branches/food on. Must be the same Tile that
      * the Beaver is on, or an adjacent one.
-     * @param resource The type of resource to drop ('branch' or 'food').
+     * @param resource The type of resource to drop ('branches' or 'food').
      * @param amount The amount of the resource to drop, numbers <= 0 will drop
      * all the resource type.
      * @param callback? The callback that eventually returns the return value
@@ -329,7 +336,7 @@ export class Beaver extends GameObject {
      * Picks up some branches or food on the beaver's tile.
      * @param tile The Tile to pickup branches/food from. Must be the same Tile
      * that the Beaver is on, or an adjacent one.
-     * @param resource The type of resource to pickup ('branch' or 'food').
+     * @param resource The type of resource to pickup ('branches' or 'food').
      * @param amount The amount of the resource to drop, numbers <= 0 will
      * pickup all of the resource type.
      * @param callback? The callback that eventually returns the return value
@@ -343,21 +350,6 @@ export class Beaver extends GameObject {
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

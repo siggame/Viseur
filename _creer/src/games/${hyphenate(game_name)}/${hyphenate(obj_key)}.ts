@@ -9,8 +9,14 @@ if len(parent_classes) == 0:
 
 imports = {
     './state-interfaces': ['I'+obj_key+'State'],
-    'src/viseur/game': ['IDeltaReason'],
+    'cadre-ts-utils/cadre': ['Delta'],
+    'src/utils': ['Immutable'],
+    'src/viseur/game': [],
 }
+
+if obj_key == 'GameObject':
+    imports['./game'] = ['Game']
+    imports["src/viseur/renderer"] = ['ResourcesForGameObject']
 
 if base_object:
     imports['src/viseur/game'].append(parent_classes[0])
@@ -19,12 +25,12 @@ if obj_key == 'Game':
     imports['./settings'] = ['GameSettings']
     imports['./resources'] = ['GameResources']
     imports['./game-object-classes'] = ['GameObjectClasses']
+    imports['./human-player'] = ['HumanPlayer']
+    imports['color'] = [ '* as Color' ]
     imports['src/viseur/renderer'] = ['IRendererSize']
-    imports["./human-player"] = ['HumanPlayer']
 else:
-    imports['./game'] = ['Game']
     imports['src/viseur'] = ['Viseur']
-    imports['src/core/ui/context-menu'] = ['MenuItems']
+    imports["src/viseur/game"].append('makeRenderable')
     if not base_object:
         imports['./'+hyphenate(parent_classes[0])] = [parent_classes[0]]
 
@@ -43,38 +49,34 @@ if obj['functions']:
                     imports['./state-interfaces'].append(return_type)
 
 %>
-% if obj_key == 'Game':
-import * as Color from "color";
-% endif
 ${shared['vis']['imports'](imports)}
 ${merge("// ", "imports", "// any additional imports you want can be added here safely between Creer runs", help=False)}
 
+% if obj_key != 'Game':
+${merge("// ", "should-render", '''// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = undefined;
+''', help=False)}
+
+% endif
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class ${obj_key} extends ${parent_classes[0]} {
+export class ${obj_key} extends ${parent_classes[0] if obj_key == 'Game' else 'makeRenderable({}, SHOULD_RENDER)'.format(parent_classes[0])} {
 ${merge("    // ", "static-functions", "    // you can add static functions here", help=False)}
 
 % if obj_key == 'Game':
     /** The static name of this game. */
-    public static readonly gameName: string = "${obj['name']}";
+    public static readonly gameName = "${obj['name']}";
 
     /** The number of players in this game. the players array should be this same size */
-    public readonly numberOfPlayers: number = ${obj['numberOfPlayers']};
+    public static readonly numberOfPlayers = ${obj['numberOfPlayers']};
 
-% else:
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-${merge("        // ", "should-render", "        return super.shouldRender; // change this to true to render all instances of this class", help=False)}
-    }
-
+% elif obj_key == 'GameObject':
     /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
+    public readonly game!: Game;
+
+    /** The factory that will build sprites for this game object */
+    public readonly addSprite!: ResourcesForGameObject${'<'}Game["resources"]> | undefined;
 
 % endif
     /** The current state of the ${obj_key} (dt = 0) */
@@ -123,9 +125,10 @@ ${merge("    // ", "variables", "    // You can add additional member variables 
 ${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
 
     /**
-     * Invoked when the first game state is ready to setup the size of the renderer
-     * @param state the initialize state of the game
-     * @returns the {height, width} you for the game's size.
+     * Invoked when the first game state is ready to setup the size of the renderer.
+     *
+     * @param state - The initialize state of the game.
+     * @returns The {height, width} you for the game's size.
      */
     protected getSize(state: IGameState): IRendererSize {
         return {
@@ -136,8 +139,9 @@ ${merge("            // ", "get-size", """            width: 10, // Change these
 
     /**
      * Called when Viseur is ready and wants to start rendering the game.
-     * This is where you should initialize stuff.
-     * @param state the initialize state of the game
+     * This is where you should initialize your state variables that rely on game data.
+     *
+     * @param state - The initialize state of the game.
      */
     protected start(state: IGameState): void {
         super.start(state);
@@ -146,8 +150,9 @@ ${merge("        // ", "start", "        // Initialize your variables here", hel
     }
 
     /**
-     * initializes the background. It is drawn once automatically after this step.
-     * @param state the initial state to use the render the background
+     * Initializes the background. It is drawn once automatically after this step.
+     *
+     * @param state - The initial state to use the render the background.
      */
     protected createBackground(state: IGameState): void {
         super.createBackground(state);
@@ -156,7 +161,8 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
 
         // this is an example of how to render a sprite. You'll probably want
         // to remove this code and the test sprite once actually doing things
-        this.resources.test.newSprite(this.layers.background, {
+        this.resources.test.newSprite({
+            container: this.layers.background,
             position: {x: 5, y: 5},
         });
 
@@ -176,34 +182,40 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
     /**
      * Called approx 60 times a second to update and render the background.
      * Leave empty if the background is static.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) game state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into the next turn to render at.
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    protected renderBackground(dt: number, current: IGameState, next: IGameState,
-                               reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.renderBackground(dt, current, next, reason, nextReason);
+    protected renderBackground(
+        dt: number,
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.renderBackground(dt, current, next, delta, nextDelta);
 
 ${merge("        // ", "render-background", "        // update and re-render whatever you initialize in renderBackground", help=False)}
     }
 
     /**
      * Invoked when the game state updates.
-     * @param current the current (most) game state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    protected stateUpdated(current: IGameState, next: IGameState,
-                           reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    protected stateUpdated(
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
 ${merge("        // ", "state-updated", "        // update the Game based on its current and next states", help=False)}
     }
@@ -211,9 +223,9 @@ ${merge("        // ", "state-updated", "        // update the Game based on its
     /**
      * Constructor for the ${obj_key} with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this ${obj_key}
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this ${obj_key}.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: I${obj_key}State, viseur: Viseur) {
         super(state, viseur);
@@ -222,27 +234,31 @@ ${merge("        // ", "constructor", "        // You can initialize your new {}
     }
 
     /**
-     * Called approx 60 times a second to update and render ${obj_key}
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render ${obj_key} instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: I${obj_key}State, next: I${obj_key}State,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<I${obj_key}State>,
+        next: Immutable<I${obj_key}State>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
 ${merge("        // ", "render", "        // render where the " + obj_key + " is", help=False)}
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this ${obj_key}'s sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this ${obj_key}'s sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -251,29 +267,43 @@ ${merge("        // ", "recolor", "        // replace with code to recolor sprit
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this ${obj_key} instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: I${obj_key}State, next: I${obj_key}State,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+${merge("        // ", "hide-render", "        // hide anything outside of `this.container`.", help=False)}
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<I${obj_key}State>,
+        next: Immutable<I${obj_key}State>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
 ${merge("        // ", "state-updated", "        // update the {} based off its states".format(obj_key), help=False)}
     }
 
 ${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
 % if len(obj['function_names']) > 0:
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
 % for function_name in obj['function_names']:
 <%
@@ -321,19 +351,6 @@ ${formatted_args}): void {
     // </Joueur functions>
 
 % endif
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-${merge("        // ", "get-context-menu", "        // add context items to the menu here", help=False)}
-
-        return menu;
-    }
 % endif
-
 ${merge("    // ", "protected-private-functions", "    // You can add additional protected/private functions here", help=False)}
 }

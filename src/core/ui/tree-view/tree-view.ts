@@ -1,15 +1,22 @@
 import { BaseElement, IBaseElementArgs } from "../base-element";
+import * as treeViewHbs from "./tree-view.hbs";
 import "./treeView.scss";
 
 /** a multi-level tree of expandable lists */
-export default class TreeView extends BaseElement {
+export class TreeView extends BaseElement {
+    /**
+     * Creates a new TreeView component.
+     *
+     * @param args - The base input args.
+     */
     constructor(args: IBaseElementArgs) {
-        super(args);
+        super(args, treeViewHbs);
     }
 
     /**
-     * displays some Object as a TreeView
-     * @param tree - the object to display
+     * Displays some Object as a TreeView.
+     *
+     * @param tree - The object to display.
      */
     public display(tree: object): void {
         // TODO: do

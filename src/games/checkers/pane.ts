@@ -1,3 +1,4 @@
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BasePane, IPaneStat } from "src/viseur/game";
 import { Game } from "./game";
@@ -11,18 +12,19 @@ import { IGameState, IPlayerState } from "./state-interfaces";
  * The visual pane that is displayed below the game and has text elements for
  * each player
  */
-export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane<G, P> {
+export class Pane extends BasePane<IGameState, IPlayerState> {
     // <<-- Creer-Merge: variables -->>
     // if you need add more member class variables, do so here
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Creates the pane
-     * @param viseur the Viseur instance controlling the pane
-     * @param game the game this pane is displaying stats for
-     * @param state the initial state of the game
+     * Creates the pane for the Checkers game.
+     *
+     * @param viseur - The Viseur instance controlling the pane.
+     * @param game - The game this pane is displaying stats for.
+     * @param state - The initial state of the game.
      */
-    constructor(viseur: Viseur, game: Game, state: IGameState) {
+    constructor(viseur: Viseur, game: Game, state: Immutable<IGameState>) {
         super(viseur, game, state);
 
         // <<-- Creer-Merge: constructor -->>
@@ -42,7 +44,7 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
      *          If You want to display no score, return undefined
      *          or an empty array.
      */
-    protected getPlayerScores(state: IGameState): number[] | undefined {
+    protected getPlayerScores(state: Immutable<IGameState>): number[] | undefined {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
@@ -57,8 +59,8 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
      * @param state the initial state of the game
      * @returns All the PaneStats to display on this BasePane for the game.
      */
-    protected getGameStats(state: IGameState): Array<IPaneStat<G>> {
-        const stats: Array<IPaneStat<G>> = super.getGameStats(state);
+    protected getGameStats(state: Immutable<IGameState>): Array<IPaneStat<IGameState>> {
+        const stats = super.getGameStats(state);
 
         // <<-- Creer-Merge: game-stats -->>
         // add stats for games to show up here
@@ -72,8 +74,8 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
      * @param state the initial state of the game
      * @returns All the PaneStats to display on this BasePane for the player.
      */
-    protected getPlayerStats(state: IGameState): Array<IPaneStat<P>> {
-        const stats: Array<IPaneStat<P>> = super.getPlayerStats(state);
+    protected getPlayerStats(state: Immutable<IGameState>): Array<IPaneStat<IPlayerState>> {
+        const stats = super.getPlayerStats(state);
 
         // <<-- Creer-Merge: player-stats -->>
         stats.push({

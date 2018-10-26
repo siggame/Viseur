@@ -1,7 +1,9 @@
+import { IGamelog } from "cadre-ts-utils/cadre";
 import { Timer } from "src/core/timer";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur/";
-import { Event } from "ts-typed-events";
-import { IGamelog } from "./game/gamelog";
+import { Event, events, Signal } from "ts-typed-events";
+import { IViseurGamelog } from "./game";
 
 /** Simple container for the current time of the time manager */
 export interface ICurrentTime {
@@ -17,25 +19,25 @@ export interface ICurrentTime {
 /** Manages playback time and what the game state to show should look like */
 export class TimeManager {
     /** Events this class emits */
-    public readonly events = Object.freeze({
+    public readonly events = events({
         /** Triggered when the current index changes */
         newIndex: new Event<number>(),
 
         /** Triggered when we starting ticking (playing) */
-        playing: new Event(),
+        playing: new Signal(),
 
         /** Triggered when we stop ticking (pause) */
-        paused: new Event(),
+        paused: new Signal(),
 
         /** Triggered when we reach the end of the indexes we can iterate through */
-        ended: new Event(),
+        ended: new Signal(),
     });
 
     /** The current index  to render */
     private currentIndex: number = -1;
 
     /** The gamelog we are counting deltas for */
-    private gamelog: IGamelog | undefined;
+    private gamelog: Immutable<IViseurGamelog> | undefined;
 
     /** The timer we use to count up or down the index */
     private readonly timer: Timer;
@@ -55,14 +57,14 @@ export class TimeManager {
             this.timer.setSpeed(newSpeed);
         });
 
-        viseur.events.ready.on((data) => {
-            this.ready(data.gamelog);
+        viseur.events.ready.on(({ gamelog }) => {
+            this.ready(gamelog);
         });
     }
 
     /**
      * Returns the current time. Calling this does not effect the timer.
-     * @returns {Object} contains the current `index` and `dt`.
+     * @returns contains the current `index` and `dt`.
      */
     public getCurrentTime(): ICurrentTime {
         return {
@@ -73,8 +75,8 @@ export class TimeManager {
 
     /**
      * Sets the current time to some index and dt
-     * @param {number} index the current index, must be between [0, deltas.length]
-     * @param {number} [dt=0] the "tweening" between index and index + 1, must be between [0, 1)
+     * @param index the current index, must be between [0, deltas.length]
+     * @param [dt=0] the "tweening" between index and index + 1, must be between [0, 1)
      */
     public setTime(index: number, dt?: number): void {
         const oldIndex = this.currentIndex;
@@ -89,8 +91,8 @@ export class TimeManager {
     /**
      * force plays the next animation
      *
-     * @param {number} [index] the index to play at
-     * @param {number} [dt] the dt to play at
+     * @param [index] the index to play at
+     * @param [dt] the dt to play at
      */
     public play(index?: number, dt?: number): void {
         if (index !== undefined) {
@@ -104,9 +106,9 @@ export class TimeManager {
 
     /**
      * Invoked when Viseur is ready
-     * @param {Object} gamelog - the gamelog, may be streaming
+     * @param gamelog - the gamelog, may be streaming
      */
-    private ready(gamelog: IGamelog): void {
+    private ready(gamelog: Immutable<IGamelog>): void {
         this.gamelog = gamelog;
 
         this.ticked(true);
@@ -133,8 +135,8 @@ export class TimeManager {
             }
         });
 
-        this.viseur.events.gamelogUpdated.on(() => {
-            if (this.currentIndex < this.gamelog!.deltas.length) {
+        this.viseur.events.gamelogUpdated.on((updated) => {
+            if (this.currentIndex < updated.deltas.length) {
                 this.play();
             }
         });
@@ -145,7 +147,8 @@ export class TimeManager {
      */
     private playPause(): void {
         if (!this.timer.isTicking()
-          && this.currentIndex === this.gamelog!.deltas.length - 1
+          && this.gamelog
+          && this.currentIndex === this.gamelog.deltas.length - 1
           && this.timer.getProgress() > 0.99
         ) { // then wrap around to the start
             this.setTime(0, 0);
@@ -155,18 +158,22 @@ export class TimeManager {
         (paused
             ? this.events.paused
             : this.events.playing
-        ).emit(undefined);
+        ).emit();
     }
 
     /**
      * Invoked when the timer ticks, advancing the index by 1, and resetting dt to 0
-     * @param {boolean} [start] - true if the tick is from the start of rendering, e.g. Viseur is ready, false otherwise
+     * @param [start] - true if the tick is from the start of rendering, e.g. Viseur is ready, false otherwise
      */
     private ticked(start?: boolean): void {
         this.currentIndex += (start ? 0 : 1);
 
+        if (!this.gamelog) {
+            throw new Error(`No gamelog when ticked!`);
+        }
+
         // check if we need to pause and go back a very small amount
-        const backPause = (this.gamelog!.streaming && this.currentIndex === this.gamelog!.deltas.length - 1);
+        const backPause = (this.gamelog.streaming && this.currentIndex === this.gamelog.deltas.length - 1);
 
         if (!backPause) {
             this.events.newIndex.emit(this.currentIndex);
@@ -174,16 +181,17 @@ export class TimeManager {
         else {
             // stop, we hit the end
             this.pause(this.currentIndex - 1, 0.9999);
+
             return;
         }
 
         if (!start) {
-            if (this.currentIndex < this.gamelog!.deltas.length) {
+            if (this.currentIndex < this.gamelog.deltas.length) {
                 this.timer.restart();
             }
             else {
                 this.pause(this.currentIndex, 0);
-                this.events.ended.emit(undefined);
+                this.events.ended.emit();
             }
         }
     }
@@ -214,8 +222,8 @@ export class TimeManager {
 
     /**
      * Pauses the timer. Doe not call to pause as in a play/pause
-     * @param {number} [index] the index to pause the time to
-     * @param {number} [dt] the dt to pause the time to
+     * @param [index] the index to pause the time to
+     * @param [dt] the dt to pause the time to
      */
     private pause(index?: number, dt?: number): void {
         this.timer.pause();
@@ -224,6 +232,6 @@ export class TimeManager {
             this.setTime(index, dt);
         }
 
-        this.events.paused.emit(undefined);
+        this.events.paused.emit();
     }
 }

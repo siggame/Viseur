@@ -1,9 +1,9 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
 
@@ -12,31 +12,24 @@ import { ITileState, IUnitState } from "./state-interfaces";
 import * as Color from "color";
 import { ease, updown } from "src/utils"; // updown
 import { GameBar } from "src/viseur/game";
-import { Player } from "./player";
+import { IJobState } from "./state-interfaces";
+import { Tile } from "./tile";
+
+const WHITE_COLOR = Color("white").rgbNumber();
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Unit extends GameObject {
+export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true; // change this to true to render all instances of this class
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Unit (dt = 0) */
     public current: IUnitState | undefined;
@@ -45,34 +38,50 @@ export class Unit extends GameObject {
     public next: IUnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
-    // Owner of the unit
-    public owner?: Player;
-    public job: string;
+    /** The id of the owner of the unit */
+    public ownerID?: string;
+
+    /** Our job */
+    public job: IJobState["title"];
 
     // Base sprite of the unit
+    /** The cat sprite. */
     public catSprite: PIXI.Sprite;
+    /** The human sprite. */
     public humanSprite: PIXI.Sprite;
+    /** The builder sprite. */
     public builderSprite: PIXI.Sprite;
+    /** The soldier sprite. */
     public soldierSprite: PIXI.Sprite;
+    /** The gatherer sprite. */
     public gathererSprite: PIXI.Sprite;
+    /** The converter sprite. */
     public converterSprite: PIXI.Sprite;
 
+    /** The sprite we are using from the above. */
     public spriteInUse: PIXI.Sprite | undefined;
 
+    /** An indicator sprite. */
     public indicatorSprite: PIXI.Sprite;
 
     // State Change Variables
+    /** The tile we are attacking, if we are. */
     public attackingTile?: ITileState;
+    /** The tile we are harvesting from, if we are. */
     public harvestTile?: ITileState;
+    /** the job we changed to, if we did. */
     public jobChanged?: string;
+    /** The id of the player we are changing to, if we are. */
     public playerChange?: string;
-    public facing: string;
+    /** The direction we are facing. */
+    public facing: "left" | "right";
 
-    // "Drop shadow" sprite
+    /** "Drop shadow" sprite */
     public dropShadow: PIXI.Sprite;
 
+    /** The maximum amount of energy we can have. */
     public maxEnergy: number;
+
     /** The bar that display's this unit's health */
     private readonly healthBar: GameBar;
 
@@ -81,9 +90,9 @@ export class Unit extends GameObject {
     /**
      * Constructor for the Unit with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Unit
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Unit.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IUnitState, viseur: Viseur) {
         super(state, viseur);
@@ -91,31 +100,24 @@ export class Unit extends GameObject {
         // <<-- Creer-Merge: constructor -->>
 
         if (state.owner) {
-            this.owner = this.game.gameObjects[state.owner.id] as Player;
+            this.ownerID = state.owner.id;
         }
         this.job = state.job.title;
 
         this.container.setParent(this.game.layers.game);
 
-        this.dropShadow = this.game.resources.dropShadow.newSprite(this.container);
+        this.dropShadow = this.addSprite.dropShadow();
 
-        this.catSprite = this.game.resources.catOverlord.newSprite(this.container);
-        this.catSprite.visible = false;
-        this.soldierSprite = this.game.resources.soldierUnit.newSprite(this.container);
-        this.soldierSprite.visible = false;
-        this.gathererSprite = this.game.resources.gathererUnit.newSprite(this.container);
-        this.gathererSprite.visible = false;
-        this.builderSprite = this.game.resources.builderHuman.newSprite(this.container);
-        this.builderSprite.visible = false;
-        this.converterSprite = this.game.resources.converterUnit.newSprite(this.container);
-        this.converterSprite.visible = false;
-        this.humanSprite = this.game.resources.freshHuman.newSprite(this.container);
-        this.humanSprite.visible = false;
+        const hide = { visible: false };
+        this.catSprite = this.addSprite.catOverlord(hide);
+        this.soldierSprite = this.addSprite.soldierUnit(hide);
+        this.gathererSprite = this.addSprite.gathererUnit(hide);
+        this.builderSprite = this.addSprite.builderHuman(hide);
+        this.converterSprite = this.addSprite.converterUnit(hide);
+        this.humanSprite = this.addSprite.freshHuman(hide);
+        this.indicatorSprite = this.addSprite.indicator(hide);
 
-        this.indicatorSprite = this.game.resources.indicator.newSprite(this.container);
-        this.indicatorSprite.visible = false;
-
-        this.set_job(this.job);
+        this.setJob(this.job);
 
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
@@ -129,7 +131,7 @@ export class Unit extends GameObject {
         this.recolor();
 
         this.facing = "left";
-        if (this.owner && this.owner.id === "0") {
+        if (this.ownerID === "0") {
             this.facing = "right";
             this.container.scale.x *= -1;
         }
@@ -141,26 +143,31 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render Unit
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Unit instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: IUnitState, next: IUnitState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<IUnitState>,
+        next: Immutable<IUnitState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
 
         // No longer on the map
-        if (next.tile == null) {
+        if (!next.tile) {
             this.container.visible = false;
+
             return;
         }
         else {
@@ -193,29 +200,24 @@ export class Unit extends GameObject {
         );
 
         if (current.owner !== next.owner) {
-            if (next.owner) {
-                this.owner = this.game.gameObjects[next.owner.id] as Player;
-            }
-            else {
-                this.owner = undefined;
-            }
+            this.ownerID = next.owner && next.owner.id;
             this.recolor();
         }
 
         if (this.jobChanged) { // If Job Changed called by player and returned true
             if (this.jobChanged !== this.job) {
-                this.set_job(this.jobChanged);
+                this.setJob(this.jobChanged);
             }
         }
         else { // This would be a unit losing loyalty/ or the game state jumps
             if (this.job !== next.job.title) {
-                this.set_job(next.job.title);
+                this.setJob(next.job.title);
             }
         }
 
         let currEnergy;
         let nextEnergy;
-        if (this.job === "fresh human" && !this.owner) {
+        if (this.job === "fresh human" && !this.ownerID) {
             currEnergy = current.turnsToDie / 10; // Magic number 10 is max turns to die
             nextEnergy = next.turnsToDie / 10;
         }
@@ -273,57 +275,72 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Unit's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Unit's sprites.
      */
     public recolor(): void {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
-        if (!this.owner) {
-            const white = Color("white");
-            this.dropShadow.tint = white.rgbNumber();
-            return;
-        }
-        const ownerColor = this.game.getPlayersColor(this.owner);
-        this.dropShadow.tint = ownerColor.rgbNumber();
+        this.dropShadow.tint = this.ownerID === undefined
+            ? WHITE_COLOR
+            : this.game.getPlayersColor(this.ownerID).rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this Unit instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: IUnitState, next: IUnitState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<IUnitState>,
+        next: Immutable<IUnitState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         this.attackingTile = undefined;
         this.harvestTile = undefined;
         this.jobChanged = undefined;
-        if (nextReason && nextReason.run && nextReason.run.caller === this) {
-            const run = nextReason.run;
-            if (run.functionName === "attack" && nextReason.returned === true) {
-                this.attackingTile = nextReason.run.args.tile.current;
+        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+            const { data } = nextDelta;
+            const tile = this.game.getGameObject(data.run.args.tile, Tile);
+
+            if (data.run.functionName === "attack" && data.returned) {
+                this.attackingTile = tile && tile.getCurrentMostState();
             }
-            else if (run.functionName === "changeJob" && nextReason.returned === true) {
-                this.jobChanged = run.args.job;
+            else if (data.run.functionName === "changeJob" && data.returned) {
+                this.jobChanged = String(data.run.args.job);
             }
-            else if (run.functionName === "harvest" && nextReason.returned === true) {
-                this.harvestTile = nextReason.run.args.tile.current;
+            else if (data.run.functionName === "harvest" && data.returned) {
+                this.harvestTile = tile && tile.getCurrentMostState();
                 this.indicatorSprite.visible = true;
             }
-            else if (run.functionName === "drop" && nextReason.returned === true) {
+            else if (data.run.functionName === "drop" && data.returned) {
                 this.indicatorSprite.visible = false;
             }
-            else if (run.functionName !== "move" && nextReason.returned === true) {
+            else if (data.run.functionName !== "move" && data.returned) {
                 // console.log(run.functionName);
             }
         }
@@ -333,7 +350,12 @@ export class Unit extends GameObject {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
 
-    public set_job(job: string): void {
+    /**
+     * Sets our current job for rendering, which will change our sprites visible state(s).
+     *
+     * @param job - The title of the job we now have.
+     */
+    public setJob(job: IJobState["title"]): void {
         if (this.spriteInUse) {
             this.spriteInUse.visible = false;
         }
@@ -359,16 +381,16 @@ export class Unit extends GameObject {
             this.spriteInUse = this.humanSprite;
         }
         this.job = job;
-        this.spriteInUse!.visible = true;
+        if (this.spriteInUse) {
+            this.spriteInUse.visible = true;
+        }
     }
 
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks an adjacent Tile. Costs an action for each Unit in this Unit's
@@ -437,7 +459,7 @@ export class Unit extends GameObject {
      * Drops some of the given resource on or adjacent to the Unit's Tile. Does
      * not count as an action.
      * @param tile The Tile to drop materials/food on.
-     * @param resource The type of resource to drop ('material' or 'food').
+     * @param resource The type of resource to drop ('materials' or 'food').
      * @param amount The amount of the resource to drop. Amounts <= 0 will drop
      * as much as possible.
      * @param callback? The callback that eventually returns the return value
@@ -476,7 +498,7 @@ export class Unit extends GameObject {
      * Picks up some materials or food on or adjacent to the Unit's Tile. Does
      * not count as an action.
      * @param tile The Tile to pickup materials/food from.
-     * @param resource The type of resource to pickup ('material' or 'food').
+     * @param resource The type of resource to pickup ('materials' or 'food').
      * @param amount The amount of the resource to pickup. Amounts <= 0 will
      * pickup as much as possible.
      * @param callback? The callback that eventually returns the return value
@@ -501,21 +523,6 @@ export class Unit extends GameObject {
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
