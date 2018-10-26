@@ -9,6 +9,9 @@ import { IMachineState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import * as Color from "color";
+import { ease } from "src/utils";
+import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -27,7 +30,7 @@ export class Machine extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true; // change this to true to render all instances of this class
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -42,6 +45,11 @@ export class Machine extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+
+    public machineSprite: PIXI.Sprite;
+    public type: string;
+    public maxWork: number;
+    private readonly workBar: GameBar;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -56,6 +64,19 @@ export class Machine extends GameObject {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Machine here.
+        this.container.setParent(this.game.layers.machine);
+        this.machineSprite = this.game.resources.machine.newSprite(this.container);
+        this.type = state.oreType.toLowerCase().charAt(0);
+        if (state.tile) {
+            this.container.position.set(state.tile.x, state.tile.y);
+        }
+        else {
+            this.container.position.set(-1, -1);
+        }
+        this.workBar = new GameBar(this.container);
+        this.workBar.recolor("red");
+        this.maxWork = state.refineTime;
+        this.recolor();
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -77,6 +98,10 @@ export class Machine extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         // render where the Machine is
+        const currWork = current.worked / this.maxWork;
+        const nextWork = next.worked / this.maxWork;
+        // this.container.position.set(next.tile.x, next.tile.y);
+        this.workBar.update(ease(currWork, nextWork, dt));
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -89,6 +114,9 @@ export class Machine extends GameObject {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        const color = this.type === "r" ? Color("red") : Color("blue");
+
+        this.machineSprite.tint = color.rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 

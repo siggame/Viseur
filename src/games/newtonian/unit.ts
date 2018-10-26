@@ -10,8 +10,8 @@ import { ITileState, IUnitState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 // import * as Color from "color";
-// import { ease, updown } from "src/utils"; // updown
-// import { GameBar } from "src/viseur/game";
+import { ease, updown } from "src/utils";
+import { GameBar } from "src/viseur/game";
 import { Player } from "./player";
 // <<-- /Creer-Merge: imports -->>
 
@@ -31,7 +31,7 @@ export class Unit extends GameObject {
      */
     public get shouldRender(): boolean {
         // <<-- Creer-Merge: should-render -->>
-        return super.shouldRender; // change this to true to render all instances of this class
+        return true; // change this to true to render all instances of this class
         // <<-- /Creer-Merge: should-render -->>
     }
 
@@ -46,18 +46,20 @@ export class Unit extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
-    public owner?: Player;
+    public owner: Player;
     // Job of unit. contains the string of their job title.
     public job: string;
-    /*
 
     public internSprite: PIXI.Sprite;
     public managerSprite: PIXI.Sprite;
     public physicistSprite: PIXI.Sprite;
 
+    public spriteInUse: PIXI.Sprite | undefined;
+    public indicatorSprite: PIXI.Sprite;
+    public attackingTile?: ITileState;
+
     public maxHeath: number;
     public readonly healthBar: GameBar;
-    */
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -76,14 +78,15 @@ export class Unit extends GameObject {
         this.job = state.job.title;
         this.container.setParent(this.game.layers.game);
 
-        /*
-
         this.internSprite = this.game.resources.intern.newSprite(this.container);
         this.internSprite.visible = false;
+        // this.internSprite.scale.x *= -1;
         this.physicistSprite = this.game.resources.physicist.newSprite(this.container);
         this.physicistSprite.visible = false;
         this.managerSprite = this.game.resources.manager.newSprite(this.container);
         this.managerSprite.visible = false;
+        this.indicatorSprite = this.game.resources.indicator.newSprite(this.container);
+        this.indicatorSprite.visible = false;
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
             this.container.visible = true;
@@ -92,10 +95,11 @@ export class Unit extends GameObject {
             this.container.position.set(-1, -1);
             this.container.visible = false;
         }
+
         this.recolor();
+        this.set_job(this.job);
         this.maxHeath = state.job.health;
         this.healthBar = new GameBar(this.container);
-      */
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -117,6 +121,37 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: render -->>
         // render where the Unit is
+
+        // No longer on the map.
+        if (next.tile == null) {
+            this.container.visible = false;
+            return;
+        }
+        else {
+            this.container.visible = true;
+        }
+
+        this.container.position.set(
+            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.y, next.tile.y, dt),
+        );
+
+        let curHealth;
+        let nextHealth;
+        curHealth = current.health / this.maxHeath;
+        nextHealth = next.health / this.maxHeath;
+
+        this.healthBar.update(ease(curHealth, nextHealth, dt));
+
+        if (this.attackingTile) {
+
+            const d = updown(dt);
+            const dx = (this.attackingTile.x - current.tile.x) / 2;
+            const dy = (this.attackingTile.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -129,6 +164,10 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        const ownerColor = this.game.getPlayersColor(this.owner);
+        if (this.spriteInUse) {
+            this.spriteInUse.tint = ownerColor.rgbNumber();
+        }
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -147,11 +186,47 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Unit based off its states
+        this.attackingTile = undefined;
+        this.indicatorSprite.visible = false;
+        if (nextReason && nextReason.run && nextReason.run.caller === this) {
+            const run = nextReason.run;
+            if (nextReason.returned === true) {
+                switch (run.functionName) {
+                    case "attack":
+                        this.attackingTile = nextReason.run.args.tile;
+                        break;
+                    case "act":
+                        if (run.args.tile.next) {
+                            this.indicatorSprite.visible = true;
+                        }
+                        break;
+                    default:
+                }
+            }
+        }
         // <<-- /Creer-Merge: state-updated -->>
     }
 
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
+    public set_job(job: string): void {
+        if (this.spriteInUse) {
+            this.spriteInUse.visible = false;
+        }
+        switch (job) {
+            case "intern":
+                this.spriteInUse = this.internSprite;
+                break;
+            case "physicist":
+                this.spriteInUse = this.physicistSprite;
+                break;
+            case "manager":
+                this.spriteInUse = this.managerSprite;
+                break;
+        }
+        this.job = job;
+        this.spriteInUse!.visible = true;
+    }
     // <<-- /Creer-Merge: public-functions -->>
 
     // NOTE: past this block are functions only used 99% of the time if
