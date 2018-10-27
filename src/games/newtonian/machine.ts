@@ -50,6 +50,8 @@ export class Machine extends GameObject {
     public type: string;
     public maxWork: number;
     private readonly workBar: GameBar;
+
+    public barContainer: PIXI.Container;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -73,8 +75,13 @@ export class Machine extends GameObject {
         else {
             this.container.position.set(-1, -1);
         }
-        this.workBar = new GameBar(this.container);
-        this.workBar.recolor("red");
+
+        this.barContainer = new PIXI.Container();
+        this.barContainer.setParent(this.container);
+        this.barContainer.position.y -= 0.1;
+
+        this.workBar = new GameBar(this.barContainer);
+        this.workBar.recolor("green");
         this.maxWork = state.refineTime;
         this.recolor();
         // <<-- /Creer-Merge: constructor -->>
