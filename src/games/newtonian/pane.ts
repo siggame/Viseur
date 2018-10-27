@@ -42,12 +42,11 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
      *          If You want to display no score, return undefined
      *          or an empty array.
      */
-    protected getPlayerScores(state: IGameState): number[] | undefined {
+    protected getPlayersScores(state: IGameState): number[] | undefined {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return [3, 10];
-        // return state.players.map((p) => p.heat + p.pressure); // change to return the states scores for each player
+        return state.players.map((p) => p.heat + p.pressure); // change to return the states scores for each player
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -78,6 +77,13 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
 
         // <<-- Creer-Merge: player-stats -->>
         // add stats for players to show up here
+        stats.push(
+            {
+                title: "Some progress",
+                get: (player) => `${player.heat + player.pressure} / ${state.victoryAmount}`,
+                icon: "rocket",
+            },
+        );
         stats.push(
             {
                 title: "Heat",
