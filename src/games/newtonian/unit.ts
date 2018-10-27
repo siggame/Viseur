@@ -103,12 +103,10 @@ export class Unit extends GameObject {
         this.barContainer.setParent(this.container);
         this.barContainer.position.y -= 0.15;
 
-        
-
         this.recolor();
         this.set_job(this.job);
         this.spriteInUse!.position.x -= .05;
-        if (this.owner && this.owner.id === "0"){
+        if (this.owner && this.owner.id === "0") {
             this.spriteInUse!.scale.x *= -1;
             this.spriteInUse!.position.x += 1;
         }
@@ -156,7 +154,7 @@ export class Unit extends GameObject {
       //  curHealth = current.health / this.maxHeath;
       //  nextHealth = next.health / this.maxHeath;
 
-        this.healthBar.update(ease(current.health/this.maxHealth, next.health/this.maxHealth, dt));
+        this.healthBar.update(ease(current.health / this.maxHealth, next.health / this.maxHealth, dt));
 
         if (this.attackingTile) {
 
