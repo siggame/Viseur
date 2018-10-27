@@ -84,7 +84,6 @@ export class Unit extends GameObject {
 
         this.internSprite = this.game.resources.intern.newSprite(this.container);
         this.internSprite.visible = false;
-        // this.internSprite.scale.x *= -1;
         this.physicistSprite = this.game.resources.physicist.newSprite(this.container);
         this.physicistSprite.visible = false;
         this.managerSprite = this.game.resources.manager.newSprite(this.container);
@@ -104,8 +103,15 @@ export class Unit extends GameObject {
         this.barContainer.setParent(this.container);
         this.barContainer.position.y -= 0.15;
 
+        
+
         this.recolor();
         this.set_job(this.job);
+        this.spriteInUse!.position.x -= .05;
+        if (this.owner && this.owner.id === "0"){
+            this.spriteInUse!.scale.x *= -1;
+            this.spriteInUse!.position.x += 1;
+        }
         this.maxHealth = state.job.health;
         this.healthBar = new GameBar(this.barContainer);
         this.healthBar.recolor(this.game.getPlayersColor(this.owner));
