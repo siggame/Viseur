@@ -81,7 +81,7 @@ export class Unit extends GameObject {
         this.container.setParent(this.game.layers.game);
         this.container.scale.x = 1.1;
         this.container.scale.y = 1.1;
-
+        
         this.internSprite = this.game.resources.intern.newSprite(this.container);
         this.internSprite.visible = false;
         // this.internSprite.scale.x *= -1;
@@ -99,11 +99,11 @@ export class Unit extends GameObject {
             this.container.position.set(-1, -1);
             this.container.visible = false;
         }
-
+        
         this.barContainer = new PIXI.Container();
         this.barContainer.setParent(this.container);
         this.barContainer.position.y -= 0.15;
-
+        
         this.recolor();
         this.set_job(this.job);
         this.maxHealth = state.job.health;
@@ -111,7 +111,7 @@ export class Unit extends GameObject {
         this.healthBar.recolor(this.game.getPlayersColor(this.owner));
         // <<-- /Creer-Merge: constructor -->>
     }
-
+    
     /**
      * Called approx 60 times a second to update and render Unit
      * instances. Leave empty if it is not being rendered.
@@ -150,7 +150,7 @@ export class Unit extends GameObject {
       //  curHealth = current.health / this.maxHeath;
       //  nextHealth = next.health / this.maxHeath;
 
-        this.healthBar.update(ease(current.health/this.maxHealth, next.health/this.maxHealth, dt));
+        this.healthBar.update(ease(current.health / this.maxHealth, next.health / this.maxHealth, dt));
 
         if (this.attackingTile) {
 
@@ -161,6 +161,9 @@ export class Unit extends GameObject {
             this.container.x += dx * d;
             this.container.y += dy * d;
         }
+
+        this.healthBar.recolor(this.game.getPlayersColor(this.owner));
+
         // <<-- /Creer-Merge: render -->>
     }
 
