@@ -62,6 +62,8 @@ export class Tile extends GameObject {
 
     public isGen: boolean;
     public isCon: boolean;
+
+    public oreContainer: PIXI.Container;
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
@@ -85,6 +87,9 @@ export class Tile extends GameObject {
         this.isGen = state.type === "generator" ? true : false;
         this.isCon = state.type === "conveyor" ? true : false;
 
+        this.oreContainer = new PIXI.Container();
+        this.oreContainer.setParent(this.game.layers.ore);
+
         this.container.setParent(this.game.layers.background);
 
         this.spawn = this.game.resources.spawn.newSprite(this.container);
@@ -102,11 +107,12 @@ export class Tile extends GameObject {
         this.redOreSprite.visible = false;
         this.blueOreSprite = this.game.resources.blueore.newSprite(this.container);
         this.blueOreSprite.visible = false;
-        this.redSprite = this.game.resources.red.newSprite(this.container);
+        this.redSprite = this.game.resources.red.newSprite(this.oreContainer);
         this.redSprite.visible = false;
-        this.blueSprite = this.game.resources.blue.newSprite(this.container);
+        this.blueSprite = this.game.resources.blue.newSprite(this.oreContainer);
         this.blueSprite.visible = false;
         this.container.position.set(state.x, state.y);
+        this.oreContainer.position.copy(this.container.position);
 
         this.recolor();
         // You can initialize your new Tile here.

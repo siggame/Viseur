@@ -58,6 +58,8 @@ export class Game extends BaseGame {
         background: this.createLayer(),
         /** Machine layer, for machines */
         machine: this.createLayer(),
+        /** Resource Layer, for ores */
+        ore: this.createLayer(),
         /** Middle layer, for moving game objects */
         game: this.createLayer(),
         /** Top layer, for UI elements above the game */
