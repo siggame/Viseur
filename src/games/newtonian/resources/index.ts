@@ -13,10 +13,10 @@ export const GameResources = createResources("Newtonian", {
     manager: load("manager.png"),
     machine: load("test.png"),
     indicator: load("bubble3.png"),
-    redore: load("redore.png"),
-    blueore: load("blueore.png"),
-    red: load("red.png"),
-    blue: load("blue.png"),
+    redore: load("rediumore.png"),
+    blueore: load("blueiumore.png"),
+    red: load("redium.png"),
+    blue: load("blueium.png"),
     // load files like this,
     // and remember to remove these lines and file!
     // <<-- /Creer-Merge: resources -->>

@@ -58,8 +58,10 @@ export class Unit extends GameObject {
     public indicatorSprite: PIXI.Sprite;
     public attackingTile?: ITileState;
 
-    public maxHeath: number;
+    public maxHealth: number;
     public readonly healthBar: GameBar;
+
+    public barContainer: PIXI.Container;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -77,6 +79,8 @@ export class Unit extends GameObject {
         this.owner = this.game.gameObjects[state.owner.id] as Player;
         this.job = state.job.title;
         this.container.setParent(this.game.layers.game);
+        this.container.scale.x = 1.1;
+        this.container.scale.y = 1.1;
 
         this.internSprite = this.game.resources.intern.newSprite(this.container);
         this.internSprite.visible = false;
@@ -96,10 +100,15 @@ export class Unit extends GameObject {
             this.container.visible = false;
         }
 
+        this.barContainer = new PIXI.Container();
+        this.barContainer.setParent(this.container);
+        this.barContainer.position.y -= 0.15;
+
         this.recolor();
         this.set_job(this.job);
-        this.maxHeath = state.job.health;
-        this.healthBar = new GameBar(this.container);
+        this.maxHealth = state.job.health;
+        this.healthBar = new GameBar(this.barContainer);
+        this.healthBar.recolor(this.game.getPlayersColor(this.owner));
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -136,12 +145,12 @@ export class Unit extends GameObject {
             ease(current.tile.y, next.tile.y, dt),
         );
 
-        let curHealth;
-        let nextHealth;
-        curHealth = current.health / this.maxHeath;
-        nextHealth = next.health / this.maxHeath;
+      //  let curHealth;
+      //  let nextHealth;
+      //  curHealth = current.health / this.maxHeath;
+      //  nextHealth = next.health / this.maxHeath;
 
-        this.healthBar.update(ease(curHealth, nextHealth, dt));
+        this.healthBar.update(ease(current.health/this.maxHealth, next.health/this.maxHealth, dt));
 
         if (this.attackingTile) {
 
@@ -164,10 +173,11 @@ export class Unit extends GameObject {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
-        const ownerColor = this.game.getPlayersColor(this.owner);
-        if (this.spriteInUse) {
-            this.spriteInUse.tint = ownerColor.rgbNumber();
-        }
+       //  const ownerColor = this.game.getPlayersColor(this.owner);
+        // if (this.spriteInUse) {
+        // this.spriteInUse.tint = ownerColor.rgbNumber();
+        // }
+
         // <<-- /Creer-Merge: recolor -->>
     }
 
