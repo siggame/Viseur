@@ -42,14 +42,15 @@ export class Machine extends GameObject {
 
     /** The next state of the Machine (dt = 1) */
     public next: IMachineState | undefined;
-
     // <<-- Creer-Merge: variables -->>
+    public barContainer: PIXI.Container;
     // You can add additional member variables here
 
     public machineSprite: PIXI.Sprite;
     public type: string;
     public maxWork: number;
     private readonly workBar: GameBar;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -73,8 +74,13 @@ export class Machine extends GameObject {
         else {
             this.container.position.set(-1, -1);
         }
-        this.workBar = new GameBar(this.container);
-        this.workBar.recolor("red");
+
+        this.barContainer = new PIXI.Container();
+        this.barContainer.setParent(this.container);
+        this.barContainer.position.y -= 0.1;
+
+        this.workBar = new GameBar(this.barContainer);
+        this.workBar.recolor("green");
         this.maxWork = state.refineTime;
         this.recolor();
         // <<-- /Creer-Merge: constructor -->>
