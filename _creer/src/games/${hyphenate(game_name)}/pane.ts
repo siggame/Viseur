@@ -36,7 +36,7 @@ ${merge("    // ", "public-functions", "    // If you want to add more public fu
      *          If You want to display no score, return undefined
      *          or an empty array.
      */
-    protected getPlayerScores(state: Immutable<IGameState>): number[] | undefined {
+    protected getPlayersScores(state: Immutable<IGameState>): number[] | undefined {
         super.getPlayersScores(state);
 
 ${merge("        // ", "get-player-scores", "        return undefined; // change to return the states scores for each player", help=False)}
