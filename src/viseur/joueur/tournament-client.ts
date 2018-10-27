@@ -17,7 +17,7 @@ export interface ITournamentPlayData {
 }
 
 /** The connection arguments for a tournament to connect */
-export type TournamentConnnectionArgs = FirstArgument<
+export type TournamentConnectionArgs = FirstArgument<
     TournamentClient["connect"]
 >;
 

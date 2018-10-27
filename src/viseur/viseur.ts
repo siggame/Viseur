@@ -10,7 +10,7 @@ import { BaseGame } from "./game/base-game";
 import { IGamelogWithReverses, IViseurGamelog } from "./game/gamelog";
 import { IBaseGameNamespace, IViseurGameState } from "./game/interfaces";
 import { GUI } from "./gui";
-import { Joueur, JoueurConnectionArgs, TournamentClient, TournamentConnnectionArgs } from "./joueur";
+import { Joueur, JoueurConnectionArgs, TournamentClient, TournamentConnectionArgs } from "./joueur";
 import { Parser } from "./parser";
 import { Renderer } from "./renderer";
 import { BaseSetting, ViseurSettings } from "./settings";
@@ -20,7 +20,7 @@ import { TimeManager } from "./time-manager";
 type QueryStringTypes = undefined | null | string | string[];
 
 /** Data required to play as a human player in a game. */
-interface IPlayAsHumanData extends TournamentConnnectionArgs, JoueurConnectionArgs {}
+interface IPlayAsHumanData extends TournamentConnectionArgs, JoueurConnectionArgs {}
 
 /**
  * The container for merged deltas. We only store 2 states as they get HUGE,
@@ -98,9 +98,9 @@ export class Viseur {
         this.games = GAMES;
 
         window.onerror = (message, source, lineno, colno, error) => {
-            this.handleError(error || new Error(message instanceof Event
-                ? message.type
-                : message,
+            this.handleError(error || new Error(typeof message === "string"
+                ? message
+                : message.type,
             ));
         };
 

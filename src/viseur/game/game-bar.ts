@@ -1,14 +1,8 @@
 import { clamp } from "lodash";
 import * as PIXI from "pixi.js";
 import { ColorTint, getTintFromColor, Immutable } from "src/utils";
-import { Viseur, viseurConstructed } from "src/viseur";
+import { ViseurInstance } from "src/viseur/constructed";
 import { BaseSetting } from "src/viseur/settings";
-
-// kind of sketchy
-let viseur: Viseur | undefined;
-viseurConstructed.once((vis) => {
-    viseur = vis;
-});
 
 /** The optional args for a game bar */
 export interface IGameBarOptions {
@@ -61,6 +55,7 @@ export class GameBar {
         parent: PIXI.Container,
         options: Immutable<IGameBarOptions> = {},
     ) {
+        const viseur = ViseurInstance;
         if (!viseur || !viseur.game) {
             throw new Error("Cannot create a game bar without a game!");
         }

@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
 import { Immutable, IPixiSpriteOptions, setPixiOptions } from "src/utils";
-import { Viseur, viseurConstructed } from "src/viseur";
+import { Viseur } from "src/viseur";
+import { viseurConstructed } from "src/viseur/constructed";
 
 /** Non standard options for resources. */
 export interface IBaseRendererResourceOptions {
@@ -51,7 +52,7 @@ export abstract class BaseRendererResource {
             ? this.path
             : "";
 
-        viseurConstructed.on((viseur) => {
+        viseurConstructed.once((viseur) => {
             this.viseur = viseur;
             viseur.renderer.events.texturesLoaded.on((resources) => {
                 this.onTextureLoaded(resources);

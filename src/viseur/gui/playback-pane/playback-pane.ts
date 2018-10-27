@@ -2,7 +2,8 @@ import { Immutable } from "cadre-ts-utils";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
-import { Viseur, viseurConstructed } from "src/viseur";
+import { Viseur } from "src/viseur";
+import { viseurConstructed } from "src/viseur/constructed";
 import { IGamelogWithReverses } from "src/viseur/game/gamelog";
 import { Event, events, Signal } from "ts-typed-events";
 import { KEYS } from "../keys";
@@ -199,7 +200,7 @@ export class PlaybackPane extends BaseElement {
             this.updateSpeedSlider();
             this.speedSlider.value = this.getSliderFromSpeed();
 
-            viseur.settings.playbackSpeed.changed.on((value) => {
+            viseur.settings.playbackSpeed.changed.on(() => {
                 this.updateSpeedSlider();
             });
 
