@@ -46,7 +46,8 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return undefined; // change to return the states scores for each player
+        return [3, 10];
+        // return state.players.map((p) => p.heat + p.pressure); // change to return the states scores for each player
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -61,7 +62,7 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
         const stats: Array<IPaneStat<G>> = super.getGameStats(state);
 
         // <<-- Creer-Merge: game-stats -->>
-        // add stats for games to show up here
+        // stuff from anarchy to play with
         // <<-- /Creer-Merge: game-stats -->>
 
         return stats;
@@ -77,6 +78,21 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
 
         // <<-- Creer-Merge: player-stats -->>
         // add stats for players to show up here
+        stats.push(
+            {
+                title: "Heat",
+                icon: "free-code-camp",
+                get: (player) => player.heat,
+            },
+        );
+
+        stats.push(
+            {
+                title: "Pressure",
+                icon: "diamond",
+                get: (player) => player.pressure,
+            },
+        );
         // <<-- /Creer-Merge: player-stats -->>
 
         return stats;
