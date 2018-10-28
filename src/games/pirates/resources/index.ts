@@ -20,8 +20,5 @@ export const GameResources = createResources("Pirates", {
     plants: load("plants.png"),
     tree: load("tree.png"),
     water2: load("water2.png"),
-
-    test: load("test.png"), // load files like this,
-                            // and remember to remove these lines and file!
     // <<-- /Creer-Merge: resources -->>
 });
