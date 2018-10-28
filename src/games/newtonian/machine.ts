@@ -42,6 +42,7 @@ export class Machine extends GameObject {
 
     /** The next state of the Machine (dt = 1) */
     public next: IMachineState | undefined;
+
     // <<-- Creer-Merge: variables -->>
     public barContainer: PIXI.Container;
     // You can add additional member variables here
