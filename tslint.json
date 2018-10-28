@@ -1,5 +1,5 @@
 {
-    "extends": [ "cadre-ts-utils/tslint.json" ],
+    "extends": [ "@cadre/ts-utils/tslint.json" ],
     "rules": {
         "no-import-side-effect": [true, {
             "ignore-module": "(\\.html|\\.(s?)css)$"

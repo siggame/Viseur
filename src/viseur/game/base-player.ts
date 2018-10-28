@@ -1,4 +1,4 @@
-import { IBasePlayer } from "cadre-ts-utils/cadre/base-player";
+import { IBasePlayer } from "@cadre/ts-utils/cadre/base-player";
 import * as Color from "color";
 
 /**

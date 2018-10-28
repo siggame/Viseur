@@ -1,4 +1,4 @@
-import { Constructor } from "cadre-ts-utils";
+import { Constructor } from "@cadre/ts-utils";
 import { BaseInput, IBaseInputArgs } from "src/core/ui/inputs/base-input";
 import * as store from "store";
 import { Event } from "ts-typed-events";

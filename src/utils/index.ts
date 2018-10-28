@@ -1,4 +1,4 @@
-export * from "cadre-ts-utils";
+export * from "@cadre/ts-utils";
 export * from "./cadre";
 export * from "./color";
 export * from "./easing";

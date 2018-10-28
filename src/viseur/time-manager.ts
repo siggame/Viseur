@@ -1,4 +1,4 @@
-import { IGamelog } from "cadre-ts-utils/cadre";
+import { IGamelog } from "@cadre/ts-utils/cadre";
 import { Timer } from "src/core/timer";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur/";

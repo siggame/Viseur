@@ -1,5 +1,5 @@
-import { ClientEvent, Delta, IGamelog, ServerEvent } from "cadre-ts-utils/cadre";
-import * as ServerEvents from "cadre-ts-utils/cadre/events/server";
+import { ClientEvent, Delta, IGamelog, ServerEvent } from "@cadre/ts-utils/cadre";
+import * as ServerEvents from "@cadre/ts-utils/cadre/events/server";
 import { FirstArgument, Immutable, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { IViseurGamelog } from "src/viseur/game";

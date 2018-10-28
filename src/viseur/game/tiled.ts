@@ -1,4 +1,4 @@
-import { IBaseGameObject } from "cadre-ts-utils/cadre";
+import { IBaseGameObject } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 
 /** The valid directions Tiles can be in. */

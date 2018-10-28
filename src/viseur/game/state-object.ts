@@ -1,5 +1,5 @@
-import { Immutable } from "cadre-ts-utils";
-import { Delta } from "cadre-ts-utils/cadre";
+import { Immutable } from "@cadre/ts-utils";
+import { Delta } from "@cadre/ts-utils/cadre";
 
 /* tslint:disable:no-empty-interface */
 

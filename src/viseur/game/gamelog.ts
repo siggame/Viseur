@@ -1,4 +1,4 @@
-import { Delta, IBaseGame, IGamelog } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame, IGamelog } from "@cadre/ts-utils/cadre";
 
 /**
  * A gamelog that is streaming to us as we are conencted to the game server

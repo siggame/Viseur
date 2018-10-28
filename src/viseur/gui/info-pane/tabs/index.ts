@@ -1,4 +1,4 @@
-import { Immutable } from "cadre-ts-utils";
+import { Immutable } from "@cadre/ts-utils";
 import { Tab } from "src/core/ui/tabular";
 import { FileTab } from "./file-tab/file-tab";
 import { HelpTab } from "./help-tab/help-tab";

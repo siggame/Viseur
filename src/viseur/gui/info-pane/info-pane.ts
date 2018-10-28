@@ -1,4 +1,4 @@
-import { Immutable } from "cadre-ts-utils";
+import { Immutable } from "@cadre/ts-utils";
 import * as $ from "jquery";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Tabular } from "src/core/ui/tabular";

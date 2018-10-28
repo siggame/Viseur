@@ -1,4 +1,4 @@
-import { Immutable } from "cadre-ts-utils";
+import { Immutable } from "@cadre/ts-utils";
 import * as dateFormat from "dateformat";
 import * as screenfull from "screenfull";
 import { partial } from "src/core/partial";

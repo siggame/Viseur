@@ -1,4 +1,4 @@
-import { IBaseGame, IBasePlayer } from "cadre-ts-utils/cadre";
+import { IBaseGame, IBasePlayer } from "@cadre/ts-utils/cadre";
 import * as dateFormat from "dateformat";
 import * as $ from "jquery";
 import { escape, sum } from "lodash";

@@ -9,7 +9,7 @@ if len(parent_classes) == 0:
 
 imports = {
     './state-interfaces': ['I'+obj_key+'State'],
-    'cadre-ts-utils/cadre': ['Delta'],
+    '@cadre/ts-utils/cadre': ['Delta'],
     'src/utils': ['Immutable'],
     'src/viseur/game': [],
 }

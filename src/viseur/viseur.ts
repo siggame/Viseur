@@ -1,5 +1,5 @@
-import { Immutable } from "cadre-ts-utils";
-import { IBaseGame, IGamelog, LobbiedEvent } from "cadre-ts-utils/cadre";
+import { Immutable } from "@cadre/ts-utils";
+import { IBaseGame, IGamelog, LobbiedEvent } from "@cadre/ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { GAMES } from "src/games";

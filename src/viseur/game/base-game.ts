@@ -1,4 +1,4 @@
-import { Delta, IBaseGame, IBaseGameObject, IBasePlayer, IGamelog } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame, IBaseGameObject, IBasePlayer, IGamelog } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 import { flatMap, range } from "lodash";
 import * as PIXI from "pixi.js";

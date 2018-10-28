@@ -1,4 +1,4 @@
-import { Delta, IBaseGameObject } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGameObject } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils/";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "./base-game";

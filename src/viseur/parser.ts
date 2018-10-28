@@ -1,5 +1,5 @@
 // tslint:disable:no-any no-unsafe-any
-import { Delta, IBaseGame, IDeltaMergeConstants } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame, IDeltaMergeConstants } from "@cadre/ts-utils/cadre";
 import { isObject, UnknownObject } from "src/utils";
 
 /** parses delta updates, and creates reverse deltas for gamelogs/cadre communications */

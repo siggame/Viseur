@@ -1,4 +1,4 @@
-import { Delta, IBaseGameObject } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGameObject } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";

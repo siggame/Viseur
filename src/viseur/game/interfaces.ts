@@ -1,4 +1,4 @@
-import { Delta, IBaseGame } from "cadre-ts-utils/cadre";
+import { Delta, IBaseGame } from "@cadre/ts-utils/cadre";
 import { CheckBoxSetting, ColorSetting, IBaseSettings } from "../settings";
 import { BaseGame } from "./base-game";
 import { BaseGameObject } from "./base-game-object";

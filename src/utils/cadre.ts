@@ -1,4 +1,4 @@
-import { isObject, UnknownObject } from "cadre-ts-utils";
+import { isObject, UnknownObject } from "@cadre/ts-utils";
 
 /**
  * Checks if an object has a given key in it that appears to be a game object or game object reference.

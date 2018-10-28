@@ -1,6 +1,6 @@
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "cadre-ts-utils/cadre";
+import { Delta } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
