@@ -62,6 +62,8 @@ export class Unit extends GameObject {
     public readonly healthBar: GameBar;
 
     public barContainer: PIXI.Container;
+
+    public facing: string;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -103,7 +105,14 @@ export class Unit extends GameObject {
         this.recolor();
         this.set_job(this.job);
         this.spriteInUse!.position.x -= .05;
+       // if (this.owner && this.owner.id === "0") {
+         //   this.spriteInUse!.scale.x *= -1;
+        //   this.spriteInUse!.position.x += 1;
+        // }
+
+        this.facing = "left";
         if (this.owner && this.owner.id === "0") {
+            this.facing = "right";
             this.spriteInUse!.scale.x *= -1;
             this.spriteInUse!.position.x += 1;
         }
