@@ -183,7 +183,7 @@ export interface IJobState extends IGameObjectState {
     readonly moves: number;
 
     /**
-     * The Job title.
+     * The Job title. 'intern', 'manager', or 'physicist'.
      */
     readonly title: string;
 

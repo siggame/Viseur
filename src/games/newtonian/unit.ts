@@ -121,6 +121,7 @@ export class Unit extends GameObject {
         this.healthBar.recolor(this.game.getPlayersColor(this.owner));
         // <<-- /Creer-Merge: constructor -->>
     }
+
     /**
      * Called approx 60 times a second to update and render Unit
      * instances. Leave empty if it is not being rendered.
