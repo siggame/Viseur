@@ -15,6 +15,9 @@ import { IBaseGameNamespace, IBaseGameSettings, IGameLayers, IViseurGameState } 
 import { RenderableGameObjectClass } from "./make-renderable";
 import { StateObject } from "./state-object";
 
+/** returned when no delta can be found. */
+const NO_DELTA = Object.freeze({ type: "" }) as any as Delta; // tslint:disable-line:no-any TODO: extend Delta type
+
 /** The base class all games in the games/ folder inherit from */
 export class BaseGame extends StateObject {
     /** The name of the game, should be overridden by sub classes */
@@ -389,7 +392,7 @@ export class BaseGame extends StateObject {
      */
     public getCurrentMostDelta(): Immutable<Delta> {
         if (!this.currentDelta && !this.nextDelta) {
-            throw new Error("No delta reason!");
+            return NO_DELTA;
         }
 
         return (this.currentDelta || this.nextDelta) as Immutable<Delta>;
@@ -402,7 +405,7 @@ export class BaseGame extends StateObject {
      */
     public getNextMostDelta(): Immutable<Delta> {
         if (!this.currentDelta && !this.nextDelta) {
-            throw new Error("No delta reason!");
+            return NO_DELTA;
         }
 
         return (this.nextDelta || this.currentDelta) as Immutable<Delta>;
