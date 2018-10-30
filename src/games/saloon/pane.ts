@@ -48,7 +48,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return [ 3, 10 ]; // state.players.map((p) => p.score);
+        return state.players.map((p) => p.score);
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
