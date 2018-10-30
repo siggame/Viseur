@@ -84,6 +84,11 @@
     "webpack-bundle-analyzer": "3.0.3",
     "webpack-dev-server": "3.1.9"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
+  },
   "scripts": {
     "build": "npm run build:dev",
     "build:raw": "webpack --progress --colors",
@@ -102,7 +107,6 @@
     "js": "http-server dist/",
     "watch": "webpack-dev-server --progress --colors --host 0.0.0.0 --port 8080 --content-base dist/ --mode development",
     "start": "npm run watch",
-    "test": "npm run lint && npm run build",
-    "precommit": "npm run test"
+    "test": "npm run lint && npm run build"
   }
 }
