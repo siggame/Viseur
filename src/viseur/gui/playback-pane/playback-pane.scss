@@ -31,6 +31,11 @@
     display: none;
 }
 
+.theme-dark .playback-pane {
+    background-color: $black;
+    color: $white;
+}
+
 .playback-pane {
     height: 4em;
     padding: 1em;
@@ -124,11 +129,14 @@
             margin-left: -1.125em;
             margin-right: 0.25em;
             color: $black;
+
+            @include dark-mode {
+                color: $white;
+            }
         }
     }
 
     & #fullscreen-button {
-
         &:before {
             @include icon(arrows-alt);
         }

@@ -1,4 +1,5 @@
 @import "src/core/colors";
+@import "src/core/mixins";
 
 .game-pane {
     background-color: $light-gray;
@@ -22,6 +23,11 @@
         color: $white;
         text-align: center;
         padding: 0.25em 0;
+
+        @include dark-mode {
+            background-color: $black;
+            color: $white;
+        }
 
         & .stats-list {
             position: relative;

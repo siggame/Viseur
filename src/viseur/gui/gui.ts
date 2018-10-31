@@ -73,6 +73,8 @@ export class GUI extends BaseElement {
     }) {
         super(args, guiHbs);
 
+        this.setTheme(args.viseur.settings.theme.get());
+
         this.infoPane = new InfoPane({
             parent: this.element,
             gui: this,
@@ -123,6 +125,8 @@ export class GUI extends BaseElement {
                     this.prettyPolygons.stop();
                 }, 350); // after all transitions end
             });
+
+            viseur.settings.theme.changed.on((val) => this.setTheme(val));
         });
 
         this.infoPane.events.resized.on((resized) => {
@@ -283,5 +287,23 @@ export class GUI extends BaseElement {
             height: newHeight,
             remainingHeight,
         });
+    }
+
+    /**
+     * Sets the theme of the gui. CSS rules use this.
+     *
+     * @param theme - The theme name to apply to the body.
+     */
+    private setTheme(theme: string): void {
+        if (!this.parent) {
+            return;
+        }
+
+        this.parent.removeClass((_, className) => /theme-.+/.exec(className)
+            ? className
+            : "",
+        );
+
+        this.parent.addClass(`theme-${theme.toLowerCase()}`);
     }
 }

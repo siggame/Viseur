@@ -25,6 +25,16 @@ export const ViseurSettings = createSettings("viseur", {
         min: 200,
         default: 440,
     }),
+    theme: new Setting.DropDownSetting<"Light" | "Dark">({
+        id: "gui-theme",
+        label: "Theme",
+        hint: "The color scheme to use for the GUI",
+        options: [
+            "Light",
+            "Dark",
+        ],
+        default: "Light",
+    }),
     playbackSpeed: new Setting.NumberSetting({
         id: "playback-speed",
         label: "Playback Speed",
