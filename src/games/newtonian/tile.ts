@@ -154,25 +154,25 @@ export class Tile extends GameObject {
         else {
             this.floor.visible = true;
         }
-        if (current.rediumOre > 0 && next.rediumOre > 0) {
+        if (current.rediumOre > 0) {
             this.redOreSprite.visible = true;
         }
         else {
             this.redOreSprite.visible = false;
         }
-        if (current.blueiumOre > 0 && next.blueiumOre > 0) {
+        if (current.blueiumOre > 0) {
             this.blueOreSprite.visible = true;
         }
         else {
             this.blueOreSprite.visible = false;
         }
-        if (current.blueium > 0 && next.blueium > 0) {
+        if (current.blueium > 0) {
             this.blueSprite.visible = true;
         }
         else {
             this.blueSprite.visible = false;
         }
-        if (current.redium > 0 && next.redium > 0) {
+        if (current.redium > 0) {
             this.redSprite.visible = true;
         }
         else {
