@@ -29,14 +29,17 @@ ${merge("        // ", "constructor", "        // constructor your pane here", h
 ${merge("    // ", "public-functions", "    // If you want to add more public functions, do so here", help=False)}
 
     /**
-     * Gets the stats for the players score bars
-     * @param state the current(most) state of the game to update this pane for
-     * @returns an array of numbers, where each index is the player at that
-     *          index. Sum does not matter, it will resize dynamically.
-     *          If You want to display no score, return undefined
-     *          or an empty array.
+     * Gets the stats for the players score bars.
+     *
+     * @param state - The current(most) state of the game to update this pane for.
+     * @returns An array of numbers, where each index is the player at that
+     * index. Sum does not matter, it will resize dynamically. If You want
+     * to display no score, return undefined.
+     * An array of numbers is treated as a full bar display.
+     * An array of number tuples is treated as individual bars alternatively
+     * left and right aligned scaling from the first to the max second value.
      */
-    protected getPlayersScores(state: Immutable<IGameState>): number[] | undefined {
+    protected getPlayersScores(state: Immutable<IGameState>): Array<[number, number]> | number[] | undefined {
         super.getPlayersScores(state);
 
 ${merge("        // ", "get-player-scores", "        return undefined; // change to return the states scores for each player", help=False)}

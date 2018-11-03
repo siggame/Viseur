@@ -24,6 +24,10 @@ const requireLanguageImage = require.context(
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 const NS_IN_MS = 1000000;
 
+const zeroOut = (num: number) => (num === Infinity || isNaN(num))
+    ? 0
+    : num;
+
 /** The information for a stat on the pane. */
 export interface IPaneStat<T = unknown> {
     /** A label to place before the (formatted) value, e.g. label: value. */
@@ -324,7 +328,7 @@ export class BasePane<
      */
     protected getPlayersScores(
         state: Immutable<IBaseGame>,
-    ): number[] | undefined {
+    ): Array<[number, number]> | number[] | undefined {
         // intended to be overridden and scores calculated there
         return undefined;
     }
@@ -336,21 +340,49 @@ export class BasePane<
      * or an array of numbers, indexed by their location in game.players,
      * with each value being [0, 1] for their progress.
      */
-    protected setPlayersProgresses(progresses: Immutable<number[]> | undefined): void {
-        const summed = (progresses && progresses.length === (this.game.constructor as typeof BaseGame).numberOfPlayers)
+    protected setPlayersProgresses(
+        progresses: Immutable<Array<[number, number]> | number[]> | undefined,
+    ): void {
+        if (!progresses) {
+            // don't display the bars
+            for (const [, bar] of this.playerProgressBars) {
+                bar.css("width", 0);
+            }
+
+            return;
+        }
+        // if we got there they returned progress bars to render
+
+        const { numberOfPlayers } = (this.game.constructor as typeof BaseGame);
+        if (progresses.length !== numberOfPlayers) {
+            throw new Error("Progresses length should be the same as the number of players in the game!");
+        }
+
+        const summed = typeof progresses[0] === "number"
             ? sum(progresses)
             : 0;
 
         for (const [ i, player ] of this.game.players.entries()) {
             const bar = this.playerProgressBars.get(player.id);
+            const progress = progresses[i];
 
-            const percentage = (progresses && summed > 0)
-                ? progresses[i] / summed
-                : 0;
-
-            if (bar) {
-                bar.css("width", `${(percentage * 100)}%`);
+            if (bar === undefined || progress === undefined) {
+                throw new Error(`Error displaying progress bar for Player #${player.id}`);
             }
+
+            bar.css(typeof progress === "number"
+                ? { width: `${zeroOut(progress / summed * 100)}%` }
+                : { // it is two numbers in a tuple, e.g. [50, 100]
+                    position: "absolute",
+                    left: i % 2
+                        ? ""
+                        : `${i / numberOfPlayers * 100}%`,
+                    right: i % 2
+                        ? `${Math.abs((i + 1 - numberOfPlayers)) / numberOfPlayers * 100}%`
+                        : "",
+                    width: `${(zeroOut(progress[0] / progress[1]) * 100 / numberOfPlayers)}%`,
+                },
+            );
         }
     }
 
