@@ -24,9 +24,9 @@ const requireLanguageImage = require.context(
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 const NS_IN_MS = 1000000;
 
-const zeroOut = (num: number) => (num === Infinity || isNaN(num))
-    ? 0
-    : num;
+const ensureFinite = (num: number) => isFinite(num)
+    ? num
+    : 0;
 
 /** The information for a stat on the pane. */
 export interface IPaneStat<T = unknown> {
@@ -371,7 +371,7 @@ export class BasePane<
             }
 
             bar.css(typeof progress === "number"
-                ? { width: `${zeroOut(progress / summed * 100)}%` }
+                ? { width: `${ensureFinite(progress / summed * 100)}%` }
                 : { // it is two numbers in a tuple, e.g. [50, 100]
                     position: "absolute",
                     left: i % 2
@@ -380,7 +380,7 @@ export class BasePane<
                     right: i % 2
                         ? `${Math.abs((i + 1 - numberOfPlayers)) / numberOfPlayers * 100}%`
                         : "",
-                    width: `${(zeroOut(progress[0] / progress[1]) * 100 / numberOfPlayers)}%`,
+                    width: `${(ensureFinite(progress[0] / progress[1]) * 100 / numberOfPlayers)}%`,
                 },
             );
         }
