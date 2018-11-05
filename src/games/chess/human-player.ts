@@ -3,6 +3,7 @@ import { BaseHumanPlayer } from "src/viseur/game";
 import { Game } from "./game";
 
 // <<-- Creer-Merge: imports -->>
+// any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -25,7 +26,7 @@ export class HumanPlayer extends BaseHumanPlayer {
     }
 
     //  <<-- Creer-Merge: variables -->>
-    private endTurnCallback?: (returned: boolean) => void;
+    // any additional variables you want to add for the HumanPlayer
     //  <<-- /Creer-Merge: variables -->>
 
     /**
@@ -44,39 +45,20 @@ export class HumanPlayer extends BaseHumanPlayer {
     // -- Orders: things the game server tells this human player to do -- \\
 
     /**
-     * This is called every time it is this AI.player's turn.
+     * This is called every time it is this AI.player's turn to make a move.
      * @param callback The callback that eventually returns the return value
-     * from the server. - The returned value is Represents if you want to end
-     * your turn. True means end your turn, False means to keep your turn going
-     * and re-call this function.
+     * from the server. - The first argument to the callback is the return
+     * value: A string in Standard Algebriac Notation (SAN) for the move you
+     * want to make. If the move is invalid or not properly formatted you will
+     * lose the game.
      */
-    public runTurn(callback: (returned: boolean) => void): void {
-        // <<-- Creer-Merge: runTurn -->>
-        this.endTurnCallback = callback;
-        // <<-- /Creer-Merge: runTurn -->>
+    public makeMove(callback: (returned: string) => void): void {
+        // <<-- Creer-Merge: makeMove -->>
+        // Put your game logic here for makeMove
+        // <<-- /Creer-Merge: makeMove -->>
     }
 
     // <<-- Creer-Merge: functions -->>
-    public handleTileClicked(pos: string): boolean {
-        const piece = this.game.selectedPiece;
-
-        // if nothing is selected, or it's not my turn
-        if (!piece || !this.endTurnCallback) {
-            return false;
-        }
-
-        const state = piece.current || piece.next!;
-
-        for (const move of this.game.validMoves) {
-            if (piece && move.to === pos && move.from === (state.file + state.rank)) {
-                piece.move(move.to[0], Number(move.to[1]), this.game.settings.pawnPromotion.get());
-                this.endTurnCallback(true);
-                this.endTurnCallback = undefined;
-                return true;
-            }
-        }
-
-        return false;
-    }
+    // any additional functions you want to add for the HumanPlayer
     // <<-- /Creer-Merge: functions -->>
 }

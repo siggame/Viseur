@@ -1,42 +1,31 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "@cadre/ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
 import { ease } from "src/utils";
-// import { GameBar } from "src/viseur/game";
-import { Player } from "./player";
-// any additional imports you want can be added here safely between Creer runs
+
+const WHITE_COLOR = Color("white").rgbNumber();
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Unit extends GameObject {
+export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true; // change this to true to render all instances of this class
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Unit (dt = 0) */
     public current: IUnitState | undefined;
@@ -46,13 +35,22 @@ export class Unit extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
 
-    public owner?: Player;
+    /** If we have an owner, it's ID. */
+    public ownerID?: string;
 
+    /** The sprite of the ship, if we are that. */
     public shipSprite: PIXI.Sprite;
+
+    /** The sprite of the pirate, if we are one. */
     public pirateSprite: PIXI.Sprite;
+
+    /** The drop shadow effect. */
     public dropShadow: PIXI.Sprite;
 
+    /** Our shirt to recolor. */
     public shirt: PIXI.Sprite;
+
+    /** Our pirate ship flag to recolor. */
     public flag: PIXI.Sprite;
 
     // private readonly healthBar: GameBar;
@@ -62,36 +60,32 @@ export class Unit extends GameObject {
     /**
      * Constructor for the Unit with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Unit
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Unit.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IUnitState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        if (state.owner) {
-            this.owner = this.game.gameObjects[state.owner.id] as Player;
-        }
-
         this.container.setParent(this.game.layers.game);
+        this.ownerID = state.owner && state.owner.id;
 
-        this.shipSprite = this.game.resources.ship.newSprite(this.container);
+        const hide = { visible: true };
+        this.shipSprite = this.addSprite.ship(hide);
         this.shipSprite.visible = false;
 
-        this.pirateSprite = this.game.resources.pirate.newSprite(this.container);
+        this.pirateSprite = this.addSprite.pirate(hide);
         this.pirateSprite.visible = false;
 
-        this.shirt = this.game.resources.shirt.newSprite(this.container);
-        this.shirt.blendMode = 2; // multiply
-        this.shirt.visible = false;
+        const shirtFlag = {
+            ...hide,
+            blendMode: 2, // multiply
+        };
+        this.shirt = this.addSprite.shirt(shirtFlag);
+        this.flag = this.addSprite.flag(shirtFlag);
 
-        this.flag = this.game.resources.flag.newSprite(this.container);
-        this.flag.blendMode = 2; // multiply
-        this.flag.visible = false;
-
-        this.dropShadow = this.game.resources.dropShadow.newSprite(this.container);
-        this.dropShadow.visible = false;
+        this.dropShadow = this.addSprite.dropShadow(hide);
 
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
@@ -110,38 +104,39 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render Unit
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Unit instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: IUnitState, next: IUnitState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<IUnitState>,
+        next: Immutable<IUnitState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        if (next.tile == null) {
+        if (!next.tile) {
             this.container.visible = false;
+
             return;
         }
-        else {
-            this.container.visible = true;
-        }
+
+        this.container.visible = true;
+
         if (current.owner !== next.owner) {
-            if (next.owner) {
-                this.owner = this.game.gameObjects[next.owner.id] as Player;
-            }
-            else {
-                this.owner = undefined;
-            }
+            this.ownerID = next.owner.id;
             this.recolor();
         }
+
         if (current.crewHealth > 0) {
             this.pirateSprite.visible = true;
             this.shirt.visible = true;
@@ -152,6 +147,7 @@ export class Unit extends GameObject {
             this.pirateSprite.visible = false;
             this.shirt.visible = false;
         }
+
         if (current.shipHealth > 0) {
             this.shipSprite.visible = true;
             this.flag.visible = true;
@@ -162,6 +158,7 @@ export class Unit extends GameObject {
             this.shipSprite.visible = false;
             this.flag.visible = false;
         }
+
         if (next.crewHealth <= 0) {
             this.shipSprite.visible = false;
             this.flag.visible = false;
@@ -183,38 +180,52 @@ export class Unit extends GameObject {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Unit's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Unit's sprites.
      */
     public recolor(): void {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        if (!this.owner) {
-            const white = Color("white");
-            this.shirt.tint = white.rgbNumber();
-            this.flag.tint = white.rgbNumber();
-            return;
-        }
-        const ownerColor = this.game.getPlayersColor(this.owner);
-        this.shirt.tint = ownerColor.rgbNumber();
-        this.flag.tint = ownerColor.rgbNumber();
-        // replace with code to recolor sprites based on player color
+        const color = this.ownerID === undefined
+            ? WHITE_COLOR
+            : this.game.getPlayersColor(this.ownerID).rgbNumber();
+
+        this.shirt.tint = color;
+        this.flag.tint = color;
         // <<-- /Creer-Merge: recolor -->>
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this Unit instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: IUnitState, next: IUnitState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<IUnitState>,
+        next: Immutable<IUnitState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Unit based off its states
@@ -225,11 +236,9 @@ export class Unit extends GameObject {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
     // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks either the 'crew' or 'ship' on a Tile in range.
@@ -340,21 +349,6 @@ export class Unit extends GameObject {
     }
 
     // </Joueur functions>
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

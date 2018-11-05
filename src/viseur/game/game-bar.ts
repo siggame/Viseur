@@ -1,13 +1,8 @@
+import { clamp } from "lodash";
 import * as PIXI from "pixi.js";
-import { clamp, ColorTint, getTintFromColor } from "src/utils";
-import { Viseur, viseurConstructed } from "src/viseur";
+import { ColorTint, getTintFromColor, Immutable } from "src/utils";
+import { ViseurInstance } from "src/viseur/constructed";
 import { BaseSetting } from "src/viseur/settings";
-
-// kind of sketchy
-let viseur: Viseur | undefined;
-viseurConstructed.once((vis) => {
-    viseur = vis;
-});
 
 /** The optional args for a game bar */
 export interface IGameBarOptions {
@@ -51,62 +46,88 @@ export class GameBar {
     private readonly max: number;
 
     /**
-     * Creates a bar to represent some game number
-     * @param parent the parent pixi object
-     * @param options options to initialize the bar
+     * Creates a bar to represent some game number.
+     *
+     * @param parent - The parent pixi object.
+     * @param options - Optional options to initialize the bar with.
      */
-    constructor(parent: PIXI.Container, options: IGameBarOptions = {}) {
-        options.height = options.height || 0.06667;
+    constructor(
+        parent: PIXI.Container,
+        options: Immutable<IGameBarOptions> = {},
+    ) {
+        const viseur = ViseurInstance;
+        if (!viseur || !viseur.game) {
+            throw new Error("Cannot create a game bar without a game!");
+        }
 
-        options.width = options.width || 0.9;
-        this.width = options.width;
+        const opts = {
+            container: this.container,
+            height: 0.06667,
+            width: 0.9,
+            ...options,
+        };
+
+        this.width = opts.width;
         this.container.setParent(parent);
-        this.max = options.max || 1;
+        this.max = opts.max || 1;
 
-        this.background = viseur!.game!.resources.blank.newSprite(this.container, options);
-        this.foreground = viseur!.game!.resources.blank.newSprite(this.container, options);
+        const { blank } = viseur.game.resources;
+        this.background = blank.newSprite(opts);
+        this.foreground = blank.newSprite(opts);
 
-        this.recolor(options.foregroundColor || 0x044F444, options.backgroundColor || 0x00000);
+        this.recolor(
+            opts.foregroundColor || 0x044F444, // green-ish
+            opts.backgroundColor || 0x00000,
+        );
 
         const widthDiff = parent.width - this.width;
         this.container.position.set(widthDiff / 2, 0);
 
-        if (options.visibilitySetting) {
-            options.visibilitySetting.changed.on((newValue: any) => {
-                newValue = Boolean(newValue);
-                if (options && options.invertSetting) {
-                    newValue = !newValue;
+        if (opts.visibilitySetting) {
+            opts.visibilitySetting.changed.on((newValue) => {
+                let val = Boolean(newValue);
+                if (opts && opts.invertSetting) {
+                    val = !val;
                 }
 
-                this.setVisible(newValue);
+                this.setVisible(val);
             });
-            this.setVisible(options.visibilitySetting.get());
+            this.setVisible(opts.visibilitySetting.get());
         }
     }
 
     /**
-     * Sets if the bar is visible
-     * @param visible true if visible, false otherwise
+     * Sets if the bar is visible.
+     *
+     * @param visible - True if visible, false otherwise.
      */
     public setVisible(visible: boolean): void {
         this.container.visible = visible;
     }
 
     /**
-     * Updates the value of the bar, which will expand/contract the foreground
-     * @param value the new value to update the foreground bar to, relative to this bar's max
+     * Updates the value of the bar, which will expand/contract the foreground.
+     *
+     * @param value The new value to update the foreground bar to, relative to
+     * this bar's max.
      */
     public update(value: number): void {
-        value = clamp(value, 0, this.max);
-        this.foreground.width = this.width * (value / this.max);
+        const clamped = clamp(value, 0, this.max);
+        this.foreground.width = this.width * (clamped / this.max);
     }
 
     /**
-     * Recolors the parts of the bar
-     * @param {Color} foregroundColor the Color to recolor the foreground part of the bar to
-     * @param {Color} backgroundColor the Color to recolor the background part of the bar to
+     * Recolors the parts of the bar.
+     *
+     * @param foregroundColor - The Color to recolor the foreground part of the
+     * bar to.
+     * @param backgroundColor - The Color to recolor the background part of the
+     * bar to.
      */
-    public recolor(foregroundColor?: ColorTint, backgroundColor?: ColorTint): void {
+    public recolor(
+        foregroundColor?: ColorTint,
+        backgroundColor?: ColorTint,
+    ): void {
         if (foregroundColor !== undefined) {
             this.foreground.tint = getTintFromColor(foregroundColor);
         }

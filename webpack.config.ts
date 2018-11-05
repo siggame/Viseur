@@ -2,12 +2,12 @@ import * as HtmlWebpackPlugin from "html-webpack-plugin";
 import { join, resolve } from "path";
 import * as webpack from "webpack";
 
-export default (
+export default (// tslint:disable-line:no-default-export
     env: undefined,
     options: webpack.Configuration,
 ): webpack.Configuration => ({
     entry: [
-        "@babel/polyfill/dist/polyfill.js", // polyfill new es functions for babel
+        "@babel/polyfill/dist/polyfill.js", // polyfill new ES functions for babel
         "font-awesome/scss/font-awesome.scss", // font-awesome icons injection
         "src/index.ts", // our actual starting file now that stuff is ready
     ],
@@ -20,7 +20,6 @@ export default (
     output: {
         filename: "js/[name].js",
         path: resolve(__dirname, "dist"),
-        // publicPath: "dist/",
     },
     module: {
         rules: [
@@ -31,23 +30,21 @@ export default (
                     {
                         loader: "babel-loader",
                         options: {
-                            presets: ["@babel/preset-env"],
+                            babelrc: true,
                         },
                     },
                     {
                         loader: "ts-loader",
+                        options: {
+                            compilerOptions: {
+                                // Keep es6+ imports in place for babel to handle.
+                                // This allows the lodash treeshakers to work.
+                                // This also means we are relying fully on babel for ESNext --> ES5 (or lower)
+                                module: "esnext",
+                            },
+                        },
                     },
                 ],
-            },
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader",
-                    options: {
-                        presets: ["@babel/preset-env"],
-                    },
-                },
             },
             {
                 test: /\.(jpe?g|png|gif|ico|svg|ttf|otf|eot|woff|woff2)$/i,
@@ -93,32 +90,18 @@ export default (
         // generate for us our index.html page
         new HtmlWebpackPlugin({
             title: "Viseur",
-        }),
-
-        /*
-        // provides a great speedup in both module use and development debugging
-        // https://webpack.js.org/plugins/commons-chunk-plugin/
-        new webpack.optimize.CommonsChunkPlugin({
-            names: ["node_modules"],
-            minChunks: (module, count) => {
-                // creates a common vendor js file for libraries in node_modules
-                return isNodeModule(module);
+            minify: {
+                collapseWhitespace: true,
             },
         }),
-        */
     ],
+    optimization: {
+        sideEffects: true,
+        usedExports: true,
+    },
     devtool: options.mode === "development"
-        ? "source-map"
+        ? "inline-source-map"
         : false,
-    /*devServer: {
-        historyApiFallback: true,
-        watchOptions: { aggregateTimeout: 300, poll: 1000 },
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",
-        },
-    },*/
     performance: {
         hints: false, // TODO: handle these warnings
     },

@@ -1,7 +1,9 @@
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
+import { Delta } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
-import { BaseGame, IDeltaReason } from "src/viseur/game";
+import { Immutable } from "src/utils";
+import { BaseGame } from "src/viseur/game";
 import { IRendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
@@ -14,8 +16,7 @@ const overScan = 10; // over-scan 5% additional area on all sides to look better
 // <<-- /Creer-Merge: imports -->>
 
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
 export class Game extends BaseGame {
     // <<-- Creer-Merge: static-functions -->>
@@ -23,10 +24,10 @@ export class Game extends BaseGame {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The static name of this game. */
-    public static readonly gameName: string = "Spiders";
+    public static readonly gameName = "Spiders";
 
     /** The number of players in this game. the players array should be this same size */
-    public readonly numberOfPlayers: number = 2;
+    public static readonly numberOfPlayers = 2;
 
     /** The current state of the Game (dt = 0) */
     public current: IGameState | undefined;
@@ -79,9 +80,10 @@ export class Game extends BaseGame {
     // <<-- /Creer-Merge: public-functions -->>
 
     /**
-     * Invoked when the first game state is ready to setup the size of the renderer
-     * @param state the initialize state of the game
-     * @returns the {height, width} you for the game's size.
+     * Invoked when the first game state is ready to setup the size of the renderer.
+     *
+     * @param state - The initialize state of the game.
+     * @returns The {height, width} you for the game's size.
      */
     protected getSize(state: IGameState): IRendererSize {
         return {
@@ -94,8 +96,9 @@ export class Game extends BaseGame {
 
     /**
      * Called when Viseur is ready and wants to start rendering the game.
-     * This is where you should initialize stuff.
-     * @param state the initialize state of the game
+     * This is where you should initialize your state variables that rely on game data.
+     *
+     * @param state - The initialize state of the game.
      */
     protected start(state: IGameState): void {
         super.start(state);
@@ -109,15 +112,17 @@ export class Game extends BaseGame {
     }
 
     /**
-     * initializes the background. It is drawn once automatically after this step.
-     * @param state the initial state to use the render the background
+     * Initializes the background. It is drawn once automatically after this step.
+     *
+     * @param state - The initial state to use the render the background.
      */
     protected createBackground(state: IGameState): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
 
-        this.resources.background.newSprite(this.layers.background, {
+        this.resources.background.newSprite({
+            container: this.layers.background,
             width: this.renderer.width,
             height: this.renderer.height,
         });
@@ -128,18 +133,21 @@ export class Game extends BaseGame {
     /**
      * Called approx 60 times a second to update and render the background.
      * Leave empty if the background is static.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) game state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into the next turn to render at.
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    protected renderBackground(dt: number, current: IGameState, next: IGameState,
-                               reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.renderBackground(dt, current, next, reason, nextReason);
+    protected renderBackground(
+        dt: number,
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.renderBackground(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
@@ -148,22 +156,24 @@ export class Game extends BaseGame {
 
     /**
      * Invoked when the game state updates.
-     * @param current the current (most) game state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    protected stateUpdated(current: IGameState, next: IGameState,
-                           reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    protected stateUpdated(
+        current: Immutable<IGameState>,
+        next: Immutable<IGameState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Game based on its current and next states
         // <<-- /Creer-Merge: state-updated -->>
     }
-
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
     // <<-- /Creer-Merge: protected-private-functions -->>

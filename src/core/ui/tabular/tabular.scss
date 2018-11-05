@@ -6,6 +6,10 @@
     background: $light-gray;
     padding: 0.5em;
     border-bottom: $gray solid;
+
+    @include dark-mode {
+        background: $light-black;
+    }
 }
 
 ul.tabular-tabs > li {
@@ -19,9 +23,17 @@ ul.tabular-tabs > li {
     cursor: pointer;
     color: $light-black;
 
+    @include dark-mode {
+        color: $gray;
+    }
+
     &.active {
         border-bottom-color: $primary;
         color: $black;
+
+        @include dark-mode {
+            color: $white;
+        }
     }
 
     &:first-child {
@@ -46,6 +58,9 @@ ul.tabular-tabs > li {
         display: block;
         opacity: 0;
         @include transition(opacity 0.1667s ease-in-out);
+        @include dark-mode {
+            color: $white;
+        }
 
         &.active {
             opacity: 1;

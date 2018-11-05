@@ -1,3 +1,4 @@
+import { Constructor } from "@cadre/ts-utils";
 import { BaseInput, IBaseInputArgs } from "src/core/ui/inputs/base-input";
 import * as store from "store";
 import { Event } from "ts-typed-events";
@@ -11,13 +12,13 @@ export interface IBaseSettingArgs<T> {
 /**
  * A base setting represents an input that controls a single setting.
  * This is basically a wrapper around the input's interface args so that
- * we can re-use them to make settings files with compile time type checking
+ * we can re-use them to make settings files with compile time type checking.
  */
-export abstract class BaseSetting<T> {
-    /** The index of the next new setting */
+export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
+    /** The index of the next new setting. */
     public static newIndex: number = 0;
 
-    /** Event emitted when this setting's value changes */
+    /** Event emitted when this setting's value changes. */
     public readonly changed = new Event<T>();
 
     /** The index this setting is when displaying in order, starting at 0 */
@@ -27,13 +28,17 @@ export abstract class BaseSetting<T> {
     public readonly default: T;
 
     /** The namespace this setting is a part of */
-    private namespace: string; // Note, although this is private in the settings
+    private namespace: string; // Note: this is private in the settings
 
+    /**
+     * Creates a setting for a given input type.
+     *
+     * @param args - Arguments used for this setting to create a base input.
+     * @param inputClass - The class constructor for this setting's input.
+     */
     protected constructor(
-        /** Arguments used for this setting to create a base input */
-        private readonly args: IBaseSettingArgs<T> & IBaseInputArgs,
-        /** The class constructor for this setting's input */
-        private readonly inputClass: { new(args: any): BaseInput<T> },
+        private readonly args: IBaseSettingArgs<T> & IBaseInputArgs<T>,
+        private readonly inputClass: Constructor<BaseInput<T>>,
     ) {
         this.namespace = "";
         this.index = BaseSetting.newIndex;
@@ -43,8 +48,9 @@ export abstract class BaseSetting<T> {
     }
 
     /**
-     * Sets the namespace for this setting (after initialization)
-     * @param namespace the new namespace to set us to
+     * Sets the namespace for this setting (after initialization).
+     *
+     * @param namespace - The new namespace to set us to.
      */
     public setNamespace(namespace: string): void {
         this.namespace = namespace;
@@ -58,19 +64,21 @@ export abstract class BaseSetting<T> {
 
     /**
      * Creates an input that listens for changes for this event
-     * @param parent the parent element for this new input
-     * @returns the input for this setting
+     * @param parent - The parent element for this new input.
+     * @returns The input for this setting.
      */
-    public createInput(parent: JQuery<HTMLElement>): BaseInput<any> {
-        const input = new this.inputClass(Object.assign({
+    public createInput(parent: JQuery): BaseInput<T> {
+        const input = new this.inputClass({
             parent,
             value: this.get(),
-        }, this.args));
+            ...this.args,
+        });
 
         let changing = false;
         this.changed.on((value) => {
             if (changing) {
-                return; // don't start an endless cycle between these two listeners
+                // don't start an endless cycle between these two listeners
+                return;
             }
             changing = true;
             input.value = value;
@@ -78,7 +86,8 @@ export abstract class BaseSetting<T> {
         });
         input.events.changed.on((value) => {
             if (changing) {
-                return; // don't start an endless cycle between these two listeners
+                // don't start an endless cycle between these two listeners
+                return;
             }
             changing = true;
             this.set(value);
@@ -89,20 +98,24 @@ export abstract class BaseSetting<T> {
     }
 
     /**
-     * Get the setting at key
-     * both are basically the id so that multiple games (namespaces) can have the same settings key.
-     * @returns {*} whatever was stored at namespace.key
+     * Get the setting at key.
+     *
+     * Both are basically the id so that multiple games (namespaces) can have
+     * the same settings keys.
+     *
+     * @returns Whatever was stored at namespace.key.
      */
     public get(): T {
         const id = this.getID();
 
+        // tslint:disable-next-line:no-unsafe-any - they type it as any
         return this.transformValue(store.get(id));
     }
 
     /**
      * Set the setting at namespace.key, both are basically the id so that
      * multiple games (namespaces) can have the same settings key.
-     * @param {*} value - the new value to store for namespace.key
+     * @param value - The new value to store for namespace.key.
      */
     public set(value: T): void {
         const id = this.getID();
@@ -111,25 +124,28 @@ export abstract class BaseSetting<T> {
             throw new Error(`undefined is not a valid value for ${id}`);
         }
 
-        value = this.transformValue(value);
+        const transformed = this.transformValue(value);
 
-        store.set(id, value);
+        store.set(id, transformed);
 
-        this.changed.emit(value);
+        this.changed.emit(transformed);
     }
 
     /**
-     * Optional override to transform the value
-     * @param value the value to transform
-     * @returns the value transformed
+     * Optional override to transform the value.
+     *
+     * @param value - The value to transform.
+     * @returns The value transformed.
      */
     protected transformValue(value: T): T {
         return value;
     }
 
     /**
-     * Creates a unique id for the namespace and key, basically joins them "namespace.key"
-     * @returns {string} a unique id as a combination of all passed in args
+     * Creates a unique id for the namespace and key, basically joins them
+     * "namespace.key".
+     *
+     * @returns A unique id as a combination of all passed in args.
      */
     private getID(): string {
         return `${this.namespace}.${this.args.id}`;

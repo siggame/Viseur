@@ -1,14 +1,23 @@
+// tslint:disable:no-math-random insecure-random
+
 const REFRESH_DURATION = 20000;
 
 // source:
 // https://www.bypeople.com/svg-low-poly-background-css-js-snippet/
 
+/** A point used for Polygon node movement calculations. */
 interface IPolyPoint {
     x: number;
     y: number;
     originX: number;
     originY: number;
 }
+
+/** A node used for polygons. */
+type PolyNode = Node & Element & { beginElement(): void };
+
+/** A Polygon element. */
+type Polygon = Element & { point1: number; point2: number; point3: number };
 
 /**
  * Injects an animated pretty low poly SVG into a DOM element and animates it.
@@ -19,7 +28,7 @@ export class PrettyPolygons {
 
     /** The SVG we are manipulating */
     private readonly svg = document.createElementNS(
-        "http://www.w3.org/2000/svg",
+        "http://www.w3.org/2000/svg", // tslint:disable-line:no-http-string
         "svg",
     );
 
@@ -46,7 +55,7 @@ export class PrettyPolygons {
      *
      * @param $parent - The Jquery wrapped parent element.
      */
-    constructor($parent: JQuery<HTMLElement>) {
+    constructor($parent: JQuery) {
         const width = Number($parent.width()) || 1000;
         const height = Number($parent.height()) || 1000;
 
@@ -94,10 +103,10 @@ export class PrettyPolygons {
                 const rand = Math.floor(Math.random() * 2);
 
                 for (let n = 0; n < 2; n++) {
-                    const polygon: any = document.createElementNS(
+                    const polygon = document.createElementNS(
                         this.svg.namespaceURI,
                         "polygon",
-                    );
+                    ) as Polygon;
 
                     if (rand === 0) {
                         if (n === 0) {
@@ -144,7 +153,7 @@ export class PrettyPolygons {
                     polygon.setAttribute("fill", `rgba(0,0,0,${Math.random() / 3})`);
 
                     const animate = document.createElementNS(
-                        "http://www.w3.org/2000/svg",
+                        "http://www.w3.org/2000/svg", // tslint:disable-line:no-http-string
                         "animate",
                     );
 
@@ -160,7 +169,7 @@ export class PrettyPolygons {
 
         this.refresh();
 
-        this.interval = setInterval(() => this.refresh(), REFRESH_DURATION) as any; // silly TS, this is not Node.js
+        this.interval = window.setInterval(() => this.refresh(), REFRESH_DURATION);
     }
 
     /**
@@ -172,8 +181,8 @@ export class PrettyPolygons {
         const childNodes = this.svg.childNodes;
         // tslint:disable-next-line:prefer-for-of - because it does not have an iterator symbol set
         for (let i = 0; i < childNodes.length; i++) {
-            const polygon: any = childNodes[i];
-            const animate = polygon.childNodes[0];
+            const polygon = childNodes[i];
+            const animate = polygon.childNodes[0] as PolyNode;
 
             animate.setAttribute("dur", "0");
         }
@@ -204,11 +213,11 @@ export class PrettyPolygons {
         const childNodes = this.svg.childNodes;
         // tslint:disable-next-line:prefer-for-of - because it does not have an iterator symbol set
         for (let i = 0; i < childNodes.length; i++) {
-            const polygon: any = childNodes[i];
-            const animate = polygon.childNodes[0];
+            const polygon = childNodes[i] as Polygon;
+            const animate = polygon.childNodes[0] as PolyNode;
 
             if (animate.getAttribute("to")) {
-                animate.setAttribute("from", animate.getAttribute("to"));
+                animate.setAttribute("from", animate.getAttribute("to") || "");
             }
 
             animate.setAttribute(

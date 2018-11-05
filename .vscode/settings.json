@@ -18,5 +18,6 @@
         "unstringify",
         "updown",
         "viseur"
-    ]
+    ],
+    "typescript.tsdk": "node_modules\\typescript\\lib"
 }

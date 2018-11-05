@@ -1,6 +1,7 @@
 import * as Settings from "src/viseur/settings";
 Settings.BaseSetting.newIndex = 0; // reset to zero for these new settings
 
+/** The settings for the Stumped game. */
 export const GameSettings = {
     // <<-- Creer-Merge: settings -->>
     displayHealthBars: new Settings.CheckBoxSetting({

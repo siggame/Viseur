@@ -3,7 +3,7 @@ import { BaseSetting, IBaseSettingArgs } from "./base-setting";
 
 /** A boolean setting controlled via checkbox */
 export class CheckBoxSetting extends BaseSetting<boolean> {
-    constructor(args: IBaseInputArgs & IBaseSettingArgs<boolean>) {
+    constructor(args: IBaseInputArgs<boolean> & IBaseSettingArgs<boolean>) {
         super(args, CheckBox);
     }
 }

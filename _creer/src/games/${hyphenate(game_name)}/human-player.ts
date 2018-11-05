@@ -73,7 +73,7 @@ arguments.append({
         'name': '(returned: ' + return_type + ') => void',
         'is_game_object': False,
     },
-    'description': 'The callback that eventually returns the return value from the server.' + (' - The returned value is ' + return_description) if return_description else ''
+    'description': 'The callback that eventually returns the return value from the server.' + ((' - The first argument to the callback is the return value: ' + return_description) if return_description else '')
 
 })
 returnless['arguments'] = arguments

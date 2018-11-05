@@ -1,26 +1,40 @@
+import { Immutable } from "@cadre/ts-utils";
 import * as $ from "jquery";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
-import { Tab, Tabular } from "src/core/ui/tabular";
+import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
-import { Event, events } from "ts-typed-events";
+import { Event, events, Signal } from "ts-typed-events";
 import { GUI } from "../gui";
+import * as infoPaneHbs from "./info-pane.hbs";
 import "./info-pane.scss";
 import { TABS } from "./tabs";
 
 const $document = $(document); // cache it
+
+/** Valid orientations to be. */
+type Orientation = "horizontal" | "vertical";
+
+/** Valid sides to dock on. */
+type Side = "top" | "left" | "bottom" | "right";
+
+/** The only valid sides to check against at run time. */
+const VALID_SIDES = [ "top", "left", "bottom", "right" ];
 
 /** The dock-able pane that has tabs and info about the Visualizer */
 export class InfoPane extends BaseElement {
     /** Events this class emits */
     public readonly events = events({
         /** Emitted when this is resized (may still be resizing) */
-        resized: new Event<{width: number, height: number}>(),
+        resized: new Event<Immutable<{
+            width: number;
+            height: number;
+        }>>(),
 
         /** Emitted when this starts resizing */
-        resizeStart: new Event<undefined>(),
+        resizeStart: new Signal(),
 
         /** Emitted when this stops resizing */
-        resizeEnd: new Event<undefined>(),
+        resizeEnd: new Signal(),
     });
 
     /** The GUI this InfoPane is a part of */
@@ -30,10 +44,10 @@ export class InfoPane extends BaseElement {
     private readonly tabular: Tabular;
 
     /** The main content container */
-    private readonly contentElement: JQuery<HTMLElement>;
+    private readonly contentElement: JQuery;
 
     /** The element for the re-sizer bar */
-    private readonly resizerElement: JQuery<HTMLElement>;
+    private readonly resizerElement: JQuery;
 
     /** The current length of the info pane */
     private length: number = 0;
@@ -42,22 +56,24 @@ export class InfoPane extends BaseElement {
     private readonly minimumLength: number = 200;
 
     /** The current orientation of the info pane */
-    private orientation: "horizontal" | "vertical" = "vertical";
+    private orientation: Orientation = "vertical";
 
     /** The current side the info pane is on */
-    private side: "top" | "left" | "bottom" | "right" = "right";
-
-    /** the possible valid sides */
-    private readonly validSides = [ "top", "left", "bottom", "right" ];
+    private side: Side = "right";
 
     /** The Viseur instance controlling us */
     private readonly viseur: Viseur;
 
-    constructor(args: IBaseElementArgs & {
+    /**
+     * Creates an info pane.
+     *
+     * @param args - Initialization arguments.
+     */
+    constructor(args: Readonly<IBaseElementArgs & {
         gui: GUI;
-        viseur: Viseur,
-    }) {
-        super(args);
+        viseur: Viseur;
+    }>) {
+        super(args, infoPaneHbs);
 
         this.viseur = args.viseur;
         this.gui = args.gui;
@@ -72,11 +88,11 @@ export class InfoPane extends BaseElement {
             this.onResize(downEvent);
         });
 
-        this.viseur.settings.infoPaneSide.changed.on((side) => {
+        this.viseur.settings.infoPaneSide.changed.on((side: string) => {
             this.snapTo(side);
         });
 
-        this.viseur.settings.infoPaneLength.changed.on((length) => {
+        this.viseur.settings.infoPaneLength.changed.on((length: number) => {
             this.resize(length);
         });
 
@@ -85,14 +101,18 @@ export class InfoPane extends BaseElement {
             parent: this.contentElement,
         });
 
-        this.tabular.attachTabs(TABS.map<Tab>((tabClass) => this.createTab(tabClass)));
+        this.tabular.attachTabs(TABS.map((TabClass) => new TabClass({
+            tabular: this.tabular,
+            viseur: this.viseur,
+        })));
     }
 
     /**
-     * Resizes the info pane based on position and length
-     * @param {number} [newLength] the new length (in pixels) of this info pane.
-     *                             If omitted the old length is used.
-     *                             Value cannot be less than minimumLength.
+     * Resizes the info pane based on position and length.
+     *
+     * @param newLength - The new length (in pixels) of this info pane.
+     * If omitted the old length is used.
+     * Value cannot be less than minimumLength.
      */
     public resize(newLength?: number): void {
         this.element.addClass("resizing");
@@ -128,53 +148,34 @@ export class InfoPane extends BaseElement {
 
     /**
      * Gets the current orientation
-     * @returns {string} the current orientation
+     * @returns the current orientation
      */
-    public getOrientation(): "horizontal" | "vertical" {
+    public getOrientation(): Orientation {
         return this.orientation;
     }
 
     /**
      * Gets the current side
-     * @returns {string} the current side
+     * @returns the current side
      */
-    public getSide(): "top" | "left" | "bottom" | "right" {
+    public getSide(): Side {
         return this.side;
     }
 
-    protected getTemplate(): Handlebars {
-        return require("./info-pane.hbs");
-    }
-
     /**
-     * Initializes a tab, from some tab data in ./tabs/
-     * @param tabClass The Tab class constructor to initialize
-     * @returns {Tab} the constructed tab as per defined in `tabClass`
-     */
-    private createTab(tabClass: typeof Tab): Tab {
-        const newTab = new tabClass(Object.assign({
-            tabular: this.tabular,
-        }, {
-            viseur: this.viseur, // some tabs require this
-        }));
-
-        return newTab;
-    }
-
-    /**
-     * Snaps to a new side of the screen
+     * Snaps to a new side of the screen.
      *
-     * @param {string} side - the side to snap to, must be 'top', 'left', 'bottom', or 'right'
+     * @param side - The side to snap to, must be 'top', 'left', 'bottom', or 'right'.
      */
     private snapTo(side: string): void {
-        side = side.toLowerCase();
+        const validSide = side.toLowerCase() as Side; // untrue until after the below check.
 
-        if (this.validSides.indexOf(side) === -1) {
+        if (VALID_SIDES.indexOf(validSide) === -1) {
             throw new Error(`invalid side to snap to: '${side}'`);
         }
 
-        for (const validSide of this.validSides) {
-            this.element.toggleClass(`snap-${validSide}`, validSide === side);
+        for (const s of VALID_SIDES) {
+            this.element.toggleClass(`snap-${s}`, validSide === s);
         }
 
         if (side === "top" || side === "left") {
@@ -184,7 +185,7 @@ export class InfoPane extends BaseElement {
             this.contentElement.before(this.resizerElement);
         }
 
-        this.side = side as any; // it's a valid side as checked above, ts can chill
+        this.side = validSide;
         this.orientation = (side === "left" || side === "right")
             ? "vertical"
             : "horizontal";
@@ -193,10 +194,11 @@ export class InfoPane extends BaseElement {
     }
 
     /**
-     * Invoked when the user is dragging to resize this
-     * @param {PIXI.Event} downEvent - the event generated from dragging the info pane
+     * Invoked when the user is dragging to resize this.
+     *
+     * @param downEvent - The event generated from dragging the info pane.
      */
-    private onResize(downEvent: JQuery.Event<HTMLElement, null>): void {
+    private onResize(downEvent: JQuery.Event): void {
         let x = downEvent.pageX;
         let y = downEvent.pageY;
         let width = Number(this.element.width());
@@ -204,7 +206,7 @@ export class InfoPane extends BaseElement {
 
         $document // cached at the top of this file
             .on("mousemove", (moveEvent) => {
-                this.events.resizeStart.emit(undefined);
+                this.events.resizeStart.emit();
 
                 const oldX = x;
                 const oldY = y;
@@ -238,7 +240,7 @@ export class InfoPane extends BaseElement {
             })
             .on("mouseup", () => {
                 this.element.removeClass("resizing");
-                this.events.resizeEnd.emit(undefined);
+                this.events.resizeEnd.emit();
                 $document.off("mousemove mouseup");
             });
     }

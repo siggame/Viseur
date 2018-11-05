@@ -148,3 +148,11 @@
         #{$vendor}#{$name}: #{$value};
     }
 }
+
+@mixin dark-mode {
+    @at-root {
+        .theme-dark & {
+            @content
+        }
+    }
+}
