@@ -18,7 +18,5 @@ export const GameResources = createResources("Newtonian", {
     blueore: load("blueiumore.png"),
     red: load("redium.png"),
     blue: load("blueium.png"),
-    // load files like this,
-    // and remember to remove these lines and file!
     // <<-- /Creer-Merge: resources -->>
 });

@@ -7,14 +7,7 @@ import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
-// <<-- Creer-Merge: imports -->>
-// import * as Color from "color";
-import { Player } from "./player";
-// any additional imports you want can be added here safely between Creer runs
-// <<-- /Creer-Merge: imports -->>
-
 // <<-- Creer-Merge: should-render -->>
-// Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
@@ -33,26 +26,32 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    public floor: PIXI.Sprite;
+    /** The floor sprite for the base ground texture */
+    public readonly floor: PIXI.Sprite;
 
-    public wall: PIXI.Sprite;
+    /** Sprite for the wall on this tile */
+    public readonly wall: PIXI.Sprite;
 
-    public genRoom: PIXI.Sprite;
+    /** Red ore sprite */
+    public readonly redOreSprite: PIXI.Sprite;
 
-    public conveyor: PIXI.Sprite;
+    /** blue ore sprite */
+    public readonly blueOreSprite: PIXI.Sprite;
 
-    public redOreSprite: PIXI.Sprite;
-    public blueOreSprite: PIXI.Sprite;
-    public redSprite: PIXI.Sprite;
-    public blueSprite: PIXI.Sprite;
+    /** red sprite */
+    public readonly redSprite: PIXI.Sprite;
 
-    public owner?: Player;
-    public spawn: PIXI.Sprite;
+    /** blue sprite */
+    public readonly blueSprite: PIXI.Sprite;
 
-    public isGen: boolean;
-    public isCon: boolean;
+    /** The ID of the owner of this tile */
+    public readonly ownerID?: string;
 
-    public oreContainer: PIXI.Container;
+    /** The generator or spawn for the room. */
+    public readonly ownerOverlay: PIXI.Sprite | undefined;
+
+    /** The container for all ore sprites */
+    public readonly oreContainer: PIXI.Container;
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
@@ -67,44 +66,34 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
+        this.container.setParent(this.game.layers.background);
+        this.container.position.set(state.x, state.y);
 
         if (state.owner) {
-            this.owner = this.game.gameObjects[state.owner.id] as Player;
+            this.ownerID = state.owner.id;
         }
-
-        // Initialize if it is a Generator Tile.
-        this.isGen = state.type === "generator" ? true : false;
-        this.isCon = state.type === "conveyor" ? true : false;
-
         this.oreContainer = new PIXI.Container();
         this.oreContainer.setParent(this.game.layers.ore);
-
-        this.container.setParent(this.game.layers.background);
-
-        this.spawn = this.game.resources.spawn.newSprite({ container: this.container });
-        this.spawn.visible = false;
-
-        this.floor = this.game.resources.floor.newSprite({ container: this.container });
-        this.floor.visible = false;
-        this.wall = this.game.resources.wall.newSprite({ container: this.container });
-        this.wall.visible = false;
-        this.genRoom = this.game.resources.genRoom.newSprite({ container: this.container });
-        this.genRoom.visible = false;
-        this.conveyor = this.game.resources.conveyor.newSprite({ container: this.container });
-        this.conveyor.visible = false;
-        this.redOreSprite = this.game.resources.redore.newSprite({ container: this.container });
-        this.redOreSprite.visible = false;
-        this.blueOreSprite = this.game.resources.blueore.newSprite({ container: this.container });
-        this.blueOreSprite.visible = false;
-        this.redSprite = this.game.resources.red.newSprite({ container: this.oreContainer });
-        this.redSprite.visible = false;
-        this.blueSprite = this.game.resources.blue.newSprite({ container: this.oreContainer });
-        this.blueSprite.visible = false;
-        this.container.position.set(state.x, state.y);
         this.oreContainer.position.copy(this.container.position);
 
-        this.recolor();
-        // You can initialize your new Tile here.
+        this.floor = state.type === "conveyor"
+            ? this.addSprite.conveyor()
+            : this.addSprite.floor();
+
+        if (this.ownerID !== undefined) {
+            this.ownerOverlay = state.type === "generator"
+                ? this.addSprite.genRoom()
+                : this.addSprite.spawn();
+        }
+
+        this.wall = this.addSprite.wall();
+
+        const inOre = { container: this.oreContainer };
+        this.redOreSprite = this.addSprite.redore(inOre);
+        this.blueOreSprite = this.addSprite.blueore(inOre);
+        this.redSprite = this.addSprite.red(inOre);
+        this.blueSprite = this.addSprite.blue(inOre);
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -130,48 +119,12 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
 
-        if (current.isWall) {
-            this.wall.visible = true;
-        }
-        else if (this.owner) {
-            if (this.isGen) {
-                this.genRoom.visible = true;
-            }
-            else {
-                this.spawn.visible = true;
-            }
-        }
-        else if (this.isCon) {
-            this.conveyor.visible = true;
-        }
-        else {
-            this.floor.visible = true;
-        }
-        if (current.rediumOre > 0) {
-            this.redOreSprite.visible = true;
-        }
-        else {
-            this.redOreSprite.visible = false;
-        }
-        if (current.blueiumOre > 0) {
-            this.blueOreSprite.visible = true;
-        }
-        else {
-            this.blueOreSprite.visible = false;
-        }
-        if (current.blueium > 0) {
-            this.blueSprite.visible = true;
-        }
-        else {
-            this.blueSprite.visible = false;
-        }
-        if (current.redium > 0) {
-            this.redSprite.visible = true;
-        }
-        else {
-            this.redSprite.visible = false;
-        }
-        // render where the Tile is
+        this.wall.visible = current.isWall;
+
+        this.redOreSprite.visible = current.rediumOre > 0;
+        this.redSprite.visible = current.redium > 0;
+        this.blueOreSprite.visible = current.blueiumOre > 0;
+        this.blueSprite.visible = current.blueium > 0;
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -183,10 +136,9 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        if (this.owner) {
-            const ownerColor = this.game.getPlayersColor(this.owner);
-            this.spawn.tint = ownerColor.rgbNumber();
-            this.genRoom.tint = ownerColor.rgbNumber();
+        if (this.ownerID !== undefined && this.ownerOverlay) {
+            const ownerColor = this.game.getPlayersColor(this.ownerID);
+            this.ownerOverlay.tint = ownerColor.rgbNumber();
         }
         // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>

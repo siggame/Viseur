@@ -34,12 +34,7 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IMachineState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    public barContainer: PIXI.Container;
-    // You can add additional member variables here
-
-    public machineSprite: PIXI.Sprite;
-    public type: string;
-    public maxWork: number;
+    /** Bar showing how much work is done. */
     private readonly workBar: GameBar;
 
     // <<-- /Creer-Merge: variables -->>
@@ -57,23 +52,22 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Machine here.
         this.container.setParent(this.game.layers.machine);
-        this.machineSprite = this.game.resources.machine.newSprite({ container: this.container });
-        this.type = state.oreType.toLowerCase().charAt(0);
-        if (state.tile) {
-            this.container.position.set(state.tile.x, state.tile.y);
-        }
-        else {
-            this.container.position.set(-1, -1);
-        }
+        this.container.position.set(state.tile.x, state.tile.y);
 
-        this.barContainer = new PIXI.Container();
-        this.barContainer.setParent(this.container);
-        this.barContainer.position.y -= 0.1;
+        this.addSprite.machine({
+            tint: state.oreType.toLowerCase().charAt(0) === "r"
+                ? Color("red")
+                : Color("blue"),
+        });
 
-        this.workBar = new GameBar(this.barContainer);
-        this.workBar.recolor("green");
-        this.maxWork = state.refineTime;
-        this.recolor();
+        const barContainer = new PIXI.Container();
+        barContainer.setParent(this.container);
+        barContainer.position.y = -0.1;
+
+        this.workBar = new GameBar(barContainer, {
+            foregroundColor: "green",
+            max: state.refineTime,
+        });
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -98,11 +92,7 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Machine is
-        const currWork = current.worked / this.maxWork;
-        const nextWork = next.worked / this.maxWork;
-        // this.container.position.set(next.tile.x, next.tile.y);
-        this.workBar.update(ease(currWork, nextWork, dt));
+        this.workBar.update(ease(current.worked, next.worked, dt));
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -112,13 +102,6 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public recolor(): void {
         super.recolor();
-
-        // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
-        const color = this.type === "r" ? Color("red") : Color("blue");
-
-        this.machineSprite.tint = color.rgbNumber();
-        // <<-- /Creer-Merge: recolor -->>
     }
 
     /**
