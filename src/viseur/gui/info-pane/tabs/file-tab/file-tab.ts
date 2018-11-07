@@ -1,19 +1,30 @@
 import * as fileSaver from "file-saver";
-import * as config from "src/../config.json";
-import { inputs, ITabArgs, Tab } from "src/core/ui";
+import { capitalize, escape, range } from "lodash";
+import { toWordsOrdinal } from "number-to-words";
+import { Config } from "src/core/config";
+import { Button, CheckBox, DropDown, FileInput, ITabArgs, NumberInput, Tab, TextBox } from "src/core/ui";
 import { sortedAscending } from "src/utils";
 import { Viseur } from "src/viseur";
+import * as fileTabHbs from "./file-tab.hbs";
 import "./file-tab.scss";
 
 /**
- * The "File" tab on the InfoPane, handles gamelog file I/O
+ * Converts a number to words.
+ *
+ * @param num - The number to use.
+ * @returns The human readable string version.
+ * @example 1 -> "First"
+ */
+function numberToWords(num: number): string {
+    return toWordsOrdinal(num)
+        .split(" ").map(capitalize).join(" ") // capitalize each word in between spaces,
+        .split("-").map(capitalize).join("-"); // and dashes
+}
+
+/**
+ * The "File" tab on the InfoPane, handles gamelog file I/O.
  */
 export class FileTab extends Tab {
-    /** The title of the tab */
-    public get title(): string {
-        return "File";
-    }
-
     /** The instance of Viseur that controls everything */
     private readonly viseur: Viseur;
 
@@ -23,7 +34,7 @@ export class FileTab extends Tab {
     private readonly localGamelogWrapper = this.element.find(".local-gamelog");
 
     /** The file input to load a local gamelog */
-    private readonly gamelogInput = new inputs.FileInput({
+    private readonly gamelogInput = new FileInput({
         id: "local-gamelog-input",
         parent: this.localGamelogWrapper,
         label: "Choose saved gamelog",
@@ -35,7 +46,7 @@ export class FileTab extends Tab {
     private readonly remoteGamelogWrapper = this.element.find(".remote-gamelog");
 
     /** The url input for the remote gamelog to load */
-    private readonly remoteGamelogInput = new inputs.TextBox({
+    private readonly remoteGamelogInput = new TextBox({
         id: "remote-gamelog-input",
         label: "Url",
         placeholder: "Enter url to gamelog",
@@ -43,7 +54,7 @@ export class FileTab extends Tab {
     });
 
     /** The button to click to load the remote gamelog and visualize it */
-    private readonly remoteVisualizeButton = new inputs.Button({
+    private readonly remoteVisualizeButton = new Button({
         id: "remote-gamelog-button",
         text: "Visualize",
         // label: "",
@@ -53,7 +64,8 @@ export class FileTab extends Tab {
     // ---- Connect Section ---- \\
 
     /** The wrapper for the connection section */
-    private readonly connectionWrapper = this.element.find(".connection-info").addClass("collapsed");
+    private readonly connectionWrapper = this.element.find(".connection-info")
+        .addClass("collapsed");
 
     /** The log of all connection events */
     private readonly connectionLog = this.connectionWrapper.find(".connection-log");
@@ -62,7 +74,7 @@ export class FileTab extends Tab {
     private readonly connectWrapper = this.element.find(".connect");
 
     /** The drop down to select the connection type */
-    private readonly connectTypeInput = new inputs.DropDown<string>({
+    private readonly connectTypeInput = new DropDown<string>({
         id: "connect-type",
         label: "Connection Type",
         parent: this.connectWrapper,
@@ -77,68 +89,73 @@ export class FileTab extends Tab {
     /** The names of all the games that are playable by humans, sorted */
     private readonly humanGameNames: string[];
 
-    private readonly gameInput = new inputs.DropDown<string>({
+    /** The game [name] input field. */
+    private readonly gameInput = new DropDown<string>({
         id: "remote-game-name",
         label: "Game",
         parent: this.connectWrapper,
         options: this.gameNames,
     });
 
-    private readonly gameSettingsInput = new inputs.TextBox({
+    /** The game settings string input field. */
+    private readonly gameSettingsInput = new TextBox({
         id: "connect-game-settings",
         label: "Game Settings",
         parent: this.connectWrapper,
     });
 
-    private readonly sessionInput = new inputs.TextBox({
+    /** The game session string input field. */
+    private readonly sessionInput = new TextBox({
         id: "connect-session",
         label: "Session",
         parent: this.connectWrapper,
-        placeholder: config.session || "*",
+        placeholder: Config.session || "*",
     });
 
-    private readonly serverInput = new inputs.TextBox({
+    /** The game server string input field. */
+    private readonly serverInput = new TextBox({
         id: "connect-server",
         label: "Server",
         parent: this.connectWrapper,
-        value: config.server || window.location.hostname,
+        value: Config.server || window.location.hostname,
     });
 
-    private readonly portInput = new inputs.NumberInput({
+    /** The port number input field. */
+    private readonly portInput = new NumberInput({
         id: "connect-port",
         label: "Port",
         parent: this.connectWrapper,
         min: 0,
-        max: 65535, // port is an unsigned 16-bit number, so this is the max
+        max: 65535, // ports are an unsigned 16-bit number, so this is the max
     });
 
-    private readonly nameInput = new inputs.TextBox({
+    /** The player's name string input field. */
+    private readonly nameInput = new TextBox({
         id: "connect-name",
         label: "Player Name",
         parent: this.connectWrapper,
-        placeholder: config.humanName || "Human",
+        placeholder: Config.humanName || "Human",
     });
 
-    private readonly playerIndexInput = new inputs.DropDown<string>({
+    /** The requested player's index field. */
+    private readonly playerIndexInput = new DropDown<number | undefined>({
         id: "player-index-input",
         label: "Player Index",
         parent: this.connectWrapper,
         hint: "Specify which player index (order) you are.",
-        options: [ // TODO: these should be filled in once we know how many player are in a game.
-            "",
-            { text: "First", value: "0" },
-            { text: "Second", value: "1" },
-        ],
+        options: [], // will be re-generated in onGameChange
     });
 
-    private readonly presentationInput = new inputs.CheckBox({
+    /** The check box for if this should restart in presentation mode. */
+    private readonly presentationInput = new CheckBox({
         id: "presentation-mode",
         label: "Presentation Mode",
         parent: this.connectWrapper,
         value: true,
     });
 
-    private readonly connectButton = new inputs.Button({
+    /** The button that starts the remote connection. */
+    private readonly connectButton = new Button({
         id: "connect-connect-button",
         text: "Connect",
         // label: " ",
@@ -148,25 +165,35 @@ export class FileTab extends Tab {
     // ---- Download Section ---- \\
 
     /** The section element for the downloads */
-    private readonly gamelogDownloadSection = this.element.find(".download-gamelog").addClass("collapsed");
+    private readonly gamelogDownloadSection = this.element.find(".download-gamelog")
+        .addClass("collapsed");
 
     /** The link to download the gamelog */
     private readonly gamelogDownloadLink = this.element.find(".download-gamelog-link");
 
     /**
-     * Creates the File Tab
-     * @param args the tab arguments
+     * Creates the File Tab.
+     *
+     * @param args - The tab arguments.
      */
     constructor(args: ITabArgs & {
         viseur: Viseur;
     }) {
-        super(args);
+        super({
+            contentTemplate: fileTabHbs,
+            title: "File",
+            ...args,
+        });
 
         this.viseur = args.viseur;
         this.gameNames = sortedAscending(Object.keys(this.viseur.games));
-        this.humanGameNames = this.gameNames.filter(
-            (name) => this.viseur.games[name]!.HumanPlayer.implemented,
-        );
+        this.humanGameNames = this.gameNames.filter((name) => {
+            const game = this.viseur.games[name];
+
+            return game
+                ? game.HumanPlayer.implemented
+                : false; // should not ever happen, this means no game for the name
+        });
 
         // -- gamelog section -- \\
         this.gamelogInput.events.loading.on(() => {
@@ -183,6 +210,10 @@ export class FileTab extends Tab {
 
         this.connectTypeInput.events.changed.on((newVal) => {
             this.onConnectTypeChange(newVal);
+        });
+
+        this.gameInput.events.changed.on((gameName) => {
+            this.onGameChange(gameName);
         });
 
         // -- connection section -- \\
@@ -203,10 +234,10 @@ export class FileTab extends Tab {
         this.connectTypeInput.value = "Human"; // default connection type
 
         // if in the config there is a default game
-        if (config.game) {
+        if (Config.game) {
             // set it here, if we did it in the gameInput DropDown constructor,
             // it would have gotten overridden from the connect input type changed where it moves around options
-            this.gameInput.value = config.game;
+            this.gameInput.value = String(Config.game);
         }
 
         // -- do stuff when viseur is ready -- \\
@@ -220,7 +251,10 @@ export class FileTab extends Tab {
                 // then let them download the gamelog from memory,
                 // otherwise it is being streamed so the gamelog in memory is incomplete
                 this.gamelogDownloadLink.on("click", () => {
-                    const blob = new Blob([this.viseur.unparsedGamelog!], {type: "application/json;charset=utf-8"});
+                    const blob = new Blob(
+                        [this.viseur.unparsedGamelog || JSON.stringify({ error: "No gamelog!" })],
+                        { type: "application/json;charset=utf-8" },
+                    );
                     fileSaver.saveAs(blob, `${data.gamelog.gameName}-${data.gamelog.gameSession}.json`);
                 });
 
@@ -236,13 +270,11 @@ export class FileTab extends Tab {
         });
     }
 
-    protected getTemplate(): Handlebars {
-        return require("./file-tab.hbs");
-    }
-
     /**
-     * Invoked when the gamelog type input changes values, so certain fields may need to be shown/hidden
-     * @param {string} newType the new type that it was changed to
+     * Invoked when the gamelog type input changes values,
+     * so certain fields may need to be shown/hidden.
+     *
+     * @param newType - The new type that it was changed to.
      */
     private onConnectTypeChange(newType: string): void {
         let port = Number(window.location.port);
@@ -277,7 +309,6 @@ export class FileTab extends Tab {
                 port = 5454;
                 showName = true;
                 humanPlayable = true;
-                break;
         }
 
         this.gameInput.setOptions(humanPlayable
@@ -286,6 +317,7 @@ export class FileTab extends Tab {
         );
 
         this.portInput.value = port;
+        // tslint:disable:no-non-null-assertion - TODO: make field better so this is not needed
         this.portInput.field!.element.toggleClass("collapsed", !showPort);
 
         this.nameInput.field!.element.toggleClass("collapsed", !showName);
@@ -296,6 +328,27 @@ export class FileTab extends Tab {
         this.playerIndexInput.field!.element.toggleClass("collapsed", !showPlayerIndex);
 
         this.presentationInput.field!.element.toggleClass("collapsed", !showPresentation);
+        // tslint:enable:no-non-null-assertion
+    }
+
+    /**
+     * Invoked when the game input changes value.
+     *
+     * @param gameName - THe new name of the game.
+     */
+    private onGameChange(gameName: string): void {
+        const namespace = this.viseur.games[gameName];
+
+        const n = namespace
+            ? namespace.Game.numberOfPlayers
+            : 2;
+
+        this.playerIndexInput.setOptions([{ text: "Any", value: undefined }, ...(namespace
+            ? range(n).map((i) => (
+                { text: numberToWords(i + 1), value: i }
+            ))
+            : []
+        )]);
     }
 
     /**
@@ -332,10 +385,10 @@ export class FileTab extends Tab {
         switch (type) {
             case "Tournament":
                 this.viseur.connectToTournament(server, port, playerName);
-                return;
+                break;
             case "Arena":
                 this.viseur.startArenaMode(server, this.presentationInput.value);
-                return;
+                break;
             case "Human":
                 this.viseur.playAsHuman({
                     gameName,
@@ -346,29 +399,30 @@ export class FileTab extends Tab {
                     playerIndex: this.playerIndexInput.value,
                     gameSettings: this.gameSettingsInput.value.trim(),
                 });
-                return;
+                break;
             case "Spectate":
                 this.viseur.spectate(server, port, gameName, session);
-                return;
+                break;
+            default:
+                throw new Error(`Connection type ${type} unexpected`);
         }
-
-        throw new Error(`Connection type ${type} unexpected`);
     }
 
     /**
-     * Logs some string to the connection log
-     * @param {string} message the string to log
+     * Logs some string to the connection log.
+     *
+     * @param message - The string to log.
      */
     private log(message: string): void {
         this.connectionWrapper.removeClass("collapsed");
 
         const li = document.createElement("li");
-        li.innerHTML = message;
+        li.innerHTML = escape(message); // tslint:disable-line:no-inner-html - we are escaping the string
         this.connectionLog.append(li);
     }
 
     /**
-     * Invoked when the local gamelog input starts loading a file
+     * Invoked when the local gamelog input starts loading a file.
      */
     private localGamelogLoading(): void {
         this.viseur.gui.modalMessage("Loading local gamelog.");
@@ -381,8 +435,9 @@ export class FileTab extends Tab {
     }
 
     /**
-     * Invoked when a remote gamelog url is submitted
-     * @param {string} url the url from the input box
+     * Invoked when a remote gamelog url is submitted.
+     *
+     * @param url - The url from the input box.
      */
     private remoteGamelogSubmitted(url: string): void {
         this.viseur.loadRemoteGamelog(url);

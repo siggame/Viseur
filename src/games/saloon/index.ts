@@ -1,14 +1,13 @@
 // Do not modify this file
-import { IBaseGameNamespace } from "src/viseur/game";
 import { Game } from "./game";
 import { HumanPlayer } from "./human-player";
 import { Pane } from "./pane";
 
 Game.prototype.namespace = {
     Game,
-    Pane,
+    Pane: Pane as any, // tslint:disable-line:no-any
     HumanPlayer,
-} as IBaseGameNamespace;
+};
 
-export const Namespace = Game.prototype.namespace;
-module.exports = Namespace;
+/** The namespace variable expected by all games for this Saloon game. */
+export const namespace = Game.prototype.namespace;

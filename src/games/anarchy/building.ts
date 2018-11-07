@@ -1,47 +1,36 @@
 // This is a class to represent the Building object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "@cadre/ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { IBuildingState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
+import { lowerFirst } from "lodash";
 import * as PIXI from "pixi.js";
-import { ease, renderSpriteBetween, unCapitalizeFirstLetter, updown } from "src/utils";
+import { ease, renderSpriteBetween, updown } from "src/utils";
+import { hasGameObjectWithID, isObject, objectHasProperty } from "src/utils";
 import { GameBar } from "src/viseur/game";
-import { RendererResource } from "src/viseur/renderer";
-import { Player } from "./player";
 
 const FIRE_FRAMES = 5;
 const RANDOM_MIN = -0.03;
 const RANDOM_MAX = 0.03;
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Building extends GameObject {
+export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Building (dt = 0) */
     public current: IBuildingState | undefined;
@@ -63,7 +52,7 @@ export class Building extends GameObject {
     private readonly aliveContainer = new PIXI.Container();
 
     /** The owner of this building */
-    private readonly owner: Player;
+    private readonly ownerID: string;
 
     /** The front of the building (colored according to owner) */
     private readonly buildingSpriteFront: PIXI.Sprite;
@@ -84,19 +73,19 @@ export class Building extends GameObject {
     private readonly fireSprites: PIXI.Sprite[] = [];
 
     /** Random X number used to animate fire */
-    private readonly randomX = Math.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    private readonly randomX = this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     /** Random Y number used to animate fire */
-    private readonly randomY = Math.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    private readonly randomY = this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
      * Constructor for the Building with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Building
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Building.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: IBuildingState, viseur: Viseur) {
         super(state, viseur);
@@ -106,7 +95,7 @@ export class Building extends GameObject {
         this.aliveContainer.setParent(this.container);
 
         // our owner's Player instance, needed to recolor ourself
-        this.owner = this.game.gameObjects[state.owner.id] as any; // we know for certain the player will be there
+        this.ownerID = state.owner.id;
 
         // This will be the sprite that shows our building, and we want to put
         // it inside our container.
@@ -115,16 +104,16 @@ export class Building extends GameObject {
         // NOTE: // this is defensive programming.
         // We don't know if it will be upper or lower case, so we make sure it
         // will always be lower case regardless
-        const base = unCapitalizeFirstLetter(state.gameObjectName);
+        const base = lowerFirst(state.gameObjectName);
 
         // the back sprite are neutral colors
-        (this.game.resources[`${base}Back`] as RendererResource).newSprite(this.aliveContainer);
-        // and the front is a white map we will re-color to the team's color
-        this.buildingSpriteFront = (this.game.resources[`${base}Front`] as RendererResource)
-            .newSprite(this.aliveContainer);
+        this.addSprite[`${base}Back` as "fireDepartmentBack"]({ container: this.aliveContainer });
+        this.buildingSpriteFront = this.addSprite[`${base}Front` as "fireDepartmentFront"]({
+            container: this.aliveContainer,
+        });
 
         // when we die we need to look burnt up, so we want to initialize that sprite too
-        this.deadSprite = this.game.resources.dead.newSprite(this.container);
+        this.deadSprite = this.addSprite.dead();
 
         this.healthBar = new GameBar(this.container, {
             max: state.health,
@@ -135,21 +124,20 @@ export class Building extends GameObject {
         // so we want a sprite for each part of the sheet
         this.fireSprites = [];
         for (let i = 0; i < FIRE_FRAMES; i++) {
-            this.fireSprites.push(this.game.resources.fire.newSprite(this.container, i));
+            this.fireSprites.push(this.addSprite.fire({ index: i }));
         }
 
         // the headquarters has no unique sprite, but instead a graffiti marking to easily make it stand out
         if (state.isHeadquarters) {
             // we have two players with id "0" and "1", so we use that to quickly get their graffiti sprite
-            (this.game.resources[`graffiti${state.owner.id}`] as RendererResource).newSprite(
-                this.aliveContainer, {
-                    alpha: 0.9, // make it partially transparent because it looks nicer
-                },
-            );
+            this.addSprite[`graffiti${state.owner.id}` as "graffiti0"]({
+                container: this.aliveContainer,
+                alpha: 0.9, // make it partially transparent because it looks nicer
+            });
         }
 
         // when we are the target on an attack, we'll highlight ourself so it's clear we are under attack
-        this.targetedSprite = this.game.resources.beam.newSprite(this.container, {
+        this.targetedSprite = this.addSprite.beam({
             alpha: 0.666, // make it partially opaque so people can still tell what building we are
             tint: "red",
         });
@@ -157,7 +145,8 @@ export class Building extends GameObject {
         if (state.gameObjectName !== "WeatherStation") {
             // all the building classes shoot beams for animations,
             // except WeatherStations, we we'll just aggregate the logic here
-            this.beamSprite = this.game.resources.beam.newSprite(this.game.layers.beams, {
+            this.beamSprite = this.addSprite.beam({
+                container: this.game.layers.beams,
                 tint: Color(this.beamColorName).opaquer(0.5),
             });
         }
@@ -173,20 +162,24 @@ export class Building extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render Building
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Building instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: IBuildingState, next: IBuildingState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<IBuildingState>,
+        next: Immutable<IBuildingState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
 
@@ -195,8 +188,9 @@ export class Building extends GameObject {
         this.aliveContainer.visible = true;
 
         // if we are being targeted, then display out targetedSprite
-        const run = nextReason && nextReason.run;
-        const beingTargeted = run && (run.args.building === this || run.args.warehouse === this);
+        const run = nextDelta.type === "ran" && nextDelta && nextDelta.data.run;
+        const beingTargeted = run && (hasGameObjectWithID(run.args, "building", this.id)
+                                      || hasGameObjectWithID(run.args, "warehouse", this.id));
         this.targetedSprite.visible = beingTargeted;
         // and fade it out
         const targetedAlpha = ease(1 - dt, "cubicInOut");
@@ -261,8 +255,8 @@ export class Building extends GameObject {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Building's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Building's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -270,24 +264,42 @@ export class Building extends GameObject {
         // <<-- Creer-Merge: recolor -->>
         // by adding their' owner's color's PIXI.ColorMatrixFilter, we recolor the sprite.
         // e.g. if a pixel is [1, 1, 1] (white) * [1, 0, 0.1] (red with a hint of blue) = [1*1, 1*0, 1*0.1]
-        const color = this.game.getPlayersColor(this.owner);
+        const color = this.game.getPlayersColor(this.ownerID);
         this.buildingSpriteFront.tint = color.lighten(0.15).rgbNumber();
         this.healthBar.recolor(color.lighten(0.5));
         // <<-- /Creer-Merge: recolor -->>
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this Building instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: IBuildingState, next: IBuildingState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<IBuildingState>,
+        next: Immutable<IBuildingState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         // if this building shoots beams (is not a WeatherStation)
@@ -295,12 +307,22 @@ export class Building extends GameObject {
             // assume it's not shooting a beam for this state
             this.beamSprite.visible = false;
             // but check if it is
-            if (nextReason && nextReason.run && nextReason.run.caller === this && nextReason.returned > -1) {
+            if (nextDelta.type === "ran"
+             && nextDelta.data.run
+             && nextDelta.data.run.caller.id === this.id
+             && Number(nextDelta.data.returned) > -1
+            ) {
                 // and if it is the Building running a verb, show the beam shooting towards a target building
                 this.beamSprite.visible = true;
-                const args = nextReason.run.args;
+                const args = nextDelta.data.run.args;
                 const building = args.building || args.warehouse;
-                renderSpriteBetween(this.beamSprite, current, building.current);
+                if (isObject(building) && objectHasProperty(building, "id")) {
+                    const buildingObject = this.game.gameObjects[String(building.id)];
+                    if (buildingObject) {
+                        const state = (buildingObject as Building).getCurrentMostState();
+                        renderSpriteBetween(this.beamSprite, current, state);
+                    }
+                }
             }
         }
         // <<-- /Creer-Merge: state-updated -->>
@@ -309,25 +331,6 @@ export class Building extends GameObject {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
-
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

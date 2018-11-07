@@ -1,15 +1,20 @@
+import { Immutable } from "@cadre/ts-utils";
 import * as dateFormat from "dateformat";
 import * as screenfull from "screenfull";
-import partial from "src/core/partial";
+import { partial } from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
 import { PrettyPolygons } from "src/core/ui/pretty-polygons";
-import { Viseur, viseurConstructed } from "src/viseur";
+import { Viseur } from "src/viseur";
+import { viseurConstructed } from "src/viseur/constructed";
 import { Event, events } from "ts-typed-events";
 import { BaseGame } from "../game";
+import * as faviconIco from "../images/favicon.ico";
+import * as guiHbs from "./gui.hbs";
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
 import { KEYS } from "./keys";
+import * as loadingMessageHbs from "./loading-message/loading-message.hbs";
 import "./loading-message/loading-message.scss";
 import { PlaybackPane } from "./playback-pane";
 
@@ -44,24 +49,31 @@ export class GUI extends BaseElement {
     /** The modal [re]used to display loading and error messages */
     private readonly modal: Modal;
 
-    // the game (for resizing purposes)
+    /** the game (for resizing purposes) */
     private game: BaseGame | undefined;
 
     /** All the events this GUI emits */
     // tslint:disable-next-line:member-ordering (because we need the private stuff above initialized first)
     public readonly events = events.concat(this.playbackPane.events, {
         /** Emitted when the GUI resizes */
-        resized: new Event<{width: number, height: number, remainingHeight: number}>(),
+        resized: new Event<Immutable<{
+            width: number;
+            height: number;
+            remainingHeight: number;
+        }>>(),
     });
 
     /**
-     * Creates a GUI to handle the user interaction(s) with html part of viseur
-     * @param args the initialization args
+     * Creates a GUI to handle the user interaction(s) with html part of viseur.
+     *
+     * @param args - The initialization args.
      */
     constructor(args: IBaseElementArgs & {
         viseur: Viseur;
     }) {
-        super(args);
+        super(args, guiHbs);
+
+        this.setTheme(args.viseur.settings.theme.get());
 
         this.infoPane = new InfoPane({
             parent: this.element,
@@ -69,12 +81,14 @@ export class GUI extends BaseElement {
             viseur: args.viseur,
         });
 
-        // add the favicon
-        const faviconLink = document.createElement("link");
-        faviconLink.href = require("../images/favicon.ico");
-        faviconLink.rel = "icon";
-        faviconLink.type = "image/x-icon";
-        document.head.appendChild(faviconLink);
+        if (document.head) {
+            // add the favicon
+            const faviconLink = document.createElement("link");
+            faviconLink.href = faviconIco;
+            faviconLink.rel = "icon";
+            faviconLink.type = "image/x-icon";
+            document.head.appendChild(faviconLink);
+        }
 
         this.playbackPane.events.toggleFullscreen.on(() => {
             this.goFullscreen();
@@ -94,23 +108,25 @@ export class GUI extends BaseElement {
         });
 
         viseurConstructed.once((viseur) => {
-            viseur.events.ready.on((data) => {
-                this.game = data.game;
+            viseur.events.ready.on(({ game, gamelog }) => {
+                this.game = game;
                 this.element.addClass("gamelog-loaded");
-                const date = data.gamelog.streaming
+                const date = gamelog.streaming
                     ? "Live"
-                    : dateFormat(new Date(data.gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z");
+                    : dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z");
 
-                document.title = `${data.gamelog.gameName} - ${data.gamelog.gameSession} - ${date} | Viseur`;
+                document.title = `${gamelog.gameName} - ${gamelog.gameSession} - ${date} | Viseur`;
 
                 // HACK: resize after all transitions finish, because we can't know
                 // for sure when the browser will finish css transitions in what
-                // order
-                setTimeout(() => {
+                // order.
+                window.setTimeout(() => {
                     this.resize();
                     this.prettyPolygons.stop();
                 }, 350); // after all transitions end
             });
+
+            viseur.settings.theme.changed.on((val) => this.setTheme(val));
         });
 
         this.infoPane.events.resized.on((resized) => {
@@ -133,27 +149,27 @@ export class GUI extends BaseElement {
     // Modal stuff \\
 
     /**
-     * Displays a message in the modal
+     * Displays a message in the modal.
      *
-     * @param {string} message to display
-     * @param {function} [callback] - callback to invoke upon showing async
+     * @param message - The message to display in the modal.
+     * @param callback - The callback to invoke upon showing async.
      */
     public modalMessage(message: string, callback?: () => void): void {
         this.modal.show(
-            partial(require("./loading-message/loading-message.hbs"), { message }),
+            partial(loadingMessageHbs, { message }),
             callback,
         );
     }
 
     /**
-     * Displays a message to the user, but as an error
+     * Displays a message to the user, but as an error.
      *
-     * @param {string} message to display
-     * @param {function} [callback] - callback to invoke upon showing async
+     * @param message - The message to display as an error.
+     * @param callback - The callback to invoke upon showing async.
      */
     public modalError(message: string, callback?: () => void): void {
         this.modal.show(
-            partial(require("./loading-message/loading-message.hbs"), { message }).addClass("error"),
+            partial(loadingMessageHbs, { message }).addClass("error"),
             callback,
         );
     }
@@ -199,33 +215,26 @@ export class GUI extends BaseElement {
     }
 
     /**
-     * Checks if the GUI is fullscreen
-     * @returns {boolean} true if fullscreen, false otherwise
+     * Checks if the GUI is fullscreen.
+     *
+     * @returns True if fullscreen, false otherwise.
      */
     public isFullscreen(): boolean {
         return screenfull && screenfull.isFullscreen;
     }
 
     /**
-     * Resizes the GUI, invoked when the window is resized
+     * Resizes the GUI, invoked when the window is resized.
      */
     public resize(): void {
         this.infoPane.resize();
     }
 
     /**
-     * Gets the template
-     * @override
-     * @returns the handlebars partial for the gui
-     */
-    protected getTemplate(): Handlebars {
-        return require("./gui.hbs");
-    }
-
-    /**
-     * Resizes the visualization's wrapper
-     * @param {number} width the width taken away from the info pane
-     * @param {number} height the height taken away from the info pane
+     * Resizes the visualization's wrapper.
+     *
+     * @param width - The width taken away from the info pane.
+     * @param height - The height taken away from the info pane.
      */
     private resizeVisualizer(width: number, height: number): void {
         let newWidth = Number(this.element.width());
@@ -278,5 +287,23 @@ export class GUI extends BaseElement {
             height: newHeight,
             remainingHeight,
         });
+    }
+
+    /**
+     * Sets the theme of the gui. CSS rules use this.
+     *
+     * @param theme - The theme name to apply to the body.
+     */
+    private setTheme(theme: string): void {
+        if (!this.parent) {
+            return;
+        }
+
+        this.parent.removeClass((_, className) => /theme-.+/.exec(className)
+            ? className
+            : "",
+        );
+
+        this.parent.addClass(`theme-${theme.toLowerCase()}`);
     }
 }

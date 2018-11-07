@@ -1,4 +1,5 @@
 @import "src/core/colors";
+@import "src/core/mixins";
 
 .modal-wrapper {
     opacity: 0;
@@ -31,6 +32,12 @@
     left: 50%;
     transform: translateY(-50%) translateX(-50%);
     max-height: 9999em;
+
+    @include dark-mode {
+        background-color: $near-black;
+        color: $white;
+        border: 0.125em solid $dark-gray;
+    }
 
     &.removing {
         opacity: 0;
