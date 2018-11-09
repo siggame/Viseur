@@ -78,6 +78,42 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             // flip the first player's job sprite
             jobContainer.scale.x *= -1;
             jobContainer.position.x += 1;
+        /**
+        this.owner = this.game.gameObjects[state.owner.id] as Player;
+        this.job = state.job.title;
+        this.container.setParent(this.game.layers.game);
+        this.container.scale.x = 1.1;
+        this.container.scale.y = 1.1;
+        this.internSprite = this.game.resources.intern.newSprite({ container: this.container });
+        this.internSprite.visible = false;
+        this.physicistSprite = this.game.resources.physicist.newSprite({ container: this.container });
+        this.physicistSprite.visible = false;
+        this.managerSprite = this.game.resources.manager.newSprite({ container: this.container });
+        this.managerSprite.visible = false;
+        this.indicatorSprite = this.game.resources.indicator.newSprite({ container: this.container });
+        this.indicatorSprite.visible = false;
+        if (state.tile) {
+            this.container.position.set(state.tile.x, state.tile.y);
+            this.container.visible = true;
+        }
+        else {
+            this.container.position.set(-1, -1);
+            this.container.visible = false;
+        }
+        this.barContainer = new PIXI.Container();
+        this.barContainer.setParent(this.container);
+        this.barContainer.position.y -= 0.15;
+        this.recolor();
+        this.set_job(this.job);
+        this.spriteInUse = this.internSprite; // default
+        this.spriteInUse!.position.x -= .05;
+
+        this.facing = "left";
+        if (this.owner && this.owner.id === "0") {
+            this.facing = "right";
+            this.spriteInUse!.scale.x *= -1;
+            this.spriteInUse!.anchor.x += 1;
+         */
         }
 
         this.healthBar = new GameBar(this.container, {
@@ -117,6 +153,26 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             return;
         }
         this.container.visible = true;
+        /**
+        else {
+            this.container.visible = true;
+        }
+
+        if (current.tile.tileWest && current.tile.tileWest.id === next.tile.id) {
+            if (this.facing !== "left") {
+                this.facing = "left";
+                this.spriteInUse!.scale.x *= -1;
+                this.spriteInUse!.anchor.x -= 1;
+            }
+        }
+        if (current.tile.tileEast && current.tile.tileEast.id === next.tile.id) {
+            if (this.facing !== "right") {
+                this.facing = "right";
+                this.spriteInUse!.scale.x *= -1;
+                this.spriteInUse!.anchor.x += 1;
+            }
+        }
+        */
         this.container.position.set(
             ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),

@@ -52,7 +52,6 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     constructor(state: IMachineState, viseur: Viseur) {
         super(state, viseur);
-
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.machine);
         this.container.position.set(state.tile.x, state.tile.y);
@@ -71,6 +70,29 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
             foregroundColor: "green",
             max: state.refineTime,
         });
+        /**
+        this.machineSprite = this.game.resources.machine.newSprite({ container: this.container });
+        this.type = state.oreType.toLowerCase().charAt(0);
+        if (state.tile) {
+            this.container.position.set(state.tile.x, state.tile.y);
+        }
+        else {
+            this.container.position.set(-1, -1);
+        }
+        this.container.scale.x = 1.35;
+        this.container.scale.y = 1.35;
+        this.container.position.y -= .5;
+        this.container.position.x -= .15;
+
+        this.barContainer = new PIXI.Container();
+        this.barContainer.setParent(this.container);
+        this.barContainer.position.y += 0.1;
+
+        this.workBar = new GameBar(this.barContainer);
+        this.workBar.recolor("green");
+        this.maxWork = state.refineTime;
+        this.recolor();
+        */
         // <<-- /Creer-Merge: constructor -->>
     }
 
