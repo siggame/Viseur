@@ -4,7 +4,7 @@ import { BaseSetting, IBaseSettingArgs } from "./base-setting";
 
 /** Represents a color (hex string) via color input */
 export class ColorSetting extends BaseSetting<string> {
-    constructor(args: IBaseInputArgs & IBaseSettingArgs<string>) {
+    constructor(args: IBaseInputArgs<string> & IBaseSettingArgs<string>) {
         super(args, ColorPicker);
     }
 }

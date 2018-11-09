@@ -1,5 +1,6 @@
 import { createResources, load } from "src/viseur/renderer";
 
+/** These are the resources (sprites) that are loaded and usable by game objects in Anarchy. */
 export const GameResources = createResources("Anarchy", {
     // <<-- Creer-Merge: resources -->>
     tile: load("tile.jpg"),
@@ -23,9 +24,9 @@ export const GameResources = createResources("Anarchy", {
     beam: load("beam.png"),
     arrow: load("arrow.png"),
     // this sprite is 2x2, not 1x1 like most
-    rotation: load("rotation.png", {width: 2, height: 2}),
+    rotation: load("rotation.png", { width: 2, height: 2 }),
 
     // we want 1,0 to be 1, then 2,0 to be 2, ..., then 1,0 to be 4
-    fire: load("fire.png", {sheet: {width: 4, height: 2, axis: "x"}}),
+    fire: load("fire.png", { sheet: { width: 4, height: 2, axis: "x" } }),
     // <<-- /Creer-Merge: resources -->>
 });

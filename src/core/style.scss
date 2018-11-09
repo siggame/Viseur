@@ -2,8 +2,8 @@
 @import "./fonts";
 @import "./colors";
 
-@import url(http://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
-@import url(http://fonts.googleapis.com/css?family=Inconsolata:400,700);
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic);
+@import url(https://fonts.googleapis.com/css?family=Inconsolata:400,700);
 
 *, *:before, *:after {
     @include transition(all 0.35s ease-in-out);
@@ -29,11 +29,35 @@ a, .link {
         color: $secondary-dark;
         cursor: pointer;
     }
+
+    @include dark-mode {
+        color: $primary-light;
+
+        &:hover, &:focus {
+            color: $secondary-light;
+        }
+    }
 }
 
 button {
     @include button();
 }
+
+@mixin placeholder {
+    color: $black;
+    opacity: 0.5;
+
+    @include dark-mode {
+        color: $white;
+    }
+}
+
+::placeholder { @include placeholder(); }
+::-webkit-input-placeholder  { @include placeholder(); }
+::-moz-placeholder  { @include placeholder(); }
+:-moz-placeholder  { @include placeholder(); }
+:-ms-input-placeholder  { @include placeholder(); }
+::-ms-input-placeholder  { @include placeholder(); }
 
 input, style, button, option {
     @extend .font-normal;
@@ -42,6 +66,13 @@ input, style, button, option {
 input, select, option {
     width: 10em;
     font-size: 0.8em;
+    background: $white;
+    color: $black;
+
+    @include dark-mode {
+        background: $light-black;
+        color: $white;
+    }
 }
 
 input[type=checkbox] {

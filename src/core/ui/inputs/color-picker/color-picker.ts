@@ -1,21 +1,24 @@
 import * as Color from "color";
+import { Immutable } from "src/utils";
 import { BaseInput, IBaseInputArgs } from "../base-input";
 import "./color-picker.scss";
 
 /** An input for colors */
 export class ColorPicker extends BaseInput<string> {
     /**
-     * Initializes the Number Input
-     * @param {object} args - initialization args
+     * Initializes the Color Picker Input, which only allows hex color strings.
+     *
+     * @param args - The initialization args.
      */
-    constructor(args: IBaseInputArgs) {
-        super(Object.assign({
+    constructor(args: Immutable<IBaseInputArgs<string>>) {
+        super({
             type: "color",
-        }, args));
+            ...args,
+        });
     }
 
     /**
-     * Sets the value to a new color (if valid), otherwise defaults to white
+     * Sets the value to a new color (if valid), otherwise defaults to white.
      */
     public set value(newValue: string) {
         let parsedColor: Color;
@@ -27,7 +30,6 @@ export class ColorPicker extends BaseInput<string> {
             parsedColor = Color("white");
         }
 
-        // for some reason the ts bindings for color lack a lot of the actual methods
         const value = parsedColor.hex();
         super.value = value;
         this.element.attr("title", value);

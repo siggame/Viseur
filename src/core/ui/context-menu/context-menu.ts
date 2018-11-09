@@ -1,8 +1,13 @@
 import * as $ from "jquery";
-import partial from "src/core/partial";
+import { FontAwesomeIds } from "src/core/font-awesome";
+import { partial } from "src/core/partial";
+import { Immutable } from "src/utils";
 import { BaseElement, IBaseElementArgs } from "../base-element";
+import * as contextMenuItemHbs from "./context-menu-item.hbs";
+import * as contextMenuHbs from "./context-menu.hbs";
 import "./context-menu.scss";
 
+/** A menu item in a ContextMenu. */
 export interface IMenuItem {
     /** hover over title */
     description: string;
@@ -11,12 +16,13 @@ export interface IMenuItem {
     text: string;
 
     /** the icon id from font awesome (without the "fa-" prefix) */
-    icon: string;
+    icon: FontAwesomeIds;
 
     /** Callback function to invoke whenever this menu item is clicked */
-    callback: () => void;
+    callback(): void;
 }
 
+/** An array of menu items to make a Context Menu from. */
 export type MenuItems = Array<"---" | IMenuItem>;
 
 /** A custom right click menu */
@@ -25,10 +31,10 @@ export class ContextMenu extends BaseElement {
      * Creates a context menu
      * @param args base element args with optional structure
      */
-    constructor(args: IBaseElementArgs & {
-        structure?: Array<"---" | IMenuItem>,
-    }) {
-        super(args);
+    constructor(args: Immutable<IBaseElementArgs & {
+        structure?: Array<"---" | IMenuItem>;
+    }>) {
+        super(args, contextMenuHbs);
 
         this.hide();
 
@@ -44,11 +50,12 @@ export class ContextMenu extends BaseElement {
     }
 
     /**
-     * Sets, and rebuilds, the structure of this context menu
+     * Sets, and rebuilds, the structure of this context menu.
      *
-     * @param {Array} structure - array of the structure, in order. Can be object for items, or "---" for seperators
+     * @param structure - The array of the structure, in order.
+     * Can be object for items, or "---" for seperators.
      */
-    public setStructure(structure: MenuItems): void {
+    public setStructure(structure: Immutable<MenuItems>): void {
         this.element.html(""); // clear out any structure we had
 
         for (const item of structure) {
@@ -56,7 +63,11 @@ export class ContextMenu extends BaseElement {
                 this.element.append($("<hr>"));
             }
             else { // it's a menu item
-                const elem = partial(require("./context-menu-item.hbs"), item, this.element);
+                const elem = partial(
+                    contextMenuItemHbs,
+                    item,
+                    this.element,
+                );
 
                 elem.on("click", (e) => {
                     e.stopPropagation();
@@ -68,9 +79,10 @@ export class ContextMenu extends BaseElement {
     }
 
     /**
-     * Displays the context menu
-     * @param x the position of the context menu in pixels
-     * @param y the position of the context menu in pixels
+     * Displays the context menu.
+     *
+     * @param x - The position of the context menu in pixels.
+     * @param y - The position of the context menu in pixels.
      */
     public show(x: number, y: number): void {
         this.element
@@ -91,10 +103,6 @@ export class ContextMenu extends BaseElement {
         $(document).off("click", () => {
             this.lostFocus();
         });
-    }
-
-    protected getTemplate(): Handlebars {
-        return require("./context-menu.hbs");
     }
 
     /**

@@ -2,8 +2,11 @@
 import * as Setting from "./setting";
 import { createSettings } from "./settings";
 
+/**
+ * The settings for the core Viseur instance
+ */
 export const ViseurSettings = createSettings("viseur", {
-    infoPaneSide: new Setting.DropDownSetting<string>({
+    infoPaneSide: new Setting.DropDownSetting<"top" | "right" | "bottom" | "left">({
         id: "info-pane-side",
         label: "Docked Side",
         hint: "Which side this info pane will be snapped to.",
@@ -22,6 +25,16 @@ export const ViseurSettings = createSettings("viseur", {
         min: 200,
         default: 440,
     }),
+    theme: new Setting.DropDownSetting<"Light" | "Dark">({
+        id: "gui-theme",
+        label: "Theme",
+        hint: "The color scheme to use for the GUI",
+        options: [
+            "Light",
+            "Dark",
+        ],
+        default: "Light",
+    }),
     playbackSpeed: new Setting.NumberSetting({
         id: "playback-speed",
         label: "Playback Speed",
@@ -30,7 +43,7 @@ export const ViseurSettings = createSettings("viseur", {
         max: 1000,
         default: 200,
     }),
-    playbackMode: new Setting.DropDownSetting<string>({
+    playbackMode: new Setting.DropDownSetting<"deltas" | "turns">({
         id: "playback-mode",
         label: "Playback Mode",
         // tslint:disable:max-line-length

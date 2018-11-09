@@ -1,5 +1,6 @@
 import { createResources, load } from "src/viseur/renderer";
 
+/** These are the resources (sprites) that are loaded and usable by game objects in Newtonian. */
 export const GameResources = createResources("Newtonian", {
     // <<-- Creer-Merge: resources -->>
 
