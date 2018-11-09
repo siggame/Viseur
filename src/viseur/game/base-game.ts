@@ -567,12 +567,17 @@ export class BaseGame extends StateObject {
             this.pane.setHumanPlayer(this.humanPlayerID);
         }
 
-        // Attach callbacks to recolor this game whenever a color setting
-        // changes.
-        const recolor = () => this.recolor();
-        this.settings.customPlayerColors.changed.on(recolor);
+        // Attach callbacks to recolor this game whenever a color setting changes.
+        const doRecolor = () => {
+            this.recolor();
+            if (this.pane) {
+                this.pane.update(this.getCurrentMostState(), this.getNextMostState());
+            }
+        };
+
+        this.settings.customPlayerColors.changed.on(doRecolor);
         for (const playerColorSetting of this.settings.playerColors) {
-            playerColorSetting.changed.on(recolor);
+            playerColorSetting.changed.on(doRecolor);
         }
 
         const size = this.getSize(current);

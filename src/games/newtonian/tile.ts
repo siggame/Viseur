@@ -7,6 +7,10 @@ import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
+// <<-- Creer-Merge: imports -->>
+import { pixiFade } from "src/utils";
+// <<-- /Creer-Merge: imports -->>
+
 // <<-- Creer-Merge: should-render -->>
 const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
@@ -26,33 +30,23 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** The floor sprite for the base ground texture */
-    public readonly floor: PIXI.Sprite;
-
     /** Sprite for the wall on this tile */
     public readonly wall: PIXI.Sprite;
 
-    /** Red ore sprite */
-    public readonly redOreSprite: PIXI.Sprite;
+    /** The bar on this tile. */
+    private readonly barSprite: PIXI.Sprite;
 
-    /** blue ore sprite */
-    public readonly blueOreSprite: PIXI.Sprite;
-
-    /** red sprite */
-    public readonly redSprite: PIXI.Sprite;
-
-    /** blue sprite */
-    public readonly blueSprite: PIXI.Sprite;
+    /** Ore sprite on this tile */
+    private readonly oreSprite: PIXI.Sprite;
 
     /** The ID of the owner of this tile */
-    public readonly ownerID?: string;
+    private readonly ownerID?: string;
 
     /** The generator or spawn for the room. */
-    public readonly ownerOverlay: PIXI.Sprite | undefined;
+    private readonly ownerOverlay: PIXI.Sprite | undefined;
 
     /** The container for all ore sprites */
-    public readonly oreContainer: PIXI.Container;
-    // You can add additional member variables here
+    private readonly oreContainer: PIXI.Container;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -72,11 +66,12 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.owner) {
             this.ownerID = state.owner.id;
         }
+
         this.oreContainer = new PIXI.Container();
         this.oreContainer.setParent(this.game.layers.ore);
         this.oreContainer.position.copy(this.container.position);
 
-        this.floor = state.type === "conveyor"
+        state.type === "conveyor"
             ? this.addSprite.conveyor()
             : this.addSprite.floor();
 
@@ -87,12 +82,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
 
         this.wall = this.addSprite.wall();
-
-        const inOre = { container: this.oreContainer };
-        this.redOreSprite = this.addSprite.redore(inOre);
-        this.blueOreSprite = this.addSprite.blueore(inOre);
-        this.redSprite = this.addSprite.red(inOre);
-        this.blueSprite = this.addSprite.blue(inOre);
+        this.barSprite = this.addSprite.resourceBar({ container: this.oreContainer });
+        this.oreSprite = this.addSprite.resourceOre({ container: this.oreContainer });
 
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -119,12 +110,12 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
 
-        this.wall.visible = current.isWall;
+        pixiFade(this.wall, dt, Number(next.isWall), Number(current.isWall));
 
-        this.redOreSprite.visible = current.rediumOre > 0;
-        this.redSprite.visible = current.redium > 0;
-        this.blueOreSprite.visible = current.blueiumOre > 0;
-        this.blueSprite.visible = current.blueium > 0;
+        this.oreContainer.visible = true;
+        pixiFade(this.barSprite, dt, current.redium || current.blueium, next.redium || next.blueium);
+        pixiFade(this.oreSprite, dt, current.rediumOre || current.blueiumOre, next.rediumOre || next.blueiumOre);
+
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -140,6 +131,9 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             const ownerColor = this.game.getPlayersColor(this.ownerID);
             this.ownerOverlay.tint = ownerColor.rgbNumber();
         }
+
+        this.recolorResources(this.getCurrentMostState(), this.getNextMostState());
+
         // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
     }
@@ -155,7 +149,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.hideRender();
 
         // <<-- Creer-Merge: hide-render -->>
-        // hide anything outside of `this.container`.
+        this.oreContainer.visible = false; // not a child of our container, so we must manually hide it.
         // <<-- /Creer-Merge: hide-render -->>
     }
 
@@ -176,7 +170,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Tile based off its states
+        this.recolorResources(current, next);
         // <<-- /Creer-Merge: state-updated -->>
     }
 
@@ -185,6 +179,31 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <<-- Creer-Merge: protected-private-functions -->>
-    // You can add additional protected/private functions here
+
+    /**
+     * Recolors the resource sprites in this tile according to player color.
+     *
+     * @param current - The current tile state.
+     * @param next - The next tile state.
+     */
+    private recolorResources(current: Immutable<ITileState>, next: Immutable<ITileState>): void {
+        let playerIndex: number | undefined;
+        switch (true) {
+            case Boolean(current.redium || next.redium || current.rediumOre || next.rediumOre):
+                playerIndex = 0;
+                break;
+            case Boolean(current.blueium || next.blueium || current.blueiumOre || next.blueiumOre):
+                playerIndex = 1;
+        }
+
+        if (playerIndex === undefined) {
+            return; /// nothing to recolor
+        }
+
+        const color = this.game.getPlayersColor(this.game.players[playerIndex]).rgbNumber();
+        this.barSprite.tint = color;
+        this.oreSprite.tint = color;
+    }
+
     // <<-- /Creer-Merge: protected-private-functions -->>
 }

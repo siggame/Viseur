@@ -1,6 +1,7 @@
 import { euclideanDistance, IPoint } from "@cadre/ts-utils";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
+import { ease } from "./easing";
 
 /** The possible types that can be used for PIXI tints. */
 export type ColorTint = Color | number | string;
@@ -281,4 +282,32 @@ export function renderSpriteRotatedTowards(
     sprite.rotation = angleRadians;
 
     sprite.position.set(pointA.x, pointA.y);
+}
+
+/**
+ * Fades a given PIXI.container's in or out based on some dt given a direction to fade.
+ * Takes a current and next number to determine if they should fade in, out, be hidden, or shown.
+ * - Both > 0 :: fully visible all the time
+ * - Both = 0 :: fully invisible all the time
+ * - Current != 0, Next = 0 :: fade out
+ * - Next != 0, Current = 0 :: fade in
+ *
+ * @param sprite - The sprite to fade in or out.
+ * @param dt - The current amount to fade in or out [0, 1). ) means no fade, 0.9999 would be almost fully faded.
+ * @param current - The current number.
+ * @param next - The next number.
+ */
+export function pixiFade(sprite: PIXI.Container, dt: number, current: number, next: number): void {
+    if (current === 0 && next === 0) { // hide
+        sprite.alpha = 0;
+    }
+    else if (current !== 0 && next !== 0) { // show
+        sprite.alpha = 1;
+    }
+    else if (current === 0 && next !== 0) { // fade in
+        sprite.alpha = ease(dt);
+    }
+    else { // must be fade out
+        sprite.alpha = ease(1 - dt);
+    }
 }

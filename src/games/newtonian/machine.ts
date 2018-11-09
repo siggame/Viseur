@@ -8,8 +8,6 @@ import { GameObject } from "./game-object";
 import { IMachineState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
-import * as Color from "color";
 import { ease } from "src/utils";
 import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
@@ -37,6 +35,12 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** Bar showing how much work is done. */
     private readonly workBar: GameBar;
 
+    /** The owner's ore index in the players array. */
+    private readonly ownerOreIndex: 0 | 1;
+
+    /** The sprite colored for this machine. */
+    private readonly sprite: PIXI.Sprite;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -50,15 +54,14 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Machine here.
         this.container.setParent(this.game.layers.machine);
         this.container.position.set(state.tile.x, state.tile.y);
 
-        this.addSprite.machine({
-            tint: state.oreType.toLowerCase().charAt(0) === "r"
-                ? Color("red")
-                : Color("blue"),
-        });
+        this.ownerOreIndex = state.oreType.toLowerCase().charAt(0) === "r"
+            ? 0 // first player's ore
+            : 1; // second player's
+
+        this.sprite = this.addSprite.machine();
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
@@ -102,6 +105,10 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public recolor(): void {
         super.recolor();
+
+        // <<-- Creer-Merge: recolor -->>
+        this.sprite.tint = this.game.getPlayersColor(this.ownerOreIndex).rgbNumber();
+        // <<-- /Creer-Merge: recolor -->>
     }
 
     /**

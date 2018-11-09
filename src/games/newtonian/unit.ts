@@ -8,11 +8,11 @@ import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
-// import * as Color from "color";
-import { ease, isObject, updown } from "src/utils";
+import { ease, isObject, pixiFade, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 import { Tile } from "./tile";
+
+const OVER_SCALE = 0.1;
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -64,31 +64,25 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Unit here.
         this.ownerID = state.owner.id;
-        this.container.setParent(this.game.layers.game);
-        this.container.scale.set(1.1, 1.1);
-        this.container.position.x -= 0.05;
+        this.container.scale.set(OVER_SCALE + 1, OVER_SCALE + 1);
+        this.container.position.x -= OVER_SCALE / 2;
 
-        this.jobSprite = this.addSprite[state.job.title as "intern" | "physicist" | "manager"]();
+        const jobContainer = new PIXI.Container();
+        jobContainer.setParent(this.container);
+        this.addSprite[`${state.job.title}Bottom` as "internBottom"]({ container: jobContainer });
+        this.jobSprite = this.addSprite[`${state.job.title}Top` as "internTop"]({ container: jobContainer });
 
         this.indicatorSprite = this.addSprite.indicator();
 
-        if (state.tile) {
-            this.container.position.set(state.tile.x, state.tile.y);
-            this.container.visible = true;
-        }
-        else {
-            this.container.position.set(-1, -1);
-            this.container.visible = false;
-        }
-
-        if (state.owner.id === "0") {
+        if (state.owner.id === this.game.players[0].id) {
             // flip the first player's job sprite
-            this.jobSprite.scale.x *= -1;
-            this.jobSprite.position.x += 1;
+            jobContainer.scale.x *= -1;
+            jobContainer.position.x += 1;
         }
 
         this.healthBar = new GameBar(this.container, {
             max: state.job.health,
+            visibilitySetting: this.game.settings.displayHealthBars,
         });
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -129,14 +123,15 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         );
 
         this.healthBar.update(ease(current.health, next.health, dt));
+        pixiFade(this.container, dt, current.health, next.health);
 
         if (this.attackingTile) {
             const d = updown(dt);
             const dx = (this.attackingTile.x - current.tile.x) / 2;
             const dy = (this.attackingTile.y - current.tile.y) / 2;
 
-            this.container.x = dx * d;
-            this.container.y = dy * d;
+            this.container.x += dx * d;
+            this.container.y += dy * d;
         }
 
         // <<-- /Creer-Merge: render -->>
@@ -150,7 +145,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        this.healthBar.recolor(this.game.getPlayersColor(this.ownerID));
+        const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.jobSprite.tint = color;
+        this.healthBar.recolor(color);
         // <<-- /Creer-Merge: recolor -->>
     }
 
