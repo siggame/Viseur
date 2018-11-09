@@ -56,13 +56,13 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),
+        /** Top layer, for UI elements above the game */
+        game: this.createLayer(),
         /** Machine layer, for machines */
         machine: this.createLayer(),
         /** Resource Layer, for ores */
         ore: this.createLayer(),
         /** Middle layer, for moving game objects */
-        game: this.createLayer(),
-        /** Top layer, for UI elements above the game */
         ui: this.createLayer(),
         // <<-- /Creer-Merge: layers -->>
     });

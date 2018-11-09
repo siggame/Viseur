@@ -74,14 +74,14 @@ export class Machine extends GameObject {
         else {
             this.container.position.set(-1, -1);
         }
-        this.container.scale.x = 1.25;
-        this.container.scale.y = 1.25;
-        this.container.position.y -= .25;
-        this.container.position.x -= .1;
+        this.container.scale.x = 1.35;
+        this.container.scale.y = 1.35;
+        this.container.position.y -= .5;
+        this.container.position.x -= .15;
 
         this.barContainer = new PIXI.Container();
         this.barContainer.setParent(this.container);
-        this.barContainer.position.y -= 0.05;
+        this.barContainer.position.y += 0.1;
 
         this.workBar = new GameBar(this.barContainer);
         this.workBar.recolor("green");
