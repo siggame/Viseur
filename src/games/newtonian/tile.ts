@@ -34,6 +34,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     public floor: PIXI.Sprite;
+    public door: PIXI.Sprite;
+    public openDoor: PIXI.Sprite;
+    public eastDoor: PIXI.Sprite;
+    public eastOpenDoor: PIXI.Sprite;
 
     public wall: PIXI.Sprite;
 
@@ -51,6 +55,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     public isGen: boolean;
     public isCon: boolean;
+
+    public isDecoration: number;
 
     public oreContainer: PIXI.Container;
     // You can add additional member variables here
@@ -86,6 +92,14 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         this.floor = this.game.resources.floor.newSprite({ container: this.container });
         this.floor.visible = false;
+        this.door = this.game.resources.door.newSprite({ container: this.container });
+        this.door.visible = false;
+        this.openDoor = this.game.resources.openDoor.newSprite({ container: this.container });
+        this.openDoor.visible = false;
+        this.eastDoor = this.game.resources.eastDoor.newSprite({ container: this.container });
+        this.eastDoor.visible = false;
+        this.eastOpenDoor = this.game.resources.eastOpenDoor.newSprite({ container: this.container });
+        this.eastOpenDoor.visible = false;
         this.wall = this.game.resources.wall.newSprite({ container: this.container });
         this.wall.visible = false;
         this.genRoom = this.game.resources.genRoom.newSprite({ container: this.container });
@@ -102,6 +116,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.blueSprite.visible = false;
         this.container.position.set(state.x, state.y);
         this.oreContainer.position.copy(this.container.position);
+
+        this.isDecoration = state.decoration;
 
         this.recolor();
         // You can initialize your new Tile here.
@@ -129,7 +145,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-
         if (current.isWall) {
             this.wall.visible = true;
         }
@@ -145,7 +160,31 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.conveyor.visible = true;
         }
         else {
-            this.floor.visible = true;
+            if (!this.isDecoration) {
+                this.floor.visible = true;
+            }
+            else {
+                if (this.isDecoration === 2) {
+                    if (!next.unit) {
+                        this.door.visible = true;
+                        this.openDoor.visible = false;
+                    }
+                    else {
+                        this.door.visible = false;
+                        this.openDoor.visible = true;
+                    }
+                }
+                else {
+                    if (!next.unit) {
+                        this.eastDoor.visible = true;
+                        this.eastOpenDoor.visible = false;
+                    }
+                    else {
+                        this.eastDoor.visible = false;
+                        this.eastOpenDoor.visible = true;
+                    }
+                }
+            }
         }
         if (current.rediumOre > 0) {
             this.redOreSprite.visible = true;
