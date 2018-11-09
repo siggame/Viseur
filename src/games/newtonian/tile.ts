@@ -8,13 +8,10 @@ import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// import * as Color from "color";
-import { Player } from "./player";
-// any additional imports you want can be added here safely between Creer runs
+import { pixiFade } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
-// Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
@@ -33,23 +30,29 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    public floor: PIXI.Sprite;
+    /** Sprite for the wall on this tile */
+    public readonly wall: PIXI.Sprite;
+    // public floor: PIXI.Sprite;
     public door: PIXI.Sprite;
     public openDoor: PIXI.Sprite;
     public eastDoor: PIXI.Sprite;
     public eastOpenDoor: PIXI.Sprite;
 
-    public wall: PIXI.Sprite;
+    /** The bar on this tile. */
+    private readonly barSprite: PIXI.Sprite;
 
-    public genRoom: PIXI.Sprite;
+    /** Ore sprite on this tile */
+    private readonly oreSprite: PIXI.Sprite;
 
-    public conveyor: PIXI.Sprite;
+    /** The ID of the owner of this tile */
+    private readonly ownerID?: string;
 
-    public redOreSprite: PIXI.Sprite;
-    public blueOreSprite: PIXI.Sprite;
-    public redSprite: PIXI.Sprite;
-    public blueSprite: PIXI.Sprite;
+    /** The generator or spawn for the room. */
+    private readonly ownerOverlay: PIXI.Sprite | undefined;
 
+    /** The container for all ore sprites */
+    private readonly oreContainer: PIXI.Container;
+    /**
     public owner?: Player;
     public spawn: PIXI.Sprite;
 
@@ -59,7 +62,9 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public isDecoration: number;
 
     public oreContainer: PIXI.Container;
+    */
     // You can add additional member variables here
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -73,20 +78,32 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
+        this.container.setParent(this.game.layers.background);
+        this.container.position.set(state.x, state.y);
 
         if (state.owner) {
-            this.owner = this.game.gameObjects[state.owner.id] as Player;
+            this.ownerID = state.owner.id;
         }
-
-        // Initialize if it is a Generator Tile.
-        this.isGen = state.type === "generator" ? true : false;
-        this.isCon = state.type === "conveyor" ? true : false;
 
         this.oreContainer = new PIXI.Container();
         this.oreContainer.setParent(this.game.layers.ore);
+        this.oreContainer.position.copy(this.container.position);
 
-        this.container.setParent(this.game.layers.background);
+        state.type === "conveyor"
+            ? this.addSprite.conveyor()
+            : this.addSprite.floor();
 
+        if (this.ownerID !== undefined) {
+            this.ownerOverlay = state.type === "generator"
+                ? this.addSprite.genRoom()
+                : this.addSprite.spawn();
+        }
+
+        this.wall = this.addSprite.wall();
+        this.barSprite = this.addSprite.resourceBar({ container: this.oreContainer });
+        this.oreSprite = this.addSprite.resourceOre({ container: this.oreContainer });
+
+        /**
         this.spawn = this.game.resources.spawn.newSprite({ container: this.container });
         this.spawn.visible = false;
 
@@ -118,7 +135,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.oreContainer.position.copy(this.container.position);
 
         this.isDecoration = state.decoration;
-
+        */
         this.recolor();
         // You can initialize your new Tile here.
         // <<-- /Creer-Merge: constructor -->>
@@ -145,6 +162,13 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
+
+        pixiFade(this.wall, dt, Number(next.isWall), Number(current.isWall));
+
+        this.oreContainer.visible = true;
+        pixiFade(this.barSprite, dt, current.redium || current.blueium, next.redium || next.blueium);
+        pixiFade(this.oreSprite, dt, current.rediumOre || current.blueiumOre, next.rediumOre || next.blueiumOre);
+        /**
         if (current.isWall) {
             this.wall.visible = true;
         }
@@ -210,6 +234,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         else {
             this.redSprite.visible = false;
         }
+        */
         // render where the Tile is
         // <<-- /Creer-Merge: render -->>
     }
@@ -222,11 +247,13 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        if (this.owner) {
-            const ownerColor = this.game.getPlayersColor(this.owner);
-            this.spawn.tint = ownerColor.rgbNumber();
-            this.genRoom.tint = ownerColor.rgbNumber();
+        if (this.ownerID !== undefined && this.ownerOverlay) {
+            const ownerColor = this.game.getPlayersColor(this.ownerID);
+            this.ownerOverlay.tint = ownerColor.rgbNumber();
         }
+
+        this.recolorResources(this.getCurrentMostState(), this.getNextMostState());
+
         // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
     }
@@ -242,7 +269,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.hideRender();
 
         // <<-- Creer-Merge: hide-render -->>
-        // hide anything outside of `this.container`.
+        this.oreContainer.visible = false; // not a child of our container, so we must manually hide it.
         // <<-- /Creer-Merge: hide-render -->>
     }
 
@@ -263,7 +290,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Tile based off its states
+        this.recolorResources(current, next);
         // <<-- /Creer-Merge: state-updated -->>
     }
 
@@ -272,6 +299,31 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <<-- Creer-Merge: protected-private-functions -->>
-    // You can add additional protected/private functions here
+
+    /**
+     * Recolors the resource sprites in this tile according to player color.
+     *
+     * @param current - The current tile state.
+     * @param next - The next tile state.
+     */
+    private recolorResources(current: Immutable<ITileState>, next: Immutable<ITileState>): void {
+        let playerIndex: number | undefined;
+        switch (true) {
+            case Boolean(current.redium || next.redium || current.rediumOre || next.rediumOre):
+                playerIndex = 0;
+                break;
+            case Boolean(current.blueium || next.blueium || current.blueiumOre || next.blueiumOre):
+                playerIndex = 1;
+        }
+
+        if (playerIndex === undefined) {
+            return; /// nothing to recolor
+        }
+
+        const color = this.game.getPlayersColor(this.game.players[playerIndex]).rgbNumber();
+        this.barSprite.tint = color;
+        this.oreSprite.tint = color;
+    }
+
     // <<-- /Creer-Merge: protected-private-functions -->>
 }

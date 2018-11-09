@@ -8,15 +8,14 @@ import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
-// import * as Color from "color";
-import { ease, updown } from "src/utils";
+import { ease, isObject, pixiFade, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
-import { Player } from "./player";
+import { Tile } from "./tile";
+
+const OVER_SCALE = 0.1;
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
-// Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
@@ -35,25 +34,21 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IUnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
-    public owner: Player;
-    // Job of unit. contains the string of their job title.
-    public job: string;
+    /** The id of the owner of this unit, for recoloring */
+    public ownerID: string;
 
-    public internSprite: PIXI.Sprite;
-    public managerSprite: PIXI.Sprite;
-    public physicistSprite: PIXI.Sprite;
+    /** Sprite for our job title */
+    public jobSprite: PIXI.Sprite;
 
-    public spriteInUse: PIXI.Sprite;
+    /** indicated conveyor direction */
     public indicatorSprite: PIXI.Sprite;
+
+    /** The tile state of the tile we are attacking, if we are. */
     public attackingTile?: ITileState;
 
-    public maxHealth: number;
+    /** Our health bar */
     public readonly healthBar: GameBar;
 
-    public barContainer: PIXI.Container;
-
-    public facing: string;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -68,6 +63,22 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Unit here.
+        this.ownerID = state.owner.id;
+        this.container.scale.set(OVER_SCALE + 1, OVER_SCALE + 1);
+        this.container.position.x -= OVER_SCALE / 2;
+
+        const jobContainer = new PIXI.Container();
+        jobContainer.setParent(this.container);
+        this.addSprite[`${state.job.title}Bottom` as "internBottom"]({ container: jobContainer });
+        this.jobSprite = this.addSprite[`${state.job.title}Top` as "internTop"]({ container: jobContainer });
+
+        this.indicatorSprite = this.addSprite.indicator();
+
+        if (state.owner.id === this.game.players[0].id) {
+            // flip the first player's job sprite
+            jobContainer.scale.x *= -1;
+            jobContainer.position.x += 1;
+        /**
         this.owner = this.game.gameObjects[state.owner.id] as Player;
         this.job = state.job.title;
         this.container.setParent(this.game.layers.game);
@@ -102,10 +113,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.facing = "right";
             this.spriteInUse!.scale.x *= -1;
             this.spriteInUse!.anchor.x += 1;
+         */
         }
-        this.maxHealth = state.job.health;
-        this.healthBar = new GameBar(this.barContainer);
-        this.healthBar.recolor(this.game.getPlayersColor(this.owner));
+
+        this.healthBar = new GameBar(this.container, {
+            max: state.job.health,
+            visibilitySetting: this.game.settings.displayHealthBars,
+        });
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -133,11 +147,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // render where the Unit is
 
         // No longer on the map.
-        if (next.tile == null) {
+        if (!next.tile) {
             this.container.visible = false;
 
             return;
         }
+        this.container.visible = true;
+        /**
         else {
             this.container.visible = true;
         }
@@ -156,20 +172,16 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
                 this.spriteInUse!.anchor.x += 1;
             }
         }
+        */
         this.container.position.set(
             ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),
         );
 
-      //  let curHealth;
-      //  let nextHealth;
-      //  curHealth = current.health / this.maxHeath;
-      //  nextHealth = next.health / this.maxHeath;
-
-        this.healthBar.update(ease(current.health / this.maxHealth, next.health / this.maxHealth, dt));
+        this.healthBar.update(ease(current.health, next.health, dt));
+        pixiFade(this.container, dt, current.health, next.health);
 
         if (this.attackingTile) {
-
             const d = updown(dt);
             const dx = (this.attackingTile.x - current.tile.x) / 2;
             const dy = (this.attackingTile.y - current.tile.y) / 2;
@@ -177,8 +189,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.container.x += dx * d;
             this.container.y += dy * d;
         }
-
-        this.healthBar.recolor(this.game.getPlayersColor(this.owner));
 
         // <<-- /Creer-Merge: render -->>
     }
@@ -191,12 +201,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
-       //  const ownerColor = this.game.getPlayersColor(this.owner);
-        // if (this.spriteInUse) {
-        // this.spriteInUse.tint = ownerColor.rgbNumber();
-        // }
-
+        const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.jobSprite.tint = color;
+        this.healthBar.recolor(color);
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -235,47 +242,26 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // update the Unit based off its states
         this.attackingTile = undefined;
         this.indicatorSprite.visible = false;
-        /* TODO: fix
-        if (nextReason && nextReason.run && nextReason.run.caller === this) {
-            const run = nextReason.run;
-            if (nextReason.returned === true) {
+        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+            if (nextDelta.data.returned) {
+                const { run } = nextDelta.data;
+                const tile = this.game.gameObjects[String(
+                    isObject(run.args.tile) && run.args.tile.id,
+                )];
+
                 switch (run.functionName) {
                     case "attack":
-                        this.attackingTile = nextReason.run.args.tile;
+                        this.attackingTile = tile && (tile as Tile).getNextMostState();
                         break;
                     case "act":
-                        if (run.args.tile.next) {
+                        if (tile && tile.next) {
                             this.indicatorSprite.visible = true;
                         }
-                        break;
-                    default:
                 }
             }
         }
-        */
         // <<-- /Creer-Merge: state-updated -->>
     }
-
-    // <<-- Creer-Merge: public-functions -->>
-    // You can add additional public functions here
-    public set_job(job: string): void {
-        if (this.spriteInUse) {
-            this.spriteInUse.visible = false;
-        }
-        switch (job) {
-            case "intern":
-                this.spriteInUse = this.internSprite;
-                break;
-            case "physicist":
-                this.spriteInUse = this.physicistSprite;
-                break;
-            case "manager":
-                this.spriteInUse = this.managerSprite;
-        }
-        this.job = job;
-        this.spriteInUse.visible = true;
-    }
-    // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
     // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).

@@ -51,7 +51,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return state.players.map((p) => p.heat + p.pressure); // change to return the states scores for each player
+        return state.players.map((p) => [p.heat + p.pressure, state.victoryAmount] as [number, number]);
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -81,23 +81,29 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         const stats = super.getPlayerStats(state);
 
         // <<-- Creer-Merge: player-stats -->>
-        // add stats for players to show up here
         stats.push(
+            {
+                title: "Resources color",
+                get: (player) => {
+                    if (!this.game.settings.customPlayerColors.get()) {
+                        return null; // don't show this stat, as the colors are correct
+                    }
+
+                    return player.id === this.game.players[0].id
+                        ? "(Redium)"
+                        : "(Bluium)";
+                },
+            },
             {
                 title: "Some progress",
                 get: (player) => `${player.heat + player.pressure} / ${state.victoryAmount}`,
                 icon: "rocket",
             },
-        );
-        stats.push(
             {
                 title: "Heat",
                 icon: "free-code-camp",
                 get: (player) => player.heat,
             },
-        );
-
-        stats.push(
             {
                 title: "Pressure",
                 icon: "diamond",
