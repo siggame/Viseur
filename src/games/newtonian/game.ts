@@ -57,13 +57,13 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),
-        /** Top layer, for UI elements above the game */
-        game: this.createLayer(),
         /** Machine layer, for machines */
         machine: this.createLayer(),
         /** Resource Layer, for ores */
         ore: this.createLayer(),
         /** Middle layer, for moving game objects */
+        game: this.createLayer(),
+        /** Top layer, for UI elements above the game */
         ui: this.createLayer(),
         // <<-- /Creer-Merge: layers -->>
     });
@@ -118,6 +118,24 @@ export class Game extends BaseGame {
 
         // <<-- Creer-Merge: create-background -->>
         // Initialize your background here if need be
+
+        // this is an example of how to render a sprite. You'll probably want
+        // to remove this code and the test sprite once actually doing things
+       /*  this.resources.test.newSprite(this.layers.background, {
+            position: {x: 5, y: 5},
+        }); */
+
+        // this shows you how to render text that scales to the game
+        // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
+        /* this.renderer.newPixiText(
+            "This game has no\ngame logic added\nto it... yet!",
+            this.layers.game,
+            {
+                fill: 0xFFFFFF, // white in hexademical color format
+            },
+            1,
+        ); */
+
         // <<-- /Creer-Merge: create-background -->>
     }
 

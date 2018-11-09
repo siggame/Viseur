@@ -51,7 +51,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return state.players.map((p) => [p.heat + p.pressure, state.victoryAmount] as [number, number]);
+        return state.players.map((p) => [p.heat * p.pressure, state.victoryAmount] as [number, number]);
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -91,12 +91,12 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
 
                     return player.id === this.game.players[0].id
                         ? "(Redium)"
-                        : "(Bluium)";
+                        : "(Blueium)";
                 },
             },
             {
                 title: "Some progress",
-                get: (player) => `${player.heat + player.pressure} / ${state.victoryAmount}`,
+                get: (player) => `${player.heat * player.pressure} / ${state.victoryAmount}`,
                 icon: "rocket",
             },
             {

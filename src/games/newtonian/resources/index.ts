@@ -10,7 +10,6 @@ export const GameResources = createResources("Newtonian", {
     spawn: load("spawn.jpg"),
     genRoom: load("genRoom.jpg"),
     conveyor: load("conveyor.png"),
-    indicator: load("bubble3.png"),
     machine: load("machine.png"),
 
     // Resources on tiles

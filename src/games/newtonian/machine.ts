@@ -58,7 +58,7 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.container.setParent(this.game.layers.machine);
         this.container.scale.set(CONTAINER_SCALE, CONTAINER_SCALE);
         const offset = (CONTAINER_SCALE - 1) / 2;
-        this.container.position.set(state.tile.x - offset, state.tile.y - offset);
+        this.container.position.set(state.tile.x - offset, state.tile.y - offset - .2);
 
         this.ownerOreIndex = state.oreType.toLowerCase().charAt(0) === "r"
             ? 0 // first player's ore
@@ -68,7 +68,7 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
-        barContainer.position.y = -0.1;
+        barContainer.position.y += 0.1;
 
         this.workBar = new GameBar(barContainer, {
             foregroundColor: "green",

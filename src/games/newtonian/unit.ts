@@ -40,9 +40,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** Sprite for our job title */
     public jobSprite: PIXI.Sprite;
 
-    /** indicated conveyor direction */
-    public indicatorSprite: PIXI.Sprite;
-
     /** The tile state of the tile we are attacking, if we are. */
     public attackingTile?: ITileState;
 
@@ -72,15 +69,17 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.addSprite[`${state.job.title}Bottom` as "internBottom"]({ container: jobContainer });
         this.jobSprite = this.addSprite[`${state.job.title}Top` as "internTop"]({ container: jobContainer });
 
-        this.indicatorSprite = this.addSprite.indicator();
-
         if (state.owner.id === this.game.players[0].id) {
             // flip the first player's job sprite
             jobContainer.scale.x *= -1;
             jobContainer.position.x += 1;
         }
 
-        this.healthBar = new GameBar(this.container, {
+        const barContainer = new PIXI.Container();
+        barContainer.setParent(this.container);
+        barContainer.position.y -= 0.25;
+
+        this.healthBar = new GameBar(barContainer, {
             max: state.job.health,
             visibilitySetting: this.game.settings.displayHealthBars,
         });
@@ -133,7 +132,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.container.x += dx * d;
             this.container.y += dy * d;
         }
-
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -185,7 +183,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: state-updated -->>
         // update the Unit based off its states
         this.attackingTile = undefined;
-        this.indicatorSprite.visible = false;
         if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
             if (nextDelta.data.returned) {
                 const { run } = nextDelta.data;
@@ -196,11 +193,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
                 switch (run.functionName) {
                     case "attack":
                         this.attackingTile = tile && (tile as Tile).getNextMostState();
-                        break;
-                    case "act":
-                        if (tile && tile.next) {
-                            this.indicatorSprite.visible = true;
-                        }
                 }
             }
         }
