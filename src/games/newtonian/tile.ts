@@ -45,7 +45,10 @@ export class Tile extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     public floor: PIXI.Sprite;
-    public floor2: PIXI.Sprite;
+    public door: PIXI.Sprite;
+    public openDoor: PIXI.Sprite;
+    public eastDoor: PIXI.Sprite;
+    public eastOpenDoor: PIXI.Sprite;
 
     public wall: PIXI.Sprite;
 
@@ -100,8 +103,14 @@ export class Tile extends GameObject {
 
         this.floor = this.game.resources.floor.newSprite(this.container);
         this.floor.visible = false;
-        this.floor2 = this.game.resources.floor2.newSprite(this.container);
-        this.floor2.visible = false;
+        this.door = this.game.resources.door.newSprite(this.container);
+        this.door.visible = false;
+        this.openDoor = this.game.resources.openDoor.newSprite(this.container);
+        this.openDoor.visible = false;
+        this.eastDoor = this.game.resources.eastDoor.newSprite(this.container);
+        this.eastDoor.visible = false;
+        this.eastOpenDoor = this.game.resources.eastOpenDoor.newSprite(this.container);
+        this.eastOpenDoor.visible = false;
         this.wall = this.game.resources.wall.newSprite(this.container);
         this.wall.visible = false;
         this.genRoom = this.game.resources.genRoom.newSprite(this.container);
@@ -162,11 +171,25 @@ export class Tile extends GameObject {
                 this.floor.visible = true;
             }
             else {
-                if (!next.unit) {
-                    this.floor2.visible = true;
+                if (this.isDecoration === 2) {
+                    if (!next.unit) {
+                        this.door.visible = true;
+                        this.openDoor.visible = false;
+                    }
+                    else {
+                        this.door.visible = false;
+                        this.openDoor.visible = true;
+                    }
                 }
                 else {
-                    this.floor2.visible = false;
+                    if (!next.unit) {
+                        this.eastDoor.visible = true;
+                        this.eastOpenDoor.visible = false;
+                    }
+                    else {
+                        this.eastDoor.visible = false;
+                        this.eastOpenDoor.visible = true;
+                    }
                 }
             }
         }

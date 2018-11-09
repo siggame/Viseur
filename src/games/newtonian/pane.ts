@@ -42,7 +42,7 @@ export class Pane<G extends IGameState, P extends IPlayerState> extends BasePane
      *          If You want to display no score, return undefined
      *          or an empty array.
      */
-    protected getPlayerScores(state: IGameState): number[] | undefined {
+    protected getPlayersScores(state: IGameState): number[] | undefined {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>

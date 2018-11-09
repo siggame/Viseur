@@ -63,7 +63,6 @@ export class Machine extends GameObject {
      */
     constructor(state: IMachineState, viseur: Viseur) {
         super(state, viseur);
-
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Machine here.
         this.container.setParent(this.game.layers.machine);
@@ -75,10 +74,14 @@ export class Machine extends GameObject {
         else {
             this.container.position.set(-1, -1);
         }
+        this.container.scale.x = 1.25;
+        this.container.scale.y = 1.25;
+        this.container.position.y -= .25;
+        this.container.position.x -= .1;
 
         this.barContainer = new PIXI.Container();
         this.barContainer.setParent(this.container);
-        this.barContainer.position.y -= 0.1;
+        this.barContainer.position.y -= 0.05;
 
         this.workBar = new GameBar(this.barContainer);
         this.workBar.recolor("green");
