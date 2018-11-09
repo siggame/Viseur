@@ -40,7 +40,7 @@ export interface IPaneStat<T = unknown> {
     title?: string;
 
     /** Callback that is send the current player/game state and should return some value to display. */
-    get(state: T): string | number;
+    get(state: T): string | number | null;
 }
 
 /** The list of stats. */
@@ -456,10 +456,15 @@ export class BasePane<
         let i = -1;
         for (const stat of statsList.stats) {
             i++;
-            let value: string = "";
+            let value = "";
+            let hide = false;
 
             if (stat.get) {
-                value = String(stat.get(obj));
+                const got = stat.get(obj);
+                if (got === null) {
+                    hide = true;
+                }
+                value = String(got);
             }
 
             if (stat.label) {
@@ -478,7 +483,7 @@ export class BasePane<
 
             const li = statsList.statsToListElement[i];
             if (li) {
-                li.html(value);
+                li.toggle(!hide).html(value);
             }
         }
     }
