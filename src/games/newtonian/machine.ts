@@ -10,6 +10,8 @@ import { IMachineState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
 import { GameBar } from "src/viseur/game";
+
+const CONTAINER_SCALE = 1.25;
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -54,7 +56,9 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.machine);
-        this.container.position.set(state.tile.x, state.tile.y);
+        this.container.scale.set(CONTAINER_SCALE, CONTAINER_SCALE);
+        const offset = (CONTAINER_SCALE - 1) / 2;
+        this.container.position.set(state.tile.x - offset, state.tile.y - offset);
 
         this.ownerOreIndex = state.oreType.toLowerCase().charAt(0) === "r"
             ? 0 // first player's ore
@@ -70,29 +74,6 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
             foregroundColor: "green",
             max: state.refineTime,
         });
-        /**
-        this.machineSprite = this.game.resources.machine.newSprite({ container: this.container });
-        this.type = state.oreType.toLowerCase().charAt(0);
-        if (state.tile) {
-            this.container.position.set(state.tile.x, state.tile.y);
-        }
-        else {
-            this.container.position.set(-1, -1);
-        }
-        this.container.scale.x = 1.35;
-        this.container.scale.y = 1.35;
-        this.container.position.y -= .5;
-        this.container.position.x -= .15;
-
-        this.barContainer = new PIXI.Container();
-        this.barContainer.setParent(this.container);
-        this.barContainer.position.y += 0.1;
-
-        this.workBar = new GameBar(this.barContainer);
-        this.workBar.recolor("green");
-        this.maxWork = state.refineTime;
-        this.recolor();
-        */
         // <<-- /Creer-Merge: constructor -->>
     }
 

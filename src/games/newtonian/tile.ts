@@ -32,11 +32,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: variables -->>
     /** Sprite for the wall on this tile */
     public readonly wall: PIXI.Sprite;
-    // public floor: PIXI.Sprite;
-    public door: PIXI.Sprite;
-    public openDoor: PIXI.Sprite;
-    public eastDoor: PIXI.Sprite;
-    public eastOpenDoor: PIXI.Sprite;
 
     /** The bar on this tile. */
     private readonly barSprite: PIXI.Sprite;
@@ -52,19 +47,12 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** The container for all ore sprites */
     private readonly oreContainer: PIXI.Container;
-    /**
-    public owner?: Player;
-    public spawn: PIXI.Sprite;
 
-    public isGen: boolean;
-    public isCon: boolean;
+    /** The sprite for a door */
+    private readonly door: PIXI.Sprite | undefined;
 
-    public isDecoration: number;
-
-    public oreContainer: PIXI.Container;
-    */
-    // You can add additional member variables here
-
+    /** The sprite for an open door. */
+    private readonly openDoor: PIXI.Sprite | undefined;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -103,41 +91,20 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.barSprite = this.addSprite.resourceBar({ container: this.oreContainer });
         this.oreSprite = this.addSprite.resourceOre({ container: this.oreContainer });
 
-        /**
-        this.spawn = this.game.resources.spawn.newSprite({ container: this.container });
-        this.spawn.visible = false;
+        const isDoor = !state.isWall && this.ownerID === undefined &&
+                        state.type !== "conveyor" && state.decoration;
 
-        this.floor = this.game.resources.floor.newSprite({ container: this.container });
-        this.floor.visible = false;
-        this.door = this.game.resources.door.newSprite({ container: this.container });
-        this.door.visible = false;
-        this.openDoor = this.game.resources.openDoor.newSprite({ container: this.container });
-        this.openDoor.visible = false;
-        this.eastDoor = this.game.resources.eastDoor.newSprite({ container: this.container });
-        this.eastDoor.visible = false;
-        this.eastOpenDoor = this.game.resources.eastOpenDoor.newSprite({ container: this.container });
-        this.eastOpenDoor.visible = false;
-        this.wall = this.game.resources.wall.newSprite({ container: this.container });
-        this.wall.visible = false;
-        this.genRoom = this.game.resources.genRoom.newSprite({ container: this.container });
-        this.genRoom.visible = false;
-        this.conveyor = this.game.resources.conveyor.newSprite({ container: this.container });
-        this.conveyor.visible = false;
-        this.redOreSprite = this.game.resources.redore.newSprite({ container: this.container });
-        this.redOreSprite.visible = false;
-        this.blueOreSprite = this.game.resources.blueore.newSprite({ container: this.container });
-        this.blueOreSprite.visible = false;
-        this.redSprite = this.game.resources.red.newSprite({ container: this.oreContainer });
-        this.redSprite.visible = false;
-        this.blueSprite = this.game.resources.blue.newSprite({ container: this.oreContainer });
-        this.blueSprite.visible = false;
-        this.container.position.set(state.x, state.y);
-        this.oreContainer.position.copy(this.container.position);
+        if (isDoor) {
+            const isEast = state.decoration === 2;
+            this.door = isEast
+                ? this.addSprite.door()
+                : this.addSprite.eastDoor();
 
-        this.isDecoration = state.decoration;
-        */
-        this.recolor();
-        // You can initialize your new Tile here.
+            this.openDoor = isEast
+                ? this.addSprite.openDoor()
+                : this.addSprite.eastOpenDoor();
+        }
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -168,74 +135,18 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.oreContainer.visible = true;
         pixiFade(this.barSprite, dt, current.redium || current.blueium, next.redium || next.blueium);
         pixiFade(this.oreSprite, dt, current.rediumOre || current.blueiumOre, next.rediumOre || next.blueiumOre);
-        /**
-        if (current.isWall) {
-            this.wall.visible = true;
-        }
-        else if (this.owner) {
-            if (this.isGen) {
-                this.genRoom.visible = true;
+
+        if (this.door && this.openDoor) {
+            if (!next.unit) {
+                this.door.visible = true;
+                this.openDoor.visible = false;
             }
             else {
-                this.spawn.visible = true;
+                this.door.visible = false;
+                this.openDoor.visible = true;
             }
         }
-        else if (this.isCon) {
-            this.conveyor.visible = true;
-        }
-        else {
-            if (!this.isDecoration) {
-                this.floor.visible = true;
-            }
-            else {
-                if (this.isDecoration === 2) {
-                    if (!next.unit) {
-                        this.door.visible = true;
-                        this.openDoor.visible = false;
-                    }
-                    else {
-                        this.door.visible = false;
-                        this.openDoor.visible = true;
-                    }
-                }
-                else {
-                    if (!next.unit) {
-                        this.eastDoor.visible = true;
-                        this.eastOpenDoor.visible = false;
-                    }
-                    else {
-                        this.eastDoor.visible = false;
-                        this.eastOpenDoor.visible = true;
-                    }
-                }
-            }
-        }
-        if (current.rediumOre > 0) {
-            this.redOreSprite.visible = true;
-        }
-        else {
-            this.redOreSprite.visible = false;
-        }
-        if (current.blueiumOre > 0) {
-            this.blueOreSprite.visible = true;
-        }
-        else {
-            this.blueOreSprite.visible = false;
-        }
-        if (current.blueium > 0) {
-            this.blueSprite.visible = true;
-        }
-        else {
-            this.blueSprite.visible = false;
-        }
-        if (current.redium > 0) {
-            this.redSprite.visible = true;
-        }
-        else {
-            this.redSprite.visible = false;
-        }
-        */
-        // render where the Tile is
+
         // <<-- /Creer-Merge: render -->>
     }
 
