@@ -45,6 +45,7 @@ export class Tile extends GameObject {
 
     // <<-- Creer-Merge: variables -->>
     public floor: PIXI.Sprite;
+    public floor2: PIXI.Sprite;
 
     public wall: PIXI.Sprite;
 
@@ -62,6 +63,8 @@ export class Tile extends GameObject {
 
     public isGen: boolean;
     public isCon: boolean;
+
+    public isDecoration: number;
 
     public oreContainer: PIXI.Container;
     // You can add additional member variables here
@@ -97,6 +100,8 @@ export class Tile extends GameObject {
 
         this.floor = this.game.resources.floor.newSprite(this.container);
         this.floor.visible = false;
+        this.floor2 = this.game.resources.floor2.newSprite(this.container);
+        this.floor2.visible = false;
         this.wall = this.game.resources.wall.newSprite(this.container);
         this.wall.visible = false;
         this.genRoom = this.game.resources.genRoom.newSprite(this.container);
@@ -113,6 +118,8 @@ export class Tile extends GameObject {
         this.blueSprite.visible = false;
         this.container.position.set(state.x, state.y);
         this.oreContainer.position.copy(this.container.position);
+
+        this.isDecoration = state.decoration;
 
         this.recolor();
         // You can initialize your new Tile here.
@@ -136,7 +143,6 @@ export class Tile extends GameObject {
         super.render(dt, current, next, reason, nextReason);
 
         // <<-- Creer-Merge: render -->>
-
         if (current.isWall) {
             this.wall.visible = true;
         }
@@ -152,7 +158,17 @@ export class Tile extends GameObject {
             this.conveyor.visible = true;
         }
         else {
-            this.floor.visible = true;
+            if (!this.isDecoration) {
+                this.floor.visible = true;
+            }
+            else {
+                if (!next.unit) {
+                    this.floor2.visible = true;
+                }
+                else {
+                    this.floor2.visible = false;
+                }
+            }
         }
         if (current.rediumOre > 0 && next.rediumOre > 0) {
             this.redOreSprite.visible = true;

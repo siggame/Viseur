@@ -4,6 +4,7 @@ export const GameResources = createResources("Newtonian", {
     // <<-- Creer-Merge: resources -->>
 
     floor: load("floor.jpg"),
+    floor2: load("floor2.png"),
     wall: load("wall.png"),
     spawn: load("spawn.jpg"),
     genRoom: load("genRoom.jpg"),
@@ -11,7 +12,7 @@ export const GameResources = createResources("Newtonian", {
     intern: load("intern.png"),
     physicist: load("physicist.png"),
     manager: load("manager.png"),
-    machine: load("test.png"),
+    machine: load("machine.png"),
     indicator: load("bubble3.png"),
     redore: load("rediumore.png"),
     blueore: load("blueiumore.png"),

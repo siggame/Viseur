@@ -105,16 +105,12 @@ export class Unit extends GameObject {
         this.recolor();
         this.set_job(this.job);
         this.spriteInUse!.position.x -= .05;
-       // if (this.owner && this.owner.id === "0") {
-         //   this.spriteInUse!.scale.x *= -1;
-        //   this.spriteInUse!.position.x += 1;
-        // }
 
         this.facing = "left";
         if (this.owner && this.owner.id === "0") {
             this.facing = "right";
             this.spriteInUse!.scale.x *= -1;
-            this.spriteInUse!.position.x += 1;
+            this.spriteInUse!.anchor.x += 1;
         }
         this.maxHealth = state.job.health;
         this.healthBar = new GameBar(this.barContainer);
@@ -150,6 +146,20 @@ export class Unit extends GameObject {
             this.container.visible = true;
         }
 
+        if (current.tile.tileWest && current.tile.tileWest.id === next.tile.id) {
+            if (this.facing !== "left") {
+                this.facing = "left";
+                this.spriteInUse!.scale.x *= -1;
+                this.spriteInUse!.anchor.x -= 1;
+            }
+        }
+        if (current.tile.tileEast && current.tile.tileEast.id === next.tile.id) {
+            if (this.facing !== "right") {
+                this.facing = "right";
+                this.spriteInUse!.scale.x *= -1;
+                this.spriteInUse!.anchor.x += 1;
+            }
+        }
         this.container.position.set(
             ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),
