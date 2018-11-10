@@ -9,7 +9,6 @@ import { ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { pixiFade } from "src/utils";
-import * as Color from "color"
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -220,9 +219,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     private recolorResources(current: Immutable<ITileState>, next: Immutable<ITileState>): void {
         let colorIndex: number | undefined;
-        let colors : Color[];
 
-        colors = [Color("red"), Color("blue")];
         switch (true) {
             case Boolean(current.redium || next.redium || current.rediumOre || next.rediumOre):
                 colorIndex = 0;
@@ -235,7 +232,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             return; /// nothing to recolor
         }
 
-        const color = colors[colorIndex].rgbNumber();
+        // Use the Player color on the ore so color blinded people can change the color to disinguish between them.
+        const color = this.game.getPlayersColor(this.game.players[colorIndex]).rgbNumber();
         this.barSprite.tint = color;
         this.oreSprite.tint = color;
     }

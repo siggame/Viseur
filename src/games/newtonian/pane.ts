@@ -83,6 +83,18 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         // <<-- Creer-Merge: player-stats -->>
         stats.push(
             {
+                title: "Resources color",
+                get: (player) => {
+                    if (!this.game.settings.customPlayerColors.get()) {
+                        return null; // don't show this as the colors are correct.
+                    }
+
+                    return player.id === this.game.players[0].id
+                        ? "(Redium)"
+                        : "(Blueium)";
+                },
+            },
+            {
                 title: "Some progress",
                 get: (player) => `${player.heat * player.pressure} / ${state.victoryAmount}`,
                 icon: "rocket",

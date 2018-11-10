@@ -8,7 +8,6 @@ import { GameObject } from "./game-object";
 import { IMachineState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import * as Color from "color";
 import { ease } from "src/utils";
 import { GameBar } from "src/viseur/game";
 const CONTAINER_SCALE = 1.25;
@@ -62,7 +61,7 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         this.oreColorIndex = state.oreType.toLowerCase().charAt(0) === "r"
             ? 0 // redium ore
-            : 1; // blueium
+            : 1; // blueium ore
 
         this.sprite = this.addSprite.machine();
 
@@ -110,8 +109,8 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        const colors: Color[] = [Color("red"), Color("blue")];
-        this.sprite.tint = colors[this.oreColorIndex].rgbNumber();
+        // use the color of the player from that side so it can be changed for color blindness.
+        this.sprite.tint = this.game.getPlayersColor(this.oreColorIndex).rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
