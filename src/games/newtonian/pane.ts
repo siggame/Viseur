@@ -51,7 +51,8 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return state.players.map((p) => [p.heat * p.pressure, state.victoryAmount] as [number, number]);
+        return state.players.map((p) => [Math.max(p.pressure === 0 ? 0 : 1, p.heat) *
+            Math.max(p.heat === 0 ? 0 : 1, p.pressure), state.victoryAmount] as [number, number]);
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -96,7 +97,9 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
             },
             {
                 title: "Some progress",
-                get: (player) => `${player.heat * player.pressure} / ${state.victoryAmount}`,
+                get: (player) =>
+                 `${Math.max(player.pressure === 0 ? 0 : 1, player.heat)
+                    * Math.max(player.heat === 0 ? 0 : 1, player.pressure)} / ${state.victoryAmount}`,
                 icon: "rocket",
             },
             {
