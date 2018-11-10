@@ -9,6 +9,7 @@ import { ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { pixiFade } from "src/utils";
+import * as Color from "color"
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -218,20 +219,23 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param next - The next tile state.
      */
     private recolorResources(current: Immutable<ITileState>, next: Immutable<ITileState>): void {
-        let playerIndex: number | undefined;
+        let colorIndex: number | undefined;
+        let colors : Color[];
+
+        colors = [Color("red"), Color("blue")];
         switch (true) {
             case Boolean(current.redium || next.redium || current.rediumOre || next.rediumOre):
-                playerIndex = 0;
+                colorIndex = 0;
                 break;
             case Boolean(current.blueium || next.blueium || current.blueiumOre || next.blueiumOre):
-                playerIndex = 1;
+                colorIndex = 1;
         }
 
-        if (playerIndex === undefined) {
+        if (colorIndex === undefined) {
             return; /// nothing to recolor
         }
 
-        const color = this.game.getPlayersColor(this.game.players[playerIndex]).rgbNumber();
+        const color = colors[colorIndex].rgbNumber();
         this.barSprite.tint = color;
         this.oreSprite.tint = color;
     }
