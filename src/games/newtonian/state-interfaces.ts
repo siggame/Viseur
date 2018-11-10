@@ -10,6 +10,12 @@ import { IBaseGameObjectState, IBaseGameState, IBasePlayerState } from "src/vise
  */
 export interface IGameState extends IBaseGameState {
     /**
+     * The percent of max HP regained when a unit end their turn on a tile owned
+     * by their player.
+     */
+    readonly RegenerateRate: number;
+
+    /**
      * The player whose turn it is currently. That player can send commands.
      * Other players cannot.
      */
@@ -19,11 +25,6 @@ export interface IGameState extends IBaseGameState {
      * The current turn number, starting at 0 for the first player's turn.
      */
     readonly currentTurn: number;
-
-    /**
-     * Percent loss from the difference of Heat and Pressure. (0 to 1).
-     */
-    readonly degradeRate: number;
 
     /**
      * A mapping of every game object's ID to the actual game object. Primarily

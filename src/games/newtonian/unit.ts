@@ -250,9 +250,9 @@ export class Unit extends GameObject {
     // <Joueur functions> --- functions invoked for human playable client
 
     /**
-     * Makes the unit do something to a machine adjacent to its tile. Interns
-     * sabotage, physicists work. Interns stun physicist, physicist stuns
-     * manager, manager stuns intern.
+     * Makes the unit do something to a machine or unit adjacent to its tile.
+     * Interns sabotage, physicists work. Interns stun physicist, physicist
+     * stuns manager, manager stuns intern.
      * @param tile The tile the unit acts on.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully acted,
