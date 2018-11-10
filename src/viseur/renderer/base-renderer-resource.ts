@@ -1,7 +1,9 @@
 import * as PIXI from "pixi.js";
-import { Viseur, viseurConstructed } from "src/viseur";
+import { Immutable, IPixiSpriteOptions, setPixiOptions } from "src/utils";
+import { Viseur } from "src/viseur";
+import { viseurConstructed } from "src/viseur/constructed";
 
-/** non standard options for resources */
+/** Non standard options for resources. */
 export interface IBaseRendererResourceOptions {
     /** Set this if the path is absolute and does not need to be resolved */
     absolute?: boolean;
@@ -13,33 +15,34 @@ export interface IBaseRendererResourceOptions {
     height?: number;
 }
 
-/** A factory that creates PIXI.Sprites for some resource in the Renderer */
+/** A factory that creates PIXI.Sprites for some resource in the Renderer. */
 export abstract class BaseRendererResource {
-    /** The path to the resource in the game's textures directory */
+    /** The path to the resource in the game's textures directory. */
     public readonly path: string;
 
-    /** the required absolute path to this resource */
+    /** The required absolute path to this resource. */
     public absolutePath: string;
 
-    /** The default width (in game units) for new sprites from this resource */
+    /** The default width (in game units) for new sprites from this resource. */
     public readonly defaultWidth: number = 1;
 
-    /** The default height (in game units) for new sprites from this resource */
+    /** The default height (in game units) for new sprites from this resource. */
     public readonly defaultHeight: number = 1;
 
-    /** The texture for this sprite, undefined while not loaded */
+    /** The texture for this sprite, undefined while not loaded. */
     protected texture: PIXI.Texture | undefined;
 
-    /** the name of the game this resource is for */
-    private readonly gameName: string = ""; // will be set from the load function
+    /** The name of the game this resource is for. */
+    private readonly gameName: string = ""; // will be set from the load()
 
-    /** The Viseur that controls everything */
+    /** The Viseur that controls everything. */
     private viseur: Viseur | undefined;
 
     /**
-     * Creates and registers a new resource that can make sprites of it
-     * @param path The path to the resource in the game's textures directory
-     * @param options optional details about the resource, such as defaults and sheet details
+     * Creates and registers a new resource that can make sprites of it.
+     *
+     * @param path - The path to the resource in the game's textures directory.
+     * @param options - The optional details about the resource, such as defaults and sheet details.
      */
     constructor(path: string, options: IBaseRendererResourceOptions = {}) {
         this.path = path;
@@ -49,17 +52,18 @@ export abstract class BaseRendererResource {
             ? this.path
             : "";
 
-        viseurConstructed.on((viseur) => {
+        viseurConstructed.once((viseur) => {
             this.viseur = viseur;
-            viseur.renderer.events.texturesLoaded.on(
-                (resources) => this.onTextureLoaded(resources),
-            );
+            viseur.renderer.events.texturesLoaded.on((resources) => {
+                this.onTextureLoaded(resources);
+            });
         });
     }
 
     /**
-     * Un-scales a sprite back to its' default dimensions of this resource
-     * @param {PIXI.Sprite} sprite the sprite to un-scale back to 1x1
+     * Un-scales a sprite back to its default dimensions of this resource.
+     *
+     * @param sprite - The sprite to un-scale back to 1x1.
      */
     public resetScale(sprite: PIXI.Sprite): void {
         sprite.scale.set(
@@ -69,13 +73,33 @@ export abstract class BaseRendererResource {
     }
 
     /**
-     * Invoked when this texture is loaded
-     * @param resources all the resources loaded, to pull our texture out of
-     * @returns a boolean indicating if this resource's texture was loaded
+     * Creates and initializes a sprite for this resource.
+     *
+     * @param options - The base options for how to render this resource.
+     * @returns A sprite with the given texture key, added to the
+     * parentContainer.
+     */
+    public newSprite(options: Immutable<IPixiSpriteOptions> & Readonly<{ // to not fuck with Pixi's state
+        container: PIXI.Container;
+    }>): PIXI.Sprite {
+        const sprite = new PIXI.Sprite(this.texture);
+
+        // Now scale the sprite, as it defaults to the dimensions of its texture's pixel size.
+        this.resetScale(sprite);
+        setPixiOptions(sprite, options);
+
+        return sprite;
+    }
+
+    /**
+     * Invoked when this texture is loaded.
+     *
+     * @param resources - All the resources loaded, to pull our texture out of.
+     * @returns A boolean indicating if this resource's texture was loaded.
      */
     protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
         // if we have textures loaded, Viseur must have a game ready
-        if (this.viseur!.game!.name !== this.gameName) {
+        if (!this.viseur || !this.viseur.game || this.viseur.game.name !== this.gameName) {
             // this resource is for a different game, and will never be used
             // so we don't care if it loaded or not
             return false;

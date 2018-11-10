@@ -1,6 +1,6 @@
 // Do not modify this file
 // This is a simple lookup object for each GameObject class
-import { IBaseGameObjectClasses } from "src/viseur/game/interfaces";
+import { IGameObjectClasses } from "src/viseur/game/interfaces";
 import { GameObject } from "./game-object";
 import { Player } from "./player";
 import { Port } from "./port";
@@ -8,10 +8,10 @@ import { Tile } from "./tile";
 import { Unit } from "./unit";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<IBaseGameObjectClasses> = Object.freeze({
+export const GameObjectClasses: Readonly<IGameObjectClasses> = Object.freeze({
     GameObject,
     Player,
     Tile,
     Port,
     Unit,
-}) as any;
+});

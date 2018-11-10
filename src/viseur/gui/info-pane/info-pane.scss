@@ -22,6 +22,11 @@
 
     & > .info-pane-content {
         background-color: $white;
+
+        @include dark-mode {
+            background-color: $black;
+            color: $white;
+        }
     }
 
     &.snap-top {
@@ -112,6 +117,10 @@
             font-size: 1.5em;
             margin-bottom: 0.25em;
             color: $primary-darkest;
+
+            @include dark-mode {
+                color: $primary-light;
+            }
         }
 
         & section {
@@ -124,7 +133,7 @@
             }
 
             &.inspect-game {
-                max-height: none !important; // special case where a max-hieight of 9999 could be too small
+                max-height: none !important; // special case where a max-height of 9999 could be too small
             }
         }
     }

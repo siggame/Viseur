@@ -1,7 +1,9 @@
+import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
-export interface INumberInputArgs extends IBaseInputArgs {
+/** Arguments to initialize a number input. */
+export interface INumberInputArgs extends IBaseInputArgs<number> {
     /** the minimum accepted number */
     min?: number;
 
@@ -15,7 +17,7 @@ export interface INumberInputArgs extends IBaseInputArgs {
     value?: number;
 }
 
-/** a text input for numbers */
+/** A text input for numbers. */
 export class NumberInput extends BaseInput<number> {
     /** Events this class emits */
     public readonly events = events({
@@ -24,17 +26,19 @@ export class NumberInput extends BaseInput<number> {
     });
 
     /**
-     * Initializes the Number Input
-     * @param {object} args initialization args, can have min, max, and step
+     * Initializes the Number Input.
+     *
+     * @param args - The initialization args, can have min, max, and step.
      */
-    constructor(args: INumberInputArgs) {
-        super(Object.assign({
-            step: "any",
+    constructor(args: Readonly<INumberInputArgs>) {
+        // tslint:disable-next-line:no-object-literal-type-assertion
+        super(({
             value: 0,
             type: "number",
-        }, args));
+            ...args,
+        }) as Immutable<INumberInputArgs>);
 
-        this.setStep(args.step);
+        this.setStep(args.step === undefined ? "any" : args.step);
         this.setMin(args.min);
         this.setMax(args.max);
     }
@@ -43,7 +47,7 @@ export class NumberInput extends BaseInput<number> {
 
     /**
      * Sets the min attribute of this input
-     * @param {number} min the minimum value this number input can be
+     * @param min the minimum value this number input can be
      */
     public setMin(min?: number): void {
         if (min !== undefined) {
@@ -60,7 +64,7 @@ export class NumberInput extends BaseInput<number> {
 
     /**
      * Sets the max attribute of this input
-     * @param {number} max the maximum value this number input can be
+     * @param max the maximum value this number input can be
      */
     public setMax(max?: number): void {
         if (max !== undefined) {
@@ -76,14 +80,15 @@ export class NumberInput extends BaseInput<number> {
     }
 
     /**
-     * Sets the step attribute of this input
-     * @param {number=} step how much this number input increases/decreases
-     *                       by for each increment.
+     * Sets the step attribute of this input.
+     *
+     * @param step - How much this number input increases/decreases
+     * by for each increment.
      */
     public setStep(step?: number | "any"): void {
-        if (step === undefined) {
-            step = "any";
-        }
-        this.element.attr("step", step);
+        this.element.attr("step", step === undefined
+            ? "any"
+            : step,
+        );
     }
 }

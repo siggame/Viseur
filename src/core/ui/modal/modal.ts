@@ -1,26 +1,34 @@
+import { Immutable } from "src/utils";
 import { onceTransitionEnds } from "src/utils/jquery";
 import { BaseElement, IBaseElementArgs } from "../base-element";
+import * as modalHbs from "./modal.hbs";
 import "./modal.scss";
 
 /** A modal that floats above the screen and blocks out all other input */
 export class Modal extends BaseElement {
     /** the content of the modal */
-    private readonly content: JQuery<HTMLElement>;
+    private readonly content: JQuery;
 
-    constructor(args: IBaseElementArgs) {
-        super(args);
+    /**
+     * Creates a modal.
+     *
+     * @param args - The arguments for the modal.
+     */
+    constructor(args: Immutable<IBaseElementArgs>) {
+        super(args, modalHbs);
 
         this.content = this.element.find(".modal-content");
         this.element.addClass("hidden");
     }
 
     /**
-     * Shows the modal with some element inside it
-     * @param {$|string} element - a jquery element, or a raw string to put inside this modal
-     * @param {function} [callback] - callback to execute after showing
-     * (not after animation, but after show is invoked async)
+     * Shows the modal with some element inside it.
+     *
+     * @param element - A jquery element, or a raw string to put inside this modal.
+     * @param callback - The optional callback to execute after showing
+     * (not after animation, but after show is invoked async).
      */
-    public show(element: JQuery<HTMLElement>, callback?: () => void): void {
+    public show(element: JQuery, callback?: () => void): void {
         this.element.removeClass("hidden");
 
         setImmediate(() => {
@@ -36,16 +44,10 @@ export class Modal extends BaseElement {
             .append(element);
     }
 
-    /**
-     * Hides the modal
-     */
+    /** Hides the modal. */
     public hide(): void {
         onceTransitionEnds(this.element.removeClass("show"), () => {
             this.element.addClass("hidden");
         });
-    }
-
-    protected getTemplate(): Handlebars {
-        return require("./modal.hbs");
     }
 }

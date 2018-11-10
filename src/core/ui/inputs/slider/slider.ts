@@ -6,11 +6,12 @@ export class Slider extends NumberInput {
      * Creates a slider
      * @param args the args for the slider
      */
-    constructor(args: INumberInputArgs) {
-        super(Object.assign({
+    constructor(args: Readonly<INumberInputArgs>) {
+        super({
             type: "range",
             step: "any",
-        }, args));
+            ...args,
+        });
 
         // this is goody but it re-sets the value
         // when done in the base constructor above the slider resets when the

@@ -1,9 +1,9 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
-import { MenuItems } from "src/core/ui/context-menu";
+import { Delta } from "@cadre/ts-utils/cadre";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { IDeltaReason } from "src/viseur/game";
-import { Game } from "./game";
+import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
@@ -17,7 +17,7 @@ const RESOURCES: ["branches", "food"] = ["branches", "food"];
 const DIRECTIONS: ["North", "South", "East", "West"] = ["North", "South", "East", "West"];
 const CORNERS = [["North", "West"], ["North", "East"], ["South", "West"], ["South", "East"]];
 
-const DIRECTION_BITS = {
+const DIRECTION_BITS: { [direction: string]: number } = {
     NorthWest: 1,
     North: 2,
     NorthEast: 4,
@@ -86,7 +86,7 @@ const BIT_TO_INDEX: { [bit: number]: number } = {
  * @returns true if that is a land tile, false otherwise
  */
 function isLand(state: ITileState, direction: string, direction2?: string): boolean {
-    let neighbor = (state as any)[`tile${direction}`];
+    let neighbor = state[`tile${direction}` as "tileNorth"];
     if (!neighbor) { // off map, just use our type as the off map type
         neighbor = state;
     }
@@ -104,28 +104,18 @@ function isLand(state: ITileState, direction: string, direction2?: string): bool
 
 // <<-- /Creer-Merge: imports -->>
 
+// <<-- Creer-Merge: should-render -->>
+// Set this variable to `true`, if this class should render.
+const SHOULD_RENDER = true;
+// <<-- /Creer-Merge: should-render -->>
+
 /**
- * An object in the game. The most basic class that all game classes should
- * inherit from automatically.
+ * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Tile extends GameObject {
+export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
-    /**
-     * Change this to return true to actually render instances of super classes
-     * @returns true if we should render game object classes of this instance,
-     *          false otherwise which optimizes playback speed
-     */
-    public get shouldRender(): boolean {
-        // <<-- Creer-Merge: should-render -->>
-        return true;
-        // <<-- /Creer-Merge: should-render -->>
-    }
-
-    /** The instance of the game this game object is a part of */
-    public readonly game!: Game; // set in super constructor
 
     /** The current state of the Tile (dt = 0) */
     public current: ITileState | undefined;
@@ -155,9 +145,9 @@ export class Tile extends GameObject {
     /**
      * Constructor for the Tile with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
-     * @param state the initial state of this Tile
-     * @param Visuer the Viseur instance that controls everything and contains
-     * the game.
+     *
+     * @param state - The initial state of this Tile.
+     * @param viseur - The Viseur instance that controls everything and contains the game.
      */
     constructor(state: ITileState, viseur: Viseur) {
         super(state, viseur);
@@ -185,7 +175,7 @@ export class Tile extends GameObject {
                     isLand(state, hor) &&
                     isLand(state, vert, hor)
                 ) {
-                    sum += (DIRECTION_BITS as any)[vert + hor]; // ts is too dumb to know this is valid
+                    sum += DIRECTION_BITS[vert + hor]; // ts is too dumb to know this is valid
                 }
             }
 
@@ -193,11 +183,11 @@ export class Tile extends GameObject {
         }
 
         byte !== undefined
-            ? this.game.resources.tileset.newSprite(this.container, byte)
-            : this.game.resources.tileWater.newSprite(this.container);
+            ? this.addSprite.tileset({ index: byte })
+            : this.addSprite.tileWater();
 
         if (state.flowDirection) {
-            this.flowSprite = this.game.resources.flow.newSprite(this.container, {
+            this.flowSprite = this.addSprite.flow({
                 alpha: 0.333,
             });
 
@@ -214,17 +204,16 @@ export class Tile extends GameObject {
                     this.flowSprite.y += 1;
                     break;
                 case "North":
-                    this.flowSprite.rotation += 3 * Math.PI / 2;
+                    this.flowSprite.rotation += Math.PI * 3 / 2;
                     this.flowSprite.y += 1;
-                    break;
             }
         }
 
-        this.lodgeBottomSprite = this.game.resources.lodgeBottom.newSprite(this.container);
-        this.lodgeTopSprite = this.game.resources.lodgeTop.newSprite(this.container);
+        this.lodgeBottomSprite = this.addSprite.lodgeBottom();
+        this.lodgeTopSprite = this.addSprite.lodgeTop();
 
-        this.branchesSprite = this.game.resources.tileBranch.newSprite(this.container);
-        this.foodSprite = this.game.resources.tileFood.newSprite(this.container);
+        this.branchesSprite = this.addSprite.tileBranch();
+        this.foodSprite = this.addSprite.tileFood();
 
         this.container.position.set(state.x, state.y);
 
@@ -232,20 +221,24 @@ export class Tile extends GameObject {
     }
 
     /**
-     * Called approx 60 times a second to update and render Tile
-     * instances. Leave empty if it is not being rendered.
-     * @param dt a floating point number [0, 1) which represents how
-     * far into the next turn that current turn we are rendering is at
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Called approx 60 times a second to update and render Tile instances.
+     * Leave empty if it is not being rendered.
+     *
+     * @param dt - A floating point number [0, 1) which represents how far into
+     * the next turn that current turn we are rendering is at
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
-    public render(dt: number, current: ITileState, next: ITileState,
-                  reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.render(dt, current, next, reason, nextReason);
+    public render(
+        dt: number,
+        current: Immutable<ITileState>,
+        next: Immutable<ITileState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
 
@@ -314,8 +307,8 @@ export class Tile extends GameObject {
     }
 
     /**
-     * Invoked after when a player changes their color, so we have a
-     * chance to recolor this Tile's sprites.
+     * Invoked after a player changes their color,
+     * so we have a chance to recolor this Tile's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -328,17 +321,35 @@ export class Tile extends GameObject {
     }
 
     /**
-     * Invoked when the state updates.
-     * @param current the current (most) state, will be this.next if
-     * this.current is undefined
-     * @param next the next (most) game state, will be this.current if
-     * this.next is undefined
-     * @param reason the reason for the current delta
-     * @param nextReason the reason for the next delta
+     * Invoked when this Tile instance should not be rendered,
+     * such as going back in time before it existed.
+     *
+     * By default the super hides container.
+     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
      */
-    public stateUpdated(current: ITileState, next: ITileState,
-                        reason: IDeltaReason, nextReason: IDeltaReason): void {
-        super.stateUpdated(current, next, reason, nextReason);
+    public hideRender(): void {
+        super.hideRender();
+
+        // <<-- Creer-Merge: hide-render -->>
+        // hide anything outside of `this.container`.
+        // <<-- /Creer-Merge: hide-render -->>
+    }
+
+    /**
+     * Invoked when the state updates.
+     *
+     * @param current - The current (most) game state, will be this.next if this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param delta - The current (most) delta, which explains what happened.
+     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     */
+    public stateUpdated(
+        current: Immutable<ITileState>,
+        next: Immutable<ITileState>,
+        delta: Immutable<Delta>,
+        nextDelta: Immutable<Delta>,
+    ): void {
+        super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Tile based off its states
@@ -348,25 +359,6 @@ export class Tile extends GameObject {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
-
-    // NOTE: past this block are functions only used 99% of the time if
-    //       the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore everything past here.
-
-    /**
-     * Invoked when the right click menu needs to be shown.
-     * @returns an array of context menu items, which can be
-     *          {text, icon, callback} for items, or "---" for a separator
-     */
-    protected getContextMenu(): MenuItems {
-        const menu = super.getContextMenu();
-
-        // <<-- Creer-Merge: get-context-menu -->>
-        // add context items to the menu here
-        // <<-- /Creer-Merge: get-context-menu -->>
-
-        return menu;
-    }
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
