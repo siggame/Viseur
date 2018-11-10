@@ -93,7 +93,7 @@ export default (// tslint:disable-line:no-default-export
             minify: {
                 collapseWhitespace: true,
             },
-        }),
+        }) as any, // tslint:disable-line:no-any no-unsafe-any
     ],
     optimization: {
         sideEffects: true,
