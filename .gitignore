@@ -47,6 +47,7 @@ desktop.ini
 .eslintcache
 
 # webpack bundle
+package-lock.json
 webpack-stats.json
 dist/
 docs/
