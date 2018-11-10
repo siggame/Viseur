@@ -1,7 +1,6 @@
 language: node_js
-
-before_script:
-  - npm install
+node_js:
+  - "9.3.0"
 
 script:
   # run units tests
