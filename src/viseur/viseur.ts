@@ -369,16 +369,13 @@ export class Viseur {
             // then we are in arena mode
             this.gui.modalMessage("Requesting next gamelog from Arena...");
 
-            const presentationMode = objectHasProperty(this.urlParameters, "presentation");
-            if (presentationMode) {
-                this.gui.goFullscreen();
-            }
-
             // load the gamelog (modal should be fullscreen)
             this.loadRemoteGamelog(this.urlParameters.arena);
 
+            const presentationMode = objectHasProperty(this.urlParameters, "presentation");
             if (presentationMode) {
                 this.events.delayedReady.on(() => {
+                    this.gui.goFullscreen();
                     this.timeManager.play();
                 });
             }
