@@ -59,16 +59,9 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        const x = state.tile.x;
-        const y = state.tile.y;
+        const { x, y } = state.tile;
         this.y = y;
         this.x = x;
-
-        this.healthBar = new GameBar(this.container, {
-            visibilitySetting: this.game.settings.showHealthBars,
-            foregroundColor: 0x43AA72,
-            max: state.health,
-        });
 
         state.isPiano
             ? this.addSprite.piano()
@@ -83,6 +76,12 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
 
         this.container.position.set(x, y);
+
+        this.healthBar = new GameBar(this.container, {
+            visibilitySetting: this.game.settings.showHealthBars,
+            foregroundColor: 0x43AA72,
+            max: state.health,
+        });
 
         // hit sprite
         this.hitSprite = this.addSprite.hit({

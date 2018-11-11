@@ -80,7 +80,7 @@ export class GameBar {
             opts.backgroundColor || 0x00000,
         );
 
-        const widthDiff = parent.width - this.width;
+        const widthDiff = (parent.width || 1) - this.width;
         this.container.position.set(widthDiff / 2, 0);
 
         if (opts.visibilitySetting) {
