@@ -174,7 +174,7 @@ export class Viseur {
         if (validateURL(url)) {
             this.urlParameters.arena = url;
 
-            if (presentationMode || true) {
+            if (presentationMode) {
                 // this way the url parm will be ?presentation, no value.
                 // it's presence tell us we want it
                 this.urlParameters.presentation = null;

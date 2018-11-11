@@ -24,6 +24,13 @@ export class CheckBox extends BaseInput<boolean> {
     }
 
     /**
+     * Gets if the checkbox is checked.
+     */
+    public get value(): boolean {
+        return Boolean(super.value);
+    }
+
+    /**
      * Gets if it is checked or not.
      *
      * @returns True if checked, false otherwise.

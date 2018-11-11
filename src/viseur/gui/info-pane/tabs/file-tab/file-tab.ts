@@ -74,7 +74,7 @@ export class FileTab extends Tab {
     private readonly connectWrapper = this.element.find(".connect");
 
     /** The drop down to select the connection type */
-    private readonly connectTypeInput = new DropDown<string>({
+    private readonly connectTypeInput = new DropDown<"Arena" | "Human" | "Spectate" | "Tournament">({
         id: "connect-type",
         label: "Connection Type",
         parent: this.connectWrapper,
@@ -231,7 +231,7 @@ export class FileTab extends Tab {
             this.connect();
         });
 
-        this.connectTypeInput.value = "Human"; // default connection type
+        this.connectTypeInput.value = "Spectate"; // default connection type
 
         // if in the config there is a default game
         if (Config.game) {
