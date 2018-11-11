@@ -169,19 +169,19 @@ export class Viseur {
      */
     public startArenaMode(
         url: string,
-        presentationMode: boolean = false,
+        presentationMode: boolean = true,
     ): void {
         if (validateURL(url)) {
             this.urlParameters.arena = url;
 
-            if (presentationMode) {
+            if (presentationMode || true) {
                 // this way the url parm will be ?presentation, no value.
                 // it's presence tell us we want it
                 this.urlParameters.presentation = null;
             }
             else {
                 // remove the key, meaning false
-                delete this.urlParameters.presentation;
+                // delete this.urlParameters.presentation;
             }
 
             // this refreshes the page, as we want
@@ -368,29 +368,20 @@ export class Viseur {
         else if (typeof this.urlParameters.arena === "string") {
             // then we are in arena mode
             this.gui.modalMessage("Requesting next gamelog from Arena...");
-            $.ajax({
-                dataType: "text",
-                url: this.urlParameters.arena,
-                crossDomain: true,
-                success: (gamelogURL: string) => {
-                    const presentationMode = objectHasProperty(this.urlParameters, "presentation");
-                    if (presentationMode) {
-                        this.gui.goFullscreen();
-                    }
 
-                    // load the gamelog (modal should be fullscreen)
-                    this.loadRemoteGamelog(gamelogURL);
+            const presentationMode = objectHasProperty(this.urlParameters, "presentation");
+            if (presentationMode) {
+                this.gui.goFullscreen();
+            }
 
-                    if (presentationMode) {
-                        this.events.delayedReady.on(() => {
-                            this.timeManager.play();
-                        });
-                    }
-                },
-                error: () => {
-                    this.gui.modalError("Error loading gamelog url from arena.");
-                },
-            });
+            // load the gamelog (modal should be fullscreen)
+            this.loadRemoteGamelog(this.urlParameters.arena);
+
+            if (presentationMode) {
+                this.events.delayedReady.on(() => {
+                    this.timeManager.play();
+                });
+            }
 
             // When we finish playback (the timer reaches its end), wait 5 seconds
             //  then reload the window (which will grab a new gamelog and do all this again)
