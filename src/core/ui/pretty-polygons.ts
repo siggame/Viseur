@@ -14,7 +14,7 @@ interface IPolyPoint {
 }
 
 /** A node used for polygons. */
-type PolyNode = Node & Element & { beginElement(): void };
+type PolyNode = Node & Element & { beginElement?(): void };
 
 /** A Polygon element. */
 type Polygon = Element & { point1: number; point2: number; point3: number };
@@ -24,7 +24,7 @@ type Polygon = Element & { point1: number; point2: number; point3: number };
  */
 export class PrettyPolygons {
     /** timer that refreshed on each tick */
-    private readonly interval: number; // as we are in browser, not node
+    private interval: number; // as we are in browser, not node
 
     /** The SVG we are manipulating */
     private readonly svg = document.createElementNS(
@@ -177,6 +177,7 @@ export class PrettyPolygons {
      */
     public stop(): void {
         clearInterval(this.interval);
+        this.interval = 0;
 
         const childNodes = this.svg.childNodes;
         // tslint:disable-next-line:prefer-for-of - because it does not have an iterator symbol set
@@ -208,6 +209,12 @@ export class PrettyPolygons {
      * points.
      */
     private refresh(): void {
+        if (!this.interval) {
+            this.stop();
+
+            return;
+        }
+
         this.randomize();
 
         const childNodes = this.svg.childNodes;
@@ -215,6 +222,13 @@ export class PrettyPolygons {
         for (let i = 0; i < childNodes.length; i++) {
             const polygon = childNodes[i] as Polygon;
             const animate = polygon.childNodes[0] as PolyNode;
+
+            if (!animate.beginElement) {
+                // we are on IE or Edge, or some browser that does not support SVG animation. Abort!
+                this.stop();
+
+                return;
+            }
 
             if (animate.getAttribute("to")) {
                 animate.setAttribute("from", animate.getAttribute("to") || "");
