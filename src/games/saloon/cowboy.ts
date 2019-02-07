@@ -67,7 +67,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** Faded colors used to show sharpshooter's focus */
     private readonly focusTiles = new Array<{
+        /** The sprite used to show focus */
         sprite: PIXI.Sprite;
+
+        /** If we are fading in or out. */
         fade?: "in" | "out";
     }>();
 

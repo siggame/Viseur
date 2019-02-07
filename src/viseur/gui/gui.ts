@@ -57,8 +57,13 @@ export class GUI extends BaseElement {
     public readonly events = events.concat(this.playbackPane.events, {
         /** Emitted when the GUI resizes */
         resized: new Event<Immutable<{
+            /** The new width of the GUI. */
             width: number;
+
+            /** The new height of the GUI. */
             height: number;
+
+            /** The Remaining vertical height for the info pane. */
             remainingHeight: number;
         }>>(),
     });
@@ -69,6 +74,7 @@ export class GUI extends BaseElement {
      * @param args - The initialization args.
      */
     constructor(args: IBaseElementArgs & {
+        /** The Viseur instance we are a part of. */
         viseur: Viseur;
     }) {
         super(args, guiHbs);

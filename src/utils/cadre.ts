@@ -16,7 +16,10 @@ export function hasGameObjectWithID<
     obj: TObj,
     name: TName,
     id: TID,
-): obj is TObj & ({ [K in TName]: { id: TID } }) {
+): obj is TObj & ({ [K in TName]: {
+    /** The id of the GameObject. */
+    id: TID;
+} }) {
     const gameObject = obj[name];
     if (!isObject(gameObject)) {
         return false;

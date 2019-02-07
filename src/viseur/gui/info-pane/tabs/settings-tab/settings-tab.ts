@@ -26,6 +26,7 @@ export class SettingsTab extends Tab {
      * @param args - Initialization args.
      */
     constructor(args: ITabArgs & {
+        /** The Viseur instance we are a part of. */
         viseur: Viseur;
     }) {
         super({

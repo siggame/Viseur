@@ -644,7 +644,10 @@ export class BaseGame extends StateObject {
         if (state.gameObjectName === "Player") {
             // It's a player instance, no easy way to cast that here as there is
             // no BasePlayer class, only the compile time interface.
-            (newGameObject as BaseGameObject & { playersIndex: number }).playersIndex = this.players.length;
+            (newGameObject as BaseGameObject & {
+                /** The player index that must exist on player game objects */
+                playersIndex: number;
+            }).playersIndex = this.players.length;
 
             this.players.push(newGameObject);
         }

@@ -67,8 +67,13 @@ export class TournamentClient {
      * exactly as the one on the tournament server.
      */
     public connect(args: Immutable<{
+        /** The server address/ip to connect to. */
         server: string;
+
+        /** The port to connect to on the server. */
         port: number;
+
+        /** The name of the player connecting. */
         playerName?: string;
     }>): void {
         try {

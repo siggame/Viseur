@@ -20,7 +20,7 @@ export class BaseHumanPlayer {
     // NOTE: set shortly after initialized... maybe shouldnt' be !'d
 
     /** Orders we could not do until our player was hooked up. */
-    private readonly backOrders: JoueurOrder[] = [];
+    private readonly backOrders: Array<Readonly<JoueurOrder>> = [];
 
     /**
      * Creates a base human player for a game.
@@ -41,7 +41,7 @@ export class BaseHumanPlayer {
         this.player = player;
 
         while (this.backOrders.length > 0) {
-            this.order.call(this, this.backOrders.shift());
+            this.order.call(this, this.backOrders.shift() as Readonly<JoueurOrder>);
         }
     }
 

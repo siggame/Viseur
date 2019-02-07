@@ -3,6 +3,7 @@ import { IBaseGameNamespace } from "src/viseur/game/interfaces";
 
 /** The expected interface all games must export from their interface. */
 interface IGameExport {
+    /** The Namespace that contains all data to initiate a game from. */
     namespace: IBaseGameNamespace;
 }
 

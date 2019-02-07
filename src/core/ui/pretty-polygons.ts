@@ -7,17 +7,34 @@ const REFRESH_DURATION = 20000;
 
 /** A point used for Polygon node movement calculations. */
 interface IPolyPoint {
+    /** the x position */
     x: number;
+
+    /** the y position */
     y: number;
+
+    /** the origin x position */
     originX: number;
+
+    /** the y position */
     originY: number;
 }
 
 /** A node used for polygons. */
-type PolyNode = Node & Element & { beginElement?(): void };
+type PolyNode = Node & Element & {
+    /** function some node's have in some browsers to start animations on SVG. */
+    beginElement?(): void;
+};
 
 /** A Polygon element. */
-type Polygon = Element & { point1: number; point2: number; point3: number };
+type Polygon = Element & {
+    /** First point */
+    point1: number;
+    /** Second point */
+    point2: number;
+    /** Third point */
+    point3: number;
+};
 
 /**
  * Injects an animated pretty low poly SVG into a DOM element and animates it.

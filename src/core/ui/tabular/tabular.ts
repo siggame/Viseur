@@ -11,7 +11,10 @@ export class Tabular extends BaseElement {
     public readonly events = events({
         /** Triggered when the active tab changes from one to another */
         tabChanged: new Event<Readonly<{
+            /** The Tab that is now active. */
             activeTab: Tab;
+
+            /** The tab that was previously active. */
             previousActiveTab: Tab;
         }>>(),
     });
@@ -32,6 +35,7 @@ export class Tabular extends BaseElement {
     private fading: boolean = false;
 
     constructor(args: IBaseElementArgs & {
+        /** The tabs in order to be displayed in this Tabular. */
         tabs?: Tab[];
     }) {
         super(args, tabularHbs);

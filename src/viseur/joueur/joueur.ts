@@ -47,7 +47,10 @@ export class Joueur {
         connected: new Signal(),
 
         /** Emitted once the connection is closed */
-        closed: new Event<{ timedOut: boolean }>(),
+        closed: new Event<{
+            /** True when the connection closed because we timed out, false otherwise. */
+            timedOut: boolean;
+        }>(),
 
         /** Emitted when we are lobbied by the game server */
         lobbied: new Event<LobbiedData>(),

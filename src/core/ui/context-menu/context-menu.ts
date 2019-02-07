@@ -32,6 +32,7 @@ export class ContextMenu extends BaseElement {
      * @param args base element args with optional structure
      */
     constructor(args: Immutable<IBaseElementArgs & {
+        /** The structure of the menu, by items and line breaks */
         structure?: Array<"---" | IMenuItem>;
     }>) {
         super(args, contextMenuHbs);

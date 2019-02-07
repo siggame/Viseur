@@ -33,6 +33,8 @@ export class GameOverScreen extends BaseElement {
     constructor(args: Immutable<IBaseElementArgs> & {
         /** The game this will be a game over screen for */
         game: BaseGame;
+
+        /** The Viseur instance we are a part of. */
         viseur: Viseur;
     }) {
         super(args, gameOverScreenHbs);

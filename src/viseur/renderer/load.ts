@@ -14,6 +14,10 @@ export interface IBaseRendererResources {
 
 /** The base resources all games can expect. */
 export interface IRendererResources extends IBaseRendererResources {
+    /**
+     * A blank (white) sprite for building simple blocks of color.
+     * Oddly faster than raster-zing the pixels directly
+     */
     blank: RendererResource;
 }
 
@@ -22,7 +26,10 @@ export type ResourcesForGameObject<T extends IBaseRendererResources> = Readonly<
     [K in keyof T]: (options?: T[K] extends undefined
         ? undefined
         : T[K] extends BaseRendererResource
-            ? Omit<FirstArgument<T[K]["newSprite"]>, "container"> & { container?: PIXI.Container }
+            ? Omit<FirstArgument<T[K]["newSprite"]>, "container"> & {
+                /** The PIXI container to place this new sprite into. */
+                container?: PIXI.Container;
+            }
             : never,
     ) => PIXI.Sprite;
 }>;

@@ -27,8 +27,13 @@ interface IPlayAsHumanData extends TournamentConnectionArgs, JoueurConnectionArg
  * and if we stored every merged delta storage space could run out.
  */
 export interface IMergedDelta {
+    /** The deltas index in the deltas array  */
     index: number;
+
+    /** The current state at that delta, what we are moving from */
     currentState?: IBaseGame;
+
+    /** The next state of that delta, what we are moving to */
     nextState?: IBaseGame;
 }
 

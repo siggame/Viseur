@@ -36,7 +36,7 @@ export abstract class BaseElement {
         protected readonly template: Handlebars,
     ) {
         this.id = args.id;
-        this.parent = args.parent && $(args.parent) as JQuery; // TODO: bad
+        this.parent = args.parent && $(args.parent);
         this.element = partial(this.template || baseElementHbs, args, this.parent);
     }
 }

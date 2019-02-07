@@ -30,7 +30,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
         public readonly renderer = this.game.renderer;
 
         /** Factories to create new sprites as a part of this game object's container. */
-        protected readonly addSprite: ResourcesForGameObject<{}> = createResourcesFor(this, this.game.resources);
+        public readonly addSprite: ResourcesForGameObject<{}> = createResourcesFor(this, this.game.resources);
 
         /** Pixi text to display the last logged string */
         private loggedPixiText: PIXI.Text | undefined;

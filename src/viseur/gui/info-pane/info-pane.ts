@@ -26,7 +26,10 @@ export class InfoPane extends BaseElement {
     public readonly events = events({
         /** Emitted when this is resized (may still be resizing) */
         resized: new Event<Immutable<{
+            /** The new width we resized to. */
             width: number;
+
+            /** The new height we resized to. */
             height: number;
         }>>(),
 
@@ -70,7 +73,10 @@ export class InfoPane extends BaseElement {
      * @param args - Initialization arguments.
      */
     constructor(args: Readonly<IBaseElementArgs & {
+        /** The GUI instance we are inside of. */
         gui: GUI;
+
+        /** The Viseur instance we are a part of. */
         viseur: Viseur;
     }>) {
         super(args, infoPaneHbs);
@@ -199,8 +205,8 @@ export class InfoPane extends BaseElement {
      * @param downEvent - The event generated from dragging the info pane.
      */
     private onResize(downEvent: JQuery.Event): void {
-        let x = downEvent.pageX;
-        let y = downEvent.pageY;
+        let x = downEvent.pageX || 0;
+        let y = downEvent.pageY || 0;
         let width = Number(this.element.width());
         let height = Number(this.element.height());
 

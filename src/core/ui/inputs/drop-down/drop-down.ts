@@ -14,6 +14,7 @@ export interface IDropDownOption<T> {
 
 /** Initialization args for drop down inputs. */
 export interface IDropDownArgs<T> extends IBaseInputArgs<T> {
+    /** The options for a drop down in order of display. */
     options: Array<string | IDropDownOption<T>>;
 }
 

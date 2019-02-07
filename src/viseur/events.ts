@@ -21,12 +21,18 @@ export const ViseurEvents = events({
 
     /** Triggers when all async events are done and we are ready to being normal operations */
     ready: new Event<Readonly<{
+        /** The game instance that is ready. */
         game: BaseGame;
+
+        /** The gamelog thus far when ready. */
         gamelog: Immutable<IGamelogWithReverses>;
     }>>(),
 
     /** Triggered during loading of the gamelog if the gamelog is found at a remote url */
-    gamelogIsRemote: new Event<Immutable<{ url?: string }>>(),
+    gamelogIsRemote: new Event<Immutable<{
+        /** If the gamelog is remote, the url to get it from. */
+        url?: string;
+    }>>(),
 
     /** Triggered when the gamelog has been loaded */
     gamelogLoaded: new Event<Immutable<IGamelogWithReverses>>(),
@@ -39,7 +45,10 @@ export const ViseurEvents = events({
      * In addition a url to the finalized gamelog (with other player's non obfuscated data) will be emitted
      */
     gamelogFinalized: new Event<Immutable<{
+        /** The gamelog contents. */
         gamelog: IGamelogWithReverses;
+
+        /** A url to download the gamelog from the remote game server, */
         url: string;
     }>>(),
 
@@ -52,7 +61,10 @@ export const ViseurEvents = events({
     connectionMessage: new Event<string>(),
 
     /** Triggers when a connection that was opened is closed, including data if it closed due to a timeout */
-    connectionClosed: new Event<Immutable<{ timedOut: boolean }>>(),
+    connectionClosed: new Event<Immutable<{
+        /** If it closed due to a client (us) timeout. */
+        timedOut: boolean;
+    }>>(),
 
     /** Triggers when a connection encounters and error, and emits that error */
     connectionError: new Event<Error>(),

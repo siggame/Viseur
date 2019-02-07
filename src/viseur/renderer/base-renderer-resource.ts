@@ -80,6 +80,7 @@ export abstract class BaseRendererResource {
      * parentContainer.
      */
     public newSprite(options: Immutable<IPixiSpriteOptions> & Readonly<{ // to not fuck with Pixi's state
+        /** The PIXI container to place the new sprite into. */
         container: PIXI.Container;
     }>): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.texture);

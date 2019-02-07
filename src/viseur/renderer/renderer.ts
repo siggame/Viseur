@@ -114,6 +114,8 @@ export class Renderer extends BaseElement {
     constructor(args: IBaseElementArgs & {
         /** The default font family to use and override the styled default */
         defaultFontFamily?: string;
+
+        /** The Viseur instance we are a part of */
         viseur: Viseur;
     }) {
         super(args, rendererHbs);
