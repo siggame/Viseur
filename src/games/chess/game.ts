@@ -12,7 +12,12 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+
+const ASCII_A = "a".charCodeAt(0);
+const BOARD_MARGIN = 0.5;
+const BOARD_LENGTH = 8; // 8x8 tiles for standard chess board
+const BOARD_LENGTH_WITH_MARGINS = (BOARD_MARGIN * 2) + BOARD_LENGTH; // margin on each side, plus the 8 chess tiles
+
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -44,8 +49,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        this.defaultPlayerColors[0], // Player 0
-        this.defaultPlayerColors[1], // Player 1
+        Color("white"),
+        Color("black"),
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
@@ -68,7 +73,29 @@ export class Game extends BaseGame {
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+
+    private readonly textColor = Color.rgb(222, 222, 222);
+    // private readonly tileBorderLength = 0.9;
+
+    private readonly tileSprites = [] as PIXI.Sprite[][];
+
+    private readonly randomColor = Color.hsl(this.random() * 360, 60, 40).whiten(1.5);
+    // private readonly randomColorCompliment = this.randomColor.rotate(180);
+
+    private readonly boardContainer = new PIXI.Container()
+        .setParent(this.layers.game);
+
+    private readonly tileContainer = new PIXI.Container()
+        .setParent(this.boardContainer);
+
+    // private readonly overlayContainer = new PIXI.Container()
+    //     .setParent(this.boardContainer);
+
+    private readonly gridStrings = {
+        rank: [[], []] as [PIXI.Text[], PIXI.Text[]],
+        file: [[], []] as [PIXI.Text[], PIXI.Text[]],
+    };
+
     // <<-- /Creer-Merge: variables -->>
 
     // <<-- Creer-Merge: public-functions -->>
@@ -84,8 +111,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: BOARD_LENGTH_WITH_MARGINS,
+            height: BOARD_LENGTH_WITH_MARGINS,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -100,7 +127,9 @@ export class Game extends BaseGame {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
-        // Initialize your variables here
+
+        this.settings.flipBoard.changed.on((flipped) => this.flipBackground(flipped));
+
         // <<-- /Creer-Merge: start -->>
     }
 
@@ -113,18 +142,67 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
-        // Initialize your background here if need be
 
-        // this shows you how to render text that scales to the game
-        // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
-        this.renderer.newPixiText(
-            "This game has no\ngame logic added\nto it... yet!",
-            this.layers.game,
-            {
-                fill: 0xFFFFFF, // white in hexademical color format
-            },
-            1,
-        );
+        const whiteColor = this.randomColor;
+        // const whiteTopColor = whiteColor.lighten(0.15);
+        // const blackColor = whiteColor.darken(0.5);
+        // const blackTopColor = blackColor.lighten(0.15);
+        const backgroundColor = whiteColor.darken(0.75);
+
+        // fill in the background, which displays the file/rank, and the "tiles"
+        this.layers.background.addChild(new PIXI.Graphics())
+            .beginFill(backgroundColor.rgbNumber(), 1)
+            .drawRect(0, 0, BOARD_LENGTH_WITH_MARGINS, BOARD_LENGTH_WITH_MARGINS)
+            .endFill();
+
+        this.boardContainer.x = BOARD_MARGIN;
+        this.boardContainer.y = BOARD_MARGIN;
+
+        const textOptions = {
+            height: BOARD_MARGIN / 2,
+            fill: this.textColor.rgbNumber(),
+        };
+
+        // for each side, left/right
+        for (const ranks of this.gridStrings.rank) {
+            // vertical ranks, 1, 2, 3, ...8
+            for (let rank = 1; rank <= 8; rank++) {
+                const rankText = this.renderer.newPixiText(String(rank), this.layers.background, textOptions);
+                rankText.alpha = 0.75;
+                rankText.anchor.set(0.5);
+
+                ranks[rank] = rankText;
+            }
+        }
+
+        // and again, for the top and bottom
+        for (const files of this.gridStrings.file) {
+            // horizontal files, a, b, c, ...h
+            for (let file = 1; file <= 8; file++) {
+                const character = String.fromCharCode(ASCII_A + file - 1);
+                const fileText = this.renderer.newPixiText(character, this.layers.background, textOptions);
+                fileText.alpha = 0.75;
+                fileText.anchor.set(0.5);
+
+                files[file] = fileText;
+            }
+        }
+
+        // make all the tiles
+        for (let x = 0; x < 8; x++) {
+            this.tileSprites[x] = [];
+            for (let y = 0; y < 8; y++) {
+                const resource = this.resources[(x + y) % 2
+                    ? "tileBlack"
+                    : "tileWhite"
+                ];
+                const tile = resource.newSprite({ container: this.tileContainer, alpha: 0.175 });
+
+                this.tileSprites[x][y] = tile;
+            }
+        }
+
+        this.flipBackground(this.settings.flipBoard.get());
         // <<-- /Creer-Merge: create-background -->>
     }
 
@@ -173,6 +251,56 @@ export class Game extends BaseGame {
         // <<-- /Creer-Merge: state-updated -->>
     }
     // <<-- Creer-Merge: protected-private-functions -->>
-    // You can add additional protected/private functions here
+
+    /**
+     * This is setup above to be called when the `flip-board` setting is changed
+     *
+     * @param flipped - To render the background as flipped or not
+     */
+    private flipBackground(flipped: boolean): void {
+        // this._unselect();
+
+        for (const [i, ranks] of this.gridStrings.rank.entries()) {
+            const bottomRank = i === 0;
+            for (let y = 1; y <= 8; y++) {
+                const rankText = ranks[y];
+
+                rankText.y = 9 - y;
+
+                if (flipped) {
+                    rankText.y = 9 - rankText.y;
+                }
+
+                rankText.x = BOARD_MARGIN / 2;
+
+                if (bottomRank) {
+                    rankText.x += BOARD_MARGIN + BOARD_LENGTH;
+                }
+            }
+        }
+
+        for (const [i, files] of this.gridStrings.file.entries()) {
+            const bottomFile = i === 0;
+            for (let x = 1; x <= 8; x++) {
+                const fileText = files[x];
+
+                fileText.x = x;
+                fileText.y = BOARD_MARGIN / 2;
+
+                if (bottomFile) {
+                    fileText.y += BOARD_MARGIN + 8;
+                }
+            }
+        }
+
+        for (let x = 0; x < 8; x++) {
+            for (let y = 0; y < 8; y++) {
+                const sprite = this.tileSprites[x][y];
+
+                sprite.x = x;
+                sprite.y = flipped ? 7 - y : y;
+            }
+        }
+    }
     // <<-- /Creer-Merge: protected-private-functions -->>
 }
