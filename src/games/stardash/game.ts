@@ -24,7 +24,7 @@ export class Game extends BaseGame {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The static name of this game. */
-    public static readonly gameName = "StarDash";
+    public static readonly gameName = "Stardash";
 
     /** The number of players in this game. the players array should be this same size */
     public static readonly numberOfPlayers = 2;
