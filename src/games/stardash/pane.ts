@@ -18,7 +18,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Creates the pane for the StarDash game.
+     * Creates the pane for the Stardash game.
      *
      * @param viseur - The Viseur instance controlling the pane.
      * @param game - The game this pane is displaying stats for.

@@ -9,5 +9,5 @@ Game.prototype.namespace = {
     HumanPlayer,
 };
 
-/** The namespace variable expected by all games for this StarDash game. */
+/** The namespace variable expected by all games for this Stardash game. */
 export const namespace = Game.prototype.namespace;
