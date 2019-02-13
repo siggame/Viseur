@@ -13,6 +13,7 @@ import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { BOARD_LENGTH_WITH_MARGINS, ChessBoardBackground } from "./chess-board-background";
+import { ChessPieces } from "./chess-pieces";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -68,6 +69,7 @@ export class Game extends BaseGame {
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
+    private chessPieces = new ChessPieces(this);
     // <<-- /Creer-Merge: variables -->>
 
     // <<-- Creer-Merge: public-functions -->>
@@ -99,7 +101,6 @@ export class Game extends BaseGame {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
-        new ChessBoardBackground(this);
         // <<-- /Creer-Merge: start -->>
     }
 
@@ -112,6 +113,7 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
+        new ChessBoardBackground(this);
         // <<-- /Creer-Merge: create-background -->>
     }
 
@@ -156,7 +158,10 @@ export class Game extends BaseGame {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Game based on its current and next states
+
+        // if there is a new move, it will be at this index in next history, else undefined
+        this.chessPieces.update(current.fen, next.history[current.history.length]);
+
         // <<-- /Creer-Merge: state-updated -->>
     }
     // <<-- Creer-Merge: protected-private-functions -->>

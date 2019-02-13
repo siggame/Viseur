@@ -1,7 +1,7 @@
 import * as Color from "color";
 import { Game } from "./game";
 
-const ASCII_A = "a".charCodeAt(0);
+export const ASCII_A = "a".charCodeAt(0);
 const BOARD_MARGIN = 0.5;
 const BOARD_LENGTH = 8; // 8x8 tiles for standard chess board
 /** // margin on each side, plus the 8 chess tiles */
