@@ -98,6 +98,11 @@ export interface IGameState extends IBaseGame {
     projectileSpeed: number;
 
     /**
+     * Every projectile in the game.
+     */
+    projectiles: IProjectileState[];
+
+    /**
      * The regeneration rate of asteroids.
      */
     regenerateRate: number;
@@ -268,6 +273,11 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
      * This player's opponent in the game.
      */
     opponent: IPlayerState;
+
+    /**
+     * Every Projectile owned by this Player.
+     */
+    projectiles: IProjectileState[];
 
     /**
      * The reason why the player lost the game.
