@@ -2,8 +2,8 @@ import * as Color from "color";
 import { Game } from "./game";
 
 export const ASCII_A = "a".charCodeAt(0);
-const BOARD_MARGIN = 0.5;
-const BOARD_LENGTH = 8; // 8x8 tiles for standard chess board
+export const BOARD_MARGIN = 0.5;
+export const BOARD_LENGTH = 8; // 8x8 tiles for standard chess board
 /** // margin on each side, plus the 8 chess tiles */
 export const BOARD_LENGTH_WITH_MARGINS = (BOARD_MARGIN * 2) + BOARD_LENGTH;
 
@@ -16,11 +16,9 @@ export class ChessBoardBackground {
     private readonly randomColor = Color.hsl(this.game.random() * 360, 60, 40).whiten(1.5);
     // private readonly randomColorCompliment = this.randomColor.rotate(180);
 
-    private readonly boardContainer = new PIXI.Container()
-        .setParent(this.game.layers.game);
+    private readonly boardContainer = new PIXI.Container();
 
-    private readonly tileContainer = new PIXI.Container()
-        .setParent(this.boardContainer);
+    private readonly tileContainer = new PIXI.Container();
 
     // private readonly overlayContainer = new PIXI.Container()
     //     .setParent(this.boardContainer);
@@ -31,6 +29,9 @@ export class ChessBoardBackground {
     };
 
     constructor(private readonly game: Game) {
+        this.boardContainer.setParent(this.game.layers.game);
+        this.tileContainer.setParent(this.boardContainer);
+
         const whiteColor = this.randomColor;
         // const whiteTopColor = whiteColor.lighten(0.15);
         // const blackColor = whiteColor.darken(0.5);
@@ -42,9 +43,6 @@ export class ChessBoardBackground {
             .beginFill(backgroundColor.rgbNumber(), 1)
             .drawRect(0, 0, BOARD_LENGTH_WITH_MARGINS, BOARD_LENGTH_WITH_MARGINS)
             .endFill();
-
-        this.boardContainer.x = BOARD_MARGIN;
-        this.boardContainer.y = BOARD_MARGIN;
 
         const textOptions = {
             height: BOARD_MARGIN / 2,

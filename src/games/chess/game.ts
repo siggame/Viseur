@@ -137,7 +137,7 @@ export class Game extends BaseGame {
         super.renderBackground(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render-background -->>
-        // update and re-render whatever you initialize in renderBackground
+        this.chessPieces.render(dt);
         // <<-- /Creer-Merge: render-background -->>
     }
 
