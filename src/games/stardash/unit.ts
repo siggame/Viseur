@@ -5,7 +5,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBodyState, IUnitState } from "./state-interfaces";
+import { IBodyState, IProjectileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -177,15 +177,16 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * tell you if there is a open path to that location.
-     * @param x The x position of the destination you wish to check to.
-     * @param y The y position of the destination you wish to check to.
+     * Attacks the specified projectile.
+     * @param missile The projectile being shot down.
      * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if pathable by this unit,
+     * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public pathable(x: number, y: number, callback?: (returned: boolean) => void): void {
-        this.runOnServer("pathable", {x, y}, callback);
+    public shootDown(missile: IProjectileState, callback?: (returned: boolean)
+                     => void,
+    ): void {
+        this.runOnServer("shootDown", {missile}, callback);
     }
 
     /**

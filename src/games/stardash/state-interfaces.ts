@@ -61,6 +61,11 @@ export interface IGameState extends IBaseGame {
     minAsteroid: number;
 
     /**
+     * The rate at which miners grab minerals from asteroids.
+     */
+    miningSpeed: number;
+
+    /**
      * The rarity modifier of the most common ore. This controls how much
      * spawns.
      */
@@ -86,6 +91,11 @@ export interface IGameState extends IBaseGame {
      * List of all the players in the game.
      */
     players: IPlayerState[];
+
+    /**
+     * The amount of distance missiles travel through space.
+     */
+    projectileSpeed: number;
 
     /**
      * The regeneration rate of asteroids.
@@ -217,6 +227,11 @@ export interface IJobState extends IGameObjectState {
      */
     title: string;
 
+    /**
+     * How much money it costs to spawn a unit.
+     */
+    unitCost: number;
+
 }
 
 /**
@@ -283,6 +298,37 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
+
+}
+
+/**
+ * Tracks any projectiles moving through space.
+ */
+export interface IProjectileState extends IGameObjectState {
+    /**
+     * The Player that owns and can control this Unit.
+     */
+    owner: IPlayerState;
+
+    /**
+     * The radius of the circle this projectile occupies.
+     */
+    radius: number;
+
+    /**
+     * The unit that is being attacked by this projectile.
+     */
+    target: IUnitState;
+
+    /**
+     * The x value this projectile is on.
+     */
+    x: number;
+
+    /**
+     * The y value this projectile is on.
+     */
+    y: number;
 
 }
 
