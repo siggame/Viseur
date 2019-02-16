@@ -69,7 +69,10 @@ export class Game extends BaseGame {
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
+
+    /** The manager that renders Chess pieces */
     private chessPieces = new ChessPieces(this);
+
     // <<-- /Creer-Merge: variables -->>
 
     // <<-- Creer-Merge: public-functions -->>
