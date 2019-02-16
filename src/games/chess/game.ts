@@ -168,5 +168,10 @@ export class Game extends BaseGame {
         // <<-- /Creer-Merge: state-updated -->>
     }
     // <<-- Creer-Merge: protected-private-functions -->>
+    protected recolor(): void {
+        super.recolor();
+
+        this.chessPieces.recolor();
+    }
     // <<-- /Creer-Merge: protected-private-functions -->>
 }

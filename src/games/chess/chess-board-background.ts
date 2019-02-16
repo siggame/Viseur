@@ -50,6 +50,8 @@ export class ChessBoardBackground {
         this.boardContainer.setParent(this.game.layers.game);
         this.tileContainer.setParent(this.boardContainer);
 
+        this.boardContainer.position.set(BOARD_MARGIN, BOARD_MARGIN);
+
         const whiteColor = this.randomColor;
         // const whiteTopColor = whiteColor.lighten(0.15);
         // const blackColor = whiteColor.darken(0.5);
