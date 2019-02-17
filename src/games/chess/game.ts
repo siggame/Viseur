@@ -12,6 +12,7 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+import * as chessJs from "chess.js";
 import { BOARD_LENGTH_WITH_MARGINS, ChessBoardBackground } from "./chess-board-background";
 import { ChessPieces } from "./chess-pieces";
 // <<-- /Creer-Merge: imports -->>
@@ -69,6 +70,12 @@ export class Game extends BaseGame {
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
+        // TODO: fix types, for some reason being exported weird
+    /** The current chess state */
+    private currentChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
+
+    /** the next chess state */
+    private nextChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
 
     /** The manager that renders Chess pieces */
     private chessPieces = new ChessPieces(this);
@@ -161,9 +168,16 @@ export class Game extends BaseGame {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
+        this.currentChess.load(current.fen);
+        this.nextChess.load(current.fen); // yes current; we will apply the next SAN move to make it next state
 
-        // if there is a new move, it will be at this index in next history, else undefined
-        this.chessPieces.update(current.fen, next.history[current.history.length]);
+        // if there is a new move, it will be at this index in next history, else null
+        const nextModeSAN = next.history[current.history.length];
+        const result = nextModeSAN
+            ? this.nextChess.move(nextModeSAN)
+            : null;
+
+        this.chessPieces.update(this.currentChess, result);
 
         // <<-- /Creer-Merge: state-updated -->>
     }

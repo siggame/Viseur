@@ -70,13 +70,6 @@ export class ChessPieces {
     // tslint:disable-next-line:no-any no-unsafe-any - lodash has bad types, and loses keyof type information
     private readonly pieceSpriteUsed = mapValues(CHESS_PIECE_INDEXES, () => ({ b: [], w: [] })) as any as SpritesCache;
 
-    // TODO: fix types, for some reason being exported weird
-    /** The current chess state */
-    private currentChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
-
-    /** the next chess state */
-    private nextChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
-
     /** A mapping of the square or promotion square to render information built during updates. */
     private renders = new Map<chessJs.Square | "promotion", IPieceRender>();
 
@@ -93,20 +86,17 @@ export class ChessPieces {
     /**
      * Update the states rendering. Pre-calculates as much as possible so render times are slim.
      *
-     * @param fen - The current FEN string
-     * @param moveSAN - optional SAN to apply to the current FEN to calculate the next state.
+     * @param chess - chess.js instance of the current state
+     * @param move - if a move occurs AFTER the current state, the result of that move, else null for no move.
      */
-    public update(fen: string, moveSAN: string | undefined): void {
+    public update(chess: chessJs.ChessInstance, move: chessJs.Move | null): void {
         this.renders.clear();
         this.unRenderPieces();
 
         const tempSprites = this.pieceSpriteCache.b.b[0]; // TODO: dislike this
 
-        // First, parse the current state, as most pieces in chess do not change state
-        this.currentChess.load(fen);
-
-        for (const square of this.currentChess.SQUARES) {
-            const piece = this.currentChess.get(square);
+        for (const square of chess.SQUARES) {
+            const piece = chess.get(square);
             if (piece) {
                 this.renders.set(square, {
                     ...piece,
@@ -117,18 +107,14 @@ export class ChessPieces {
             }
         }
 
-        // Now look at the next state to update what moved/changed, if there is a SAN move
-        this.nextChess.load(fen);
-        const result = moveSAN && this.nextChess.move(moveSAN);
-
-        if (result) {
+        if (move) {
             // first, let's check if something got captured
             let capturedSquare: chessJs.Square | undefined;
-            if (result.flags.includes("e")) { // en passant capture
-                capturedSquare = result.to[0] + result.from[1] as chessJs.Square;
+            if (move.flags.includes("e")) { // en passant capture
+                capturedSquare = move.to[0] + move.from[1] as chessJs.Square;
             }
-            else if (result.captured) { // normal capture via moving to captured piece
-                capturedSquare = result.to;
+            else if (move.captured) { // normal capture via moving to captured piece
+                capturedSquare = move.to;
             }
 
             if (capturedSquare) {
@@ -136,11 +122,11 @@ export class ChessPieces {
             }
 
             // now check for casteling, if so we need to animate the Rook moving with the King
-            if (result.flags.includes("q") || result.flags.includes("k")) { // queen or king side castle
-                const file = result.flags === "q" ? "a" : "h"; // queenside rook at file "a", kingside at "h"
-                const rank = result.to[1];
+            if (move.flags.includes("q") || move.flags.includes("k")) { // queen or king side castle
+                const file = move.flags === "q" ? "a" : "h"; // queenside rook at file "a", kingside at "h"
+                const rank = move.to[1];
                 // queenside castle ends up at file "d", kingside at "f"
-                const newRookSquare = (result.flags === "q" ? "d" : "f") + rank as chessJs.Square;
+                const newRookSquare = (move.flags === "q" ? "d" : "f") + rank as chessJs.Square;
 
                 const rookRender = this.getRenderUnsafe(file + rank).to = newRookSquare;
                 if (!rookRender) {
@@ -149,14 +135,14 @@ export class ChessPieces {
             }
 
             // now update the actual piece that moved
-            this.getRenderUnsafe(result.from).to = result.to;
+            this.getRenderUnsafe(move.from).to = move.to;
 
-            if (result.promotion) {
+            if (move.promotion) {
                 this.renders.set("promotion", {
-                    type: result.promotion,
-                    color: result.color,
+                    type: move.promotion,
+                    color: move.color,
                     from: null, // didn't exist, fade in
-                    to: result.to,
+                    to: move.to,
                     sprites: tempSprites,
                 });
             }
