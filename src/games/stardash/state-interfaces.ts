@@ -222,6 +222,11 @@ export interface IJobState extends IGameObjectState {
     moves: number;
 
     /**
+     * The distance at which this job can effect things.
+     */
+    range: number;
+
+    /**
      * The reserve the martyr use to protect allies.
      */
     shield: number;
@@ -316,6 +321,11 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
  */
 export interface IProjectileState extends IGameObjectState {
     /**
+     * The amount of remaining distance the projectile can move.
+     */
+    fuel: number;
+
+    /**
      * The Player that owns and can control this Unit.
      */
     owner: IPlayerState;
@@ -393,6 +403,11 @@ export interface IUnitState extends IGameObjectState {
      * The Player that owns and can control this Unit.
      */
     owner: IPlayerState;
+
+    /**
+     * The martyr ship that is currently shielding this ship if any.
+     */
+    protector: IUnitState;
 
     /**
      * The radius of the circle this unit occupies.
