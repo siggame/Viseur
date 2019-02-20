@@ -165,7 +165,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * tells you if your ship can be at that location.
+     * tells you if your ship can dash to that location.
      * @param x The x position of the location you wish to check.
      * @param y The y position of the location you wish to check.
      * @param callback? The callback that eventually returns the return value

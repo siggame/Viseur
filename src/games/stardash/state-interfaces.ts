@@ -27,6 +27,11 @@ export interface IGameState extends IBaseGame {
     currentTurn: number;
 
     /**
+     * Radius of the no dash zone around the sun.
+     */
+    dashBlock: number;
+
+    /**
      * The distance traveled each turn by dashing.
      */
     dashDistance: number;
@@ -113,6 +118,11 @@ export interface IGameState extends IBaseGame {
     session: string;
 
     /**
+     * The standard size of ships.
+     */
+    shipRadius: number;
+
+    /**
      * The size of the map in the X direction.
      */
     sizeX: number;
@@ -153,6 +163,11 @@ export interface IBodyState extends IGameObjectState {
      * The type of material the celestial body has.
      */
     materialType: string;
+
+    /**
+     * The Player that owns and can control this Unit.
+     */
+    owner: IPlayerState;
 
     /**
      * The radius of the circle that this body takes up.
@@ -360,6 +375,16 @@ export interface IUnitState extends IGameObjectState {
      * Whether or not this Unit has performed its action this turn.
      */
     acted: boolean;
+
+    /**
+     * The x value this unit is dashing to.
+     */
+    dashX: number;
+
+    /**
+     * The y value this unit is dashing to.
+     */
+    dashY: number;
 
     /**
      * The remaining health of a unit.
