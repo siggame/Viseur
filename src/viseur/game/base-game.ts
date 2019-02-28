@@ -534,6 +534,13 @@ export class BaseGame extends StateObject {
     }
 
     /**
+     * Intended to be overwritten by super classes to recolor their background or whatever.
+     */
+    protected recolor(): void {
+        // pass
+    }
+
+    /**
      * Starts the game, basically like init, but after other stuff is ready
      * (like loading textures).
      */
@@ -569,7 +576,7 @@ export class BaseGame extends StateObject {
 
         // Attach callbacks to recolor this game whenever a color setting changes.
         const doRecolor = () => {
-            this.recolor();
+            this.recolorEverything();
             if (this.pane) {
                 this.pane.update(this.getCurrentMostState(), this.getNextMostState());
             }
@@ -658,7 +665,8 @@ export class BaseGame extends StateObject {
     /**
      * Invoked when a player color changes, so all game objects have an opportunity to recolor themselves
      */
-    private recolor(): void {
+    private recolorEverything(): void {
+        this.recolor();
         for (const gameObject of Object.values(this.gameObjects)) {
             if (gameObject) {
                 gameObject.recolor();

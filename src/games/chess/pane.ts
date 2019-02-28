@@ -66,7 +66,17 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         const stats = super.getGameStats(state);
 
         // <<-- Creer-Merge: game-stats -->>
-        // add stats for games to show up here
+        stats.push({
+            get: (game) => {
+                const move = Math.max(Math.ceil((game.history.length - 1) / 2), 0);
+                const sideToMove = game.fen.split(" ")[1] === "w"
+                    ? "(White)"
+                    : "(Black)";
+
+                return `${move} ${sideToMove}`;
+            },
+            label: "Move",
+        });
         // <<-- /Creer-Merge: game-stats -->>
 
         return stats;
@@ -88,6 +98,19 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
     }
 
     // <<-- Creer-Merge: functions -->>
-    // add more functions for your pane here
+    protected getCurrentPlayerID(state: Immutable<IGameState>): string {
+        const fenSplit = state.fen.split(" ");
+
+        // the second element in a split FEN string should be the current player color, "w" or "b"
+        const playerColor = fenSplit[1];
+        switch (playerColor) {
+            case "w":
+                return "0"; // White is first player.
+            case "b":
+                return "1"; // Black is second.
+            default:
+                return ""; // Unknown state! Should never happen.
+        }
+    }
     // <<-- /Creer-Merge: functions -->>
 }

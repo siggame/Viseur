@@ -191,10 +191,7 @@ export class BasePane<
             ? nextState
             : currentState;
 
-        const currentPlayerId = objectHasProperty(state, "currentPlayer")
-                                && isObject(state.currentPlayer)
-                                && state.currentPlayer.id !== undefined
-                                && String(state.currentPlayer.id);
+        const currentPlayerId = this.getCurrentPlayerID(state);
 
         for (const player of state.players) {
             const playerStatsList = this.playerToStatsList.get(player.id);
@@ -384,6 +381,20 @@ export class BasePane<
                 },
             );
         }
+    }
+
+    /**
+     * Gets the id of the player to highlight as the current player. Empty string is treated as none.
+     *
+     * @param state - The current/next game state, whichever is current to animate.
+     * @returns A string. Must be an ID of a player in the game, otherwise empty string for no current player.
+     */
+    protected getCurrentPlayerID(state: Immutable<IBaseGame>): string {
+        return objectHasProperty(state, "currentPlayer")
+               && isObject(state.currentPlayer)
+               && state.currentPlayer.id !== undefined
+               && String(state.currentPlayer.id)
+               || "";
     }
 
     /**

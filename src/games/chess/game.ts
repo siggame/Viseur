@@ -12,7 +12,9 @@ import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import * as chessJs from "chess.js";
+import { BOARD_LENGTH_WITH_MARGINS, ChessBoardBackground } from "./chess-board-background";
+import { ChessPieces } from "./chess-pieces";
 // <<-- /Creer-Merge: imports -->>
 
 /**
@@ -44,8 +46,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        this.defaultPlayerColors[0], // Player 0
-        this.defaultPlayerColors[1], // Player 1
+        Color("white"),
+        Color("black"),
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
@@ -68,7 +70,16 @@ export class Game extends BaseGame {
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+        // TODO: fix types, for some reason being exported weird
+    /** The current chess state */
+    private currentChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
+
+    /** the next chess state */
+    private nextChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
+
+    /** The manager that renders Chess pieces */
+    private chessPieces = new ChessPieces(this);
+
     // <<-- /Creer-Merge: variables -->>
 
     // <<-- Creer-Merge: public-functions -->>
@@ -84,8 +95,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: BOARD_LENGTH_WITH_MARGINS,
+            height: BOARD_LENGTH_WITH_MARGINS,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -100,7 +111,6 @@ export class Game extends BaseGame {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
-        // Initialize your variables here
         // <<-- /Creer-Merge: start -->>
     }
 
@@ -113,18 +123,7 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
-        // Initialize your background here if need be
-
-        // this shows you how to render text that scales to the game
-        // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
-        this.renderer.newPixiText(
-            "This game has no\ngame logic added\nto it... yet!",
-            this.layers.game,
-            {
-                fill: 0xFFFFFF, // white in hexademical color format
-            },
-            1,
-        );
+        new ChessBoardBackground(this);
         // <<-- /Creer-Merge: create-background -->>
     }
 
@@ -148,7 +147,7 @@ export class Game extends BaseGame {
         super.renderBackground(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render-background -->>
-        // update and re-render whatever you initialize in renderBackground
+        this.chessPieces.render(dt);
         // <<-- /Creer-Merge: render-background -->>
     }
 
@@ -169,10 +168,24 @@ export class Game extends BaseGame {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Game based on its current and next states
+        this.currentChess.load(current.fen);
+        this.nextChess.load(current.fen); // yes current; we will apply the next SAN move to make it next state
+
+        // if there is a new move, it will be at this index in next history, else null
+        const nextModeSAN = next.history[current.history.length];
+        const result = nextModeSAN
+            ? this.nextChess.move(nextModeSAN)
+            : null;
+
+        this.chessPieces.update(this.currentChess, result);
+
         // <<-- /Creer-Merge: state-updated -->>
     }
     // <<-- Creer-Merge: protected-private-functions -->>
-    // You can add additional protected/private functions here
+    protected recolor(): void {
+        super.recolor();
+
+        this.chessPieces.recolor();
+    }
     // <<-- /Creer-Merge: protected-private-functions -->>
 }
