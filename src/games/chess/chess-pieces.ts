@@ -1,7 +1,7 @@
 import * as chessJs from "chess.js";
 import { mapValues } from "lodash";
 import { ease, IPoint } from "src/utils";
-import { ASCII_A, BOARD_MARGIN } from "./chess-board-background";
+import { ASCII_A, BOARD_LENGTH, BOARD_MARGIN } from "./chess-board-background";
 import { Game } from "./game";
 
 /** The SAN character for a chess piece type to their index in the sprite sheet. */
@@ -204,6 +204,15 @@ export class ChessPieces {
 
             const to = render.to && squareToXY(render.to);
             const from = render.from && squareToXY(render.from);
+
+            if (this.game.settings.flipBoard.get()) {
+                if (to) {
+                    to.y = BOARD_LENGTH - to.y - 1;
+                }
+                if (from) {
+                    from.y = BOARD_LENGTH - from.y - 1;
+                }
+            }
 
             const position = from || to as IPoint; // one has to exist
             if (to && from && (to.x !== from.x || to.y !== from.y)) {
