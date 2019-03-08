@@ -53,7 +53,7 @@ type SpritesCache = {
 function squareToXY(square: chessJs.Square): IPoint {
     return {
         x: square.charCodeAt(0) - ASCII_A,
-        y: Number(square.charAt(1)) - 1,
+        y: BOARD_LENGTH - Number(square.charAt(1)),
     };
 }
 
