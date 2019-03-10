@@ -31,6 +31,10 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
     public next: IWarehouseState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+    /**
+     * The color of the beam shot out, super buildings override
+     * @returns An RGB number to make the color from. Use hex format for ease.
+     */
     protected get beamColorName(): number {
         return 0xFF8C00;
     }

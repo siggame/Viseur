@@ -33,7 +33,20 @@ export interface IBaseTile extends IBaseGameObject {
     y: number;
 }
 
+/**
+ * Gets the neighboring tile given any unknown string, which may not always have a tile in that direction.
+ * @param state - Tile state
+ * @param direction  - unknown direction to try to get at.
+ * @returns A tile stat in that direction, or undefined if direction is invalid.
+ */
 export function getTileNeighbor<T extends IBaseTile>(state: Immutable<T>, direction: string): T | undefined;
+
+/**
+ * Gets the neighboring tile given a known direction string.
+ * @param state - Tile state
+ * @param direction  - The direction to get a tile in.
+ * @returns A tile stat in that direction.
+ */
 export function getTileNeighbor<T extends IBaseTile>(state: Immutable<T>, direction: TileDirection): T;
 
 /**

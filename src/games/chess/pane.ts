@@ -98,6 +98,12 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
     }
 
     // <<-- Creer-Merge: functions -->>
+    /**
+     * Override to get the current player's id because this is not a TurnBasedGame based game class
+     *
+     * @param state - The current game state.
+     * @returns The id of the current player.
+     */
     protected getCurrentPlayerID(state: Immutable<IGameState>): string {
         const fenSplit = state.fen.split(" ");
 

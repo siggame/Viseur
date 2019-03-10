@@ -54,7 +54,7 @@ export class HumanPlayer extends BaseHumanPlayer {
      */
     public makeMove(callback: (returned: string) => void): void {
         // <<-- Creer-Merge: makeMove -->>
-        // Put your game logic here for makeMove
+        // console.log("i've been told to make a move!");
         // <<-- /Creer-Merge: makeMove -->>
     }
 

@@ -182,10 +182,15 @@ export class Game extends BaseGame {
         // <<-- /Creer-Merge: state-updated -->>
     }
     // <<-- Creer-Merge: protected-private-functions -->>
+
+    /**
+     * Override to recolors everything in the game.
+     */
     protected recolor(): void {
         super.recolor();
 
         this.chessPieces.recolor();
     }
+
     // <<-- /Creer-Merge: protected-private-functions -->>
 }
