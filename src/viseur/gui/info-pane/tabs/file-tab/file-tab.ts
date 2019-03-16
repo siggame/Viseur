@@ -232,7 +232,7 @@ export class FileTab extends Tab {
             this.connect();
         });
 
-        this.connectTypeInput.value = "Spectate"; // default connection type
+        this.connectTypeInput.value = "Human"; // default connection type
 
         // if in the config there is a default game
         if (Config.game) {
@@ -372,12 +372,12 @@ export class FileTab extends Tab {
         });
 
         this.viseur.events.connectionError.on((err) => {
-            this.log(`Unexpected error occurred in connection. ${err}`);
+            this.log(`Unexpected error occurred in connection. ${err}`, true);
         });
 
         this.viseur.events.connectionClosed.once((data) => {
             if (data.timedOut) {
-                this.log("You timed out and were forcibly disconnected.");
+                this.log("You timed out and were forcibly disconnected.", true);
             }
             this.log("Connection closed.");
         });
@@ -413,12 +413,16 @@ export class FileTab extends Tab {
      * Logs some string to the connection log.
      *
      * @param message - The string to log.
+     * @param error - If this string is an error message.
      */
-    private log(message: string): void {
+    private log(message: string, error?: true): void {
         this.connectionWrapper.removeClass("collapsed");
 
         const li = document.createElement("li");
-        li.innerHTML = escape(message); // tslint:disable-line:no-inner-html - we are escaping the string
+        li.innerHTML = escape(message); // tslint:disable-line:no-inner-html - we are escaping the string above
+        if (error) {
+            li.classList.add("error");
+        }
         this.connectionLog.append(li);
     }
 

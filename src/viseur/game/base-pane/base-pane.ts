@@ -23,6 +23,7 @@ const requireLanguageImage = require.context(
 ) as (path: string) => string;
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 const NS_IN_MS = 1000000;
+const ONE_SEC_IN_NS = NS_IN_MS * 1000;
 
 const ensureFinite = (num: number) => isFinite(num)
     ? num
@@ -112,6 +113,15 @@ export class BasePane<
 
             this.humansTimer.events.finished.on(() => {
                 this.ticked();
+            });
+
+            viseur.events.connectionClosed.once(() => {
+                if (this.humansTimer) {
+                    this.humansTimeRemaining = ONE_SEC_IN_NS;
+                    this.humansTimer.pause();
+
+                    this.ticked(true); // updates everything that we hit 0 time
+                }
             });
         }
 
@@ -516,13 +526,13 @@ export class BasePane<
     }
 
     /**
-     * Invoked when the timer ticks once a second
+     * Invoked when the timer ticks once a second.
+     *
+     * @param doNotRestart - flag to not restart the timer
      */
-    private ticked(): void {
+    private ticked(doNotRestart?: boolean): void {
         if (this.humansTickingPlayer) {
-            this.humansTimeRemaining = this.humansTimeRemaining || 0;
-            // 1000 ms elapsed on this tick
-            this.humansTimeRemaining -= (NS_IN_MS * 1000);
+            this.humansTimeRemaining = (this.humansTimeRemaining || 0) - ONE_SEC_IN_NS;
 
             const list = this.playerToStatsList.get(
                 this.humansTickingPlayer.id,
@@ -535,8 +545,8 @@ export class BasePane<
                     li.html(this.formatTimeRemaining(this.humansTimeRemaining));
                 }
             }
-            if (this.humansTimer) {
-                // Should always happen
+
+            if (!doNotRestart && this.humansTimer) {
                 this.humansTimer.restart();
             }
         }

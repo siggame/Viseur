@@ -19,6 +19,10 @@
             margin-left: 1.5em;
             margin-bottom: 0.5em;
 
+            &.error {
+                color: $error;
+            }
+
             &:last-child {
                 margin-bottom: 0;
             }

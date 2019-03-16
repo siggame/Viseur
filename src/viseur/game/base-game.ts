@@ -591,6 +591,10 @@ export class BaseGame extends StateObject {
         this.renderer.setSize(size);
         this.start(current);
         this.createBackground(current);
+
+        if (this.humanPlayer) {
+            this.humanPlayer.start();
+        }
     }
 
     /**

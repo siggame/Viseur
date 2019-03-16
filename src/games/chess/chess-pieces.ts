@@ -50,7 +50,13 @@ type SpritesCache = {
     };
 };
 
-function squareToXY(square: chessJs.Square): IPoint {
+/**
+ * Takes a chess square and returns the (x, y) coordinates for them.
+ *
+ * @param square - The square to convert.
+ * @returns A point for the given square.
+ */
+export function squareToXY(square: chessJs.Square): IPoint {
     return {
         x: square.charCodeAt(0) - ASCII_A,
         y: BOARD_LENGTH - Number(square.charAt(1)),

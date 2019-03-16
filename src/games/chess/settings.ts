@@ -13,5 +13,19 @@ export const GameSettings = {
         id: "flip-board",
     }),
 
+    /** Setting for human player pawn promotion type */
+    pawnPromotion: new Settings.DropDownSetting<"q" | "n" | "r" | "b">({
+        id: "pawn-promotion",
+        label: "Pawn Promotion",
+        hint: "When making moves as a human player, the type of piece to promote pawns to automatically",
+        options: [
+            { text: "Queen", value: "q" },
+            { text: "Knight", value: "n" },
+            { text: "Rook", value: "r" },
+            { text: "Bishop", value: "b" },
+        ],
+        default: "q",
+    }),
+
     // <<-- /Creer-Merge: settings -->>
 };

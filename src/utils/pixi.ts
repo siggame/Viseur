@@ -83,7 +83,7 @@ export function getTintFromColor(color: ColorTint): number {
  * @param options - The options to set the properties from.
  */
 export function setPixiOptions(
-    sprite: PIXI.Sprite,
+    sprite: PIXI.Sprite | PIXI.Container,
     options: Readonly<IPixiSpriteOptions>,
 ): void {
     if (options.container) {
@@ -144,8 +144,14 @@ export function setPixiOptions(
         sprite.alpha = options.alpha;
     }
 
-    if (options.tint !== undefined) {
-        sprite.tint = getTintFromColor(options.tint);
+    if (sprite instanceof PIXI.Sprite) {
+        if (options.tint !== undefined) {
+            sprite.tint = getTintFromColor(options.tint);
+        }
+
+        if (options.blendMode !== undefined) {
+            sprite.blendMode = options.blendMode;
+        }
     }
 
     if (options.relativePivot !== undefined) {
@@ -158,10 +164,6 @@ export function setPixiOptions(
             y = options.relativePivot.y;
         }
         setRelativePivot(sprite, x, y);
-    }
-
-    if (options.blendMode !== undefined) {
-        sprite.blendMode = options.blendMode;
     }
 
     if (options.alpha !== undefined) {
@@ -210,7 +212,9 @@ export function setPixiOptions(
             y = options.anchor.y;
         }
 
-        sprite.anchor.set(x, y);
+        if (sprite instanceof PIXI.Sprite) {
+            sprite.anchor.set(x, y);
+        }
     }
 }
 
@@ -224,7 +228,7 @@ export function setPixiOptions(
  * @returns The passing obj for chaining.
  */
 export function setRelativePivot(
-    obj: PIXI.Container,
+    obj: PIXI.Container | PIXI.Sprite,
     relativeX: number = 0.5,
     relativeY: number = 0.5,
 ): PIXI.Container {

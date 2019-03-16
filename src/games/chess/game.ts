@@ -14,6 +14,7 @@ import { IGameState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 import * as chessJs from "chess.js";
 import { BOARD_LENGTH_WITH_MARGINS, ChessBoardBackground } from "./chess-board-background";
+import { ChessOverlay } from "./chess-overlay";
 import { ChessPieces } from "./chess-pieces";
 // <<-- /Creer-Merge: imports -->>
 
@@ -72,13 +73,21 @@ export class Game extends BaseGame {
     // <<-- Creer-Merge: variables -->>
         // TODO: fix types, for some reason being exported weird
     /** The current chess state */
-    private currentChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
+    // tslint:disable-next-line no-any no-unsafe-any
+    public readonly currentChess: chessJs.ChessInstance = new (chessJs as any)();
 
     /** the next chess state */
-    private nextChess: chessJs.ChessInstance = new (chessJs as any)(); // tslint:disable-line no-any no-unsafe-any
+    // tslint:disable-next-line no-any no-unsafe-any
+    public readonly nextChess: chessJs.ChessInstance = new (chessJs as any)();
+
+    /** The background render manager instance */
+    public chessBackground!: ChessBoardBackground;
+
+    /** The overlay to handle human interactions */
+    public chessOverlay!: ChessOverlay;
 
     /** The manager that renders Chess pieces */
-    private chessPieces = new ChessPieces(this);
+    private readonly chessPieces = new ChessPieces(this);
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -123,7 +132,8 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
-        new ChessBoardBackground(this);
+        this.chessBackground = new ChessBoardBackground(this);
+        this.chessOverlay = new ChessOverlay(this);
         // <<-- /Creer-Merge: create-background -->>
     }
 

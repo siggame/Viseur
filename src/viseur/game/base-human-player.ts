@@ -39,7 +39,10 @@ export class BaseHumanPlayer {
      */
     public setPlayer(player: BaseGameObject): void {
         this.player = player;
+    }
 
+    /** Invoked when everything is ready and the human player can start playing. */
+    public start(): void {
         while (this.backOrders.length > 0) {
             this.order.call(this, this.backOrders.shift() as Readonly<JoueurOrder>);
         }

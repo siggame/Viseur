@@ -585,7 +585,9 @@ export class Viseur {
             // HACK: wait 1 second, then resize the gui because the panel
             //       sometimes (seemingly randomly) is the wrong height
             window.setTimeout(() => {
+                this.gui.hideModal();
                 this.gui.resize();
+                this.timeManager.setTime((this.rawGamelog as Immutable<IGamelog>).deltas.length - 1, 0.9999);
                 this.events.delayedReady.emit(); // ready, but delayed so we are super ready (arena mode play)
             }, 1000);
         }

@@ -1,4 +1,6 @@
+import { Square } from "chess.js";
 import * as Color from "color";
+import { Event, events } from "ts-typed-events";
 import { Game } from "./game";
 
 /** The ASCII code for the character 'a'. */
@@ -13,21 +15,33 @@ export const BOARD_LENGTH = 8; // 8x8 tiles for standard chess board
 /** // margin on each side, plus the 8 chess tiles */
 export const BOARD_LENGTH_WITH_MARGINS = (BOARD_MARGIN * 2) + BOARD_LENGTH;
 
+function xToChar(x: number): string {
+    return String.fromCharCode(ASCII_A + x);
+}
+
 /** Manager class that maintains state about the chess board background. */
 export class ChessBoardBackground {
+    /** The events this board emits */
+    public readonly events = events({
+        /** Emitted when a tile is clicked. The square clicked is emitted. */
+        tileClicked: new Event<Square>(),
+    });
+
+    /** The container for the board itself */
+    public readonly boardContainer = new PIXI.Container();
+
+    /** The random color used to make each board a little unique. */
+    public readonly randomColor = Color.hsl(this.game.random() * 360, 60, 40).whiten(1.5);
+
+    /** The complimentary color for this random color */
+    public readonly randomColorCompliment = this.randomColor.rotate(180);
+
     /** The color of the rank/file text. */
     private readonly textColor = Color.rgb(222, 222, 222);
     // private readonly tileBorderLength = 0.9;
 
     /** The sprites used to make tiles on the board. */
     private readonly tileSprites = [] as PIXI.Sprite[][];
-
-    /** The random color used to make each board a little unique. */
-    private readonly randomColor = Color.hsl(this.game.random() * 360, 60, 40).whiten(1.5);
-    // private readonly randomColorCompliment = this.randomColor.rotate(180);
-
-    /** The container for the board itself */
-    private readonly boardContainer = new PIXI.Container();
 
     /** The container for all the tiles. */
     private readonly tileContainer = new PIXI.Container();
@@ -47,11 +61,6 @@ export class ChessBoardBackground {
      * @param game - The game this is a background for.
      */
     constructor(private readonly game: Game) {
-        this.boardContainer.setParent(this.game.layers.game);
-        this.tileContainer.setParent(this.boardContainer);
-
-        this.boardContainer.position.set(BOARD_MARGIN, BOARD_MARGIN);
-
         const whiteColor = this.randomColor;
         // const whiteTopColor = whiteColor.lighten(0.15);
         // const blackColor = whiteColor.darken(0.5);
@@ -63,6 +72,11 @@ export class ChessBoardBackground {
             .beginFill(backgroundColor.rgbNumber(), 1)
             .drawRect(0, 0, BOARD_LENGTH_WITH_MARGINS, BOARD_LENGTH_WITH_MARGINS)
             .endFill();
+
+        this.boardContainer.setParent(this.game.layers.background);
+        this.tileContainer.setParent(this.boardContainer);
+
+        this.boardContainer.position.set(BOARD_MARGIN, BOARD_MARGIN);
 
         const textOptions = {
             height: BOARD_MARGIN / 2,
@@ -85,7 +99,7 @@ export class ChessBoardBackground {
         for (const files of this.gridStrings.file) {
             // horizontal files, a, b, c, ...h
             for (let file = 1; file <= 8; file++) {
-                const character = String.fromCharCode(ASCII_A + file - 1);
+                const character = xToChar(file - 1);
                 const fileText = this.game.renderer.newPixiText(character, this.game.layers.background, textOptions);
                 fileText.alpha = 0.75;
                 fileText.anchor.set(0.5);
@@ -102,7 +116,19 @@ export class ChessBoardBackground {
                     ? "tileBlack"
                     : "tileWhite"
                 ];
-                const tile = resource.newSprite({ container: this.tileContainer, alpha: 0.175 });
+                const tile = resource.newSprite({
+                    container: this.tileContainer,
+                    alpha: 0.175,
+                    onClick: () => {
+                        const square = xToChar(x) + String(8 - y) as Square;
+                        // check to make certain above as Square check is valid
+                        if (!this.game.currentChess.SQUARES.includes(square)) {
+                            throw new Error(`Invalid square at (${x}, ${y})!`);
+                        }
+
+                        this.events.tileClicked.emit(square);
+                    },
+                });
 
                 this.tileSprites[x][y] = tile;
             }
