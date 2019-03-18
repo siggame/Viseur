@@ -74,18 +74,18 @@ export interface IGameState extends IBaseGame {
      * The rarity modifier of the most common ore. This controls how much
      * spawns.
      */
-    oreRarity1: number;
+    oreRarityGenarium: number;
 
     /**
      * The rarity modifier of the second rarest ore. This controls how much
      * spawns.
      */
-    oreRarity2: number;
+    oreRarityRarium: number;
 
     /**
      * The rarity modifier of the rarest ore. This controls how much spawns.
      */
-    oreRarity3: number;
+    oreRaritylegendarium: number;
 
     /**
      * The amount of energy the planets restore each round.
@@ -96,6 +96,11 @@ export interface IGameState extends IBaseGame {
      * List of all the players in the game.
      */
     players: IPlayerState[];
+
+    /**
+     * The standard size of ships.
+     */
+    projectileRadius: number;
 
     /**
      * The amount of distance missiles travel through space.
@@ -346,11 +351,6 @@ export interface IProjectileState extends IGameObjectState {
     owner: IPlayerState;
 
     /**
-     * The radius of the circle this projectile occupies.
-     */
-    radius: number;
-
-    /**
      * The unit that is being attacked by this projectile.
      */
     target: IUnitState;
@@ -435,15 +435,15 @@ export interface IUnitState extends IGameObjectState {
     protector: IUnitState;
 
     /**
-     * The radius of the circle this unit occupies.
-     */
-    radius: number;
-
-    /**
      * The amount of Rarium carried by this unit. (0 to job carry capacity -
      * other carried items).
      */
     rarium: number;
+
+    /**
+     * The sheild that a martyr ship has.
+     */
+    shield: number;
 
     /**
      * The x value this unit is on.
