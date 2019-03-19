@@ -43,10 +43,20 @@ export interface IGameState extends IBaseGame {
     gameObjects: {[id: string]: IGameObjectState};
 
     /**
+     * The value of every unit of genarium.
+     */
+    genariumValue: number;
+
+    /**
      * A list of all jobs. first item is corvette, second is missleboat, third
      * is martyr, fourth is transport, and fifth is miner.
      */
     jobs: IJobState[];
+
+    /**
+     * The value of every unit of legendarium.
+     */
+    legendariumValue: number;
 
     /**
      * The highest amount of material, barring rarity, that can be in a
@@ -71,10 +81,20 @@ export interface IGameState extends IBaseGame {
     miningSpeed: number;
 
     /**
+     * The amount of mythicite that spawns at the start of the game.
+     */
+    mythiciteAmount: number;
+
+    /**
      * The rarity modifier of the most common ore. This controls how much
      * spawns.
      */
     oreRarityGenarium: number;
+
+    /**
+     * The rarity modifier of the rarest ore. This controls how much spawns.
+     */
+    oreRarityLegendarium: number;
 
     /**
      * The rarity modifier of the second rarest ore. This controls how much
@@ -83,9 +103,9 @@ export interface IGameState extends IBaseGame {
     oreRarityRarium: number;
 
     /**
-     * The rarity modifier of the rarest ore. This controls how much spawns.
+     * The amount of energy a planet can hold at once.
      */
-    oreRaritylegendarium: number;
+    planetEnergyCap: number;
 
     /**
      * The amount of energy the planets restore each round.
@@ -111,6 +131,11 @@ export interface IGameState extends IBaseGame {
      * Every projectile in the game.
      */
     projectiles: IProjectileState[];
+
+    /**
+     * The value of every unit of rarium.
+     */
+    rariumValue: number;
 
     /**
      * The regeneration rate of asteroids.
@@ -155,7 +180,7 @@ export interface IGameState extends IBaseGame {
  */
 export interface IBodyState extends IGameObjectState {
     /**
-     * The amount of material the object has.
+     * The amount of material the object has, or energy if it is a planet.
      */
     amount: number;
 
