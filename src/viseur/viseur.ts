@@ -587,7 +587,10 @@ export class Viseur {
             window.setTimeout(() => {
                 this.gui.hideModal();
                 this.gui.resize();
-                this.timeManager.setTime((this.rawGamelog as Immutable<IGamelog>).deltas.length - 1, 0.9999);
+                if (this.hasHumanPlaying()) {
+                    // deltas may have streamed in while we were setting up, so fast forward to the last delta
+                    this.timeManager.setTime((this.rawGamelog as Immutable<IGamelog>).deltas.length - 1, 0.9999);
+                }
                 this.events.delayedReady.emit(); // ready, but delayed so we are super ready (arena mode play)
             }, 1000);
         }
