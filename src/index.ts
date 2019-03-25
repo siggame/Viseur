@@ -18,9 +18,7 @@ $(document).ready(() => {
     const required = require("./viseur");
     const viseur = new required.Viseur();
 
-    if (process.env.NODE_ENV === "development") {
-        // Globals for easier debugging.
-        (window as any).viseur = viseur;
-        (window as any).$ = $;
-    }
+    // Globals for easier debugging.
+    (window as any).viseur = viseur;
+    (window as any).$ = $;
 });
