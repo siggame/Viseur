@@ -1,5 +1,6 @@
 import { Move, Square } from "chess.js";
 import { Event, events } from "ts-typed-events";
+import { BOARD_LENGTH } from "./chess-board-background";
 import { squareToXY } from "./chess-pieces";
 import { Game } from "./game";
 
@@ -27,6 +28,8 @@ export class ChessOverlay {
      */
     constructor(private readonly game: Game) {
         this.game.chessBackground.events.tileClicked.on((square) => this.tileClicked(square));
+
+        this.game.settings.flipBoard.changed.on(() => this.deSelect());
     }
 
     /**
@@ -35,9 +38,7 @@ export class ChessOverlay {
      * @param square - The chess square clicked.
      */
     private tileClicked(square: Square): void {
-        this.deSelect();
-
-        const wasSelected = this.currentlySelected;
+        const wasSelected = this.deSelect();
         this.currentlySelected = square;
 
         if (wasSelected === square) {
@@ -59,9 +60,13 @@ export class ChessOverlay {
 
         this.validSquares = movesFromSquare;
 
+        const yOffset = (y: number) => this.game.settings.flipBoard.get()
+        ? BOARD_LENGTH - y - 1
+        : y;
+
         const from = squareToXY(square);
         const fromOverlay = this.getNextOverlay();
-        fromOverlay.position.set(from.x, from.y);
+        fromOverlay.position.set(from.x, yOffset(from.y));
         fromOverlay.alpha = 0.25;
         fromOverlay.tint = movesFromSquare.length > 0
             ? this.game.chessBackground.randomColorCompliment.rgbNumber()
@@ -71,15 +76,24 @@ export class ChessOverlay {
             const overlay = this.getNextOverlay();
 
             const to = squareToXY(move.to);
-            overlay.position.set(to.x, to.y);
+            overlay.position.set(to.x, yOffset(to.y));
         }
     }
 
-    /** Hides all overlays */
-    private deSelect(): void {
+    /**
+     * Hides all overlays, and returns what was selected.
+     *
+     * @returns the square that was selected, if any
+     */
+    private deSelect(): Square | undefined {
         for (const overlay of this.overlays) {
             overlay.visible = false;
         }
+
+        const wasSelected = this.currentlySelected;
+        this.currentlySelected = undefined;
+
+        return wasSelected;
     }
 
     /**
