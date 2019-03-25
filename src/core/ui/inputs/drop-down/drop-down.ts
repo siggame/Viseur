@@ -19,7 +19,7 @@ export interface IDropDownArgs<T> extends IBaseInputArgs<T> {
 }
 
 /** A select with options input */
-export class DropDown<T> extends BaseInput<T> {
+export class DropDown<T extends string = string> extends BaseInput<T> {
     /** The options available on this drop down menu */
     private readonly options: Array<IDropDownOption<T>> = [];
 

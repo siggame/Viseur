@@ -138,7 +138,7 @@ export class FileTab extends Tab {
     });
 
     /** The requested player's index field. */
-    private readonly playerIndexInput = new DropDown<number | undefined>({
+    private readonly playerIndexInput = new DropDown({
         id: "player-index-input",
         label: "Player Index",
         parent: this.connectWrapper,
@@ -344,9 +344,12 @@ export class FileTab extends Tab {
             ? namespace.Game.numberOfPlayers
             : 2;
 
-        this.playerIndexInput.setOptions([{ text: "Any", value: undefined }, ...(namespace
+        this.playerIndexInput.setOptions([{ text: "Any", value: "" }, ...(namespace
             ? range(n).map((i) => (
-                { text: numberToWords(i + 1), value: i }
+                {
+                    text: numberToWords(i + 1),
+                    value: String(i),
+                }
             ))
             : []
         )]);
@@ -397,7 +400,7 @@ export class FileTab extends Tab {
                     port,
                     session,
                     playerName,
-                    playerIndex: this.playerIndexInput.value,
+                    playerIndex: this.playerIndexInput.value || undefined,
                     gameSettings: this.gameSettingsInput.value.trim(),
                 });
                 break;
