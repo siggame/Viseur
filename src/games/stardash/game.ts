@@ -116,11 +116,13 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: create-background -->>
         // Initialize your background here if need be
         const sun = state.bodies.find((x) => x.bodyType === "sun");
+
         this.resources.background.newSprite({
             container: this.layers.background,
             width: this.renderer.width,
             height: this.renderer.height,
         });
+
         if (sun !== undefined) {
             this.resources.sun.newSprite({
                 container: this.layers.background,
@@ -130,16 +132,23 @@ export class Game extends BaseGame {
             });
         }
 
+        this.resources.earth_planet.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[0].radius * 2),
+            height: (state.bodies[0].radius * 1.5),
+            position: {x: state.bodies[0].x-175 , y: state.bodies[0].y - 85}
+        });
+
+        this.resources.alien_planet.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[1].radius * 2),
+            height: (state.bodies[1].radius * 1.5),
+            position: {x: state.bodies[1].x - 175, y: state.bodies[1].y - 85}
+        });
+
+        
         // this shows you how to render text that scales to the game
         // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
-        this.renderer.newPixiText(
-            "This game has no\ngame logic added\nto it... yet!",
-            this.layers.game,
-            {
-                fill: 0xFFFFFF, // white in hexademical color format
-            },
-            1,
-        );
         // <<-- /Creer-Merge: create-background -->>
     }
 
