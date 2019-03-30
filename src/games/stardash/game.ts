@@ -115,7 +115,6 @@ export class Game extends BaseGame {
 
         // <<-- Creer-Merge: create-background -->>
         // Initialize your background here if need be
-        const sun = state.bodies.find((x) => x.bodyType === "sun");
 
         this.resources.background.newSprite({
             container: this.layers.background,
@@ -123,14 +122,13 @@ export class Game extends BaseGame {
             height: this.renderer.height,
         });
 
-        if (sun !== undefined) {
-            this.resources.sun.newSprite({
-                container: this.layers.background,
-                width: (sun.radius * 2),
-                height: (sun.radius * 1.5),
-                position: {x: sun.x - 300, y: sun.y - 270},
-            });
-        }
+        this.resources.sun.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[2].radius * 2),
+            height: (state.bodies[2].radius * 1.5),
+            position: {x: state.bodies[2].x - 300, y: state.bodies[2].y - 270},
+         
+        });
 
         this.resources.earth_planet.newSprite({
             container: this.layers.background,
@@ -146,6 +144,12 @@ export class Game extends BaseGame {
             position: {x: state.bodies[1].x - 175, y: state.bodies[1].y - 85}
         });
 
+        this.resources.asteroid.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[3].radius),
+            height: (state.bodies[3].radius),
+            position: {x: state.bodies[3].x, y: state.bodies[4].y}
+        });
         
         // this shows you how to render text that scales to the game
         // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
