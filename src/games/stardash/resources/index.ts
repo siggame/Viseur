@@ -3,7 +3,12 @@ import { createResources, load } from "src/viseur/renderer";
 /** These are the resources (sprites) that are loaded and usable by game objects in Stardash. */
 export const GameResources = createResources("Stardash", {
     // <<-- Creer-Merge: resources -->>
-    test: load("test.png"), // load files like this,
-                            // and remember to remove these lines and file!
+        background: load("spacebackground.png"),
+        width: 16,
+        height: 9,
+    }),
+    sun: load("sun.png"),
+    earth_planet: load("earth_planet.png"),
+    alien_planet: load("alien_planet.png")
     // <<-- /Creer-Merge: resources -->>
 });
