@@ -1,3 +1,4 @@
+
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
 import { Delta } from "@cadre/ts-utils/cadre";
@@ -84,8 +85,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: state.sizeX, // Change these. Probably read in the map's width
+            height: state.sizeY, // and height from the initial state here.
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -114,13 +115,20 @@ export class Game extends BaseGame {
 
         // <<-- Creer-Merge: create-background -->>
         // Initialize your background here if need be
-
-        // this is an example of how to render a sprite. You'll probably want
-        // to remove this code and the test sprite once actually doing things
-        this.resources.test.newSprite({
+        const sun = state.bodies.find((x) => x.bodyType === "sun");
+        this.resources.background.newSprite({
             container: this.layers.background,
-            position: {x: 5, y: 5},
+            width: this.renderer.width,
+            height: this.renderer.height,
         });
+        if (sun !== undefined) {
+            this.resources.sun.newSprite({
+                container: this.layers.background,
+                width: (sun.radius * 2),
+                height: (sun.radius * 1.5),
+                position: {x: sun.x - 300, y: sun.y - 270},
+            });
+        }
 
         // this shows you how to render text that scales to the game
         // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
