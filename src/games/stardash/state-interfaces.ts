@@ -32,11 +32,6 @@ export interface IGameState extends IBaseGame {
     dashBlock: number;
 
     /**
-     * The cost of dashing.
-     */
-    dashCost: number;
-
-    /**
      * The distance traveled each turn by dashing.
      */
     dashDistance: number;
@@ -89,11 +84,6 @@ export interface IGameState extends IBaseGame {
      * The amount of mythicite that spawns at the start of the game.
      */
     mythiciteAmount: number;
-
-    /**
-     * The number of orbit updates you cannot mine the mithicite asteroid.
-     */
-    orbitsProtected: number;
 
     /**
      * The rarity modifier of the most common ore. This controls how much
@@ -177,12 +167,6 @@ export interface IGameState extends IBaseGame {
      * turn.
      */
     timeAddedPerTurn: number;
-
-    /**
-     * The number of turns it takes for a asteroid to orbit the sun. (Asteroids
-     * move after each players turn).
-     */
-    turnsToOrbit: number;
 
     /**
      * Every Unit in the game.
