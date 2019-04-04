@@ -11,7 +11,9 @@ import { IBaseGame, IBaseGameObject, IBasePlayer } from "@cadre/ts-utils/cadre";
  */
 export interface IGameState extends IBaseGame {
     /**
-     * All the celestial bodies in the game.
+     * All the celestial bodies in the game. The first two are planets and the
+     * third is the sun. The fourth is the VP asteroid. Everything else is
+     * normal asteroids.
      */
     bodies: IBodyState[];
 
@@ -64,8 +66,7 @@ export interface IGameState extends IBaseGame {
     legendariumValue: number;
 
     /**
-     * The highest amount of material, barring rarity, that can be in a
-     * asteroid.
+     * The highest amount of material, that can be in a asteroid.
      */
     maxAsteroid: number;
 
@@ -75,8 +76,7 @@ export interface IGameState extends IBaseGame {
     maxTurns: number;
 
     /**
-     * The smallest amount of material, barring rarity, that can be in a
-     * asteroid.
+     * The smallest amount of material, that can be in a asteroid.
      */
     minAsteroid: number;
 
@@ -211,7 +211,7 @@ export interface IBodyState extends IGameObjectState {
     materialType: string;
 
     /**
-     * The Player that owns and can control this Unit.
+     * The Player that owns and can control this Body.
      */
     owner: IPlayerState;
 
@@ -387,7 +387,7 @@ export interface IProjectileState extends IGameObjectState {
     fuel: number;
 
     /**
-     * The Player that owns and can control this Unit.
+     * The Player that owns and can control this Projectile.
      */
     owner: IPlayerState;
 
