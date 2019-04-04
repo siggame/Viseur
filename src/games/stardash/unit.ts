@@ -184,8 +184,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if pathable by this unit,
      * false otherwise.
      */
-    public safe(x: number, y: number, callback?: (returned: boolean) => void): void {
-        this.runOnServer("safe", {x, y}, callback);
+    public open(x: number, y: number, callback?: (returned: boolean) => void): void {
+        this.runOnServer("open", {x, y}, callback);
     }
 
     /**
