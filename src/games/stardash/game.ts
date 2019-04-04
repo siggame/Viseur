@@ -1,4 +1,3 @@
-
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
 import { Delta } from "@cadre/ts-utils/cadre";
