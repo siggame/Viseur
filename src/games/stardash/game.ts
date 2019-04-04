@@ -1,3 +1,4 @@
+
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
 import { Delta } from "@cadre/ts-utils/cadre";
@@ -84,8 +85,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: state.sizeX, // Change these. Probably read in the map's width
+            height: state.sizeY, // and height from the initial state here.
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -115,23 +116,43 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: create-background -->>
         // Initialize your background here if need be
 
-        // this is an example of how to render a sprite. You'll probably want
-        // to remove this code and the test sprite once actually doing things
-        this.resources.test.newSprite({
+        this.resources.background.newSprite({
             container: this.layers.background,
-            position: {x: 5, y: 5},
+            width: this.renderer.width,
+            height: this.renderer.height,
         });
 
+        this.resources.sun.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[2].radius * 2),
+            height: (state.bodies[2].radius * 1.5),
+            position: {x: state.bodies[2].x - 300, y: state.bodies[2].y - 270},
+         
+        });
+
+        this.resources.earth_planet.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[0].radius * 2),
+            height: (state.bodies[0].radius * 1.5),
+            position: {x: state.bodies[0].x-175 , y: state.bodies[0].y - 85}
+        });
+
+        this.resources.alien_planet.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[1].radius * 2),
+            height: (state.bodies[1].radius * 1.5),
+            position: {x: state.bodies[1].x - 175, y: state.bodies[1].y - 85}
+        });
+
+        this.resources.asteroid.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[3].radius),
+            height: (state.bodies[3].radius),
+            position: {x: state.bodies[3].x, y: state.bodies[4].y}
+        });
+        
         // this shows you how to render text that scales to the game
         // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
-        this.renderer.newPixiText(
-            "This game has no\ngame logic added\nto it... yet!",
-            this.layers.game,
-            {
-                fill: 0xFFFFFF, // white in hexademical color format
-            },
-            1,
-        );
         // <<-- /Creer-Merge: create-background -->>
     }
 
