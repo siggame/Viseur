@@ -131,30 +131,6 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
     //       If it does not, feel free to ignore these Joueur functions.
 
     /**
-     * The x value of this body a number of turns from now. (0-how many you
-     * want).
-     * @param num The number of turns in the future you wish to check.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is The x position of the body the
-     * input number of turns in the future.
-     */
-    public nextX(num: number, callback?: (returned: number) => void): void {
-        this.runOnServer("nextX", {num}, callback);
-    }
-
-    /**
-     * The x value of this body a number of turns from now. (0-how many you
-     * want).
-     * @param num The number of turns in the future you wish to check.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is The x position of the body the
-     * input number of turns in the future.
-     */
-    public nextY(num: number, callback?: (returned: number) => void): void {
-        this.runOnServer("nextY", {num}, callback);
-    }
-
-    /**
      * Spawn a unit on some value of this celestial body.
      * @param x The x value of the spawned unit.
      * @param y The y value of the spawned unit.
