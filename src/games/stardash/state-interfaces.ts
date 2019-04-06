@@ -433,7 +433,7 @@ export interface IUnitState extends IGameObjectState {
     energy: number;
 
     /**
-     * The amount of Generium ore carried by this unit. (0 to job carry capacity
+     * The amount of Genarium ore carried by this unit. (0 to job carry capacity
      * - other carried items).
      */
     genarium: number;
