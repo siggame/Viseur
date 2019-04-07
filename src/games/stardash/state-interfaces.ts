@@ -196,12 +196,13 @@ export interface IBodyState extends IGameObjectState {
     amount: number;
 
     /**
-     * The type of celestial body it is.
+     * The type of celestial body it is. Either 'planet', 'asteroid', or 'sun'.
      */
     bodyType: string;
 
     /**
-     * The type of material the celestial body has.
+     * The type of material the celestial body has. Either 'none', 'genarium',
+     * 'rarium', 'legendarium', or 'mythicite'.
      */
     materialType: string;
 
@@ -336,7 +337,8 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     opponent: IPlayerState;
 
     /**
-     * Every Projectile owned by this Player.
+     * Every Projectile owned by this Player. The earlier in the list the older
+     * they are.
      */
     projectiles: IProjectileState[];
 
@@ -356,7 +358,8 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     timeRemaining: number;
 
     /**
-     * Every Unit owned by this Player.
+     * Every Unit owned by this Player. The earlier in the list the older they
+     * are.
      */
     units: IUnitState[];
 
@@ -376,6 +379,11 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
  * Tracks any projectiles moving through space.
  */
 export interface IProjectileState extends IGameObjectState {
+    /**
+     * The remaining health of the projectile.
+     */
+    energy: number;
+
     /**
      * The amount of remaining distance the projectile can move.
      */
@@ -423,7 +431,7 @@ export interface IUnitState extends IGameObjectState {
     dashY: number;
 
     /**
-     * The remaining health of a unit.
+     * The remaining health of the unit.
      */
     energy: number;
 

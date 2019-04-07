@@ -9,11 +9,13 @@ import { IBodyState, IProjectileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
+// import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -32,6 +34,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+    public ownerID: string;
+    public jobSprite: PIXI.Sprite;
+    // public healthBar: GameBar;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -46,6 +51,33 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Unit here.
+        this.ownerID = state.owner.id;
+
+        const jobContainer = new PIXI.Container();
+        jobContainer.setParent(this.container);
+        if (state.job.id === "2") {
+            this.jobSprite = this.addSprite.corvette();
+            this.jobSprite.scale.set(1 * .01, 1 * .01);
+            this.jobSprite.visible = true;
+        }
+        else if (state.job.id === "3") {
+            this.jobSprite = this.addSprite.missleboat();
+            this.jobSprite.scale.set(1 * .01, 1 * .01);
+            this.jobSprite.visible = true;
+        }
+        else if (state.job.id === "4") {
+            this.jobSprite = this.addSprite.martyr();
+            this.jobSprite.scale.set(1 * .01, 1 * .01);
+            this.jobSprite.visible = true;
+        }
+        else if (state.job.id === "5") {
+            this.jobSprite = this.addSprite.transport();
+            this.jobSprite.scale.set(1 * .01, 1 * .01);
+            this.jobSprite.visible = true;
+        }
+        else {
+            this.jobSprite = this.addSprite.test();
+        }
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -71,6 +103,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
         // render where the Unit is
+        this.jobSprite.visible = true;
+        this.jobSprite.position.set(
+            ease(current.x, next.x + 100, dt),
+            ease(current.y, next.y + 100, dt),
+        );
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -196,10 +233,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public shootDown(missile: IProjectileState, callback?: (returned: boolean)
+    public shootdown(missile: IProjectileState, callback?: (returned: boolean)
                      => void,
     ): void {
-        this.runOnServer("shootDown", {missile}, callback);
+        this.runOnServer("shootdown", {missile}, callback);
     }
 
     /**
@@ -207,8 +244,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param unit The unit you are grabbing the resources from.
      * @param amount The amount of materials to you with to grab. Amounts <= 0
      * will pick up all the materials that the unit can.
-     * @param material The material the unit will pick up. 'resource1',
-     * 'resource2', or 'resource3'.
+     * @param material The material the unit will pick up. 'genarium', 'rarium',
+     * 'legendarium', or 'mythicite'.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully taken,
      * false otherwise.
