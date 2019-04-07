@@ -51,7 +51,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return undefined; // change to return the states scores for each player
+        return state.players.map((p) => p.victoryPoints);
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -82,6 +82,20 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
 
         // <<-- Creer-Merge: player-stats -->>
         // add stats for players to show up here
+        stats.push(
+            {
+                title: "Mythicite",
+                icon: "diamond",
+                get: (player) => player.victoryPoints,
+            },
+        );
+        stats.push(
+            {
+                title: "Money",
+                icon: "money",
+                get: (player) => player.money,
+            },
+        );
         // <<-- /Creer-Merge: player-stats -->>
 
         return stats;
