@@ -214,9 +214,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * tells you if your ship can be at that location.
-     * @param x The x position of the location you wish to check.
-     * @param y The y position of the location you wish to check.
+     * tells you if your ship can move to that location from were it is without
+     * clipping the sun.
+     * @param x The x position of the location you wish to arrive.
+     * @param y The y position of the location you wish to arrive.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if pathable by this unit,
      * false otherwise.

@@ -29,11 +29,6 @@ export interface IGameState extends IBaseGame {
     currentTurn: number;
 
     /**
-     * Radius of the no dash zone around the sun.
-     */
-    dashBlock: number;
-
-    /**
      * The cost of dashing.
      */
     dashCost: number;
@@ -55,7 +50,7 @@ export interface IGameState extends IBaseGame {
     genariumValue: number;
 
     /**
-     * A list of all jobs. first item is corvette, second is missleboat, third
+     * A list of all jobs. first item is corvette, second is missileboat, third
      * is martyr, fourth is transport, and fifth is miner.
      */
     jobs: IJobState[];
@@ -293,7 +288,7 @@ export interface IJobState extends IGameObjectState {
     shield: number;
 
     /**
-     * The Job title. 'corvette', 'missleboat', 'martyr', 'transport', or
+     * The Job title. 'corvette', 'missileboat', 'martyr', 'transport', or
      * 'miner'. (in this order from 0-4).
      */
     title: string;
@@ -439,9 +434,10 @@ export interface IUnitState extends IGameObjectState {
     genarium: number;
 
     /**
-     * Tracks wheither or not the ship is dashing.
+     * Tracks wheither or not the ship is dashing or Mining. If true, it cannot
+     * do anything else.
      */
-    isDashing: boolean;
+    isBusy: boolean;
 
     /**
      * The Job this Unit has.
