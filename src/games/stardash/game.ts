@@ -168,46 +168,6 @@ export class Game extends BaseGame {
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
 
-        for(let i in current.bodies)
-        {            
-            if(current.bodies[i].materialType == "genarium")
-            {
-                this.resources.genarium.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-            if(current.bodies[i].materialType == "rarium")
-            {
-                this.resources.rarium.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-            if(current.bodies[i].materialType == "legendarium")
-            {
-                this.resources.legendarium.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-            if(current.bodies[i].materialType == "mythicite")
-            {
-                this.resources.mythicite.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-        }
-
         // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
         // <<-- /Creer-Merge: render-background -->>

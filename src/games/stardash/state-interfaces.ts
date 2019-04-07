@@ -434,9 +434,10 @@ export interface IUnitState extends IGameObjectState {
     genarium: number;
 
     /**
-     * Tracks wheither or not the ship is dashing.
+     * Tracks wheither or not the ship is dashing or Mining. If true, it cannot
+     * do anything else.
      */
-    isDashing: boolean;
+    isBusy: boolean;
 
     /**
      * The Job this Unit has.
