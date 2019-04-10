@@ -11,6 +11,11 @@ export const GameResources = createResources("Stardash", {
     genarium: load("genarium.png"),
     rarium: load("rarium.png"),
     legendarium: load("legendarium.png"),
-    mythicite: load("mythicite.png")
+    mythicite: load("mythicite.png"),
+    corvette: load("corvette.png"),
+    miner: load("miner.png"),
+    martyr: load("martyr.png"),
+    missleboat: load("missleboat.png"),
+    transport: load("transport.png"),
     // <<-- /Creer-Merge: resources -->>
 });
