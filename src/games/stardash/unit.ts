@@ -52,10 +52,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Unit here.
         this.ownerID = state.owner.id;
+        this.container.scale.set(2,2);
 
-        const jobContainer = new PIXI.Container();
-        jobContainer.setParent(this.container);
-        if (state.job.id === "2") {
+        if (state.job.title === "corvette") {
             this.jobSprite = this.addSprite.corvette();
             this.jobSprite.scale.set(1 * .01, 1 * .01);
             this.jobSprite.visible = true;
@@ -76,7 +75,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.jobSprite.visible = true;
         }
         else {
-            this.jobSprite = this.addSprite.test();
+            this.jobSprite = this.addSprite.miner();
         }
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -105,8 +104,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // render where the Unit is
         this.jobSprite.visible = true;
         this.jobSprite.position.set(
-            ease(current.x, next.x + 100, dt),
-            ease(current.y, next.y + 100, dt),
+            ease(current.x, next.x, dt),
+            ease(current.y, next.y, dt),
         );
         // <<-- /Creer-Merge: render -->>
     }

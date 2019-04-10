@@ -377,6 +377,11 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
  */
 export interface IProjectileState extends IGameObjectState {
     /**
+     * The remaining health of the projectile.
+     */
+    energy: number;
+
+    /**
      * The amount of remaining distance the projectile can move.
      */
     fuel: number;
@@ -423,7 +428,7 @@ export interface IUnitState extends IGameObjectState {
     dashY: number;
 
     /**
-     * The remaining health of a unit.
+     * The remaining health of the unit.
      */
     energy: number;
 
