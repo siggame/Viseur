@@ -59,26 +59,46 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.job.id === "2") {
             this.jobSprite = this.addSprite.corvette();
             this.jobSprite.scale.set(1 * .01, 1 * .01);
+            if(state.shield === 1)
+            {
+                this.addSprite.shield();
+            }
             this.jobSprite.visible = true;
         }
         else if (state.job.id === "3") {
             this.jobSprite = this.addSprite.missleboat();
             this.jobSprite.scale.set(1 * .01, 1 * .01);
+            if(state.shield === 1)
+            {
+                this.addSprite.shield();
+            }
             this.jobSprite.visible = true;
         }
         else if (state.job.id === "4") {
             this.jobSprite = this.addSprite.martyr();
             this.jobSprite.scale.set(1 * .01, 1 * .01);
+            if(state.shield === 1)
+            {
+                this.addSprite.shield();
+            }
             this.jobSprite.visible = true;
         }
         else if (state.job.id === "5") {
             this.jobSprite = this.addSprite.transport();
             this.jobSprite.scale.set(1, 1);
+            if(state.shield === 1)
+            {
+                this.addSprite.shield();
+            }
             this.jobSprite.visible = true;
         }
         else {
             this.jobSprite = this.addSprite.miner();
             this.jobSprite.scale.set(1 * .01, 1 * .01);
+            if(state.shield === 1)
+            {
+                this.addSprite.shield();
+            }
             this.jobSprite.visible = true;
         }
         // <<-- /Creer-Merge: constructor -->>
