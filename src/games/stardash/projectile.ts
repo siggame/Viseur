@@ -9,11 +9,12 @@ import { IProjectileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -29,6 +30,9 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** The next state of the Projectile (dt = 1) */
     public next: IProjectileState | undefined;
+
+    public ownerID: string;
+    public jobSprite: PIXI.Sprite;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -46,6 +50,14 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Projectile here.
+        this.ownerID = state.owner.id;
+        this.container.scale.set(1,1);
+        const jobContainer = new PIXI.Container();
+        jobContainer.setParent(this.container);
+        this.jobSprite = this.addSprite.beam();
+
+
+        // state.gameObjectName
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -68,10 +80,15 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<Delta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
-
+    this.container.visible = true;
+        this.container.position.set(
+            ease(current.x, next.x, dt),
+            ease(current.y, next.y, dt),
+        );
         // <<-- Creer-Merge: render -->>
         // render where the Projectile is
         // <<-- /Creer-Merge: render -->>
+
     }
 
     /**
