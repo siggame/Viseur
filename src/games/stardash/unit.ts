@@ -65,27 +65,26 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         else if (state.job.id === "4") {
             this.jobSprite = this.addSprite.martyr();
         }
-        else if (state.job.id === "6") {
-            this.jobSprite = this.addSprite.miner();
-        }
-        else {
+        else if (state.job.id === "5") {
             this.jobSprite = this.addSprite.transport();
         }
-        
-        if(state.job.id === "5"){
+        else {
+            this.jobSprite = this.addSprite.miner();
+        }
+        if (state.job.id === "5") {
             this.jobSprite.scale.set(1 * .1, 1 * .1);
         }
-        else{
+        else {
             this.jobSprite.scale.set(1 * .01, 1 * .01);
         }
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
-        barContainer.position.y -= 0.25;
+        barContainer.position.y -= 1;
 
         this.healthBar = new GameBar(barContainer, {
             max: state.job.energy,
-            // there should be some sort of visibilitySetting parameter set here
+            visibilitySetting: this.game.settings.displayHealthBars,
         });
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -111,6 +110,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
+        // const shield = PIXI.Sprite.fromImage("resources/shield.png");
+        // shield.scale.set(1 * .1, 1 * .1);
         // render where the Unit is
         if (next.energy <= 0) {
             this.container.visible = false;
@@ -124,7 +125,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         );
         if (next.shield > 0) {
             this.jobSprite.mask = this.addSprite.shield();
-            this.jobSprite.mask.alpha = 0.5;
+            this.jobSprite.mask.x -= 11;
+            this.jobSprite.mask.y -= 14;
+            this.jobSprite.mask.scale.set(1 * .12, 1 * .12);
+            this.jobSprite.mask.alpha = 0.05;
         }
         else {
             this.jobSprite.mask = null;
