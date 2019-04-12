@@ -17,7 +17,7 @@ export const GameResources = createResources("Stardash", {
     martyr: load("martyr.png"),
     missleboat: load("missleboat.png"),
     transport: load("transport.png"),
-    shield: load("shield.png"),
+    shield: load("newshield.png"),
     beam: load("beam.png"),
     // <<-- /Creer-Merge: resources -->>
 });
