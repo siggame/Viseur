@@ -10,7 +10,6 @@ import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
-//import { Container } from 'pixi.js';
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -102,6 +101,34 @@ export class Game extends BaseGame {
 
         // <<-- Creer-Merge: start -->>
         // Initialize your variables here
+        this.resources.background.newSprite({
+            container: this.layers.background,
+            width: this.renderer.width,
+            height: this.renderer.height,
+        });
+
+        this.resources.sun.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[2].radius * 2),
+            height: (state.bodies[2].radius * 1.5),
+            position: {x: state.bodies[2].x - 450, y: state.bodies[2].y - 270},
+         
+        });
+
+        this.resources.earth_planet.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[1].radius * 3),
+            height: (state.bodies[1].radius * 2.25),
+            position: {x: state.bodies[1].x-275 , y: state.bodies[1].y - 85}
+        });
+
+        this.resources.alien_planet.newSprite({
+            container: this.layers.background,
+            width: (state.bodies[0].radius * 3),
+            height: (state.bodies[0].radius * 2.25),
+            position: {x: state.bodies[0].x - 175, y: state.bodies[0].y - 85}
+        });
+
         // <<-- /Creer-Merge: start -->>
     }
 
@@ -119,34 +146,6 @@ export class Game extends BaseGame {
         // this shows you how to render text that scales to the game
         // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
         
-        // this.resources.background.newSprite({
-        //     container: this.layers.background,
-        //     width: this.renderer.width,
-        //     height: this.renderer.height,
-        // });
-
-        // this.resources.sun.newSprite({
-        //     container: this.layers.background,
-        //     width: (state.bodies[2].radius * 2),
-        //     height: (state.bodies[2].radius * 1.5),
-        //     position: {x: state.bodies[2].x - 450, y: state.bodies[2].y - 270},
-         
-        // });
-
-        // this.resources.earth_planet.newSprite({
-        //     container: this.layers.background,
-        //     width: (state.bodies[0].radius * 2),
-        //     height: (state.bodies[0].radius * 1.5),
-        //     position: {x: state.bodies[0].x-175 , y: state.bodies[0].y - 85}
-        // });
-
-        // this.resources.alien_planet.newSprite({
-        //     container: this.layers.background,
-        //     width: (state.bodies[1].radius * 2),
-        //     height: (state.bodies[1].radius * 1.5),
-        //     position: {x: state.bodies[1].x - 175, y: state.bodies[1].y - 85}
-        // });
-
         // <<-- /Creer-Merge: create-background -->>
     }
 
@@ -168,70 +167,6 @@ export class Game extends BaseGame {
         nextDelta: Immutable<Delta>,
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
-
-        this.resources.background.newSprite({
-            container: this.layers.background,
-            width: this.renderer.width,
-            height: this.renderer.height,
-        });
-
-        this.resources.sun.newSprite({
-            container: this.layers.background,
-            width: (current.bodies[2].radius * 2),
-            height: (current.bodies[2].radius * 1.5),
-            position: {x: current.bodies[2].x - 450, y: current.bodies[2].y - 270},
-         
-        });
-
-        this.resources.earth_planet.newSprite({
-            container: this.layers.background,
-            width: (current.bodies[1].radius * 2),
-            height: (current.bodies[1].radius * 1.5),
-            position: {x: current.bodies[1].x-175 , y: current.bodies[1].y - 85}
-        });
-
-        this.resources.alien_planet.newSprite({
-            container: this.layers.background,
-            width: (current.bodies[0].radius * 2),
-            height: (current.bodies[0].radius * 1.5),
-            position: {x: current.bodies[0].x - 175, y: current.bodies[0].y - 85}
-        });
-        
-        for (let i in current.bodies){
-            if(current.bodies[i].materialType == "genarium"){
-                this.resources.genarium.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-            if(current.bodies[i].materialType == "rarium"){
-                this.resources.rarium.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-            if(current.bodies[i].materialType == "legendarium"){
-                this.resources.legendarium.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-            if(current.bodies[i].materialType == "mythicite"){
-                this.resources.mythicite.newSprite({
-                    container: this.layers.background,
-                    width: (current.bodies[i].radius),
-                    height: (current.bodies[i].radius),
-                    position: {x: current.bodies[i].x, y: current.bodies[i].y}
-                });
-            }
-            
-        }
         
         // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
