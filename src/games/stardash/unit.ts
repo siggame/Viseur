@@ -71,7 +71,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         else {
             this.jobSprite = this.addSprite.transport();
         }
-        this.jobSprite.scale.set(1 * .01, 1 * .01);
+        
+        if(state.job.id === "5"){
+            this.jobSprite.scale.set(1 * .1, 1 * .1);
+        }
+        else{
+            this.jobSprite.scale.set(1 * .01, 1 * .01);
+        }
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);

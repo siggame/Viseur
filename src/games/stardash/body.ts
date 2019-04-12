@@ -9,11 +9,12 @@ import { IBodyState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -32,6 +33,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+    public bodiesSprite: PIXI.Sprite;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -46,6 +48,30 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Body here.
+        const bodiesContainer = new PIXI.Container();
+        bodiesContainer.setParent(this.container)
+
+       if (state.materialType === "genarium") {
+            this.bodiesSprite = this.addSprite.genarium();
+            this.bodiesSprite.scale.set(.02, .02);
+        }
+        else if (state.materialType === "rarium") {
+            this.bodiesSprite = this.addSprite.rarium();
+            this.bodiesSprite.scale.set(.023, .023);
+        }
+        else if (state.materialType === "legendarium") {
+            this.bodiesSprite = this.addSprite.legendarium();
+            this.bodiesSprite.scale.set(.027, .027);
+        }
+        else if (state.materialType === "mythicite") {
+            this.bodiesSprite = this.addSprite.mythicite();
+            this.bodiesSprite.scale.set(.04, .04);
+        }
+        else {
+            this.bodiesSprite = this.addSprite.blank();
+        }
+        
+        
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -70,6 +96,15 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
+        if (next.amount === 0 ) {
+            this.container.visible = false;
+
+            return;
+        }
+        this.bodiesSprite.position.set(
+            ease(current.x, next.x, dt),
+            ease(current.y, next.y, dt),
+        );
         // render where the Body is
         // <<-- /Creer-Merge: render -->>
     }
