@@ -10,7 +10,6 @@ import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
 import { IGameState } from "./state-interfaces";
-//import { ease} from "src/utils";
 //import { Container } from 'pixi.js';
 
 // <<-- Creer-Merge: imports -->>
@@ -119,12 +118,36 @@ export class Game extends BaseGame {
         
         // this shows you how to render text that scales to the game
         // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
+        
+        // this.resources.background.newSprite({
+        //     container: this.layers.background,
+        //     width: this.renderer.width,
+        //     height: this.renderer.height,
+        // });
+
+        // this.resources.sun.newSprite({
+        //     container: this.layers.background,
+        //     width: (state.bodies[2].radius * 2),
+        //     height: (state.bodies[2].radius * 1.5),
+        //     position: {x: state.bodies[2].x - 450, y: state.bodies[2].y - 270},
+         
+        // });
+
+        // this.resources.earth_planet.newSprite({
+        //     container: this.layers.background,
+        //     width: (state.bodies[0].radius * 2),
+        //     height: (state.bodies[0].radius * 1.5),
+        //     position: {x: state.bodies[0].x-175 , y: state.bodies[0].y - 85}
+        // });
+
+        // this.resources.alien_planet.newSprite({
+        //     container: this.layers.background,
+        //     width: (state.bodies[1].radius * 2),
+        //     height: (state.bodies[1].radius * 1.5),
+        //     position: {x: state.bodies[1].x - 175, y: state.bodies[1].y - 85}
+        // });
+
         // <<-- /Creer-Merge: create-background -->>
-        this.resources.background.newSprite({
-            container: this.layers.background,
-            width: this.renderer.width,
-            height: this.renderer.height,
-        });
     }
 
     /**
