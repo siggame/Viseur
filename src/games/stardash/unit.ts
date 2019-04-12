@@ -9,8 +9,8 @@ import { IBodyState, IProjectileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
-import { ease } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
-// import { GameBar } from "src/viseur/game";
+import { ease, pixiFade } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
+import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -36,7 +36,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // You can add additional member variables here
     public ownerID: string;
     public jobSprite: PIXI.Sprite;
-    // public healthBar: GameBar;
+    public healthBar: GameBar;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -52,55 +52,35 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Unit here.
         this.ownerID = state.owner.id;
-        this.container.scale.set(1,1);
+        this.container.scale.set(1, 1);
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
 
         if (state.job.id === "2") {
             this.jobSprite = this.addSprite.corvette();
-            this.jobSprite.scale.set(1 * .01, 1 * .01);
-            if(state.shield === 1)
-            {
-                this.addSprite.shield();
-            }
-            this.jobSprite.visible = true;
         }
         else if (state.job.id === "3") {
             this.jobSprite = this.addSprite.missleboat();
-            this.jobSprite.scale.set(1 * .01, 1 * .01);
-            if(state.shield === 1)
-            {
-                this.addSprite.shield();
-            }
-            this.jobSprite.visible = true;
         }
         else if (state.job.id === "4") {
             this.jobSprite = this.addSprite.martyr();
-            this.jobSprite.scale.set(1 * .01, 1 * .01);
-            if(state.shield === 1)
-            {
-                this.addSprite.shield();
-            }
-            this.jobSprite.visible = true;
         }
-        else if (state.job.id === "5") {
-            this.jobSprite = this.addSprite.transport();
-            this.jobSprite.scale.set(1, 1);
-            if(state.shield === 1)
-            {
-                this.addSprite.shield();
-            }
-            this.jobSprite.visible = true;
+        else if (state.job.id === "6") {
+            this.jobSprite = this.addSprite.miner();
         }
         else {
-            this.jobSprite = this.addSprite.miner();
-            this.jobSprite.scale.set(1 * .01, 1 * .01);
-            if(state.shield === 1)
-            {
-                this.addSprite.shield();
-            }
-            this.jobSprite.visible = true;
+            this.jobSprite = this.addSprite.transport();
         }
+        this.jobSprite.scale.set(1 * .01, 1 * .01);
+
+        const barContainer = new PIXI.Container();
+        barContainer.setParent(this.container);
+        barContainer.position.y -= 0.25;
+
+        this.healthBar = new GameBar(barContainer, {
+            max: state.job.energy,
+            // there should be some sort of visibilitySetting parameter set here
+        });
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -126,11 +106,26 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
         // render where the Unit is
+        if (next.energy <= 0) {
+            this.container.visible = false;
+
+            return;
+        }
         this.container.visible = true;
         this.container.position.set(
             ease(current.x, next.x, dt),
             ease(current.y, next.y, dt),
         );
+        if (next.shield > 0) {
+            this.jobSprite.mask = this.addSprite.shield();
+            this.jobSprite.mask.alpha = 0.5;
+        }
+        else {
+            this.jobSprite.mask = null;
+        }
+
+        this.healthBar.update(ease(current.energy, next.energy, dt));
+        pixiFade(this.container, dt, current.energy, next.energy);
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -143,6 +138,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.jobSprite.tint = color;
+        this.healthBar.recolor(color);
         // <<-- /Creer-Merge: recolor -->>
     }
 

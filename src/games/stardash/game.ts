@@ -185,18 +185,18 @@ export class Game extends BaseGame {
 
         this.resources.earth_planet.newSprite({
             container: this.layers.background,
-            width: (current.bodies[0].radius * 2),
-            height: (current.bodies[0].radius * 1.5),
-            position: {x: current.bodies[0].x-175 , y: current.bodies[0].y - 85}
+            width: (current.bodies[1].radius * 2),
+            height: (current.bodies[1].radius * 1.5),
+            position: {x: current.bodies[1].x-175 , y: current.bodies[1].y - 85}
         });
 
         this.resources.alien_planet.newSprite({
             container: this.layers.background,
-            width: (current.bodies[1].radius * 2),
-            height: (current.bodies[1].radius * 1.5),
-            position: {x: current.bodies[1].x - 175, y: current.bodies[1].y - 85}
+            width: (current.bodies[0].radius * 2),
+            height: (current.bodies[0].radius * 1.5),
+            position: {x: current.bodies[0].x - 175, y: current.bodies[0].y - 85}
         });
-
+        
         for (let i in current.bodies){
             if(current.bodies[i].materialType == "genarium"){
                 this.resources.genarium.newSprite({
@@ -232,7 +232,7 @@ export class Game extends BaseGame {
             }
             
         }
-
+        
         // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
         // <<-- /Creer-Merge: render-background -->>
