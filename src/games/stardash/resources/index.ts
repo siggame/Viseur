@@ -8,6 +8,7 @@ export const GameResources = createResources("Stardash", {
     sun: load("sun.png"),
     earth_planet: load("earth_planet.png"),
     alien_planet: load("alien_planet.png"),
+    corvette: load("corvette.png"),
     genarium: load("genarium.png"),
     rarium: load("rarium.png"),
     legendarium: load("legendarium.png"),
