@@ -43,6 +43,9 @@ node_modules
 desktop.ini
 .DS_Store
 
+# Windows Artifacts
+Thumbs.db
+
 # eslinter cache
 .eslintcache
 
