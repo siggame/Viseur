@@ -221,8 +221,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if pathable by this unit,
      * false otherwise.
      */
-    public open(x: number, y: number, callback?: (returned: boolean) => void): void {
-        this.runOnServer("open", {x, y}, callback);
+    public safe(x: number, y: number, callback?: (returned: boolean) => void): void {
+        this.runOnServer("safe", {x, y}, callback);
     }
 
     /**
@@ -232,10 +232,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public shootDown(missile: IProjectileState, callback?: (returned: boolean)
+    public shootdown(missile: IProjectileState, callback?: (returned: boolean)
                      => void,
     ): void {
-        this.runOnServer("shootDown", {missile}, callback);
+        this.runOnServer("shootdown", {missile}, callback);
     }
 
     /**
@@ -243,8 +243,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param unit The unit you are grabbing the resources from.
      * @param amount The amount of materials to you with to grab. Amounts <= 0
      * will pick up all the materials that the unit can.
-     * @param material The material the unit will pick up. 'resource1',
-     * 'resource2', or 'resource3'.
+     * @param material The material the unit will pick up. 'genarium', 'rarium',
+     * 'legendarium', or 'mythicite'.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully taken,
      * false otherwise.
