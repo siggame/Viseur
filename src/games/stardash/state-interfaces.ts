@@ -196,12 +196,13 @@ export interface IBodyState extends IGameObjectState {
     amount: number;
 
     /**
-     * The type of celestial body it is.
+     * The type of celestial body it is. Either 'planet', 'asteroid', or 'sun'.
      */
     bodyType: string;
 
     /**
-     * The type of material the celestial body has.
+     * The type of material the celestial body has. Either 'none', 'genarium',
+     * 'rarium', 'legendarium', or 'mythicite'.
      */
     materialType: string;
 
@@ -336,7 +337,8 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     opponent: IPlayerState;
 
     /**
-     * Every Projectile owned by this Player.
+     * Every Projectile owned by this Player. The earlier in the list the older
+     * they are.
      */
     projectiles: IProjectileState[];
 
@@ -356,7 +358,8 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     timeRemaining: number;
 
     /**
-     * Every Unit owned by this Player.
+     * Every Unit owned by this Player. The earlier in the list the older they
+     * are.
      */
     units: IUnitState[];
 
