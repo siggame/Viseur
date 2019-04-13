@@ -55,6 +55,7 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
         this.jobSprite = this.addSprite.beam();
+        this.jobSprite.scale.set(1 * .1, 1 * .1);
 
 
         // state.gameObjectName
@@ -80,7 +81,12 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<Delta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
-    this.container.visible = true;
+        if (next.energy <= 0) {
+            this.container.visible = false;
+
+            return;
+        }
+        this.container.visible = true;
         this.container.position.set(
             ease(current.x, next.x, dt),
             ease(current.y, next.y, dt),

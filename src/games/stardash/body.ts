@@ -50,7 +50,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         // You can initialize your new Body here.
         const bodiesContainer = new PIXI.Container();
         bodiesContainer.setParent(this.container)
-
+         
        if (state.materialType === "genarium") {
             this.bodiesSprite = this.addSprite.genarium();
             this.bodiesSprite.scale.set(.02, .02);
@@ -96,14 +96,14 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        if (next.amount === 0 ) {
+        if (next.amount === 0) {
             this.container.visible = false;
 
             return;
         }
         this.bodiesSprite.position.set(
-            ease(current.x, next.x, dt),
-            ease(current.y, next.y, dt),
+           ease(current.x, next.x, dt),
+           ease(current.y, next.y, dt),
         );
         // render where the Body is
         // <<-- /Creer-Merge: render -->>

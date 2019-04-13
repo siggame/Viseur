@@ -77,21 +77,18 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         else {
             this.jobSprite.scale.set(1 * .01, 1 * .01);
         }
-        if (state.job.id === "5") {
-            this.jobSprite.scale.set(1 * .1, 1 * .1);
-        }
-        else {
-            this.jobSprite.scale.set(1 * .01, 1 * .01);
-        }
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
-        barContainer.position.y -= 1;
-
+        barContainer.position.y -= 30;
         this.healthBar = new GameBar(barContainer, {
             max: state.job.energy,
             visibilitySetting: this.game.settings.displayHealthBars,
+            backgroundColor: "grey",
+            height: 10,
+            width: 50,
         });
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
