@@ -167,7 +167,11 @@ export class Game extends BaseGame {
         nextDelta: Immutable<Delta>,
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> Updated run, fixed docs, and fixed shootdown
         // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
         // <<-- /Creer-Merge: render-background -->>
