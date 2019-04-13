@@ -168,10 +168,13 @@ export class Game extends BaseGame {
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
 <<<<<<< HEAD
+<<<<<<< HEAD
         
 =======
 
 >>>>>>> Updated run, fixed docs, and fixed shootdown
+=======
+>>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
         // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
         // <<-- /Creer-Merge: render-background -->>

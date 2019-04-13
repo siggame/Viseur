@@ -88,7 +88,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             height: 10,
             width: 50,
         });
+<<<<<<< HEAD
 
+=======
+>>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -126,7 +129,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             ease(current.x, next.x, dt),
             ease(current.y, next.y, dt),
         );
-        if (next.shield > 0) {
+        if (next.shield > 0 || next.protector !== null) {
             this.jobSprite.mask = this.addSprite.shield();
             this.jobSprite.mask.x -= 11;
             this.jobSprite.mask.y -= 14;
