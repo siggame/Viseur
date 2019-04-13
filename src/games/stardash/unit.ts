@@ -34,8 +34,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+    /** TODO: document */
     public ownerID: string;
+
+    /** TODO: document */
     public jobSprite: PIXI.Sprite;
+
+    /** TODO: document */
     public healthBar: GameBar;
     // <<-- /Creer-Merge: variables -->>
 
@@ -88,10 +93,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             height: 10,
             width: 50,
         });
-<<<<<<< HEAD
-
-=======
->>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
         // <<-- /Creer-Merge: constructor -->>
     }
 

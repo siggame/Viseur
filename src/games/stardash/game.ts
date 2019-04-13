@@ -112,21 +112,20 @@ export class Game extends BaseGame {
             width: (state.bodies[2].radius * 2),
             height: (state.bodies[2].radius * 1.5),
             position: {x: state.bodies[2].x - 450, y: state.bodies[2].y - 270},
-         
         });
 
         this.resources.earth_planet.newSprite({
             container: this.layers.background,
             width: (state.bodies[1].radius * 3),
             height: (state.bodies[1].radius * 2.25),
-            position: {x: state.bodies[1].x-275 , y: state.bodies[1].y - 85}
+            position: {x: state.bodies[1].x - 275 , y: state.bodies[1].y - 85},
         });
 
         this.resources.alien_planet.newSprite({
             container: this.layers.background,
             width: (state.bodies[0].radius * 3),
             height: (state.bodies[0].radius * 2.25),
-            position: {x: state.bodies[0].x - 175, y: state.bodies[0].y - 85}
+            position: {x: state.bodies[0].x - 175, y: state.bodies[0].y - 85},
         });
 
         // <<-- /Creer-Merge: start -->>
@@ -142,10 +141,10 @@ export class Game extends BaseGame {
 
         // <<-- Creer-Merge: create-background -->>
         // Initialize your background here if need be
-        
+
         // this shows you how to render text that scales to the game
         // NOTE: height of 1 means 1 "unit", so probably 1 tile in height
-        
+
         // <<-- /Creer-Merge: create-background -->>
     }
 
@@ -167,14 +166,7 @@ export class Game extends BaseGame {
         nextDelta: Immutable<Delta>,
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> Updated run, fixed docs, and fixed shootdown
-=======
->>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
         // <<-- Creer-Merge: render-background -->>
         // update and re-render whatever you initialize in renderBackground
         // <<-- /Creer-Merge: render-background -->>

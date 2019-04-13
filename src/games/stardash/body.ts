@@ -32,12 +32,11 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IBodyState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    /** TODO: document */
     public bodiesSprite: PIXI.Sprite;
-<<<<<<< HEAD
-=======
+
+    /** TODO: document */
     public hasMoved: boolean;
->>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -53,15 +52,9 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Body here.
         const bodiesContainer = new PIXI.Container();
-<<<<<<< HEAD
-        bodiesContainer.setParent(this.container)
-         
-       if (state.materialType === "genarium") {
-=======
         bodiesContainer.setParent(this.container);
 
         if (state.materialType === "genarium") {
->>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
             this.bodiesSprite = this.addSprite.genarium();
             this.bodiesSprite.scale.set(.02, .02);
         }
@@ -80,12 +73,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         else {
             this.bodiesSprite = this.addSprite.blank();
         }
-<<<<<<< HEAD
-        
-        
-=======
         this.hasMoved = false;
->>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -110,14 +98,10 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-<<<<<<< HEAD
-        if (next.amount === 0) {
-=======
         if (current.x !== next.x) {
             this.hasMoved = true;
         }
         if (next.amount === 0 || this.hasMoved === false) {
->>>>>>> cfc070ebc9676d0f65aa80e0162b374b7c163d77
             this.container.visible = false;
 
             return;

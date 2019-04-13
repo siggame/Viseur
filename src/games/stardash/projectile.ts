@@ -31,7 +31,10 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** The next state of the Projectile (dt = 1) */
     public next: IProjectileState | undefined;
 
+    /** TODO: document */
     public ownerID: string;
+
+    /** TODO: document */
     public jobSprite: PIXI.Sprite;
 
     // <<-- Creer-Merge: variables -->>
@@ -51,12 +54,11 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Projectile here.
         this.ownerID = state.owner.id;
-        this.container.scale.set(1,1);
+        this.container.scale.set(1, 1);
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
         this.jobSprite = this.addSprite.beam();
         this.jobSprite.scale.set(1 * .1, 1 * .1);
-
 
         // state.gameObjectName
         // <<-- /Creer-Merge: constructor -->>
