@@ -31,12 +31,6 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** The next state of the Projectile (dt = 1) */
     public next: IProjectileState | undefined;
 
-    /** TODO: document */
-    public ownerID: string;
-
-    /** TODO: document */
-    public jobSprite: PIXI.Sprite;
-
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
@@ -83,20 +77,10 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<Delta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
-        if (next.energy <= 0) {
-            this.container.visible = false;
 
-            return;
-        }
-        this.container.visible = true;
-        this.container.position.set(
-            ease(current.x, next.x, dt),
-            ease(current.y, next.y, dt),
-        );
         // <<-- Creer-Merge: render -->>
         // render where the Projectile is
         // <<-- /Creer-Merge: render -->>
-
     }
 
     /**
