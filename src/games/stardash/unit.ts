@@ -64,41 +64,62 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
 
-        this.shield = this.addSprite.shield();
-        this.shield.setParent(this.game.layers.game);
+        this.shield = this.addSprite.shield(
+            {
+
+                relativeScale: this.game.scaler * 105,
+                relativePivot: 0.5,
+            });
+        this.shield.setParent(this.game.layers.shield);
+        this.shield.tint = this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.shield.alpha = 0.6;
         this.shield.visible = false;
 
         if (state.job.id === "2") {
-            this.jobSprite = this.addSprite.corvette();
+            this.jobSprite = this.addSprite.corvette(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.job.id === "3") {
-            this.jobSprite = this.addSprite.missleboat();
+            this.jobSprite = this.addSprite.missleboat(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.job.id === "4") {
-            this.jobSprite = this.addSprite.martyr();
+            this.jobSprite = this.addSprite.martyr(
+                {
+                    relativePivot: 0.5,
+                });
             this.shield.visible = true;
             this.shield.x = this.container.x;
             this.shield.y = this.container.y;
         }
         else if (state.job.id === "5") {
-            this.jobSprite = this.addSprite.transport();
+            this.jobSprite = this.addSprite.transport(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.job.id === "6") {
-            this.jobSprite = this.addSprite.miner();
+            this.jobSprite = this.addSprite.miner(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else {
-            this.jobSprite = this.addSprite.test();
+            this.jobSprite = this.addSprite.test(
+                {
+                    relativePivot: 0.5,
+                });
         }
-        if (state.job.id === "5") {
-            this.jobSprite.scale.set(1 * .1, 1 * .1);
-        }
-        else {
-            this.jobSprite.scale.set(1 * .01, 1 * .01);
-        }
-
+        this.jobSprite.scale.x *= this.game.scaler * 20;
+        this.jobSprite.scale.y *= this.game.scaler * 20;
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
         barContainer.position.y -= 30;
+        barContainer.position.x -= 24;
         this.healthBar = new GameBar(barContainer, {
             max: state.job.energy,
             visibilitySetting: this.game.settings.displayHealthBars,
@@ -130,8 +151,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        // const shield = PIXI.Sprite.fromImage("resources/shield.png");
-        // shield.scale.set(1 * .1, 1 * .1);
         // render where the Unit is
         if (next.energy <= 0) {
             this.container.visible = false;
@@ -145,19 +164,16 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             ease(current.y, next.y, dt),
         );
 
-        if (next.shield > 0 || next.protector !== null) {
+        if (next.shield > 0) {
             this.shield.visible = true;
-            this.shield.x = this.container.x - 10;
-            this.shield.y = this.container.y - 20;
-            this.shield.scale.set(1 * .12, 1 * .12);
-            // this.shield.alpha = 0.05;
+            this.shield.x = this.container.x;
+            this.shield.y = this.container.y;
         }
         else {
             this.shield.visible = false;
         }
 
         this.healthBar.update(ease(current.energy, next.energy, dt));
-        // pixiFade(this.container, dt, current.energy, next.energy);
         // <<-- /Creer-Merge: render -->>
     }
 

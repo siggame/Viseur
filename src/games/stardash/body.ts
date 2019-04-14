@@ -53,26 +53,35 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         // You can initialize your new Body here.
         const bodiesContainer = new PIXI.Container();
         bodiesContainer.setParent(this.container);
-
         if (state.materialType === "genarium") {
-            this.bodiesSprite = this.addSprite.genarium();
-            this.bodiesSprite.scale.set(.02, .02);
+            this.bodiesSprite = this.addSprite.genarium(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.materialType === "rarium") {
-            this.bodiesSprite = this.addSprite.rarium();
-            this.bodiesSprite.scale.set(.023, .023);
+            this.bodiesSprite = this.addSprite.rarium(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.materialType === "legendarium") {
-            this.bodiesSprite = this.addSprite.legendarium();
-            this.bodiesSprite.scale.set(.027, .027);
+            this.bodiesSprite = this.addSprite.legendarium(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.materialType === "mythicite") {
-            this.bodiesSprite = this.addSprite.mythicite();
-            this.bodiesSprite.scale.set(.04, .04);
+            this.bodiesSprite = this.addSprite.mythicite(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else {
             this.bodiesSprite = this.addSprite.blank();
         }
+        this.bodiesSprite.scale.x *= state.radius * this.game.scaler;
+        this.bodiesSprite.scale.y *= state.radius * this.game.scaler;
         this.hasMoved = false;
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -110,7 +119,6 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
            ease(current.x, next.x, dt),
            ease(current.y, next.y, dt),
         );
-        // render where the Body is
         // <<-- /Creer-Merge: render -->>
     }
 

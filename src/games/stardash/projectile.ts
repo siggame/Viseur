@@ -57,8 +57,12 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.container.scale.set(1, 1);
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
-        this.jobSprite = this.addSprite.beam();
-        this.jobSprite.scale.set(1 * .1, 1 * .1);
+        this.jobSprite = this.addSprite.beam(
+            {
+                relativeScale: this.game.scaler * 5,
+            },
+        );
+        this.jobSprite.scale.set(.1, .1);
 
         // state.gameObjectName
         // <<-- /Creer-Merge: constructor -->>
@@ -83,6 +87,8 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<Delta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
+        // <<-- Creer-Merge: render -->>
+        // render where the Projectile is
         if (next.energy <= 0) {
             this.container.visible = false;
 
@@ -93,8 +99,6 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
             ease(current.x, next.x, dt),
             ease(current.y, next.y, dt),
         );
-        // <<-- Creer-Merge: render -->>
-        // render where the Projectile is
         // <<-- /Creer-Merge: render -->>
 
     }
