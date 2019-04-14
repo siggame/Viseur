@@ -9,7 +9,7 @@ import { IBodyState, IProjectileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
-import { ease, pixiFade } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
+import { ease } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 
@@ -42,6 +42,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** TODO: document */
     public healthBar: GameBar;
+
+    /** TODO: document */
+    public shield: PIXI.Sprite;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -61,6 +64,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
 
+        this.shield = this.addSprite.shield();
+        this.shield.setParent(this.game.layers.game);
+        this.shield.visible = false;
+
         if (state.job.id === "2") {
             this.jobSprite = this.addSprite.corvette();
         }
@@ -69,12 +76,18 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         else if (state.job.id === "4") {
             this.jobSprite = this.addSprite.martyr();
+            this.shield.visible = true;
+            this.shield.x = this.container.x;
+            this.shield.y = this.container.y;
         }
         else if (state.job.id === "5") {
             this.jobSprite = this.addSprite.transport();
         }
-        else {
+        else if (state.job.id === "6") {
             this.jobSprite = this.addSprite.miner();
+        }
+        else {
+            this.jobSprite = this.addSprite.test();
         }
         if (state.job.id === "5") {
             this.jobSprite.scale.set(1 * .1, 1 * .1);
@@ -122,6 +135,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // render where the Unit is
         if (next.energy <= 0) {
             this.container.visible = false;
+            this.shield.visible = false;
 
             return;
         }
@@ -130,19 +144,20 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             ease(current.x, next.x, dt),
             ease(current.y, next.y, dt),
         );
+
         if (next.shield > 0 || next.protector !== null) {
-            this.jobSprite.mask = this.addSprite.shield();
-            this.jobSprite.mask.x -= 11;
-            this.jobSprite.mask.y -= 14;
-            this.jobSprite.mask.scale.set(1 * .12, 1 * .12);
-            this.jobSprite.mask.alpha = 0.05;
+            this.shield.visible = true;
+            this.shield.x = this.container.x-10;
+            this.shield.y = this.container.y-20;
+            this.shield.scale.set(1 * .12, 1 * .12);
+            // this.shield.alpha = 0.05;
         }
         else {
-            this.jobSprite.mask = null;
+            this.shield.visible = false;
         }
 
         this.healthBar.update(ease(current.energy, next.energy, dt));
-        pixiFade(this.container, dt, current.energy, next.energy);
+        // pixiFade(this.container, dt, current.energy, next.energy);
         // <<-- /Creer-Merge: render -->>
     }
 
