@@ -45,6 +45,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** TODO: document */
     public shield: PIXI.Sprite;
+
+    /** TODO: document */
+    public readonly rotationOffset: number = Math.asin(1);
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -116,6 +119,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         this.jobSprite.scale.x *= this.game.scaler * 20;
         this.jobSprite.scale.y *= this.game.scaler * 20;
+
+        // offset ships to point to the sun when spawned.
+        this.jobSprite.rotation += (this.rotationOffset * (this.ownerID === "1" ? -1 : 1));
+
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
         barContainer.position.y -= 30;
@@ -158,7 +165,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
             return;
         }
-        this.container.visible = true;
+
         this.container.position.set(
             ease(current.x, next.x, dt),
             ease(current.y, next.y, dt),
@@ -225,6 +232,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Unit based off its states
+        // if there was a change in the location...
+        if (current.x !== next.x || current.y !== next.y) {
+            // get the angle between the two points(fancy stuff here)
+            const rot = Math.atan2(next.y - current.y, next.x - current.x);
+            // apply rotation with consideration to offset we did in initialization.
+            this.jobSprite.rotation = rot + this.rotationOffset;
+        }
         // <<-- /Creer-Merge: state-updated -->>
     }
 
