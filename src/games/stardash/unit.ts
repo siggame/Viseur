@@ -260,6 +260,21 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
+     * tells you if your ship can dash to that location from where it is without
+     * clipping the sun.
+     * @param x The x position of the location you wish to arrive.
+     * @param y The y position of the location you wish to arrive.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if pathable by this unit,
+     * false otherwise.
+     */
+    public isDashable(x: number, y: number, callback?: (returned: boolean) =>
+                      void,
+    ): void {
+        this.runOnServer("isDashable", {x, y}, callback);
+    }
+
+    /**
      * allows a miner to mine a asteroid
      * @param body The object to be mined.
      * @param callback? The callback that eventually returns the return value
@@ -283,8 +298,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * tells you if your ship can move to that location from were it is without
-     * clipping the sun.
+     * tells you if your ship can move to that location from were it is landing
+     * in the sun.
      * @param x The x position of the location you wish to arrive.
      * @param y The y position of the location you wish to arrive.
      * @param callback? The callback that eventually returns the return value

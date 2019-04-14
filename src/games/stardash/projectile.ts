@@ -31,14 +31,13 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** The next state of the Projectile (dt = 1) */
     public next: IProjectileState | undefined;
 
+    // <<-- Creer-Merge: variables -->>
+    // You can add additional member variables here
     /** TODO: document */
     public ownerID: string;
 
     /** TODO: document */
     public jobSprite: PIXI.Sprite;
-
-    // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -100,7 +99,6 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
             ease(current.y, next.y, dt),
         );
         // <<-- /Creer-Merge: render -->>
-
     }
 
     /**
