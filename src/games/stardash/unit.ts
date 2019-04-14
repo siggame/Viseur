@@ -147,8 +147,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         if (next.shield > 0 || next.protector !== null) {
             this.shield.visible = true;
-            this.shield.x = this.container.x-10;
-            this.shield.y = this.container.y-20;
+            this.shield.x = this.container.x - 10;
+            this.shield.y = this.container.y - 20;
             this.shield.scale.set(1 * .12, 1 * .12);
             // this.shield.alpha = 0.05;
         }
