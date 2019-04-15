@@ -3,52 +3,28 @@
 @import "src/core/fonts";
 @import "src/core/colors";
 
-li.tree-view-node {
-    & > .node-children {
-        &.hidden {
-            display: none;
-        }
+.tree-view {
+    list-style-type: none;
+    margin-left: 0;
 
-        &:empty {
-            &::after {
-                content: "Empty";
-                margin-left: 1.5em;
-                color: $dark-gray;
-                font-style: italic;
-            }
-        }
-
-        & > li {
-            margin-left: 1em;
-        }
+    & ul {
+        list-style-type: none;
+        margin-left: 1em;
     }
 
-    & > header {
-        & .node-key::after {
-            content: " = ";
+    & li.tree-view-node > header {
+        color: $black;
+        font-size: 1em;
+        font-weight: normal;
+        @extend .font-monospace;
+
+        @include dark-mode {
+            color: $white;
         }
 
-        &:before {
-            @include icon(square);
-            font-size: 0.75em;
-        }
-
-        &.expandable {
-            cursor: pointer;
-
-            &:before {
-                @include icon(plus-square);
-                font-size: 0.75em;
-            }
-        }
-
-        &.expanded {
-            cursor: pointer;
-
-            &:before {
-                @include icon(minus-square);
-                font-size: 0.75em;
-            }
+        .node-key:after {
+            color: $dark-gray;
+            content: " =";
         }
     }
 }

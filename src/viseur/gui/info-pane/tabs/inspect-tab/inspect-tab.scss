@@ -1,0 +1,45 @@
+:not(.gamelog-loaded) .inspect-tab {
+    & .inspect-no-gamelog {
+        display: block;
+    }
+
+    & .inspect-gamelog-loaded {
+        display: none;
+    }
+}
+
+.gamelog-loaded .inspect-tab {
+    & .inspect-no-gamelog {
+        display: none;
+    }
+
+    & .inspect-gamelog-loaded {
+        display: block;
+    }
+}
+
+.inspect-tab li.tree-view-node {
+    &[data-inspect-type="array"] > header > .node-value {
+        color: orange;
+    }
+
+    &[data-inspect-type="object"] > header > .node-value {
+        color: teal;
+    }
+
+    &[data-inspect-type="string"] > header > .node-value {
+        color: green;
+
+        &:before, &:after {
+            content: "\"";
+        }
+    }
+
+    &[data-inspect-type="number"] > header > .node-value {
+        color: deeppink;
+    }
+
+    &[data-inspect-type="boolean"] > header > .node-value {
+        color: darkblue;
+    }
+}
