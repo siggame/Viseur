@@ -76,7 +76,7 @@ export class TreeView extends BaseElement {
         if (Array.isArray(value)) {
             formatted = `Array[${value.length}]`;
         }
-        else if (typeof value === "object") {
+        else if (isObject(value)) {
             formatted = "Object";
         }
 
@@ -108,12 +108,15 @@ export class TreeView extends BaseElement {
             node.$element.attr("data-inspect-key", fullKey);
 
             if (isObject(value)) {
+                node.$header.addClass("inspect-expandable");
                 const onClick = () => {
                     this.deepDisplay(fullKey, value, node.$children);
+                    node.$header.addClass("expanded");
 
                     node.$header.one("click", () => {
                         node.$children.empty();
                         node.$header.one("click", onClick);
+                        node.$header.removeClass("expanded");
                     });
                 };
 

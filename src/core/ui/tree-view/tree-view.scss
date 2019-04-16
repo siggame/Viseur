@@ -26,5 +26,13 @@
             color: $dark-gray;
             content: " =";
         }
+
+        &.inspect-expandable {
+            cursor: zoom-in;
+
+            &.expanded {
+                cursor: zoom-out;
+            }
+        }
     }
 }

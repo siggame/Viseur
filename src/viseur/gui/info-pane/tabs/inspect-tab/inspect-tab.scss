@@ -23,8 +23,8 @@
         color: orange;
     }
 
-    &[data-inspect-type="object"] > header > .node-value {
-        color: teal;
+    &[data-inspect-type="map"] > header > .node-value {
+        color: red;
     }
 
     &[data-inspect-type="string"] > header > .node-value {
@@ -41,5 +41,14 @@
 
     &[data-inspect-type="boolean"] > header > .node-value {
         color: darkblue;
+    }
+
+    &[data-inspect-type="null"] > header > .node-value {
+        color: blueviolet;
+        font-style: italic;
+    }
+
+    &[data-inspect-type="game-object"] > header > .node-value {
+        color: teal;
     }
 }
