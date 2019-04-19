@@ -1,4 +1,5 @@
 import { ITabArgs, Tab } from "src/core/ui";
+import { Viseur } from "src/viseur";
 import { IViseurGameState } from "src/viseur/game";
 import * as inspectTabHbs from "./inspect-tab.hbs";
 import "./inspect-tab.scss";
@@ -8,11 +9,14 @@ import { InspectTreeView } from "./inspect-tree";
  * The "Inspect" tab on the InfoPane
  */
 export class InspectTab extends Tab {
-    /** Our treeview we basically are. */
-    private readonly treeView: InspectTreeView;
+    /** Main treeview for the game. */
+    private readonly gameTreeView: InspectTreeView;
 
-    /** The settings to display, they never change once set. */
-    private settings = {};
+    /** Three view for the settings. Never updated once set */
+    private readonly settingsTreeView: InspectTreeView;
+
+    /** The viseur instance. */
+    private readonly viseur: Viseur;
 
     /**
      * Creates the Inspect Tab.
@@ -26,17 +30,22 @@ export class InspectTab extends Tab {
             ...args,
         });
 
-        this.treeView = new InspectTreeView({
-            parent: this.element.find(".inspect-tree-root"),
+        const parent = this.element.find(".inspect-tree-root");
+        this.gameTreeView = new InspectTreeView({ parent, name: "game" });
+        this.settingsTreeView = new InspectTreeView({ parent, name: "settings" });
+
+        this.viseur = args.viseur;
+        this.viseur.events.ready.once(({ gamelog }) => {
+            this.settingsTreeView.setGameName(gamelog.gameName);
+            this.settingsTreeView.display(gamelog.settings);
+
+            this.gameTreeView.setGameName(gamelog.gameName);
+            this.refreshTree(this.viseur.getCurrentState());
+
+            this.viseur.events.stateChanged.on((state) => this.refreshTree(state));
         });
 
-        args.viseur.events.ready.once(({ gamelog }) => {
-            this.settings = gamelog.settings;
-            this.treeView.setGameName(gamelog.gameName);
-            this.refreshTree(args.viseur.getCurrentState());
-
-            args.viseur.events.stateChanged.on((state) => this.refreshTree(state));
-        });
+        this.tabular.events.tabChanged.on(() => this.refreshTree(this.viseur.getCurrentState()));
     }
 
     /**
@@ -45,9 +54,10 @@ export class InspectTab extends Tab {
      * @param state - The new game states to use to re-build the tree.
      */
     private refreshTree(state: IViseurGameState): void {
-        this.treeView.display({
-            game: state.game as {}, // TODO: something sane
-            settings: this.settings,
-        });
+        if (this.tabular.getActiveTab() !== this) {
+            return;
+        }
+
+        this.gameTreeView.display(state.game as {}); // TODO: sketchy cast
     }
 }

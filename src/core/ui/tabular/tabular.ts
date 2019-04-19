@@ -117,6 +117,15 @@ export class Tabular extends BaseElement {
     }
 
     /**
+     * Gets the currently active tab.
+     *
+     * @returns The currently active tab.
+     */
+    public getActiveTab(): Tab {
+        return this.activeTab;
+    }
+
+    /**
      * Fades a tab out, invoked when switching tabs.
      *
      * @param tab - The tab to fade out.

@@ -1,3 +1,15 @@
+@mixin inspect-value($type) {
+    &[data-inspect-type="#{$type}"] > header > .node-value {
+        @content;
+    }
+}
+
+@mixin inspect-key($type) {
+    &[data-inspect-type="#{$type}"] > ul > li > header > .node-key {
+        @content;
+    }
+}
+
 :not(.gamelog-loaded) .inspect-tab {
     & .inspect-no-gamelog {
         display: block;
@@ -18,16 +30,28 @@
     }
 }
 
+.inspect-tree-root > ul > ul {
+    margin-left: 0;
+}
+
 .inspect-tab li.tree-view-node {
-    &[data-inspect-type="array"] > header > .node-value {
+    @include inspect-value("array") {
         color: orange;
     }
 
-    &[data-inspect-type="map"] > header > .node-value {
+    @include inspect-key("array") {
+        color: deeppink;
+    }
+
+    @include inspect-value("number") {
+        color: deeppink;
+    }
+
+    @include inspect-value("map") {
         color: red;
     }
 
-    &[data-inspect-type="string"] > header > .node-value {
+    @include inspect-key("map") {
         color: green;
 
         &:before, &:after {
@@ -35,20 +59,28 @@
         }
     }
 
-    &[data-inspect-type="number"] > header > .node-value {
-        color: deeppink;
+    @include inspect-value("string") {
+        color: green;
+
+        &:before, &:after {
+            content: "\"";
+        }
     }
 
-    &[data-inspect-type="boolean"] > header > .node-value {
+    @include inspect-value("boolean") {
         color: darkblue;
     }
 
-    &[data-inspect-type="null"] > header > .node-value {
+    @include inspect-value("null") {
         color: blueviolet;
         font-style: italic;
     }
 
-    &[data-inspect-type="game-object"] > header > .node-value {
+    @include inspect-value("game-object") {
         color: teal;
+    }
+
+    @include inspect-value("root") {
+        color: dodgerblue;
     }
 }

@@ -1,4 +1,5 @@
-import { IBaseGame, IBaseGameObject, IBasePlayer } from "@cadre/ts-utils/cadre";
+import { IBaseGameObject, IBasePlayer } from "@cadre/ts-utils/cadre";
+import { capitalize } from "lodash";
 import { ITreeViewNode, Treeable, TreeView } from "src/core/ui";
 import { isObject } from "src/utils";
 import { IBaseTile } from "src/viseur/game";
@@ -7,12 +8,6 @@ function isGameObject(val: unknown): val is IBaseGameObject {
     return isObject(val)
         && typeof val.id === "string"
         && typeof val.gameObjectName === "string";
-}
-
-function isGame(val: unknown): val is IBaseGame {
-    return isObject(val)
-        && isObject(val.gameObjects)
-        && Array.isArray(val.players);
 }
 
 /** A tree view for inspecting game states */
@@ -45,6 +40,10 @@ export class InspectTreeView extends TreeView {
         else if (value === null) {
             type = "null";
         }
+        else if (node.parent && !node.parent.parent) {
+            type = "root";
+            displayValue = `${this.gameName} ${capitalize(this.name)}`;
+        }
         else if (isGameObject(value)) {
             type = "game-object";
 
@@ -60,10 +59,6 @@ export class InspectTreeView extends TreeView {
                     displayValue = gameObject.gameObjectName;
             }
             displayValue += ` #${gameObject.id}`;
-        }
-        else if (isGame(value)) {
-            type = "game-object";
-            displayValue = `${this.gameName} Game`;
         }
         else if (isObject(value)) {
             type = "map";
