@@ -3,51 +3,65 @@
 @import "src/core/fonts";
 @import "src/core/colors";
 
-li.tree-view-node {
-    & > .node-children {
-        &.hidden {
-            display: none;
-        }
+.tree-view {
+    list-style-type: none;
+    margin-left: 0;
 
-        &:empty {
-            &::after {
-                content: "Empty";
-                margin-left: 1.5em;
-                color: $dark-gray;
-                font-style: italic;
-            }
-        }
-
-        & > li {
-            margin-left: 1em;
-        }
+    & ul {
+        list-style-type: none;
+        margin-left: 1em;
+        margin-bottom: 0.25em;
     }
 
-    & > header {
-        & .node-key::after {
-            content: " = ";
+    & li.tree-view-node > header {
+        color: $black;
+        font-size: 1em;
+        font-weight: normal;
+        @extend .font-monospace;
+
+        @include dark-mode {
+            color: $white;
         }
 
         &:before {
             @include icon(square);
-            font-size: 0.75em;
+            color: $dark-gray;
         }
 
-        &.expandable {
-            cursor: pointer;
+        & .node-key-value-spacer {
+            color: $dark-gray;
+        }
+
+        &.inspect-expandable {
+            cursor: zoom-in;
 
             &:before {
                 @include icon(plus-square);
-                font-size: 0.75em;
             }
-        }
 
-        &.expanded {
-            cursor: pointer;
+            &.expanded {
+                cursor: zoom-out;
 
-            &:before {
-                @include icon(minus-square);
-                font-size: 0.75em;
+                &:before {
+                    @include icon(minus-square);
+                }
+
+                & + ul:empty {
+                    &:before, &:after {
+                        color: $gray;
+                        @extend .font-monospace;
+                    }
+
+                    &:before {
+                        @include icon(square-o);
+                    }
+
+                    &:after {
+                        content: "Empty";
+                        font-style: italic;
+                        margin-left: 0.5em;
+                    }
+                }
             }
         }
     }
