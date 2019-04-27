@@ -154,6 +154,15 @@ export class FileTab extends Tab {
         value: true,
     });
 
+    /** The check box for if this should restart in presentation mode. */
+    private readonly legacyInput = new CheckBox({
+        id: "legacy-mode",
+        label: "Legacy Mode",
+        parent: this.connectWrapper,
+        value: true,
+        hint: "Legacy arena mode for the previous Python arena",
+    });
+
     /** The button that starts the remote connection. */
     private readonly connectButton = new Button({
         id: "connect-connect-button",
@@ -288,6 +297,7 @@ export class FileTab extends Tab {
         let showPresentation = false;
         let showGameSettings = false;
         let humanPlayable = false;
+        let showLegacy = false;
 
         switch (newType) {
             case "Arena":
@@ -295,6 +305,7 @@ export class FileTab extends Tab {
                 showPort = false;
                 showGame = false;
                 showPresentation = true;
+                showLegacy = true;
                 break;
             case "Human":
                 port = 3088;
@@ -333,6 +344,7 @@ export class FileTab extends Tab {
         this.gameSettingsInput.field!.element.toggleClass("collapsed", !showGameSettings);
         this.playerIndexInput.field!.element.toggleClass("collapsed", !showPlayerIndex);
 
+        this.legacyInput.field!.element.toggleClass("collapsed", !showLegacy);
         this.presentationInput.field!.element.toggleClass("collapsed", !showPresentation);
         // tslint:enable:no-non-null-assertion
     }
@@ -396,7 +408,7 @@ export class FileTab extends Tab {
                 this.viseur.connectToTournament(server, port, playerName);
                 break;
             case "Arena":
-                this.viseur.startArenaMode(server, this.presentationInput.value);
+                this.viseur.startArenaMode(server, this.presentationInput.value, this.legacyInput.value);
                 break;
             case "Human":
                 this.viseur.playAsHuman({

@@ -171,12 +171,33 @@ export class Viseur {
      *
      * @param url - The url to start grabbing arena gamelog urls from.
      * @param presentationMode True if should auto fullscreen, false otherwise.
+     * @param legacyMode True if legacy mode (old python arena), false otherwise
      */
     public startArenaMode(
         url: string,
         presentationMode: boolean = true,
+        legacyMode: boolean = false,
     ): void {
         if (validateURL(url)) {
+            if (legacyMode) {
+                // old arena mode, we have to hit-up a url that will respond with the url to use
+                this.gui.modalMessage("Asking legacy arena for gamelog...");
+
+                $.ajax({
+                    dataType: "text",
+                    url,
+                    crossDomain: true,
+                    success: (gamelogURL: string) => {
+                        this.startArenaMode(gamelogURL, presentationMode, false);
+                    },
+                    error: () => {
+                        this.gui.modalError("Error loading gamelog url from arena.");
+                    },
+                });
+
+                return;
+            }
+
             this.urlParameters.arena = url;
 
             if (presentationMode) {

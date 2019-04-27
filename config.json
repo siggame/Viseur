@@ -1,6 +1,6 @@
 {
     "game": "Chess",
-    "arenaServer": "arena.siggame.io/mies/thunderdome/get_next_game",
+    "arenaServer": "http://arena.siggame.io/mies/thunderdome/get_next_game",
     "gameServer": "game.siggame.io",
     "tournamentServer": "arena.siggame.io"
 }
