@@ -179,25 +179,6 @@ export class Viseur {
         legacyMode: boolean = false,
     ): void {
         if (validateURL(url)) {
-            if (legacyMode) {
-                // old arena mode, we have to hit-up a url that will respond with the url to use
-                this.gui.modalMessage("Asking legacy arena for gamelog...");
-
-                $.ajax({
-                    dataType: "text",
-                    url,
-                    crossDomain: true,
-                    success: (gamelogURL: string) => {
-                        this.startArenaMode(gamelogURL, presentationMode, false);
-                    },
-                    error: () => {
-                        this.gui.modalError("Error loading gamelog url from arena.");
-                    },
-                });
-
-                return;
-            }
-
             this.urlParameters.arena = url;
 
             if (presentationMode) {
@@ -205,9 +186,9 @@ export class Viseur {
                 // it's presence tell us we want it
                 this.urlParameters.presentation = null;
             }
-            else {
-                // remove the key, meaning false
-                // delete this.urlParameters.presentation;
+
+            if (legacyMode) {
+                this.urlParameters.legacy = null;
             }
 
             // this refreshes the page, as we want
@@ -394,9 +375,19 @@ export class Viseur {
         else if (typeof this.urlParameters.arena === "string") {
             // then we are in arena mode
             this.gui.modalMessage("Requesting next gamelog from Arena...");
+            const arenaUrl = this.urlParameters.arena;
 
-            // load the gamelog (modal should be fullscreen)
-            this.loadRemoteGamelog(this.urlParameters.arena);
+            // load the gamelog (modal should be fullscreen already)
+            if (objectHasProperty(this.urlParameters, "legacy")) { // legacy mode, hit-up the url for a gamelog url
+                // NOTE: would be better with async/await syntax, however I don't want to bloat the build with that
+                // polyfill for just this usage.
+                this.getRemoteGamelogUrl(arenaUrl)
+                    .then((gamelogUrl) => this.loadRemoteGamelog(gamelogUrl))
+                    .catch((err) => this.gui.modalError(`Error loading legacy gamelog url: ${err}`));
+            }
+            else { // url directly points to gamelog
+                this.loadRemoteGamelog(arenaUrl);
+            }
 
             const presentationMode = objectHasProperty(this.urlParameters, "presentation");
             if (presentationMode) {
@@ -689,5 +680,27 @@ export class Viseur {
         });
 
         this.joueur.connect(args);
+    }
+
+    /**
+     * Hits up a remote url expecting the text response to be a url to a gamelog.
+     *
+     * @param url - The url to query
+     * @returns A promise that might resolve to the url, or reject if an error occurs
+     */
+    private getRemoteGamelogUrl(url: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                dataType: "text",
+                url,
+                crossDomain: true,
+                success: (gamelogURL: string) => {
+                    resolve(gamelogURL);
+                },
+                error: (err) => {
+                    reject(err);
+                },
+            });
+        });
     }
 }
