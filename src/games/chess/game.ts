@@ -199,6 +199,7 @@ export class Game extends BaseGame {
     protected recolor(): void {
         super.recolor();
 
+        this.chessBackground.recolor();
         this.chessPieces.recolor();
     }
 

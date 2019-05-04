@@ -1,5 +1,6 @@
 import { Square } from "chess.js";
 import * as Color from "color";
+import { getContrastingColor } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Game } from "./game";
 
@@ -38,6 +39,10 @@ export class ChessBoardBackground {
 
     /** The color of the rank/file text. */
     private readonly textColor = Color.rgb(222, 222, 222);
+
+    /** The background color overlay */
+    private readonly backgroundGraphics = new PIXI.Graphics();
+
     // private readonly tileBorderLength = 0.9;
 
     /** The sprites used to make tiles on the board. */
@@ -61,17 +66,7 @@ export class ChessBoardBackground {
      * @param game - The game this is a background for.
      */
     constructor(private readonly game: Game) {
-        const whiteColor = this.randomColor;
-        // const whiteTopColor = whiteColor.lighten(0.15);
-        // const blackColor = whiteColor.darken(0.5);
-        // const blackTopColor = blackColor.lighten(0.15);
-        const backgroundColor = whiteColor.darken(0.75);
-
-        // fill in the background, which displays the file/rank, and the "tiles"
-        this.game.layers.background.addChild(new PIXI.Graphics())
-            .beginFill(backgroundColor.rgbNumber(), 1)
-            .drawRect(0, 0, BOARD_LENGTH_WITH_MARGINS, BOARD_LENGTH_WITH_MARGINS)
-            .endFill();
+        this.game.layers.background.addChild(this.backgroundGraphics);
 
         this.boardContainer.setParent(this.game.layers.background);
         this.tileContainer.setParent(this.boardContainer);
@@ -118,7 +113,6 @@ export class ChessBoardBackground {
                 ];
                 const tile = resource.newSprite({
                     container: this.tileContainer,
-                    alpha: 0.175,
                     onClick: () => {
                         const square = xToChar(x) + String(8 - y) as Square;
                         // check to make certain above as Square check is valid
@@ -136,6 +130,50 @@ export class ChessBoardBackground {
 
         this.flipBackground(this.game.settings.flipBoard.get());
         this.game.settings.flipBoard.changed.on((flipped) => this.flipBackground(flipped));
+
+        const recolor = () => this.recolor();
+        this.game.settings.boardColor.changed.on(recolor);
+        this.game.settings.blackSquareContrast.changed.on(recolor);
+        this.game.settings.whiteSquareContrast.changed.on(recolor);
+        this.recolor();
+    }
+
+    /** Recolors the board based on settings */
+    public recolor(): void {
+        const colorSetting = this.game.settings.boardColor.get();
+
+        const color = colorSetting === "#000000"
+            ? this.randomColor.darken(0.75)
+            : Color(colorSetting);
+
+        // fill in the background, which displays the file/rank, and the "tiles"
+        this.backgroundGraphics
+            .clear()
+            .beginFill(color.rgbNumber(), 1)
+            .drawRect(0, 0, BOARD_LENGTH_WITH_MARGINS, BOARD_LENGTH_WITH_MARGINS)
+            .endFill();
+
+        const textColor = getContrastingColor(color);
+        const texts = this.gridStrings.rank
+            .concat(this.gridStrings.file)
+            .flatMap((t) => t);
+
+        for (const text of texts) {
+            text.tint = textColor.rgbNumber();
+        }
+
+        for (let x = 0; x < 8; x++) {
+            const tiles = this.tileSprites[x];
+            for (let y = 0; y < 8; y++) {
+                const tile = tiles[y];
+                const setting = this.game.settings[(x + y) % 2
+                    ? "blackSquareContrast"
+                    : "whiteSquareContrast"
+                ];
+
+                tile.alpha = setting.get();
+            }
+        }
     }
 
     /**
