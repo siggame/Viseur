@@ -1,5 +1,5 @@
 import { Delta, IBaseGameObject } from "@cadre/ts-utils/cadre";
-import { Immutable } from "src/utils/";
+import { Immutable, UnknownObject } from "src/utils/";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "./base-game";
 import { StateObject } from "./state-object";
@@ -57,7 +57,7 @@ export class BaseGameObject extends StateObject {
      */
     public runOnServer(
         run: string,
-        args: Immutable<object>,
+        args: Immutable<UnknownObject>,
         callback?: (returned: any) => void, // tslint:disable-line:no-any - any because this comes from Creer code.
     ): void {
         this.viseur.runOnServer(this.id, run, args, callback);

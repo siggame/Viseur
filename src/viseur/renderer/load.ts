@@ -1,6 +1,6 @@
 // This is a simple function to be used in games
 import { mapValues } from "lodash";
-import { FirstArgument, IPixiSpriteOptions, Omit } from "src/utils";
+import { FirstArgument, IPixiSpriteOptions } from "src/utils";
 import { RenderableGameObjectClass } from "src/viseur/game";
 import * as blankPng from "src/viseur/images/blank.png";
 import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
@@ -24,12 +24,9 @@ export interface IRendererResources extends IBaseRendererResources {
 /** The resources for a given game object. */
 export type ResourcesForGameObject<T extends IBaseRendererResources> = Readonly<{
     [K in keyof T]: (options?: T[K] extends undefined
-        ? undefined
+        ? never
         : T[K] extends BaseRendererResource
-            ? Omit<FirstArgument<T[K]["newSprite"]>, "container"> & {
-                /** The PIXI container to place this new sprite into. */
-                container?: PIXI.Container;
-            }
+            ? FirstArgument<T[K]["newSprite"]>
             : never,
     ) => PIXI.Sprite;
 }>;

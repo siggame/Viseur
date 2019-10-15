@@ -6,7 +6,7 @@ import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
-import { getContrastingColor, Immutable, isObject, objectHasProperty, UnknownObject } from "src/utils";
+import { getContrastingColor, Immutable, isObject, objectHasProperty } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
 import * as basePaneStatsHbs from "./base-pane-stats.hbs";
@@ -318,7 +318,10 @@ export class BasePane<
         if (objectHasProperty(state, "currentTurn")) {
             list.push({
                 label: "Turn",
-                get: (game: UnknownObject) => Number(game.currentTurn),
+                get: (game: IBaseGame & {
+                    /** Turn based games should expose this for the turn number */
+                    currentTurn?: number;
+                }) => Number(game.currentTurn),
             });
         }
 

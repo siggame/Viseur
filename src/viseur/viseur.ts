@@ -19,6 +19,9 @@ import { TimeManager } from "./time-manager";
 /** The possible types a parsed query string can result in values from. */
 type QueryStringTypes = undefined | null | string | string[];
 
+/** A game state with an index signature to be delta merged */
+type DeltaMergeableGameState = IBaseGame;
+
 /** Data required to play as a human player in a game. */
 interface IPlayAsHumanData extends TournamentConnectionArgs, JoueurConnectionArgs {}
 
@@ -31,10 +34,10 @@ export interface IMergedDelta {
     index: number;
 
     /** The current state at that delta, what we are moving from */
-    currentState?: IBaseGame;
+    currentState?: DeltaMergeableGameState;
 
     /** The next state of that delta, what we are moving to */
-    nextState?: IBaseGame;
+    nextState?: DeltaMergeableGameState;
 }
 
 /** The class that handles all the interconnected-ness of the application */
@@ -514,11 +517,14 @@ export class Viseur {
             d.index++;
 
             if (deltas[d.index] && !deltas[d.index].reversed) {
-                deltas[d.index].reversed = this.parser.createReverseDelta(d.currentState, deltas[d.index].game);
+                deltas[d.index].reversed = this.parser.createReverseDelta(d.currentState as {}, deltas[d.index].game);
             }
 
             if (d.nextState && deltas[d.index] && deltas[d.index + 1] && !deltas[d.index + 1].reversed) {
-                deltas[d.index + 1].reversed = this.parser.createReverseDelta(d.nextState, deltas[d.index + 1].game);
+                deltas[d.index + 1].reversed = this.parser.createReverseDelta(
+                    d.nextState as {},
+                    deltas[d.index + 1].game,
+                );
             }
 
             if (deltas[d.index]) {
@@ -538,12 +544,12 @@ export class Viseur {
             const r2 = d.nextState && deltas[d.index + 1] && deltas[d.index + 1].reversed;
 
             if (r) {
-                d.currentState = this.parser.mergeDelta(d.currentState, r);
+                d.currentState = this.parser.mergeDelta(d.currentState, r as {});
             }
 
             if (r2) {
                 if (deltas[d.index + 1]) { // if there is a next state (not at the end)
-                    d.nextState = this.parser.mergeDelta(d.nextState as IBaseGame, r2);
+                    d.nextState = this.parser.mergeDelta(d.nextState as IBaseGame, r2 as {});
                 }
             }
 

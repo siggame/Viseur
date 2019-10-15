@@ -9,7 +9,7 @@ import { BaseGame } from "src/viseur/game/base-game";
  * @returns true if appears to be a game object reference, false otherwise
  */
 export function isGameObjectReference(obj: object): boolean {
-    return isEmptyExceptFor(obj, "id");
+    return isEmptyExceptFor(obj as {}, "id");
 }
 
 /**
@@ -46,7 +46,7 @@ export function serialize(
         return { id: String(data.id) };
     }
 
-    const serialized: UnknownObject = Array.isArray(data) ? [] : {};
+    const serialized: UnknownObject = Array.isArray(data) ? [] as {} : {};
     for (const key of Object.keys(data)) {
         if (isSerializable(data, key)) {
             serialized[key] = serialize(data[key]);
@@ -67,7 +67,7 @@ export function serialize(
 export function deserialize<T extends unknown>(data: T, game?: BaseGame): T {
     if (isObject(data)) {
         // TODO: check for game object reference?
-        const result: UnknownObject = Array.isArray(data) ? [] : {};
+        const result: UnknownObject = Array.isArray(data) ? [] as {} : {};
 
         for (const key of (Object.keys(data))) {
             result[key] = deserialize((data as UnknownObject)[key], game);

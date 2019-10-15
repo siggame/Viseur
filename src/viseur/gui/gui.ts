@@ -1,6 +1,6 @@
 import { Immutable } from "@cadre/ts-utils";
 import * as dateFormat from "dateformat";
-import * as screenfull from "screenfull";
+import * as screenfull from "screenFull";
 import { partial } from "src/core/partial";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
@@ -17,6 +17,8 @@ import { KEYS } from "./keys";
 import * as loadingMessageHbs from "./loading-message/loading-message.hbs";
 import "./loading-message/loading-message.scss";
 import { PlaybackPane } from "./playback-pane";
+
+const screenFull = screenfull as screenfull.Screenfull;
 
 /** all the GUI (DOM) elements in the Viseur */
 export class GUI extends BaseElement {
@@ -100,9 +102,9 @@ export class GUI extends BaseElement {
             this.goFullscreen();
         });
 
-        if (screenfull) {
-            screenfull.on("change", () => {
-                if (screenfull && !screenfull.isFullscreen) {
+        if (screenFull) {
+            screenFull.on("change", () => {
+                if (screenFull && !screenFull.isEnabled) {
                     this.exitFullscreen();
                 }
             });
@@ -195,8 +197,8 @@ export class GUI extends BaseElement {
     public goFullscreen(): void {
         this.element.addClass("fullscreen");
 
-        if (screenfull) {
-            screenfull.request();
+        if (screenFull) {
+            screenFull.request();
         }
 
         this.resizeVisualizer(0, 0); // top left now that we (should) be fullscreen
@@ -211,8 +213,8 @@ export class GUI extends BaseElement {
         this.element.removeClass("fullscreen");
 
         KEYS.escape.up.off(this.exitFullscreen);
-        if (screenfull) {
-            screenfull.exit();
+        if (screenFull) {
+            screenFull.exit();
         }
 
         setImmediate(() => { // HACK: width and height will be incorrect after going out of fullscreen, so wait a moment
@@ -226,7 +228,7 @@ export class GUI extends BaseElement {
      * @returns True if fullscreen, false otherwise.
      */
     public isFullscreen(): boolean {
-        return screenfull && screenfull.isFullscreen;
+        return screenFull && screenFull.isFullscreen;
     }
 
     /**
