@@ -126,6 +126,23 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
+    // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
+
+    /**
+     * Resurrect the corpses on this tile into zombies.
+     * @param number Number of zombies on the tile that are being resurrected.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if Unit was created
+     * successfully, false otherwise.
+     */
+    public res(number: number, callback?: (returned: boolean) => void): void {
+        this.runOnServer("res", {number}, callback);
+    }
+
+    // </Joueur functions>
+
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
     // <<-- /Creer-Merge: protected-private-functions -->>

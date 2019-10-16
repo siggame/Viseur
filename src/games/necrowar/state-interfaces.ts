@@ -159,12 +159,12 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     gold: number;
 
     /**
-     * The amount of health remaining for this player's main unit.
+     * The amount of health remaining for this player's Castle.
      */
     health: number;
 
     /**
-     * The tile that the home base is located on.
+     * The tiles that the home base is located on.
      */
     homeBase: ITileState[];
 
@@ -265,6 +265,21 @@ export interface ITileState extends IGameObjectState {
     isWall: boolean;
 
     /**
+     * The amount of Ghouls on this tile at the moment.
+     */
+    numOfGhouls: number;
+
+    /**
+     * The amount of Hell Hounds on this tile at the moment.
+     */
+    numOfHounds: number;
+
+    /**
+     * The amount of animated zombies on this tile at the moment.
+     */
+    numOfZombies: number;
+
+    /**
      * The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the
      * map.
      */
@@ -294,7 +309,8 @@ export interface ITileState extends IGameObjectState {
     tower: ITowerState;
 
     /**
-     * The type of Tile this is ('normal', 'path', 'river', or 'spawn').
+     * The type of Tile this is ('normal', 'path', 'river', 'mine', 'castle',
+     * 'pathSpawn', or 'workerSpawn').
      */
     type: string;
 
