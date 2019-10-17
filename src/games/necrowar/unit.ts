@@ -169,7 +169,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Enters a mine and is put to work gathering resources.
+     * Enters an empty mine tile and is put to work gathering resources.
      * @param tile The tile the mine is located on.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully entered

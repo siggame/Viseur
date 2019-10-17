@@ -38,12 +38,6 @@ export interface IGameState extends IBaseGame {
     islandIncomePerUnit: number;
 
     /**
-     * The maximum number of workers that can occupy the mine on the island at a
-     * given time.
-     */
-    islandUnitCap: number;
-
-    /**
      * The Amount of gold income per turn per unit fishing on the river side.
      */
     manaIncomePerUnit: number;
@@ -465,6 +459,11 @@ export interface ItJobState extends IGameObjectState {
      */
     title: string;
 
+    /**
+     * How many turns this tower type needs to take between attacks.
+     */
+    turnsBetweenAttacks: number;
+
 }
 
 /**
@@ -475,11 +474,6 @@ export interface IuJobState extends IGameObjectState {
      * The amount of damage this type does per attack.
      */
     damage: number;
-
-    /**
-     * Amount of damage this type does against towers on a given turn.
-     */
-    damageVsTowers: number;
 
     /**
      * How much does this type cost in gold.
