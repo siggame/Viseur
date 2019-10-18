@@ -55,7 +55,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // Floor tiles of the balcony
         if (state.isBalcony) {
             this.addSprite.wall();
-            if (!(state.tileEast && state.tileWest) && state.tileNorth && state.tileSouth) {
+            if (state.tileNorth && state.tileSouth) {
                 this.addSprite.railVertical({
                     container: railContainer,
                     position: {
@@ -64,7 +64,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
                     },
                 });
             }
-            else if (!(state.tileNorth && state.tileSouth) && state.tileEast && state.tileWest) {
+            else if ((state.tileEast && state.tileWest)
+                && (!state.tileNorth || !state.tileNorth.isBalcony)
+                && (!state.tileSouth || !state.tileSouth.isBalcony)
+            ) {
                 this.addSprite.railHorizontal({
                     container: railContainer,
                     position: {
@@ -75,13 +78,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             }
         }
         // Visible side of the balcony
-        else if (state.tileNorth.isBalcony) {
-            state.tileEast.isBalcony
-                ? this.addSprite.wallCorner()
-                : this.addSprite.wallSide();
-        }
         else if (state.tileEast.isBalcony) {
-            this.addSprite.shade();
+            this.addSprite.railVertical({
+                container: railContainer,
+                position: {
+                    x: state.x + 0.45,
+                    y: state.y - 0.4,
+                },
+            });
+
+            if (state.tileNorth.isBalcony) {
+                this.addSprite.wallCorner();
+            }
+            else {
+                this.addSprite.shade();
+            }
+        }
+        else if (state.tileNorth.isBalcony) {
+            this.addSprite.wallSide();
         }
         else {
             this.addSprite.tile();

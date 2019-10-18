@@ -123,6 +123,7 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
                 this.shotSprites.push(this.game.resources.shotHead.newSprite({
                     anchor: 0.5,
                     container: this.game.layers.bullets,
+                    visible: false,
                 }));
 
                 this.game.settings.sharpshooterFocus.changed.on(() => {
