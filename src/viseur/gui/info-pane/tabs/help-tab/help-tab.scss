@@ -1,0 +1,18 @@
+@import "src/core/colors";
+
+.help-tab {
+    & footer {
+        margin-top: 1em;
+        text-align: right;
+
+        & a {
+            opacity: 0.25;
+            text-decoration: none;
+            color: $black;
+
+            &:hover, &:focus {
+                opacity: 1;
+            }
+        }
+    }
+}
