@@ -333,7 +333,7 @@ export class Viseur {
 
         let parsed: GamelogUnknownVersion;
         try {
-            parsed = JSON.parse(jsonGamelog) as GamelogUnknownVersion; // tslint:disable-next-line:no-unsafe-any
+            parsed = JSON.parse(jsonGamelog) as GamelogUnknownVersion;
         }
         catch (err) {
             this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
