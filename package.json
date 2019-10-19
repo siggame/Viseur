@@ -15,7 +15,7 @@
     "@babel/plugin-proposal-optional-catch-binding": "7.2.0",
     "@babel/polyfill": "7.6.0",
     "@babel/preset-env": "7.6.3",
-    "@cadre/ts-utils": "1.0.5",
+    "@cadre/ts-utils": "1.1.0",
     "@types/chess.js": "0.10.0",
     "@types/color": "3.0.0",
     "@types/dateformat": "3.0.1",

@@ -1,5 +1,5 @@
 import { Immutable } from "@cadre/ts-utils";
-import { IBaseGame, IGamelog, LobbiedEvent } from "@cadre/ts-utils/cadre";
+import { GamelogUnknownVersion, IBaseGame, IGamelog, LobbiedEvent } from "@cadre/ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { GAMES } from "src/games";
@@ -331,9 +331,9 @@ export class Viseur {
     public parseGamelog(jsonGamelog: string): void {
         this.unparsedGamelog = jsonGamelog;
 
-        let parsed: Immutable<IGamelog>;
+        let parsed: GamelogUnknownVersion;
         try {
-            parsed = JSON.parse(jsonGamelog) as IGamelog; // tslint:disable-next-line:no-unsafe-any
+            parsed = JSON.parse(jsonGamelog) as GamelogUnknownVersion; // tslint:disable-next-line:no-unsafe-any
         }
         catch (err) {
             this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
@@ -341,7 +341,38 @@ export class Viseur {
             return;
         }
 
-        this.gamelogLoaded(parsed);
+        this.gamelogLoaded(this.ensureLatestGamelog(parsed));
+    }
+
+    /**
+     * Ensure the structure of a gamelog is the latest version.
+     *
+     * @param gamelog - The gamelog to check and ensure.
+     * @returns A gamelog that will have the latest structure for certain.
+     */
+    private ensureLatestGamelog(gamelog: GamelogUnknownVersion): IGamelog {
+        if (objectHasProperty(gamelog, "gamelogVersion")) {
+            return gamelog;
+        }
+        // Else we are unsure if this gamelog is an old version we need to patch to the newest structure
+
+        if (objectHasProperty(gamelog, "settings")) {
+            return {
+                gamelogVersion: "2.0.0",
+                ...gamelog,
+            };
+        }
+
+        const { randomSeed, ...oldGamelog } = gamelog;
+
+        return {
+            gamelogVersion: "1.0.0",
+            settings: {
+                note: "This is an old gamelog that is lacking complete saved settings",
+                randomSeed,
+            },
+            ...oldGamelog,
+        };
     }
 
     /**
