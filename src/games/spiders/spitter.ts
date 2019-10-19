@@ -139,7 +139,10 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * from the server. - The returned value is True if the spit was successful,
      * false otherwise.
      */
-    public spit(nest: INestState, callback?: (returned: boolean) => void): void {
+    public spit(
+        nest: INestState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("spit", {nest}, callback);
     }
 

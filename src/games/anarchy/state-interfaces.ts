@@ -195,7 +195,7 @@ export interface IForecastState extends IGameObjectState {
      * The direction the wind will blow fires in. Can be 'north', 'east',
      * 'south', or 'west'.
      */
-    direction: string;
+    direction: "North" | "East" | "South" | "West";
 
     /**
      * How much of a Building's fire that can be blown in the direction of this

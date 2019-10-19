@@ -80,7 +80,7 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
      * The color (side) of this player. Either 'white' or 'black', with the
      * 'white' player having the first move.
      */
-    color: string;
+    color: "black" | "white";
 
     /**
      * If the player lost the game or not.

@@ -132,13 +132,13 @@ export interface IBottleState extends IGameObjectState {
      * The Direction this Bottle is flying and will move to between turns, can
      * be 'North', 'East', 'South', or 'West'.
      */
-    direction: string;
+    direction: "North" | "East" | "South" | "West";
 
     /**
      * The direction any Cowboys hit by this will move, can be 'North', 'East',
      * 'South', or 'West'.
      */
-    drunkDirection: string;
+    drunkDirection: "North" | "East" | "South" | "West";
 
     /**
      * True if this Bottle has impacted and has been destroyed (removed from the
@@ -166,7 +166,7 @@ export interface ICowboyState extends IGameObjectState {
      * The direction this Cowboy is moving while drunk. Will be 'North', 'East',
      * 'South', or 'West' when drunk; or '' (empty string) when not drunk.
      */
-    drunkDirection: string;
+    drunkDirection: "North" | "East" | "South" | "West" | "";
 
     /**
      * How much focus this Cowboy has. Different Jobs do different things with
@@ -193,7 +193,7 @@ export interface ICowboyState extends IGameObjectState {
      * The job that this Cowboy does, and dictates how they fight and interact
      * within the Saloon.
      */
-    job: string;
+    job: "Bartender" | "Brawler" | "Sharpshooter";
 
     /**
      * The Player that owns and can control this Cowboy.

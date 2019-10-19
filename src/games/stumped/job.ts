@@ -138,7 +138,10 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is The recruited Beaver if
      * successful, null otherwise.
      */
-    public recruit(tile: ITileState, callback?: (returned: IBeaverState) => void): void {
+    public recruit(
+        tile: ITileState,
+        callback?: (returned: IBeaverState) => void,
+    ): void {
         this.runOnServer("recruit", {tile}, callback);
     }
 

@@ -183,7 +183,10 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
      * from the server. - The returned value is True if the intensity was
      * changed, false otherwise.
      */
-    public intensify(negative: boolean, callback?: (returned: boolean) => void): void {
+    public intensify(
+        negative: boolean,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("intensify", {negative}, callback);
     }
 
@@ -197,8 +200,9 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
      * from the server. - The returned value is True if the rotation worked,
      * false otherwise.
      */
-    public rotate(counterclockwise: boolean, callback?: (returned: boolean) =>
-                  void,
+    public rotate(
+        counterclockwise: boolean,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("rotate", {counterclockwise}, callback);
     }

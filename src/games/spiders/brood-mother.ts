@@ -157,8 +157,9 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * from the server. - The returned value is True if the Spiderling was
      * consumed. False otherwise.
      */
-    public consume(spiderling: ISpiderlingState, callback?: (returned: boolean)
-                   => void,
+    public consume(
+        spiderling: ISpiderlingState,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("consume", {spiderling}, callback);
     }
@@ -172,8 +173,9 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * from the server. - The returned value is The newly spwaned Spiderling if
      * successful. Null otherwise.
      */
-    public spawn(spiderlingType: string, callback?: (returned: ISpiderlingState)
-                 => void,
+    public spawn(
+        spiderlingType: "Spitter" | "Weaver" | "Cutter",
+        callback?: (returned: ISpiderlingState) => void,
     ): void {
         this.runOnServer("spawn", {spiderlingType}, callback);
     }

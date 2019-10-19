@@ -1,4 +1,4 @@
-// This is where you build your the Human player interactions with Viseur for the Anarchy game.
+// This is where you build your the Human player interactions with Viseur for the Stumped game.
 import { BaseHumanPlayer } from "src/viseur/game";
 import { Game } from "./game";
 
@@ -7,7 +7,7 @@ import { Game } from "./game";
 // <<-- /Creer-Merge: imports -->>
 
 /**
- * This is the class to play the Anarchy game as a human.
+ * This is the class to play the Stumped game as a human.
  * This is similar to building an "AI", but you need to query the human player
  * for things and then use callback actions to send values to the game server.
  */

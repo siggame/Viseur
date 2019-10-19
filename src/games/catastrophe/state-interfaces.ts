@@ -205,7 +205,7 @@ export interface IJobState extends IGameObjectState {
     /**
      * The Job title.
      */
-    title: string;
+    title: "fresh human" | "cat overlord" | "soldier" | "gatherer" | "builder" | "missionary";
 
     /**
      * The amount of food per turn this Unit consumes. If there isn't enough
@@ -319,7 +319,7 @@ export interface IStructureState extends IGameObjectState {
      * The type of Structure this is ('shelter', 'monument', 'wall', 'road',
      * 'neutral').
      */
-    type: string;
+    type: "neutral" | "shelter" | "monument" | "wall" | "road";
 
 }
 

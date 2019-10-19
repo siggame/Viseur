@@ -332,7 +332,7 @@ export interface ISpawnerState extends IGameObjectState {
     /**
      * What type of resource this is ('food' or 'branches').
      */
-    type: string;
+    type: "food" | "branches";
 
 }
 
@@ -354,7 +354,7 @@ export interface ITileState extends IGameObjectState {
      * The cardinal direction water is flowing on this Tile ('North', 'East',
      * 'South', 'West').
      */
-    flowDirection: string;
+    flowDirection: "North" | "East" | "South" | "West" | "";
 
     /**
      * The number of food dropped on this Tile.
@@ -398,7 +398,7 @@ export interface ITileState extends IGameObjectState {
     /**
      * What type of Tile this is, either 'water' or 'land'.
      */
-    type: string;
+    type: "land" | "water";
 
     /**
      * The x (horizontal) position of this Tile.

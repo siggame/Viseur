@@ -86,6 +86,7 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<Delta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
+
         // <<-- Creer-Merge: render -->>
         // render where the Projectile is
         if (next.energy <= 0) {

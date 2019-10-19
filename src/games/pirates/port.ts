@@ -190,7 +190,10 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if Unit was created
      * successfully, false otherwise.
      */
-    public spawn(type: string, callback?: (returned: boolean) => void): void {
+    public spawn(
+        type: "crew" | "ship",
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("spawn", {type}, callback);
     }
 

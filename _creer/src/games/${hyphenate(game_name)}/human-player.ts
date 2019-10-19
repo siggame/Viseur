@@ -1,4 +1,4 @@
-<%include file="functions.noCreer" />// This is where you build your the Human player interactions with Viseur for the Anarchy game.
+<%include file="functions.noCreer" />// This is where you build your the Human player interactions with Viseur for the ${game_name} game.
 <%
 imports = {
     'src/viseur/game': ['BaseHumanPlayer'],
@@ -22,7 +22,7 @@ if len(imports['./state-interfaces']) == 0:
 ${merge("// ", "imports", "// any additional imports you want can be added here safely between Creer runs", help=False)}
 
 /**
- * This is the class to play the Anarchy game as a human.
+ * This is the class to play the ${game_name} game as a human.
  * This is similar to building an "AI", but you need to query the human player
  * for things and then use callback actions to send values to the game server.
  */

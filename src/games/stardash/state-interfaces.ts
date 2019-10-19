@@ -198,13 +198,13 @@ export interface IBodyState extends IGameObjectState {
     /**
      * The type of celestial body it is. Either 'planet', 'asteroid', or 'sun'.
      */
-    bodyType: string;
+    bodyType: "planet" | "asteroid" | "sun";
 
     /**
      * The type of material the celestial body has. Either 'none', 'genarium',
      * 'rarium', 'legendarium', or 'mythicite'.
      */
-    materialType: string;
+    materialType: "none" | "genarium" | "rarium" | "legendarium" | "mythicite";
 
     /**
      * The Player that owns and can control this Body.
@@ -292,7 +292,7 @@ export interface IJobState extends IGameObjectState {
      * The Job title. 'corvette', 'missileboat', 'martyr', 'transport', or
      * 'miner'. (in this order from 0-4).
      */
-    title: string;
+    title: "corvette" | "missileboat" | "martyr" | "transport" | "miner";
 
     /**
      * How much money it costs to spawn a unit.

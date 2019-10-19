@@ -53,6 +53,7 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     constructor(state: IMachineState, viseur: Viseur) {
         super(state, viseur);
+
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.machine);
         this.container.scale.set(CONTAINER_SCALE, CONTAINER_SCALE);

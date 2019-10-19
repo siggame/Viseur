@@ -167,7 +167,9 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it is yours, false if it
      * is not yours.
      */
-    public isMine(callback?: (returned: boolean) => void): void {
+    public isMine(
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("isMine", {}, callback);
     }
 
@@ -179,8 +181,10 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is Returns the same checker that
      * moved if the move was successful. null otherwise.
      */
-    public move(x: number, y: number, callback?: (returned: ICheckerState) =>
-                void,
+    public move(
+        x: number,
+        y: number,
+        callback?: (returned: ICheckerState) => void,
     ): void {
         this.runOnServer("move", {x, y}, callback);
     }

@@ -13,7 +13,7 @@ export interface IGameState extends IBaseGame {
      * The percent of max HP regained when a unit end their turn on a tile owned
      * by their player.
      */
-    readonly RegenerateRate: number;
+    RegenerateRate: number;
 
     /**
      * The player whose turn it is currently. That player can send commands.
@@ -186,7 +186,7 @@ export interface IJobState extends IGameObjectState {
     /**
      * The Job title. 'intern', 'manager', or 'physicist'.
      */
-    title: string;
+    title: "intern" | "manager" | "physicist";
 
 }
 
@@ -198,7 +198,7 @@ export interface IMachineState extends IGameObjectState {
      * What type of ore the machine takes it. Also determines the type of
      * material it outputs. (redium or blueium).
      */
-    oreType: string;
+    oreType: "redium" | "blueium";
 
     /**
      * The amount of ore that needs to be inputted into the machine for it to be
@@ -342,7 +342,7 @@ export interface ITileState extends IGameObjectState {
      * The direction of a conveyor belt ('blank', 'north', 'east', 'south', or
      * 'west'). blank means conveyor doesn't move.
      */
-    direction: string;
+    direction: "blank" | "north" | "east" | "south" | "west";
 
     /**
      * Whether or not the tile is a wall.
@@ -397,7 +397,7 @@ export interface ITileState extends IGameObjectState {
     /**
      * The type of Tile this is ('normal', 'generator', 'conveyor', or 'spawn').
      */
-    type: string;
+    type: "normal" | "generator" | "conveyor" | "spawn";
 
     /**
      * The Unit on this Tile if present, otherwise null.

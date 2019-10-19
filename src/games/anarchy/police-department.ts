@@ -141,8 +141,9 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * from the server. - The returned value is The amount of damage dealt to
      * the warehouse, or -1 if there was an error.
      */
-    public raid(warehouse: IWarehouseState, callback?: (returned: number) =>
-                void,
+    public raid(
+        warehouse: IWarehouseState,
+        callback?: (returned: number) => void,
     ): void {
         this.runOnServer("raid", {warehouse}, callback);
     }

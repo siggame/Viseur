@@ -141,8 +141,9 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * from the server. - The returned value is True if the bribe worked, false
      * otherwise.
      */
-    public extinguish(building: IBuildingState, callback?: (returned: boolean)
-                      => void,
+    public extinguish(
+        building: IBuildingState,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("extinguish", {building}, callback);
     }

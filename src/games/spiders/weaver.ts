@@ -138,7 +138,10 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * from the server. - The returned value is True if the strengthen was
      * successfully started, false otherwise.
      */
-    public strengthen(web: IWebState, callback?: (returned: boolean) => void): void {
+    public strengthen(
+        web: IWebState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("strengthen", {web}, callback);
     }
 
@@ -150,7 +153,10 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * from the server. - The returned value is True if the weaken was
      * successfully started, false otherwise.
      */
-    public weaken(web: IWebState, callback?: (returned: boolean) => void): void {
+    public weaken(
+        web: IWebState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("weaken", {web}, callback);
     }
 

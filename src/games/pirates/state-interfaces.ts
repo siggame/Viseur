@@ -326,7 +326,7 @@ export interface ITileState extends IGameObjectState {
     /**
      * The type of Tile this is ('water' or 'land').
      */
-    type: string;
+    type: "water" | "land";
 
     /**
      * The Unit on this Tile if present, otherwise null.

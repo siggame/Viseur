@@ -165,7 +165,10 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
      * in if valid. They will not be added to any `cowboys` lists until the turn
      * ends. Null otherwise.
      */
-    public callIn(job: string, callback?: (returned: ICowboyState) => void): void {
+    public callIn(
+        job: "Bartender" | "Brawler" | "Sharpshooter",
+        callback?: (returned: ICowboyState) => void,
+    ): void {
         this.runOnServer("callIn", {job}, callback);
     }
 

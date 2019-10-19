@@ -317,7 +317,7 @@ if function_parms['returns']:
     return_type = shared['vis']['type'](function_parms['returns']['type'])
     returnless.pop('returns', None)
 
-function_parms['arguments'].append({
+returnless['arguments'].append({
     'name': 'callback?',
     'type': {
         'name': '(returned: ' + return_type + ') => void',
@@ -326,24 +326,15 @@ function_parms['arguments'].append({
     'description': 'The callback that eventually returns the return value from the server.' + (' - The returned value is ' + return_description) if return_description else ''
 
 })
+
 docstring = shared['vis']['block_comment']('    ', returnless)
 
-formatted_name = '    public '+function_name+'('
-formatted_args = ', '.join([(a['name']+': '+shared['vis']['type'](a['type'])) for a in function_parms['arguments']])
-
-wrapper = shared['vis']['TextWrapper'](
-    initial_indent=formatted_name,
-    subsequent_indent=' ' * len(formatted_name),
-    width=80,
-)
-
-formatted_args = '\n'.join(wrapper.wrap(formatted_args))
-
-if '\n' in formatted_args:
-    formatted_args += ',\n    '
-
 %>${docstring}
-${formatted_args}): void {
+    public ${function_name}(
+% for parm in function_parms['arguments']:
+        ${parm['name']}: ${shared['vis']['type'](parm['type'])},
+% endfor
+    ): void {
         this.runOnServer("${function_name}", {${', '.join(a['name'] for a in function_parms['arguments'][:-1])}}, callback);
     }
 

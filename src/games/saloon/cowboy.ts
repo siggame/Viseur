@@ -449,8 +449,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the act worked, false
      * otherwise.
      */
-    public act(tile: ITileState, drunkDirection: string, callback?: (returned:
-               boolean) => void,
+    public act(
+        tile: ITileState,
+        drunkDirection: "" | "North" | "East" | "South" | "West",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("act", {tile, drunkDirection}, callback);
     }
@@ -462,7 +464,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the move worked, false
      * otherwise.
      */
-    public move(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {tile}, callback);
     }
 
@@ -473,7 +478,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the play worked, false
      * otherwise.
      */
-    public play(piano: IFurnishingState, callback?: (returned: boolean) => void): void {
+    public play(
+        piano: IFurnishingState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("play", {piano}, callback);
     }
 

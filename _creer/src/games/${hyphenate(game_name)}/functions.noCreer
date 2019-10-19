@@ -5,20 +5,35 @@ import operator
 if not 'vis' in shared:
     shared['vis'] = {}
 
-    def vis_type(type_obj):
+
+    def vis_type(type_obj, nullable=None):
         base_type = type_obj['name']
+
+        if 'literals' in type_obj and type_obj['literals']:
+            literals = list(type_obj['literals'])
+            if base_type == 'string':
+                literals = [ '"{}"'.format(lit) for lit in literals ]
+            return ' | '.join(literals)
 
         if base_type == "dictionary":
             return "{[id: " + vis_type(type_obj['keyType']) + "]: " + vis_type(type_obj['valueType']) + "}"
         elif base_type == "list":
-            return vis_type(type_obj['valueType']) + "[]"
+            ret = vis_type(type_obj['valueType'], False)
+            if ' ' in ret:
+                ret = '(' + ret + ')'
+            return ret + "[]"
         elif base_type == "int" or base_type == "float":
             return "number"
         elif type_obj['is_game_object']:
-            return "I" + base_type + "State"
-        else:
+            ret = 'I' + base_type + 'State'
+            if nullable is not None:
+                if nullable and type_obj['nullable']:
+                    ret += " | undefined"
+            return ret
+        else: # string, boolean
             return base_type
     shared['vis']['type'] = vis_type
+
 
     def js_value(type_obj, default):
         base_type = type_obj['name']

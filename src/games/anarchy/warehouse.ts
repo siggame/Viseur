@@ -145,8 +145,9 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
      * from the server. - The returned value is The exposure added to this
      * Building's exposure. -1 is returned if there was an error.
      */
-    public ignite(building: IBuildingState, callback?: (returned: number) =>
-                  void,
+    public ignite(
+        building: IBuildingState,
+        callback?: (returned: number) => void,
     ): void {
         this.runOnServer("ignite", {building}, callback);
     }

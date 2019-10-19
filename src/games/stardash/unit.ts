@@ -257,7 +257,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(enemy: IUnitState, callback?: (returned: boolean) => void): void {
+    public attack(
+        enemy: IUnitState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("attack", {enemy}, callback);
     }
 
@@ -269,23 +272,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public dash(x: number, y: number, callback?: (returned: boolean) => void): void {
-        this.runOnServer("dash", {x, y}, callback);
-    }
-
-    /**
-     * tells you if your ship can dash to that location from where it is without
-     * clipping the sun.
-     * @param x The x position of the location you wish to arrive.
-     * @param y The y position of the location you wish to arrive.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if pathable by this unit,
-     * false otherwise.
-     */
-    public isDashable(x: number, y: number, callback?: (returned: boolean) =>
-                      void,
+    public dash(
+        x: number,
+        y: number,
+        callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("isDashable", {x, y}, callback);
+        this.runOnServer("dash", {x, y}, callback);
     }
 
     /**
@@ -295,7 +287,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully acted,
      * false otherwise.
      */
-    public mine(body: IBodyState, callback?: (returned: boolean) => void): void {
+    public mine(
+        body: IBodyState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("mine", {body}, callback);
     }
 
@@ -307,20 +302,28 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(x: number, y: number, callback?: (returned: boolean) => void): void {
+    public move(
+        x: number,
+        y: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {x, y}, callback);
     }
 
     /**
-     * tells you if your ship can move to that location from were it is landing
-     * in the sun.
+     * tells you if your ship can move to that location from were it is without
+     * clipping the sun.
      * @param x The x position of the location you wish to arrive.
      * @param y The y position of the location you wish to arrive.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if pathable by this unit,
      * false otherwise.
      */
-    public safe(x: number, y: number, callback?: (returned: boolean) => void): void {
+    public safe(
+        x: number,
+        y: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("safe", {x, y}, callback);
     }
 
@@ -331,8 +334,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public shootdown(missile: IProjectileState, callback?: (returned: boolean)
-                     => void,
+    public shootdown(
+        missile: IProjectileState,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("shootdown", {missile}, callback);
     }
@@ -348,8 +352,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully taken,
      * false otherwise.
      */
-    public transfer(unit: IUnitState, amount: number, material: string,
-                    callback?: (returned: boolean) => void,
+    public transfer(
+        unit: IUnitState,
+        amount: number,
+        material: "genarium" | "rarium" | "legendarium" | "mythicite",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("transfer", {unit, amount, material}, callback);
     }

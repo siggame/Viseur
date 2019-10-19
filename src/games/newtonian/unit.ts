@@ -199,6 +199,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- /Creer-Merge: state-updated -->>
     }
 
+    // <<-- Creer-Merge: public-functions -->>
+    // You can add additional public functions here
+    // <<-- /Creer-Merge: public-functions -->>
+
     // <Joueur functions> --- functions invoked for human playable client
     // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
     //       If it does not, feel free to ignore these Joueur functions.
@@ -212,7 +216,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully acted,
      * false otherwise.
      */
-    public act(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public act(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("act", {tile}, callback);
     }
 
@@ -223,7 +230,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public attack(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("attack", {tile}, callback);
     }
 
@@ -238,8 +248,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully deposited,
      * false otherwise.
      */
-    public drop(tile: ITileState, amount: number, material: string, callback?:
-                (returned: boolean) => void,
+    public drop(
+        tile: ITileState,
+        amount: number,
+        material: "redium ore" | "redium" | "blueium" | "blueium ore",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("drop", {tile, amount, material}, callback);
     }
@@ -251,7 +264,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {tile}, callback);
     }
 
@@ -266,8 +282,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully deposited,
      * false otherwise.
      */
-    public pickup(tile: ITileState, amount: number, material: string, callback?:
-                  (returned: boolean) => void,
+    public pickup(
+        tile: ITileState,
+        amount: number,
+        material: "redium ore" | "redium" | "blueium" | "blueium ore",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("pickup", {tile, amount, material}, callback);
     }
