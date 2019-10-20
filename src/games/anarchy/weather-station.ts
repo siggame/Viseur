@@ -1,11 +1,10 @@
 // This is a class to represent the WeatherStation object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { IWeatherStationState } from "./state-interfaces";
+import { AnarchyDelta, IWeatherStationState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -81,8 +80,8 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IWeatherStationState>,
         next: Immutable<IWeatherStationState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<AnarchyDelta>,
+        nextDelta: Immutable<AnarchyDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -137,8 +136,8 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IWeatherStationState>,
         next: Immutable<IWeatherStationState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<AnarchyDelta>,
+        nextDelta: Immutable<AnarchyDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

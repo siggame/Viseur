@@ -1,11 +1,10 @@
 // This is a class to represent the Weaver object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spiderling } from "./spiderling";
-import { IWeaverState, IWebState } from "./state-interfaces";
+import { IWeaverState, IWebState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -64,8 +63,8 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IWeaverState>,
         next: Immutable<IWeaverState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -112,8 +111,8 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IWeaverState>,
         next: Immutable<IWeaverState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

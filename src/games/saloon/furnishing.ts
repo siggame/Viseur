@@ -1,11 +1,10 @@
 // This is a class to represent the Furnishing object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IFurnishingState } from "./state-interfaces";
+import { IFurnishingState, SaloonDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -106,8 +105,8 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IFurnishingState>,
         next: Immutable<IFurnishingState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -214,8 +213,8 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IFurnishingState>,
         next: Immutable<IFurnishingState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

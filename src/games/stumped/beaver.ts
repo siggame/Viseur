@@ -1,11 +1,10 @@
 // This is a class to represent the Beaver object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBeaverState, ISpawnerState, ITileState } from "./state-interfaces";
+import { IBeaverState, ISpawnerState, ITileState, StumpedDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, updown } from "src/utils";
@@ -118,8 +117,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IBeaverState>,
         next: Immutable<IBeaverState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -235,8 +234,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IBeaverState>,
         next: Immutable<IBeaverState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

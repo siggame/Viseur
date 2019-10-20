@@ -1,11 +1,10 @@
 // This is a class to represent the Port object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IPortState } from "./state-interfaces";
+import { IPortState, PiratesDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -93,8 +92,8 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IPortState>,
         next: Immutable<IPortState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<PiratesDelta>,
+        nextDelta: Immutable<PiratesDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -165,8 +164,8 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IPortState>,
         next: Immutable<IPortState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<PiratesDelta>,
+        nextDelta: Immutable<PiratesDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

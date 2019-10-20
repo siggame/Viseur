@@ -1,12 +1,11 @@
 // This is a class to represent the GameObject object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGameObject, makeRenderable } from "src/viseur/game";
 import { ResourcesForGameObject } from "src/viseur/renderer";
 import { Game } from "./game";
-import { IGameObjectState } from "./state-interfaces";
+import { IGameObjectState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -71,8 +70,8 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IGameObjectState>,
         next: Immutable<IGameObjectState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -119,8 +118,8 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IGameObjectState>,
         next: Immutable<IGameObjectState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

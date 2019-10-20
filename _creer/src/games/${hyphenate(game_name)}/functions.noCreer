@@ -6,7 +6,7 @@ if not 'vis' in shared:
     shared['vis'] = {}
 
 
-    def vis_type(type_obj, nullable=None):
+    def vis_type(type_obj, nullable=None, use_game_object_states=True):
         base_type = type_obj['name']
 
         if 'literals' in type_obj and type_obj['literals']:
@@ -25,7 +25,10 @@ if not 'vis' in shared:
         elif base_type == "int" or base_type == "float":
             return "number"
         elif type_obj['is_game_object']:
-            ret = 'I' + base_type + 'State'
+            if use_game_object_states:
+                ret = 'I' + base_type + 'State'
+            else:
+                ret = base_type
             if nullable is not None:
                 if nullable and type_obj['nullable']:
                     ret += " | undefined"

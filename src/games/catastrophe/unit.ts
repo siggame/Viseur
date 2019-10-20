@@ -1,11 +1,10 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, IUnitState } from "./state-interfaces";
+import { CatastropheDelta, ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -157,8 +156,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -314,8 +313,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

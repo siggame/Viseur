@@ -1,11 +1,10 @@
 // This is a class to represent the Web object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IWebState } from "./state-interfaces";
+import { IWebState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, renderSpriteBetween } from "src/utils";
@@ -72,8 +71,8 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IWebState>,
         next: Immutable<IWebState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -125,8 +124,8 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IWebState>,
         next: Immutable<IWebState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

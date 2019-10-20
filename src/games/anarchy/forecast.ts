@@ -1,11 +1,10 @@
 // This is a class to represent the Forecast object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IForecastState } from "./state-interfaces";
+import { AnarchyDelta, IForecastState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -64,8 +63,8 @@ export class Forecast extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IForecastState>,
         next: Immutable<IForecastState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<AnarchyDelta>,
+        nextDelta: Immutable<AnarchyDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -112,8 +111,8 @@ export class Forecast extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IForecastState>,
         next: Immutable<IForecastState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<AnarchyDelta>,
+        nextDelta: Immutable<AnarchyDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

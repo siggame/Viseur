@@ -8,8 +8,7 @@ if len(parent_classes) == 0:
     parent_classes.append('BaseGame' if obj_key == 'Game' else 'BaseGameObject')
 
 imports = {
-    './state-interfaces': ['I'+obj_key+'State'],
-    '@cadre/ts-utils/cadre': ['Delta'],
+    './state-interfaces': ['I'+obj_key+'State', game_name+'Delta'],
     'src/utils': ['Immutable'],
     'src/viseur/game': [],
 }
@@ -193,8 +192,8 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
         dt: number,
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<${game_name}Delta>,
+        nextDelta: Immutable<${game_name}Delta>,
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
 
@@ -212,8 +211,8 @@ ${merge("        // ", "render-background", "        // update and re-render wha
     protected stateUpdated(
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<${game_name}Delta>,
+        nextDelta: Immutable<${game_name}Delta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -248,8 +247,8 @@ ${merge("        // ", "constructor", "        // You can initialize your new {}
         dt: number,
         current: Immutable<I${obj_key}State>,
         next: Immutable<I${obj_key}State>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<${game_name}Delta>,
+        nextDelta: Immutable<${game_name}Delta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -290,8 +289,8 @@ ${merge("        // ", "hide-render", "        // hide anything outside of `this
     public stateUpdated(
         current: Immutable<I${obj_key}State>,
         next: Immutable<I${obj_key}State>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<${game_name}Delta>,
+        nextDelta: Immutable<${game_name}Delta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -309,6 +308,7 @@ ${merge("    // ", "public-functions", "    // You can add additional public fun
 <%
 function_parms = dict(obj['functions'][function_name])
 returnless = dict(function_parms)
+returnless['arguments'] = returnless['arguments'].copy()
 
 return_type = 'void'
 return_description = ''
@@ -331,11 +331,11 @@ docstring = shared['vis']['block_comment']('    ', returnless)
 
 %>${docstring}
     public ${function_name}(
-% for parm in function_parms['arguments']:
+% for parm in returnless['arguments']:
         ${parm['name']}: ${shared['vis']['type'](parm['type'])},
 % endfor
     ): void {
-        this.runOnServer("${function_name}", {${', '.join(a['name'] for a in function_parms['arguments'][:-1])}}, callback);
+        this.runOnServer("${function_name}", {${', '.join(a['name'] for a in returnless['arguments'][:-1])}}, callback);
     }
 
 % endfor
