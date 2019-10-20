@@ -69,11 +69,16 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.type === "shelter") {
             this.sprite = this.addSprite.shelter();
         }
+        if (state.type === "wall") {
+            this.sprite = this.addSprite.wall();
+        }
 
-        this.sprite = state.type === "wall"
-            ? this.addSprite.wall()
-            : this.addSprite.monument();
-
+        if (state.type === "monument") {
+            this.sprite = this.addSprite.monument();
+        }
+        
+        this.sprite = this.addSprite.road();
+        
         this.container.position.set(state.tile.x, state.tile.y);
         // <<-- /Creer-Merge: constructor -->>
     }
