@@ -76,9 +76,6 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.type === "monument") {
             this.sprite = this.addSprite.monument();
         }
-
-        
-
         this.container.position.set(state.tile.x, state.tile.y);
         // <<-- /Creer-Merge: constructor -->>
     }
