@@ -96,7 +96,8 @@ export default (// tslint:disable-line:no-default-export
             minify: {
                 collapseWhitespace: true,
             },
-        }),
+        }) as unknown as webpack.Plugin,
+        // ^ TS definition are old and deprecated. HtmlWebpackPlugin will have defs in 4.0, this is a hack till then
         gitRevisionPlugin,
         new webpack.DefinePlugin({
             "process.env.DEVELOPMENT": options.mode === "development",
