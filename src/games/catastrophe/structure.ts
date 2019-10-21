@@ -51,9 +51,9 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // Sets this container to be inside of the background layer of the game
         this.container.setParent(this.game.layers.structure);
-
         // type strings taken from game rules at
         // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
+        this.sprite = this.addSprite.neutral();
         if (state.type === "neutral") {
             // Creates a copy of the neutral sprite and puts the copy inside of the current container
             this.sprite = this.addSprite.neutral();
@@ -77,7 +77,7 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.sprite = this.addSprite.monument();
         }
 
-        this.sprite = this.addSprite.road();
+        
 
         this.container.position.set(state.tile.x, state.tile.y);
         // <<-- /Creer-Merge: constructor -->>
