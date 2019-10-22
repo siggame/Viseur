@@ -58,11 +58,6 @@ export interface IGameState extends IBaseGame {
     maxTurns: number;
 
     /**
-     * The maximum number of workers that can occupy a mine at a given time.
-     */
-    mineUnitCap: number;
-
-    /**
      * List of all the players in the game.
      */
     players: IPlayerState[];
@@ -309,7 +304,7 @@ export interface ITileState extends IGameObjectState {
     type: string;
 
     /**
-     * The Unit on this Tile if present, otherwise null.
+     * The list of Units on this Tile if present, otherwise null.
      */
     unit: IUnitState;
 
@@ -403,36 +398,6 @@ export interface ItJobState extends IGameObjectState {
      * a time (false).
      */
     allUnits: boolean;
-
-    /**
-     * The amount of damage this type does per attack against abominations.
-     */
-    damageVsAbomination: number;
-
-    /**
-     * The amount of damage this type does per attack against ghouls.
-     */
-    damageVsGhoul: number;
-
-    /**
-     * The amount of damage this type does per attack against horseman.
-     */
-    damageVsHorseman: number;
-
-    /**
-     * The amount of damage this type does per attack against hounds.
-     */
-    damageVsHound: number;
-
-    /**
-     * The amount of damage this type does per attack against wraiths.
-     */
-    damageVsWraith: number;
-
-    /**
-     * The amount of damage this type does per attack against zombies.
-     */
-    damageVsZombie: number;
 
     /**
      * How much does this type cost in gold.
