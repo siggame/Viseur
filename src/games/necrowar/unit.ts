@@ -6,7 +6,6 @@ import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
-import { tJob } from './t-job';
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
