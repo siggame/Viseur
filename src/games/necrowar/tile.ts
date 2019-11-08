@@ -8,12 +8,11 @@ import { GameObject } from "./game-object";
 import { ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -31,7 +30,17 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    /** castle */
+    public readonly castle: PIXI.Sprite | undefined;
+    /** grass */
+    public readonly grass: PIXI.Sprite | undefined
+    /** goldmine */
+    public readonly goldmine: PIXI.Sprite | undefined;
+    /** path */
+    public readonly path: PIXI.Sprite | undefined;
+    /** river */
+    public readonly river: PIXI.Sprite | undefined;
+
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -45,7 +54,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Tile here.
+        this.container.setParent(this.game.layers.background);
+        this.container.position.set(state.x, state.y)
+
+        if (state.isCastle) {
+            this.castle = this.addSprite.castle();
+        }
+        else if (state.isGrass) {
+            this.grass = this.addSprite.grass();
+        }
+        else if (state.isGoldMine) {
+            this.goldmine = this.addSprite.goldMine();
+        }
+        else if (state.isPath) {
+            this.path = this.addSprite.path();
+        }
+        else if (state.isRiver) {
+            this.river = this.addSprite.water();
+        }
         // <<-- /Creer-Merge: constructor -->>
     }
 

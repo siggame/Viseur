@@ -3,7 +3,7 @@ import { createResources, load } from "src/viseur/renderer";
 /** These are the resources (sprites) that are loaded and usable by game objects in Necrowar. */
 export const GameResources = createResources("Necrowar", {
     // <<-- Creer-Merge: resources -->>
-    test: load("test.png"), 
+    test: load("test.png"),
     archerTower: load("archerTower.png"),
     arrow: load("arrow.png"),
     ballistaArrow: load("ballistaArrow.png"),
@@ -15,10 +15,7 @@ export const GameResources = createResources("Necrowar", {
     manaFish: load("manaFish.png"),
     path: load("path.png"),
     pentagram: load("pentagram.png"),
-    water: load("water.png")
-
-
-
+    water: load("water.png"),
     // load files like this,
                             // and remember to remove these lines and file!
     // <<-- /Creer-Merge: resources -->>

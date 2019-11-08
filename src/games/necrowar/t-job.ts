@@ -13,7 +13,7 @@ import { ItJobState } from "./state-interfaces";
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -31,7 +31,17 @@ export class tJob extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ItJobState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    /** Aoe Tower */
+    public readonly aoe: PIXI.Sprite | undefined;
+
+    /** Arrow Tower */
+    public readonly arrow: PIXI.Sprite | undefined;
+
+    /** Ballista Tower */
+    public readonly ballista: PIXI.Sprite | undefined;
+    
+    /** Cleansing */
+    public readonly cleansing: PIXI.Sprite | undefined;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -45,8 +55,21 @@ export class tJob extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new tJob here.
+        this.container.setParent(this.game.layers.game);
         // <<-- /Creer-Merge: constructor -->>
+
+        if (state.title === "aoe") {
+            this.aoe = this.addSprite.archerTower();
+        }
+        else if (state.title === "arrow") {
+            this.arrow = this.addSprite.archerTower();
+        }
+        else if (state.title === "ballista") {
+            this.ballista = this.addSprite.ballistaTower();
+        }
+        else if (state.title === "cleansing") {
+            this.cleansing = this.addSprite.cleansingTower();
+        }
     }
 
     /**
