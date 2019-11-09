@@ -38,12 +38,6 @@ export interface IGameState extends IBaseGame {
     islandIncomePerUnit: number;
 
     /**
-     * The maximum number of workers that can occupy the mine on the island at a
-     * given time.
-     */
-    islandUnitCap: number;
-
-    /**
      * The Amount of gold income per turn per unit fishing on the river side.
      */
     manaIncomePerUnit: number;
@@ -62,11 +56,6 @@ export interface IGameState extends IBaseGame {
      * The maximum number of turns before the game will automatically end.
      */
     maxTurns: number;
-
-    /**
-     * The maximum number of workers that can occupy a mine at a given time.
-     */
-    mineUnitCap: number;
 
     /**
      * List of all the players in the game.
@@ -285,6 +274,21 @@ export interface ITileState extends IGameObjectState {
      * Whether or not the tile is the worker spawn.
      */
     isWorkerSpawn: boolean;
+
+    /**
+     * The amount of Ghouls on this tile.
+     */
+    numGhouls: number;
+
+    /**
+     * The amount of Hounds on this tile.
+     */
+    numHounds: number;
+
+    /**
+     * The amount of Zombies on this tile.
+     */
+    numZombies: number;
 
     /**
      * The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the

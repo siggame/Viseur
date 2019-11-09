@@ -158,13 +158,13 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /**
      * Resurrect the corpses on this tile into Zombies.
-     * @param number Number of zombies to resurrect.
+     * @param num Number of zombies to resurrect.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successful res, false
      * otherwise.
      */
-    public res(number: number, callback?: (returned: boolean) => void): void {
-        this.runOnServer("res", {number}, callback);
+    public res(num: number, callback?: (returned: boolean) => void): void {
+        this.runOnServer("res", {num}, callback);
     }
 
     /**
