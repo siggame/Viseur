@@ -157,14 +157,35 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     //       If it does not, feel free to ignore these Joueur functions.
 
     /**
-     * Resurrect the corpses on this tile into zombies.
-     * @param number Number of zombies on the tile that are being resurrected.
+     * Resurrect the corpses on this tile into Zombies.
+     * @param number Number of zombies to resurrect.
      * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if Unit was created
-     * successfully, false otherwise.
+     * from the server. - The returned value is True if successful res, false
+     * otherwise.
      */
     public res(number: number, callback?: (returned: boolean) => void): void {
         this.runOnServer("res", {number}, callback);
+    }
+
+    /**
+     * Spawns a fighting unit on the correct tile.
+     * @param title The title of the desired unit type.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully spawned,
+     * false otherwise.
+     */
+    public spawnUnit(title: string, callback?: (returned: boolean) => void): void {
+        this.runOnServer("spawnUnit", {title}, callback);
+    }
+
+    /**
+     * Spawns a worker on the correct tile.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully spawned,
+     * false otherwise.
+     */
+    public spawnWorker(callback?: (returned: boolean) => void): void {
+        this.runOnServer("spawnWorker", {}, callback);
     }
 
     // </Joueur functions>

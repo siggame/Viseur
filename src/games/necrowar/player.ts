@@ -126,35 +126,6 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
-
-    /**
-     * Spawn a fighting Unit on this player's path spawn tile.
-     * @param type What type of Unit to create (ghoul, hound, abomination,
-     * wraith, or horseman).
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if Unit was created
-     * successfully, false otherwise.
-     */
-    public spawnUnit(type: string, callback?: (returned: boolean) => void): void {
-        this.runOnServer("spawnUnit", {type}, callback);
-    }
-
-    /**
-     * Spawn a worker Unit on this player's worker spawn tile.
-     * @param type What type of Unit to create (worker, zombie, ghoul).
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if Unit was created
-     * successfully, false otherwise.
-     */
-    public spawnWorker(type: string, callback?: (returned: boolean) => void): void {
-        this.runOnServer("spawnWorker", {type}, callback);
-    }
-
-    // </Joueur functions>
-
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
     // <<-- /Creer-Merge: protected-private-functions -->>

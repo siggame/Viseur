@@ -57,19 +57,6 @@ export class tJob extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.game);
         // <<-- /Creer-Merge: constructor -->>
-
-        if (state.title === "aoe") {
-            this.aoe = this.addSprite.archerTower();
-        }
-        else if (state.title === "arrow") {
-            this.arrow = this.addSprite.archerTower();
-        }
-        else if (state.title === "ballista") {
-            this.ballista = this.addSprite.ballistaTower();
-        }
-        else if (state.title === "cleansing") {
-            this.cleansing = this.addSprite.cleansingTower();
-        }
     }
 
     /**

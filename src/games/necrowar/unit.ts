@@ -6,7 +6,6 @@ import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
-import { tJob } from "./t-job";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -170,7 +169,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Enters an empty mine tile and is put to work gathering resources.
+     * Enters a mine and is put to work gathering resources.
      * @param tile The tile the mine is located on.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully entered
