@@ -144,17 +144,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Unit, if it is a worker, builds a tower on the tile it is on, only
      * workers can do this.
-     * @param tile The tile the unit is on/builds on.
-     * @param tJob The type of tower that is being built. 'arrow', 'aoe',
-     * 'ballista', or 'cleansing'.
+     * @param title The tower type to build, as a string.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully built,
      * false otherwise.
      */
-    public build(tile: ITileState, tJob: tJob, callback?: (returned: boolean) =>
-                 void,
-    ): void {
-        this.runOnServer("build", {tile, tJob}, callback);
+    public build(title: string, callback?: (returned: boolean) => void): void {
+        this.runOnServer("build", {title}, callback);
     }
 
     /**
