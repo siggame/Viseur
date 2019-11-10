@@ -11,6 +11,16 @@ import { IBaseGame, IBaseGameObject, IBasePlayer } from "@cadre/ts-utils/cadre";
  */
 export interface IGameState extends IBaseGame {
     /**
+     * A list of every tower type / job.
+     */
+    TowerJobs: ITowerJobState[];
+
+    /**
+     * A list of every unit type / job.
+     */
+    UnitJobs: IUnitJobState[];
+
+    /**
      * The player whose turn it is currently. That player can send commands.
      * Other players cannot.
      */
@@ -73,11 +83,6 @@ export interface IGameState extends IBaseGame {
     session: string;
 
     /**
-     * A list of every tower type / job.
-     */
-    tJobs: tJob[];
-
-    /**
      * All the tiles in the map, stored in Row-major order. Use `x + y *
      * mapWidth` to access the correct index.
      */
@@ -93,11 +98,6 @@ export interface IGameState extends IBaseGame {
      * Every Tower in the game.
      */
     towers: ITowerState[];
-
-    /**
-     * A list of every unit type / job.
-     */
-    uJobs: uJob[];
 
     /**
      * Every Unit in the game.
@@ -356,6 +356,11 @@ export interface ITowerState extends IGameObjectState {
     health: number;
 
     /**
+     * What type of tower this is (it's job).
+     */
+    job: ITowerJobState;
+
+    /**
      * The player that built / owns this tower.
      */
     owner: IPlayerState;
@@ -365,55 +370,12 @@ export interface ITowerState extends IGameObjectState {
      */
     tile: ITileState;
 
-    /**
-     * What type of tower this is (it's job).
-     */
-    type: tJob;
-
-}
-
-/**
- * A unit in the game. May be a worker, zombie, ghoul, hound, abomination,
- * wraith or horseman.
- */
-export interface IUnitState extends IGameObjectState {
-    /**
-     * Whether or not this Unit has performed its action this turn (attack or
-     * build).
-     */
-    acted: boolean;
-
-    /**
-     * The remaining health of a unit.
-     */
-    health: number;
-
-    /**
-     * The number of moves this unit has left this turn.
-     */
-    moves: number;
-
-    /**
-     * The Player that owns and can control this Unit.
-     */
-    owner: IPlayerState;
-
-    /**
-     * The Tile this Unit is on.
-     */
-    tile: ITileState;
-
-    /**
-     * The type of unit this is.
-     */
-    uJob: uJob;
-
 }
 
 /**
  * Information about a tower's job/type.
  */
-export interface ItJobState extends IGameObjectState {
+export interface ITowerJobState extends IGameObjectState {
     /**
      * Whether this tower type hits all of the units on a tile (true) or one at
      * a time (false).
@@ -458,9 +420,47 @@ export interface ItJobState extends IGameObjectState {
 }
 
 /**
+ * A unit in the game. May be a worker, zombie, ghoul, hound, abomination,
+ * wraith or horseman.
+ */
+export interface IUnitState extends IGameObjectState {
+    /**
+     * Whether or not this Unit has performed its action this turn (attack or
+     * build).
+     */
+    acted: boolean;
+
+    /**
+     * The remaining health of a unit.
+     */
+    health: number;
+
+    /**
+     * The type of unit this is.
+     */
+    job: IUnitJobState;
+
+    /**
+     * The number of moves this unit has left this turn.
+     */
+    moves: number;
+
+    /**
+     * The Player that owns and can control this Unit.
+     */
+    owner: IPlayerState;
+
+    /**
+     * The Tile this Unit is on.
+     */
+    tile: ITileState;
+
+}
+
+/**
  * Information about a unit's job/type.
  */
-export interface IuJobState extends IGameObjectState {
+export interface IUnitJobState extends IGameObjectState {
     /**
      * The amount of damage this type does per attack.
      */
