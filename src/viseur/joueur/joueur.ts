@@ -80,12 +80,13 @@ export class Joueur {
      * game server
      */
     private readonly gamelog: IViseurGamelog = {
-        gamelogVersion: "",
         constants: {DELTA_LIST_LENGTH: "", DELTA_REMOVED: ""},
         deltas: [],
         epoch: 0,
+        gamelogVersion: "",
         gameName: "",
         gameSession: "",
+        gameVersion: "",
         losers: [],
         streaming: true,
         settings: { randomSeed: "" },

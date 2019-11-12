@@ -359,6 +359,7 @@ export class Viseur {
         if (objectHasProperty(gamelog, "settings")) {
             return {
                 gamelogVersion: "2.0.0",
+                gameVersion: "unknown",
                 ...gamelog,
             };
         }
@@ -367,6 +368,7 @@ export class Viseur {
 
         return {
             gamelogVersion: "1.0.0",
+            gameVersion: "unknown",
             settings: {
                 note: "This is an old gamelog that is lacking complete saved settings",
                 randomSeed,
