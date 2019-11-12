@@ -33,7 +33,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** castle */
     public readonly castle: PIXI.Sprite | undefined;
     /** grass */
-    public readonly grass: PIXI.Sprite | undefined
+    public readonly grass: PIXI.Sprite | undefined;
     /** goldmine */
     public readonly goldmine: PIXI.Sprite | undefined;
     /** path */
@@ -55,21 +55,21 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.background);
-        this.container.position.set(state.x, state.y)
+        this.container.position.set(state.x, state.y);
 
         if (state.isCastle) {
             this.castle = this.addSprite.castle();
         }
-        else if (state.isGrass) {
+        if (state.isGrass) {
             this.grass = this.addSprite.grass();
         }
-        else if (state.isGoldMine) {
+        if (state.isIslandGoldMine) {
             this.goldmine = this.addSprite.goldMine();
         }
-        else if (state.isPath) {
+        if (state.isPath) {
             this.path = this.addSprite.path();
         }
-        else if (state.isRiver) {
+        if (state.isRiver) {
             this.river = this.addSprite.water();
         }
         // <<-- /Creer-Merge: constructor -->>
@@ -95,8 +95,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
-        // <<-- Creer-Merge: render -->>
-        // render where the Tile is
+        // <<-- Creer-Merge: render -->
         // <<-- /Creer-Merge: render -->>
     }
 

@@ -10,7 +10,6 @@ import { IuJobState } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
-
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = undefined;
@@ -31,7 +30,6 @@ export class uJob extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IuJobState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -43,9 +41,7 @@ export class uJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     constructor(state: IuJobState, viseur: Viseur) {
         super(state, viseur);
-
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new uJob here.
         // <<-- /Creer-Merge: constructor -->>
     }
 

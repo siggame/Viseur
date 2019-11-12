@@ -46,8 +46,6 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Projectile here.
-        
-
         // state.gameObjectName
         // <<-- /Creer-Merge: constructor -->>
     }
