@@ -80,7 +80,7 @@ export class Joueur {
      * game server
      */
     private readonly gamelog: IViseurGamelog = {
-        constants: {DELTA_LIST_LENGTH: "", DELTA_REMOVED: ""},
+        constants: { DELTA_LIST_LENGTH: "", DELTA_REMOVED: "" },
         deltas: [],
         epoch: 0,
         gamelogVersion: "",
