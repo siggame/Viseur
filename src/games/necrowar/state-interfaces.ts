@@ -291,6 +291,12 @@ export interface ITileState extends IGameObjectState {
     numZombies: number;
 
     /**
+     * Which player owns this tile, only applies to grass tiles for workers,
+     * NULL otherwise.
+     */
+    owner: IPlayerState;
+
+    /**
      * The Tile to the 'East' of this one (x+1, y). Null if out of bounds of the
      * map.
      */
@@ -318,11 +324,6 @@ export interface ITileState extends IGameObjectState {
      * The Tower on this Tile if present, otherwise null.
      */
     tower: ITowerState;
-
-    /**
-     * The type of Tile this is ('normal', 'path', 'river', or 'spawn').
-     */
-    type: string;
 
     /**
      * The Unit on this Tile if present, otherwise null.
@@ -408,7 +409,7 @@ export interface ITowerJobState extends IGameObjectState {
     range: number;
 
     /**
-     * The type title. 'arrow', 'aoe', 'ballista', or 'cleansing'.
+     * The type title. 'arrow', 'aoe', 'ballista', 'cleansing', or 'castle'.
      */
     title: string;
 
