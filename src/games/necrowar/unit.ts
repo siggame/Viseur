@@ -8,12 +8,13 @@ import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
+const OVER_SCALE = 0.1;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -30,8 +31,36 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** The next state of the Unit (dt = 1) */
     public next: IUnitState | undefined;
 
+    /** abomination */
+    public readonly abomination: PIXI.Sprite | undefined;
+    /** dog */
+    public readonly dog: PIXI.Sprite | undefined;
+    /** ghoul */
+    public readonly ghoul: PIXI.Sprite | undefined;
+    /** horde */
+    public readonly horde: PIXI.Sprite | undefined;
+    /** horseman */
+    public readonly horseman: PIXI.Sprite | undefined;
+    /** necromancer */
+    public readonly necromancer: PIXI.Sprite | undefined;
+    /** skeleton */
+    public readonly skeleton: PIXI.Sprite | undefined;
+    /** worker */
+    public readonly worker: PIXI.Sprite | undefined;
+    /** wraith */
+    public readonly wraith: PIXI.Sprite | undefined;
+    /** zombie */
+    public readonly zombie: PIXI.Sprite | undefined;
+
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    /** The id of the owner of this unit, for recoloring */
+    public ownerID: string;
+
+    // /** The tile state of the tile we are attacking, if we are. */
+    // public attackingTile?: ITileState;
+
+    // /** Our health bar */
+    // public readonly healthBar: GameBar;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -45,7 +74,37 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Unit here.
+        this.ownerID = state.owner.id;
+        this.container.scale.set(OVER_SCALE + 1, OVER_SCALE + 1);
+        this.container.position.x -= OVER_SCALE / 2;
+        this.container.setParent(this.game.layers.game);
+
+        if (state.job.title === "abomination") {
+            this.abomination = this.addSprite.abomination();
+        }
+        else if (state.job.title === "hound") {
+            this.dog = this.addSprite.dog();
+        }
+        else if (state.job.title === "ghoul") {
+            this.ghoul = this.addSprite.ghould();
+        }
+        else if (state.job.title === "zombie") {
+            this.zombie = this.addSprite.zombie();
+        }
+        else if (state.job.title === "wraith") {
+            this.abomination = this.addSprite.wraith();
+        }
+        else if (state.job.title === "horseman") {
+            this.horseman = this.addSprite.horseman();
+        }
+        else if (state.job.title === "worker") {
+            this.worker = this.addSprite.necromancer();
+        }
+
+        if (state.owner.id === this.game.players[0].id) {
+            this.container.scale.x *= -1;
+            this.container.position.x += 1;
+        }
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -70,7 +129,16 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Unit is
+        if (!next.tile) {
+            this.container.visible = false;
+
+            return;
+        }
+        this.container.visible = true;
+        this.container.position.set(
+            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.y, next.tile.y, dt),
+        );
         // <<-- /Creer-Merge: render -->>
     }
 

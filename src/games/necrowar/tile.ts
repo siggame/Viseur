@@ -30,6 +30,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+    /** The ID of the owner of this tile */
+    // private readonly ownerID?: string;
     /** castle */
     public readonly castle: PIXI.Sprite | undefined;
     /** grass */
@@ -40,6 +42,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public readonly path: PIXI.Sprite | undefined;
     /** river */
     public readonly river: PIXI.Sprite | undefined;
+    /** The container for all unit sprites */
+    private readonly unitContainer: PIXI.Container;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -57,14 +61,22 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.container.setParent(this.game.layers.background);
         this.container.position.set(state.x, state.y);
 
+        // if (state.owner) {
+        //     this.ownerID = state.owner.id;
+        // }
+
+        this.unitContainer = new PIXI.Container();
+        this.unitContainer.setParent(this.game.layers.game);
+        this.unitContainer.position.copy(this.container.position);
+
         if (state.isCastle) {
-            this.castle = this.addSprite.castle();
+            this.castle = this.addSprite.castle({ container: this.unitContainer });
+        }
+        if (state.isIslandGoldMine) {
+            this.goldmine = this.addSprite.goldMine({ container: this.unitContainer});
         }
         if (state.isGrass) {
             this.grass = this.addSprite.grass();
-        }
-        if (state.isIslandGoldMine) {
-            this.goldmine = this.addSprite.goldMine();
         }
         if (state.isPath) {
             this.path = this.addSprite.path();
@@ -107,7 +119,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
     }
 

@@ -21,7 +21,7 @@ export const GameResources = createResources("Necrowar", {
     ghould: load("ghoul.png"),
     zombie: load("zombie.png"),
     horde: load("horde.png"),
-    hordeman: load("horseman.png"),
+    horseman: load("horseman.png"),
     necromancer: load("necromancer.png"),
     skeleton: load("skeleton.png"),
     wraith: load("wraith.png"),

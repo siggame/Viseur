@@ -5,7 +5,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ItJobState } from "./state-interfaces";
+import { ITowerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -25,10 +25,10 @@ export class tJob extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the tJob (dt = 0) */
-    public current: ItJobState | undefined;
+    public current: ITowerState | undefined;
 
     /** The next state of the tJob (dt = 1) */
-    public next: ItJobState | undefined;
+    public next: ITowerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // <<-- /Creer-Merge: variables -->>
@@ -40,7 +40,7 @@ export class tJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this tJob.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ItJobState, viseur: Viseur) {
+    constructor(state: ITowerState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -60,8 +60,8 @@ export class tJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ItJobState>,
-        next: Immutable<ItJobState>,
+        current: Immutable<ITowerState>,
+        next: Immutable<ITowerState>,
         delta: Immutable<Delta>,
         nextDelta: Immutable<Delta>,
     ): void {
@@ -108,8 +108,8 @@ export class tJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ItJobState>,
-        next: Immutable<ItJobState>,
+        current: Immutable<ITowerState>,
+        next: Immutable<ITowerState>,
         delta: Immutable<Delta>,
         nextDelta: Immutable<Delta>,
     ): void {
