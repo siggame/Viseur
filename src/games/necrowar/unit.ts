@@ -7,6 +7,7 @@ import { GameObject } from "./game-object";
 import { ITileState, IUnitState, NecrowarDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+import * as PIXI from "pixi.js";
 import { ease, isObject, pixiFade , updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 import { Tile } from "./tile";
