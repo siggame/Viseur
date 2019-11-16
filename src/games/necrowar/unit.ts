@@ -1,22 +1,21 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, IUnitState } from "./state-interfaces";
+import { ITileState, IUnitState, NecrowarDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, isObject, pixiFade , updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 import { Tile } from "./tile";
+const OVER_SCALE = 0.1;
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = true;
-const OVER_SCALE = 0.1;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -33,6 +32,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** The next state of the Unit (dt = 1) */
     public next: IUnitState | undefined;
 
+    // <<-- Creer-Merge: variables -->>
     /** abomination */
     public readonly abomination: PIXI.Sprite | undefined;
     /** dog */
@@ -55,7 +55,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public readonly zombie: PIXI.Sprite | undefined;
     /** jobSprite for recoloring */
     public readonly jobSprite: PIXI.Sprite;
-    // <<-- Creer-Merge: variables -->>
     /** The id of the owner of this unit, for recoloring */
     public ownerID: string;
 
@@ -64,7 +63,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** Our health bar */
     public readonly healthBar: GameBar;
-    // <<-- /Creer-Merge: variables -->>
+        // <<-- /Creer-Merge: variables -->>
 
     /**
      * Constructor for the Unit with basic logic as provided by the Creer
@@ -141,8 +140,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NecrowarDelta>,
+        nextDelta: Immutable<NecrowarDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -212,8 +211,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NecrowarDelta>,
+        nextDelta: Immutable<NecrowarDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -250,7 +249,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public attack(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("attack", {tile}, callback);
     }
 
@@ -262,7 +264,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully built,
      * false otherwise.
      */
-    public build(title: string, callback?: (returned: boolean) => void): void {
+    public build(
+        title: string,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("build", {title}, callback);
     }
 
@@ -273,7 +278,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully began
      * fishing for mana, false otherwise.
      */
-    public fish(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public fish(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("fish", {tile}, callback);
     }
 
@@ -284,7 +292,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully entered
      * mine and began mining, false otherwise.
      */
-    public mine(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public mine(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("mine", {tile}, callback);
     }
 
@@ -295,7 +306,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {tile}, callback);
     }
 

@@ -1,11 +1,10 @@
 // This is a class to represent the Tower object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, ITowerState } from "./state-interfaces";
+import { ITileState, ITowerState, NecrowarDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -23,11 +22,13 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
+
     /** The current state of the Tower (dt = 0) */
     public current: ITowerState | undefined;
 
     /** The next state of the Tower (dt = 1) */
     public next: ITowerState | undefined;
+
     // <<-- Creer-Merge: variables -->>
     /** archer */
     public readonly archer: PIXI.Sprite | undefined;
@@ -55,7 +56,7 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.ownerID = state.owner.id;
         this.container.setParent(this.game.layers.game);
 
-        if (state.job.title === "archer") {
+        if (state.job.title === "arrow") {
             this.archer = this.addSprite.archerTower();
         }
         else if (state.job.title === "aoe") {
@@ -86,8 +87,8 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<ITowerState>,
         next: Immutable<ITowerState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NecrowarDelta>,
+        nextDelta: Immutable<NecrowarDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -143,8 +144,8 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<ITowerState>,
         next: Immutable<ITowerState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NecrowarDelta>,
+        nextDelta: Immutable<NecrowarDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -168,7 +169,10 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public attack(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("attack", {tile}, callback);
     }
 

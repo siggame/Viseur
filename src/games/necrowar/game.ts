@@ -1,6 +1,5 @@
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
@@ -9,7 +8,7 @@ import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { IGameState } from "./state-interfaces";
+import { IGameState, NecrowarDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -85,7 +84,7 @@ export class Game extends BaseGame {
         return {
             // <<-- Creer-Merge: get-size -->>
             width: state.mapWidth, // Change these. Probably read in the map's width
-            height: state.mapHeight, // and height from the initial state here.
+            height: state.mapWidth, // and height from the initial state here.
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -113,7 +112,6 @@ export class Game extends BaseGame {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
-        // Initialize your background here if need be
         // <<-- /Creer-Merge: create-background -->>
     }
 
@@ -131,8 +129,8 @@ export class Game extends BaseGame {
         dt: number,
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NecrowarDelta>,
+        nextDelta: Immutable<NecrowarDelta>,
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
 
@@ -152,8 +150,8 @@ export class Game extends BaseGame {
     protected stateUpdated(
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NecrowarDelta>,
+        nextDelta: Immutable<NecrowarDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

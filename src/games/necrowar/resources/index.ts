@@ -29,5 +29,5 @@ export const GameResources = createResources("Necrowar", {
     unitSpawn: load("spawn.png"),
     workerSpawn: load("spawn1.png"),
 
-   // <<-- /Creer-Merge: resources -->>
+    // <<-- /Creer-Merge: resources -->>
 });
