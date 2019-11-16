@@ -1,11 +1,10 @@
 // This is a class to represent the Beaver object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBeaverState, ISpawnerState, ITileState } from "./state-interfaces";
+import { IBeaverState, ISpawnerState, ITileState, StumpedDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, updown } from "src/utils";
@@ -118,8 +117,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IBeaverState>,
         next: Immutable<IBeaverState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -235,8 +234,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IBeaverState>,
         next: Immutable<IBeaverState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -276,7 +275,10 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(beaver: IBeaverState, callback?: (returned: boolean) => void): void {
+    public attack(
+        beaver: IBeaverState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("attack", {beaver}, callback);
     }
 
@@ -286,7 +288,9 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully built a
      * lodge, false otherwise.
      */
-    public buildLodge(callback?: (returned: boolean) => void): void {
+    public buildLodge(
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("buildLodge", {}, callback);
     }
 
@@ -301,8 +305,11 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully dropped the
      * resource, false otherwise.
      */
-    public drop(tile: ITileState, resource: string, amount: number, callback?:
-                (returned: boolean) => void,
+    public drop(
+        tile: ITileState,
+        resource: "branches" | "food",
+        amount: number,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("drop", {tile, resource, amount}, callback);
     }
@@ -315,8 +322,9 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully harvested,
      * false otherwise.
      */
-    public harvest(spawner: ISpawnerState, callback?: (returned: boolean) =>
-                   void,
+    public harvest(
+        spawner: ISpawnerState,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("harvest", {spawner}, callback);
     }
@@ -328,7 +336,10 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the move worked, false
      * otherwise.
      */
-    public move(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {tile}, callback);
     }
 
@@ -343,8 +354,11 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully picked up a
      * resource, false otherwise.
      */
-    public pickup(tile: ITileState, resource: string, amount: number, callback?:
-                  (returned: boolean) => void,
+    public pickup(
+        tile: ITileState,
+        resource: "branches" | "food",
+        amount: number,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("pickup", {tile, resource, amount}, callback);
     }

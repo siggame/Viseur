@@ -1,11 +1,10 @@
 // This is a class to represent the YoungGun object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ICowboyState, IYoungGunState } from "./state-interfaces";
+import { ICowboyState, IYoungGunState, SaloonDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -82,8 +81,8 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IYoungGunState>,
         next: Immutable<IYoungGunState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -133,8 +132,8 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IYoungGunState>,
         next: Immutable<IYoungGunState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -165,7 +164,10 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
      * in if valid. They will not be added to any `cowboys` lists until the turn
      * ends. Null otherwise.
      */
-    public callIn(job: string, callback?: (returned: ICowboyState) => void): void {
+    public callIn(
+        job: "Bartender" | "Brawler" | "Sharpshooter",
+        callback?: (returned: ICowboyState) => void,
+    ): void {
         this.runOnServer("callIn", {job}, callback);
     }
 

@@ -1,11 +1,10 @@
 // This is a class to represent the BroodMother object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spider } from "./spider";
-import { IBroodMotherState, ISpiderlingState } from "./state-interfaces";
+import { IBroodMotherState, ISpiderlingState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { setRelativePivot } from "src/utils";
@@ -79,8 +78,8 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IBroodMotherState>,
         next: Immutable<IBroodMotherState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -130,8 +129,8 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IBroodMotherState>,
         next: Immutable<IBroodMotherState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -157,8 +156,9 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * from the server. - The returned value is True if the Spiderling was
      * consumed. False otherwise.
      */
-    public consume(spiderling: ISpiderlingState, callback?: (returned: boolean)
-                   => void,
+    public consume(
+        spiderling: ISpiderlingState,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("consume", {spiderling}, callback);
     }
@@ -172,8 +172,9 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * from the server. - The returned value is The newly spwaned Spiderling if
      * successful. Null otherwise.
      */
-    public spawn(spiderlingType: string, callback?: (returned: ISpiderlingState)
-                 => void,
+    public spawn(
+        spiderlingType: "Spitter" | "Weaver" | "Cutter",
+        callback?: (returned: ISpiderlingState) => void,
     ): void {
         this.runOnServer("spawn", {spiderlingType}, callback);
     }

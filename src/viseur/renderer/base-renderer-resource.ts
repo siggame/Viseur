@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { Immutable, IPixiSpriteOptions, setPixiOptions } from "src/utils";
+import { Immutable, IPixiSpriteOptions, setPixiOptions, TypedObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { viseurConstructed } from "src/viseur/constructed";
 
@@ -79,10 +79,7 @@ export abstract class BaseRendererResource {
      * @returns A sprite with the given texture key, added to the
      * parentContainer.
      */
-    public newSprite(options: Immutable<IPixiSpriteOptions> & Readonly<{ // to not fuck with Pixi's state
-        /** The PIXI container to place the new sprite into. */
-        container: PIXI.Container;
-    }>): PIXI.Sprite {
+    public newSprite(options: Immutable<IPixiSpriteOptions>): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.texture);
 
         // Now scale the sprite, as it defaults to the dimensions of its texture's pixel size.
@@ -98,7 +95,7 @@ export abstract class BaseRendererResource {
      * @param resources - All the resources loaded, to pull our texture out of.
      * @returns A boolean indicating if this resource's texture was loaded.
      */
-    protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
+    protected onTextureLoaded(resources: TypedObject<PIXI.LoaderResource>): boolean {
         // if we have textures loaded, Viseur must have a game ready
         if (!this.viseur || !this.viseur.game || this.viseur.game.name !== this.gameName) {
             // this resource is for a different game, and will never be used

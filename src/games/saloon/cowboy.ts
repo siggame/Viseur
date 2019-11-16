@@ -1,20 +1,18 @@
 // This is a class to represent the Cowboy object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ICowboyState, IFurnishingState, ITileState } from "./state-interfaces";
+import { ICowboyState, IFurnishingState, ITileState, SaloonDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
-import { ease, updown } from "src/utils";
+import { ease, IPoint, updown } from "src/utils";
 import { GameBar, getTileNeighbor } from "src/viseur/game";
-import { Furnishing } from "./furnishing";
 
 const DRUNK_COLOR = Color().hsl(127, 33, 50);
-const TILE_DIRECTIONS = [ "North", "East", "South", "West" ];
+const TILE_DIRECTIONS = [ "North", "East", "South", "West" ] as const;
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -56,7 +54,7 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     private readonly hitSprite: PIXI.Sprite;
 
     /** True when we are being rendered playing a piano */
-    private playingPiano?: Furnishing;
+    private playingPianoAt?: IPoint;
 
     // -- Sharpshooter Specific Variables -- \\
     /** If the shot is visible */
@@ -123,6 +121,7 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
                 this.shotSprites.push(this.game.resources.shotHead.newSprite({
                     anchor: 0.5,
                     container: this.game.layers.bullets,
+                    visible: false,
                 }));
 
                 this.game.settings.sharpshooterFocus.changed.on(() => {
@@ -162,8 +161,8 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<ICowboyState>,
         next: Immutable<ICowboyState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -209,10 +208,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         );
 
         // updown tween to move us towards the piano if we played it
-        if (this.playingPiano) {
+        if (this.playingPianoAt) {
             const d = updown(dt);
-            const dx = (this.playingPiano.x - current.tile.x) / 2;
-            const dy = (this.playingPiano.y - current.tile.y) / 2;
+            const dx = (this.playingPianoAt.x - current.tile.x) / 2;
+            const dy = (this.playingPianoAt.y - current.tile.y) / 2;
 
             this.container.x += dx * d;
             this.container.y += dy * d;
@@ -328,30 +327,28 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<ICowboyState>,
         next: Immutable<ICowboyState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
-        this.playingPiano = undefined;
+        this.playingPianoAt = undefined;
 
         // if the delta is a run that we did
         if (nextDelta.type === "ran"
-         && nextDelta.data
-         && nextDelta.data.run
          && nextDelta.data.run.caller.id === this.id) {
             const { run } = nextDelta.data;
             switch (this.job) {
                 case "Sharpshooter":
                     if (run.functionName === "act" && nextDelta.data.returned === true) { // they successfully shot
-                        this.showShot(current.tile, run.args.tile as ITileState, current.focus);
+                        this.showShot(current.tile, run.args.tile.getCurrentMostState(), current.focus);
                     }
             }
 
             if (run.functionName === "play" && nextDelta.data.returned === true) {
                 // then they played a piano
-                this.playingPiano = run.args.piano as Furnishing;
+                this.playingPianoAt = run.args.piano.getCurrentMostState().tile;
             }
         }
         else {
@@ -448,8 +445,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the act worked, false
      * otherwise.
      */
-    public act(tile: ITileState, drunkDirection: string, callback?: (returned:
-               boolean) => void,
+    public act(
+        tile: ITileState,
+        drunkDirection: "" | "North" | "East" | "South" | "West",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("act", {tile, drunkDirection}, callback);
     }
@@ -461,7 +460,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the move worked, false
      * otherwise.
      */
-    public move(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {tile}, callback);
     }
 
@@ -472,7 +474,10 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the play worked, false
      * otherwise.
      */
-    public play(piano: IFurnishingState, callback?: (returned: boolean) => void): void {
+    public play(
+        piano: IFurnishingState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("play", {piano}, callback);
     }
 
@@ -535,8 +540,8 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param distance - The distance between the two tiles.
      */
     private showShot(
-        from: Immutable<ITileState>,
-        to: Immutable<ITileState>,
+        from: Immutable<IPoint>,
+        to: Immutable<IPoint>,
         distance: number,
     ): void {
         this.visibleShot(true);

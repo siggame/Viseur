@@ -1,6 +1,5 @@
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
@@ -9,7 +8,7 @@ import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { IGameState } from "./state-interfaces";
+import { IGameState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -57,6 +56,7 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),
+        shield: this.createLayer(),
         /** Middle layer, for moving game objects */
         game: this.createLayer(),
         /** Top layer, for UI elements above the game */
@@ -69,6 +69,8 @@ export class Game extends BaseGame {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+    /** THIS IS DOCUMENTATION */
+    public readonly scaler: number = 2;
     // <<-- /Creer-Merge: variables -->>
 
     // <<-- Creer-Merge: public-functions -->>
@@ -101,33 +103,32 @@ export class Game extends BaseGame {
 
         // <<-- Creer-Merge: start -->>
         // Initialize your variables here
-        this.resources.background.newSprite({
+        const back = this.resources.background.newSprite({
             container: this.layers.background,
-            width: this.renderer.width,
-            height: this.renderer.height,
         });
+        back.scale.x *= state.sizeX;
+        back.scale.y *= state.sizeY;
 
         this.resources.sun.newSprite({
             container: this.layers.background,
-            width: (state.bodies[2].radius * 2),
-            height: (state.bodies[2].radius * 1.5),
-            position: {x: state.bodies[2].x - 450, y: state.bodies[2].y - 270},
+            relativeScale: state.bodies[2].radius * this.scaler,
+            relativePivot: 0.5,
+            position: {x: state.bodies[2].x , y: state.bodies[2].y},
         });
 
         this.resources.earth_planet.newSprite({
             container: this.layers.background,
-            width: (state.bodies[1].radius * 3),
-            height: (state.bodies[1].radius * 2.25),
-            position: {x: state.bodies[1].x - 275 , y: state.bodies[1].y - 85},
+            relativePivot: 0.5,
+            relativeScale: state.bodies[1].radius * this.scaler,
+            position: {x: state.bodies[1].x , y: state.bodies[1].y},
         });
 
         this.resources.alien_planet.newSprite({
             container: this.layers.background,
-            width: (state.bodies[0].radius * 3),
-            height: (state.bodies[0].radius * 2.25),
-            position: {x: state.bodies[0].x - 175, y: state.bodies[0].y - 85},
+            relativeScale: state.bodies[0].radius * this.scaler,
+            relativePivot: 0.5,
+            position: {x: state.bodies[0].x, y: state.bodies[0].y},
         });
-
         // <<-- /Creer-Merge: start -->>
     }
 
@@ -162,8 +163,8 @@ export class Game extends BaseGame {
         dt: number,
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
 
@@ -183,8 +184,8 @@ export class Game extends BaseGame {
     protected stateUpdated(
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

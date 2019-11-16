@@ -1,14 +1,13 @@
 // This is a class to represent the Projectile object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IProjectileState } from "./state-interfaces";
+import { IProjectileState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import * as PIXI from "pixi.js";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -32,6 +31,11 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+    /** TODO: document */
+    public ownerID: string;
+
+    /** TODO: document */
+    public jobSprite: PIXI.Sprite;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -46,6 +50,17 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Projectile here.
+        this.ownerID = state.owner.id;
+        this.container.scale.set(1, 1);
+        const jobContainer = new PIXI.Container();
+        jobContainer.setParent(this.container);
+        this.jobSprite = this.addSprite.beam(
+            {
+                relativeScale: this.game.scaler * 5,
+            },
+        );
+        this.jobSprite.scale.set(.1, .1);
+
         // state.gameObjectName
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -65,13 +80,23 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IProjectileState>,
         next: Immutable<IProjectileState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
         // render where the Projectile is
+        if (next.energy <= 0) {
+            this.container.visible = false;
+
+            return;
+        }
+        this.container.visible = true;
+        this.container.position.set(
+            ease(current.x, next.x, dt),
+            ease(current.y, next.y, dt),
+        );
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -113,8 +138,8 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IProjectileState>,
         next: Immutable<IProjectileState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

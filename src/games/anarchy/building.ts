@@ -1,11 +1,10 @@
 // This is a class to represent the Building object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBuildingState } from "./state-interfaces";
+import { AnarchyDelta, IBuildingState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -176,8 +175,8 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IBuildingState>,
         next: Immutable<IBuildingState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<AnarchyDelta>,
+        nextDelta: Immutable<AnarchyDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -296,8 +295,8 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IBuildingState>,
         next: Immutable<IBuildingState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<AnarchyDelta>,
+        nextDelta: Immutable<AnarchyDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

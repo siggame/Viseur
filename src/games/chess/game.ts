@@ -1,6 +1,5 @@
 // This is a class to represent the Game object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
@@ -9,7 +8,7 @@ import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { IGameState } from "./state-interfaces";
+import { ChessDelta, IGameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as chessJs from "chess.js";
@@ -151,8 +150,8 @@ export class Game extends BaseGame {
         dt: number,
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<ChessDelta>,
+        nextDelta: Immutable<ChessDelta>,
     ): void {
         super.renderBackground(dt, current, next, delta, nextDelta);
 
@@ -172,8 +171,8 @@ export class Game extends BaseGame {
     protected stateUpdated(
         current: Immutable<IGameState>,
         next: Immutable<IGameState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<ChessDelta>,
+        nextDelta: Immutable<ChessDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -199,6 +198,7 @@ export class Game extends BaseGame {
     protected recolor(): void {
         super.recolor();
 
+        this.chessBackground.recolor();
         this.chessPieces.recolor();
     }
 

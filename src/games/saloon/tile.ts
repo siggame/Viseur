@@ -1,14 +1,13 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState } from "./state-interfaces";
+import { ITileState, SaloonDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import * as PIXI from "pixi.js";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -55,7 +54,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // Floor tiles of the balcony
         if (state.isBalcony) {
             this.addSprite.wall();
-            if (!(state.tileEast && state.tileWest) && state.tileNorth && state.tileSouth) {
+            if (state.tileNorth && state.tileSouth) {
                 this.addSprite.railVertical({
                     container: railContainer,
                     position: {
@@ -64,7 +63,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
                     },
                 });
             }
-            else if (!(state.tileNorth && state.tileSouth) && state.tileEast && state.tileWest) {
+            else if ((state.tileEast && state.tileWest)
+                && (!state.tileNorth || !state.tileNorth.isBalcony)
+                && (!state.tileSouth || !state.tileSouth.isBalcony)
+            ) {
                 this.addSprite.railHorizontal({
                     container: railContainer,
                     position: {
@@ -75,13 +77,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             }
         }
         // Visible side of the balcony
-        else if (state.tileNorth.isBalcony) {
-            state.tileEast.isBalcony
-                ? this.addSprite.wallCorner()
-                : this.addSprite.wallSide();
-        }
         else if (state.tileEast.isBalcony) {
-            this.addSprite.shade();
+            this.addSprite.railVertical({
+                container: railContainer,
+                position: {
+                    x: state.x + 0.45,
+                    y: state.y - 0.4,
+                },
+            });
+
+            if (state.tileNorth.isBalcony) {
+                this.addSprite.wallCorner();
+            }
+            else {
+                this.addSprite.shade();
+            }
+        }
+        else if (state.tileNorth.isBalcony) {
+            this.addSprite.wallSide();
         }
         else {
             this.addSprite.tile();
@@ -110,8 +123,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<ITileState>,
         next: Immutable<ITileState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -158,8 +171,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<ITileState>,
         next: Immutable<ITileState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SaloonDelta>,
+        nextDelta: Immutable<SaloonDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

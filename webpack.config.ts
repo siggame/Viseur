@@ -1,6 +1,9 @@
+import * as GitRevisionPlugin from "git-revision-webpack-plugin";
 import * as HtmlWebpackPlugin from "html-webpack-plugin";
 import { join, resolve } from "path";
 import * as webpack from "webpack";
+
+const gitRevisionPlugin = new GitRevisionPlugin();
 
 export default (// tslint:disable-line:no-default-export
     env: undefined,
@@ -93,7 +96,15 @@ export default (// tslint:disable-line:no-default-export
             minify: {
                 collapseWhitespace: true,
             },
-        }) as any, // tslint:disable-line:no-any no-unsafe-any
+        }) as unknown as webpack.Plugin,
+        // ^ TS definition are old and deprecated. HtmlWebpackPlugin will have defs in 4.0, this is a hack till then
+        gitRevisionPlugin,
+        new webpack.DefinePlugin({
+            "process.env.DEVELOPMENT": options.mode === "development",
+            "process.env.GIT_VERSION": JSON.stringify(gitRevisionPlugin.version()),
+            "process.env.GIT_COMMIT_HASH": JSON.stringify(gitRevisionPlugin.commithash()),
+            "process.env.GIT_BRANCH": JSON.stringify(gitRevisionPlugin.branch()),
+        }),
     ],
     optimization: {
         sideEffects: true,

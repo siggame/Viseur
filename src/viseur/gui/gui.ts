@@ -100,9 +100,9 @@ export class GUI extends BaseElement {
             this.goFullscreen();
         });
 
-        if (screenfull) {
+        if (screenfull.isEnabled) {
             screenfull.on("change", () => {
-                if (screenfull && !screenfull.isFullscreen) {
+                if (screenfull && !screenfull.isEnabled) {
                     this.exitFullscreen();
                 }
             });
@@ -195,7 +195,7 @@ export class GUI extends BaseElement {
     public goFullscreen(): void {
         this.element.addClass("fullscreen");
 
-        if (screenfull) {
+        if (screenfull.isEnabled) {
             screenfull.request();
         }
 
@@ -211,7 +211,7 @@ export class GUI extends BaseElement {
         this.element.removeClass("fullscreen");
 
         KEYS.escape.up.off(this.exitFullscreen);
-        if (screenfull) {
+        if (screenfull.isEnabled) {
             screenfull.exit();
         }
 
@@ -226,7 +226,7 @@ export class GUI extends BaseElement {
      * @returns True if fullscreen, false otherwise.
      */
     public isFullscreen(): boolean {
-        return screenfull && screenfull.isFullscreen;
+        return screenfull.isEnabled && screenfull.isFullscreen;
     }
 
     /**

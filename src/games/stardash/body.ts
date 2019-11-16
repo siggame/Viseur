@@ -1,11 +1,10 @@
 // This is a class to represent the Body object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBodyState } from "./state-interfaces";
+import { IBodyState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -53,26 +52,35 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         // You can initialize your new Body here.
         const bodiesContainer = new PIXI.Container();
         bodiesContainer.setParent(this.container);
-
         if (state.materialType === "genarium") {
-            this.bodiesSprite = this.addSprite.genarium();
-            this.bodiesSprite.scale.set(.02, .02);
+            this.bodiesSprite = this.addSprite.genarium(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.materialType === "rarium") {
-            this.bodiesSprite = this.addSprite.rarium();
-            this.bodiesSprite.scale.set(.023, .023);
+            this.bodiesSprite = this.addSprite.rarium(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.materialType === "legendarium") {
-            this.bodiesSprite = this.addSprite.legendarium();
-            this.bodiesSprite.scale.set(.027, .027);
+            this.bodiesSprite = this.addSprite.legendarium(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.materialType === "mythicite") {
-            this.bodiesSprite = this.addSprite.mythicite();
-            this.bodiesSprite.scale.set(.04, .04);
+            this.bodiesSprite = this.addSprite.mythicite(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else {
             this.bodiesSprite = this.addSprite.blank();
         }
+        this.bodiesSprite.scale.x *= state.radius * this.game.scaler;
+        this.bodiesSprite.scale.y *= state.radius * this.game.scaler;
         this.hasMoved = false;
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -92,8 +100,8 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IBodyState>,
         next: Immutable<IBodyState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -110,7 +118,6 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
            ease(current.x, next.x, dt),
            ease(current.y, next.y, dt),
         );
-        // render where the Body is
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -152,8 +159,8 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IBodyState>,
         next: Immutable<IBodyState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -178,7 +185,10 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is The x position of the body the
      * input number of turns in the future.
      */
-    public nextX(num: number, callback?: (returned: number) => void): void {
+    public nextX(
+        num: number,
+        callback?: (returned: number) => void,
+    ): void {
         this.runOnServer("nextX", {num}, callback);
     }
 
@@ -190,7 +200,10 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is The x position of the body the
      * input number of turns in the future.
      */
-    public nextY(num: number, callback?: (returned: number) => void): void {
+    public nextY(
+        num: number,
+        callback?: (returned: number) => void,
+    ): void {
         this.runOnServer("nextY", {num}, callback);
     }
 
@@ -203,8 +216,11 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully taken,
      * false otherwise.
      */
-    public spawn(x: number, y: number, title: string, callback?: (returned:
-                 boolean) => void,
+    public spawn(
+        x: number,
+        y: number,
+        title: string,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("spawn", {x, y, title}, callback);
     }

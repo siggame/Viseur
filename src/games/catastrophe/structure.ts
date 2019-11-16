@@ -1,11 +1,10 @@
 // This is a class to represent the Structure object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IStructureState } from "./state-interfaces";
+import { CatastropheDelta, IStructureState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -52,9 +51,9 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // Sets this container to be inside of the background layer of the game
         this.container.setParent(this.game.layers.structure);
-
         // type strings taken from game rules at
         // https://github.com/siggame/Cadre-MegaMinerAI-Dev/blob/master/Games/Catastrophe/rules.md
+        this.sprite = this.addSprite.neutral();
         if (state.type === "neutral") {
             // Creates a copy of the neutral sprite and puts the copy inside of the current container
             this.sprite = this.addSprite.neutral();
@@ -70,11 +69,13 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.type === "shelter") {
             this.sprite = this.addSprite.shelter();
         }
+        if (state.type === "wall") {
+            this.sprite = this.addSprite.wall();
+        }
 
-        this.sprite = state.type === "wall"
-            ? this.addSprite.wall()
-            : this.addSprite.monument();
-
+        if (state.type === "monument") {
+            this.sprite = this.addSprite.monument();
+        }
         this.container.position.set(state.tile.x, state.tile.y);
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -94,8 +95,8 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IStructureState>,
         next: Immutable<IStructureState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -145,8 +146,8 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IStructureState>,
         next: Immutable<IStructureState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

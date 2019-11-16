@@ -1,0 +1,24 @@
+@import "src/core/colors";
+@import "src/core/mixins";
+
+.help-tab {
+    & footer {
+        margin-top: 1em;
+        text-align: right;
+
+        & a {
+            opacity: 0.25;
+            text-decoration: none;
+            color: $black;
+            @include dark-mode {
+                color: $white;
+            }
+
+            &:hover, &:focus {
+                opacity: 1;
+                color: $secondary;
+            }
+
+        }
+    }
+}

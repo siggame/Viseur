@@ -186,7 +186,7 @@ export class PrettyPolygons {
 
         this.refresh();
 
-        this.interval = window.setInterval(() => this.refresh(), REFRESH_DURATION);
+        this.interval = 0; // window.setInterval(() => this.refresh(), REFRESH_DURATION);
     }
 
     /**

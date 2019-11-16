@@ -3,6 +3,7 @@ import { clamp } from "lodash";
 import * as PIXI from "pixi.js";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
+import { TypedObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { Event, events, Signal } from "ts-typed-events";
 import * as rendererHbs from "./renderer.hbs";
@@ -56,7 +57,7 @@ export class Renderer extends BaseElement {
     /** All the events this emits */
     public readonly events = events({
         /** Emitted once the textures are loaded for the game */
-        texturesLoaded: new Event<PIXI.loaders.ResourceDictionary>(),
+        texturesLoaded: new Event<TypedObject<PIXI.LoaderResource>>(),
 
         /** Triggered when a specific id key is changed */
         rendering: new Signal(),
@@ -135,8 +136,9 @@ export class Renderer extends BaseElement {
         // check only now for anti-aliasing, because them changing it requires a restart to see it inverted
         const aa = this.viseur.settings.antiAliasing.get();
 
-                                            // will be resized, just placeholder dimensions
-        this.pixiApp = new PIXI.Application(this.pxExternalWidth, this.pxExternalHeight, {
+        this.pixiApp = new PIXI.Application({
+            width: this.pxExternalWidth, // will be resized, just placeholder dimensions
+            height: this.pxExternalWidth,
             antialias: aa,
         });
 
@@ -189,7 +191,7 @@ export class Renderer extends BaseElement {
      * functions are loaded.
      */
     public loadTextures(callback?: () => void): void {
-        const loader = PIXI.loader;
+        const loader = PIXI.Loader.shared;
 
         if (!this.viseur.game) {
             throw new Error(`Cannot load textures for ${this.viseur.game}`);
@@ -211,7 +213,7 @@ export class Renderer extends BaseElement {
             loader.add(resource.path, resource.absolutePath);
         }
 
-        loader.load((sameLoader: PIXI.loaders.Loader, resources: PIXI.loaders.ResourceDictionary) => {
+        loader.load((sameLoader, resources) => {
             this.events.texturesLoaded.emit(resources);
 
             if (callback) {

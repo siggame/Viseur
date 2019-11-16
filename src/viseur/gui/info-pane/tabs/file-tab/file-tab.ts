@@ -117,7 +117,7 @@ export class FileTab extends Tab {
         id: "connect-server",
         label: "Server",
         parent: this.connectWrapper,
-        value: Config.server || window.location.hostname,
+        value: Config.gameServer || window.location.hostname,
     });
 
     /** The port number input field. */
@@ -152,6 +152,15 @@ export class FileTab extends Tab {
         label: "Presentation Mode",
         parent: this.connectWrapper,
         value: true,
+    });
+
+    /** The check box for if this should restart in presentation mode. */
+    private readonly legacyInput = new CheckBox({
+        id: "legacy-mode",
+        label: "Legacy Mode",
+        parent: this.connectWrapper,
+        value: true,
+        hint: "Legacy arena mode for the previous Python arena",
     });
 
     /** The button that starts the remote connection. */
@@ -279,6 +288,7 @@ export class FileTab extends Tab {
      */
     private onConnectTypeChange(newType: string): void {
         let port = Number(window.location.port);
+        let server = Config.gameServer;
         let showName = false;
         let showPlayerIndex = false;
         let showPort = true;
@@ -287,12 +297,15 @@ export class FileTab extends Tab {
         let showPresentation = false;
         let showGameSettings = false;
         let humanPlayable = false;
+        let showLegacy = false;
 
         switch (newType) {
             case "Arena":
+                server = Config.arenaServer;
                 showPort = false;
                 showGame = false;
                 showPresentation = true;
+                showLegacy = true;
                 break;
             case "Human":
                 port = 3088;
@@ -307,6 +320,7 @@ export class FileTab extends Tab {
                 showSession = true;
                 break;
             case "Tournament":
+                server = Config.tournamentServer;
                 port = 5454;
                 showName = true;
                 humanPlayable = true;
@@ -317,7 +331,9 @@ export class FileTab extends Tab {
             : this.gameNames,
         );
 
+        this.serverInput.value = server;
         this.portInput.value = port;
+
         // tslint:disable:no-non-null-assertion - TODO: make field better so this is not needed
         this.portInput.field!.element.toggleClass("collapsed", !showPort);
 
@@ -328,6 +344,7 @@ export class FileTab extends Tab {
         this.gameSettingsInput.field!.element.toggleClass("collapsed", !showGameSettings);
         this.playerIndexInput.field!.element.toggleClass("collapsed", !showPlayerIndex);
 
+        this.legacyInput.field!.element.toggleClass("collapsed", !showLegacy);
         this.presentationInput.field!.element.toggleClass("collapsed", !showPresentation);
         // tslint:enable:no-non-null-assertion
     }
@@ -391,7 +408,7 @@ export class FileTab extends Tab {
                 this.viseur.connectToTournament(server, port, playerName);
                 break;
             case "Arena":
-                this.viseur.startArenaMode(server, this.presentationInput.value);
+                this.viseur.startArenaMode(server, this.presentationInput.value, this.legacyInput.value);
                 break;
             case "Human":
                 this.viseur.playAsHuman({

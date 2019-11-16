@@ -1,11 +1,10 @@
 // This is a class to represent the Spiderling object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spider } from "./spider";
-import { ISpiderlingState, IWebState } from "./state-interfaces";
+import { ISpiderlingState, IWebState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -64,8 +63,8 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
         dt: number,
         current: Immutable<ISpiderlingState>,
         next: Immutable<ISpiderlingState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -112,8 +111,8 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<ISpiderlingState>,
         next: Immutable<ISpiderlingState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<SpidersDelta>,
+        nextDelta: Immutable<SpidersDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -137,8 +136,9 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
      * from the server. - The returned value is True if the attack was
      * successful, false otherwise.
      */
-    public attack(spiderling: ISpiderlingState, callback?: (returned: boolean)
-                  => void,
+    public attack(
+        spiderling: ISpiderlingState,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {spiderling}, callback);
     }
@@ -150,7 +150,10 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
      * from the server. - The returned value is True if the move was successful,
      * false otherwise.
      */
-    public move(web: IWebState, callback?: (returned: boolean) => void): void {
+    public move(
+        web: IWebState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {web}, callback);
     }
 

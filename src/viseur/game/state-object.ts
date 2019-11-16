@@ -11,11 +11,11 @@ export interface IState {}
 /**
  * An object in the game that has states that tween [0, 1)].
  */
-export class StateObject {
+export class StateObject<TState extends IState = IState> {
     /** The current state (e.g. at delta time = 0) */
-    public current: Immutable<IState> | undefined;
+    public current: Immutable<TState> | undefined;
 
-    /** The next state (e.g. at delta time = 1) */
+    /** The next state (e.g. TState delta time = 1) */
     public next: Immutable<IState> | undefined;
 
     /**
@@ -25,8 +25,8 @@ export class StateObject {
      * @param next - The next state.
      */
     public update(
-        current?: Immutable<IState>,
-        next?: Immutable<IState>,
+        current?: Immutable<TState>,
+        next?: Immutable<TState>,
     ): void {
         this.current = current;
         this.next = next;
@@ -70,8 +70,8 @@ export class StateObject {
      * @param nextDelta - The reason for the next delta.
      */
     protected stateUpdated(
-        current: Immutable<IState>,
-        next: Immutable<IState>,
+        current: Immutable<TState>,
+        next: Immutable<TState>,
         delta: Immutable<Delta>,
         nextDelta: Immutable<Delta>,
     ): void {

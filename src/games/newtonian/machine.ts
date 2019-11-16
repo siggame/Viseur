@@ -1,11 +1,10 @@
 // This is a class to represent the Machine object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IMachineState } from "./state-interfaces";
+import { IMachineState, NewtonianDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -53,6 +52,7 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     constructor(state: IMachineState, viseur: Viseur) {
         super(state, viseur);
+
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.machine);
         this.container.scale.set(CONTAINER_SCALE, CONTAINER_SCALE);
@@ -91,8 +91,8 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IMachineState>,
         next: Immutable<IMachineState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NewtonianDelta>,
+        nextDelta: Immutable<NewtonianDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -140,8 +140,8 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IMachineState>,
         next: Immutable<IMachineState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<NewtonianDelta>,
+        nextDelta: Immutable<NewtonianDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

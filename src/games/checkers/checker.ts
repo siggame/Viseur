@@ -1,11 +1,10 @@
 // This is a class to represent the Checker object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ICheckerState } from "./state-interfaces";
+import { CheckersDelta, ICheckerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, getContrastingColor } from "src/utils";
@@ -78,8 +77,8 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<ICheckerState>,
         next: Immutable<ICheckerState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CheckersDelta>,
+        nextDelta: Immutable<CheckersDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -143,8 +142,8 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<ICheckerState>,
         next: Immutable<ICheckerState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CheckersDelta>,
+        nextDelta: Immutable<CheckersDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -167,7 +166,9 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it is yours, false if it
      * is not yours.
      */
-    public isMine(callback?: (returned: boolean) => void): void {
+    public isMine(
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("isMine", {}, callback);
     }
 
@@ -179,8 +180,10 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is Returns the same checker that
      * moved if the move was successful. null otherwise.
      */
-    public move(x: number, y: number, callback?: (returned: ICheckerState) =>
-                void,
+    public move(
+        x: number,
+        y: number,
+        callback?: (returned: ICheckerState) => void,
     ): void {
         this.runOnServer("move", {x, y}, callback);
     }

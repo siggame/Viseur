@@ -1,11 +1,10 @@
 // This is a class to represent the Job object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBeaverState, IJobState, ITileState } from "./state-interfaces";
+import { IBeaverState, IJobState, ITileState, StumpedDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -64,8 +63,8 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IJobState>,
         next: Immutable<IJobState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -112,8 +111,8 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IJobState>,
         next: Immutable<IJobState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -138,7 +137,10 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is The recruited Beaver if
      * successful, null otherwise.
      */
-    public recruit(tile: ITileState, callback?: (returned: IBeaverState) => void): void {
+    public recruit(
+        tile: ITileState,
+        callback?: (returned: IBeaverState) => void,
+    ): void {
         this.runOnServer("recruit", {tile}, callback);
     }
 

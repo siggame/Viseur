@@ -621,7 +621,7 @@ export class BaseGame extends StateObject {
             cloned[key] = this.hookupGameObjectReferences(obj[key]);
         }
 
-        return cloned as T;
+        return cloned as unknown as T; // TODO: messy. It MUST be an object at this point that TS lost that.
     }
 
     /**

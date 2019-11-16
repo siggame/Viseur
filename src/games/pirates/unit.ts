@@ -1,11 +1,10 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, IUnitState } from "./state-interfaces";
+import { ITileState, IUnitState, PiratesDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -118,8 +117,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<PiratesDelta>,
+        nextDelta: Immutable<PiratesDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -222,8 +221,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<PiratesDelta>,
+        nextDelta: Immutable<PiratesDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -249,8 +248,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(tile: ITileState, target: string, callback?: (returned:
-                  boolean) => void,
+    public attack(
+        tile: ITileState,
+        target: "crew" | "ship",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {tile, target}, callback);
     }
@@ -264,7 +265,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully buried,
      * false otherwise.
      */
-    public bury(amount: number, callback?: (returned: boolean) => void): void {
+    public bury(
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("bury", {amount}, callback);
     }
 
@@ -278,7 +282,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully deposited,
      * false otherwise.
      */
-    public deposit(amount: number, callback?: (returned: boolean) => void): void {
+    public deposit(
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("deposit", {amount}, callback);
     }
 
@@ -290,7 +297,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully dug up,
      * false otherwise.
      */
-    public dig(amount: number, callback?: (returned: boolean) => void): void {
+    public dig(
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("dig", {amount}, callback);
     }
 
@@ -304,7 +314,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {tile}, callback);
     }
 
@@ -314,7 +327,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully rested,
      * false otherwise.
      */
-    public rest(callback?: (returned: boolean) => void): void {
+    public rest(
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("rest", {}, callback);
     }
 
@@ -330,8 +345,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully split,
      * false otherwise.
      */
-    public split(tile: ITileState, amount: number, gold: number, callback?:
-                 (returned: boolean) => void,
+    public split(
+        tile: ITileState,
+        amount: number,
+        gold: number,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("split", {tile, amount, gold}, callback);
     }
@@ -344,7 +362,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully withdrawn,
      * false otherwise.
      */
-    public withdraw(amount: number, callback?: (returned: boolean) => void): void {
+    public withdraw(
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("withdraw", {amount}, callback);
     }
 

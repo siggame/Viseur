@@ -1,11 +1,10 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState } from "./state-interfaces";
+import { CatastropheDelta, ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -90,8 +89,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<ITileState>,
         next: Immutable<ITileState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -144,8 +143,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<ITileState>,
         next: Immutable<ITileState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

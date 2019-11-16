@@ -1,5 +1,5 @@
 import { Immutable } from "@cadre/ts-utils";
-import { IBaseGame, IGamelog, LobbiedEvent } from "@cadre/ts-utils/cadre";
+import { GamelogUnknownVersion, IBaseGame, IGamelog, LobbiedEvent } from "@cadre/ts-utils/cadre";
 import * as $ from "jquery";
 import * as queryString from "query-string";
 import { GAMES } from "src/games";
@@ -19,6 +19,9 @@ import { TimeManager } from "./time-manager";
 /** The possible types a parsed query string can result in values from. */
 type QueryStringTypes = undefined | null | string | string[];
 
+/** A game state with an index signature to be delta merged */
+type DeltaMergeableGameState = IBaseGame;
+
 /** Data required to play as a human player in a game. */
 interface IPlayAsHumanData extends TournamentConnectionArgs, JoueurConnectionArgs {}
 
@@ -31,10 +34,10 @@ export interface IMergedDelta {
     index: number;
 
     /** The current state at that delta, what we are moving from */
-    currentState?: IBaseGame;
+    currentState?: DeltaMergeableGameState;
 
     /** The next state of that delta, what we are moving to */
-    nextState?: IBaseGame;
+    nextState?: DeltaMergeableGameState;
 }
 
 /** The class that handles all the interconnected-ness of the application */
@@ -171,10 +174,12 @@ export class Viseur {
      *
      * @param url - The url to start grabbing arena gamelog urls from.
      * @param presentationMode True if should auto fullscreen, false otherwise.
+     * @param legacyMode True if legacy mode (old python arena), false otherwise
      */
     public startArenaMode(
         url: string,
         presentationMode: boolean = true,
+        legacyMode: boolean = false,
     ): void {
         if (validateURL(url)) {
             this.urlParameters.arena = url;
@@ -184,9 +189,9 @@ export class Viseur {
                 // it's presence tell us we want it
                 this.urlParameters.presentation = null;
             }
-            else {
-                // remove the key, meaning false
-                // delete this.urlParameters.presentation;
+
+            if (legacyMode) {
+                this.urlParameters.legacy = null;
             }
 
             // this refreshes the page, as we want
@@ -326,9 +331,9 @@ export class Viseur {
     public parseGamelog(jsonGamelog: string): void {
         this.unparsedGamelog = jsonGamelog;
 
-        let parsed: Immutable<IGamelog>;
+        let parsed: GamelogUnknownVersion;
         try {
-            parsed = JSON.parse(jsonGamelog) as IGamelog; // tslint:disable-next-line:no-unsafe-any
+            parsed = JSON.parse(jsonGamelog) as GamelogUnknownVersion;
         }
         catch (err) {
             this.gui.modalError("Error parsing gamelog - Does not appear to be valid JSON");
@@ -336,7 +341,40 @@ export class Viseur {
             return;
         }
 
-        this.gamelogLoaded(parsed);
+        this.gamelogLoaded(this.ensureLatestGamelog(parsed));
+    }
+
+    /**
+     * Ensure the structure of a gamelog is the latest version.
+     *
+     * @param gamelog - The gamelog to check and ensure.
+     * @returns A gamelog that will have the latest structure for certain.
+     */
+    private ensureLatestGamelog(gamelog: GamelogUnknownVersion): IGamelog {
+        if (objectHasProperty(gamelog, "gamelogVersion")) {
+            return gamelog;
+        }
+        // Else we are unsure if this gamelog is an old version we need to patch to the newest structure
+
+        if (objectHasProperty(gamelog, "settings")) {
+            return {
+                gamelogVersion: "2.0.0",
+                gameVersion: "unknown",
+                ...gamelog,
+            };
+        }
+
+        const { randomSeed, ...oldGamelog } = gamelog;
+
+        return {
+            gamelogVersion: "1.0.0",
+            gameVersion: "unknown",
+            settings: {
+                note: "This is an old gamelog that is lacking complete saved settings",
+                randomSeed,
+            },
+            ...oldGamelog,
+        };
     }
 
     /**
@@ -373,9 +411,19 @@ export class Viseur {
         else if (typeof this.urlParameters.arena === "string") {
             // then we are in arena mode
             this.gui.modalMessage("Requesting next gamelog from Arena...");
+            const arenaUrl = this.urlParameters.arena;
 
-            // load the gamelog (modal should be fullscreen)
-            this.loadRemoteGamelog(this.urlParameters.arena);
+            // load the gamelog (modal should be fullscreen already)
+            if (objectHasProperty(this.urlParameters, "legacy")) { // legacy mode, hit-up the url for a gamelog url
+                // NOTE: would be better with async/await syntax, however I don't want to bloat the build with that
+                // polyfill for just this usage.
+                this.getRemoteGamelogUrl(arenaUrl)
+                    .then((gamelogUrl) => this.loadRemoteGamelog(gamelogUrl))
+                    .catch((err) => this.gui.modalError(`Error loading legacy gamelog url: ${err}`));
+            }
+            else { // url directly points to gamelog
+                this.loadRemoteGamelog(arenaUrl);
+            }
 
             const presentationMode = objectHasProperty(this.urlParameters, "presentation");
             if (presentationMode) {
@@ -502,11 +550,14 @@ export class Viseur {
             d.index++;
 
             if (deltas[d.index] && !deltas[d.index].reversed) {
-                deltas[d.index].reversed = this.parser.createReverseDelta(d.currentState, deltas[d.index].game);
+                deltas[d.index].reversed = this.parser.createReverseDelta(d.currentState as {}, deltas[d.index].game);
             }
 
             if (d.nextState && deltas[d.index] && deltas[d.index + 1] && !deltas[d.index + 1].reversed) {
-                deltas[d.index + 1].reversed = this.parser.createReverseDelta(d.nextState, deltas[d.index + 1].game);
+                deltas[d.index + 1].reversed = this.parser.createReverseDelta(
+                    d.nextState as {},
+                    deltas[d.index + 1].game,
+                );
             }
 
             if (deltas[d.index]) {
@@ -526,12 +577,12 @@ export class Viseur {
             const r2 = d.nextState && deltas[d.index + 1] && deltas[d.index + 1].reversed;
 
             if (r) {
-                d.currentState = this.parser.mergeDelta(d.currentState, r);
+                d.currentState = this.parser.mergeDelta(d.currentState, r as {});
             }
 
             if (r2) {
                 if (deltas[d.index + 1]) { // if there is a next state (not at the end)
-                    d.nextState = this.parser.mergeDelta(d.nextState as IBaseGame, r2);
+                    d.nextState = this.parser.mergeDelta(d.nextState as IBaseGame, r2 as {});
                 }
             }
 
@@ -668,5 +719,27 @@ export class Viseur {
         });
 
         this.joueur.connect(args);
+    }
+
+    /**
+     * Hits up a remote url expecting the text response to be a url to a gamelog.
+     *
+     * @param url - The url to query
+     * @returns A promise that might resolve to the url, or reject if an error occurs
+     */
+    private getRemoteGamelogUrl(url: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                dataType: "text",
+                url,
+                crossDomain: true,
+                success: (gamelogURL: string) => {
+                    resolve(gamelogURL);
+                },
+                error: (err) => {
+                    reject(err);
+                },
+            });
+        });
     }
 }

@@ -62,7 +62,7 @@ export class BaseHumanPlayer {
             return; // can't order until we know our player
         }
 
-        const orderFunction = (this as UnknownObject)[order.name];
+        const orderFunction = (this as unknown as UnknownObject)[order.name];
 
         if (typeof(orderFunction) !== "function") {
             throw new Error(`No order '${order.name}' found in humanPlayer`);

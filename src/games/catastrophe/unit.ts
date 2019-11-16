@@ -1,11 +1,10 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, IUnitState } from "./state-interfaces";
+import { CatastropheDelta, ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -70,7 +69,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** The tile we are harvesting from, if we are. */
     public harvestTile?: ITileState;
     /** the job we changed to, if we did. */
-    public jobChanged?: string;
+    public jobChanged?: IJobState["title"];
     /** The id of the player we are changing to, if we are. */
     public playerChange?: string;
     /** The direction we are facing. */
@@ -157,8 +156,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -314,8 +313,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<CatastropheDelta>,
+        nextDelta: Immutable<CatastropheDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
@@ -331,7 +330,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
                 this.attackingTile = tile && tile.getCurrentMostState();
             }
             else if (data.run.functionName === "changeJob" && data.returned) {
-                this.jobChanged = String(data.run.args.job);
+                this.jobChanged = String(data.run.args.job) as IJobState["title"];
             }
             else if (data.run.functionName === "harvest" && data.returned) {
                 this.harvestTile = tile && tile.getCurrentMostState();
@@ -402,7 +401,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public attack(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("attack", {tile}, callback);
     }
 
@@ -413,7 +415,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully changed
      * Jobs, false otherwise.
      */
-    public changeJob(job: string, callback?: (returned: boolean) => void): void {
+    public changeJob(
+        job: "soldier" | "gatherer" | "builder" | "missionary",
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("changeJob", {job}, callback);
     }
 
@@ -426,8 +431,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully constructed
      * a structure, false otherwise.
      */
-    public construct(tile: ITileState, type: string, callback?: (returned:
-                     boolean) => void,
+    public construct(
+        tile: ITileState,
+        type: "neutral" | "shelter" | "monument" | "wall" | "road",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("construct", {tile, type}, callback);
     }
@@ -439,7 +446,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully converted,
      * false otherwise.
      */
-    public convert(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public convert(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("convert", {tile}, callback);
     }
 
@@ -451,7 +461,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully
      * deconstructed, false otherwise.
      */
-    public deconstruct(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public deconstruct(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("deconstruct", {tile}, callback);
     }
 
@@ -466,8 +479,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully dropped the
      * resource, false otherwise.
      */
-    public drop(tile: ITileState, resource: string, amount: number, callback?:
-                (returned: boolean) => void,
+    public drop(
+        tile: ITileState,
+        resource: "materials" | "food",
+        amount: number,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("drop", {tile, resource, amount}, callback);
     }
@@ -479,7 +495,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully harvested,
      * false otherwise.
      */
-    public harvest(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public harvest(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("harvest", {tile}, callback);
     }
 
@@ -490,7 +509,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(tile: ITileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: ITileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {tile}, callback);
     }
 
@@ -505,8 +527,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully picked up a
      * resource, false otherwise.
      */
-    public pickup(tile: ITileState, resource: string, amount: number, callback?:
-                  (returned: boolean) => void,
+    public pickup(
+        tile: ITileState,
+        resource: "materials" | "food",
+        amount: number,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("pickup", {tile, resource, amount}, callback);
     }
@@ -518,7 +543,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully rested,
      * false otherwise.
      */
-    public rest(callback?: (returned: boolean) => void): void {
+    public rest(
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("rest", {}, callback);
     }
 

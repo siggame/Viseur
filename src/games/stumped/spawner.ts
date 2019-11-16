@@ -1,11 +1,10 @@
 // This is a class to represent the Spawner object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ISpawnerState } from "./state-interfaces";
+import { ISpawnerState, StumpedDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -76,8 +75,8 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<ISpawnerState>,
         next: Immutable<ISpawnerState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
@@ -151,8 +150,8 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<ISpawnerState>,
         next: Immutable<ISpawnerState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StumpedDelta>,
+        nextDelta: Immutable<StumpedDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 

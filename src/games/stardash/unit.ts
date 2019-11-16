@@ -1,15 +1,14 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
-import { Delta } from "@cadre/ts-utils/cadre";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBodyState, IProjectileState, IUnitState } from "./state-interfaces";
+import { IBodyState, IProjectileState, IUnitState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
-import { ease, pixiFade } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
+import { ease } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 
@@ -42,6 +41,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** TODO: document */
     public healthBar: GameBar;
+
+    /** TODO: document */
+    public shield: PIXI.Sprite;
+
+    /** TODO: document */
+    public readonly rotationOffset: number = Math.asin(1);
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -61,31 +66,66 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
 
+        this.shield = this.addSprite.shield(
+            {
+
+                relativeScale: this.game.scaler * 105,
+                relativePivot: 0.5,
+            });
+        this.shield.setParent(this.game.layers.shield);
+        this.shield.tint = this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.shield.alpha = 0.6;
+        this.shield.visible = false;
+
         if (state.job.id === "2") {
-            this.jobSprite = this.addSprite.corvette();
+            this.jobSprite = this.addSprite.corvette(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.job.id === "3") {
-            this.jobSprite = this.addSprite.missleboat();
+            this.jobSprite = this.addSprite.missleboat(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else if (state.job.id === "4") {
-            this.jobSprite = this.addSprite.martyr();
+            this.jobSprite = this.addSprite.martyr(
+                {
+                    relativePivot: 0.5,
+                });
+            this.shield.visible = true;
+            this.shield.x = this.container.x;
+            this.shield.y = this.container.y;
         }
         else if (state.job.id === "5") {
-            this.jobSprite = this.addSprite.transport();
+            this.jobSprite = this.addSprite.transport(
+                {
+                    relativePivot: 0.5,
+                });
+        }
+        else if (state.job.id === "6") {
+            this.jobSprite = this.addSprite.miner(
+                {
+                    relativePivot: 0.5,
+                });
         }
         else {
-            this.jobSprite = this.addSprite.miner();
+            this.jobSprite = this.addSprite.test(
+                {
+                    relativePivot: 0.5,
+                });
         }
-        if (state.job.id === "5") {
-            this.jobSprite.scale.set(1 * .1, 1 * .1);
-        }
-        else {
-            this.jobSprite.scale.set(1 * .01, 1 * .01);
-        }
+        this.jobSprite.scale.x *= this.game.scaler * 20;
+        this.jobSprite.scale.y *= this.game.scaler * 20;
+
+        // offset ships to point to the sun when spawned.
+        this.jobSprite.rotation += (this.rotationOffset * (this.ownerID === "1" ? -1 : 1));
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
         barContainer.position.y -= 30;
+        barContainer.position.x -= 24;
         this.healthBar = new GameBar(barContainer, {
             max: state.job.energy,
             visibilitySetting: this.game.settings.displayHealthBars,
@@ -111,38 +151,35 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         dt: number,
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        // const shield = PIXI.Sprite.fromImage("resources/shield.png");
-        // shield.scale.set(1 * .1, 1 * .1);
         // render where the Unit is
         if (next.energy <= 0) {
             this.container.visible = false;
+            this.shield.visible = false;
 
             return;
         }
-        this.container.visible = true;
+
         this.container.position.set(
             ease(current.x, next.x, dt),
             ease(current.y, next.y, dt),
         );
-        if (next.shield > 0 || next.protector !== null) {
-            this.jobSprite.mask = this.addSprite.shield();
-            this.jobSprite.mask.x -= 11;
-            this.jobSprite.mask.y -= 14;
-            this.jobSprite.mask.scale.set(1 * .12, 1 * .12);
-            this.jobSprite.mask.alpha = 0.05;
+
+        if (next.shield > 0) {
+            this.shield.visible = true;
+            this.shield.x = this.container.x;
+            this.shield.y = this.container.y;
         }
         else {
-            this.jobSprite.mask = null;
+            this.shield.visible = false;
         }
 
         this.healthBar.update(ease(current.energy, next.energy, dt));
-        pixiFade(this.container, dt, current.energy, next.energy);
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -187,13 +224,20 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public stateUpdated(
         current: Immutable<IUnitState>,
         next: Immutable<IUnitState>,
-        delta: Immutable<Delta>,
-        nextDelta: Immutable<Delta>,
+        delta: Immutable<StardashDelta>,
+        nextDelta: Immutable<StardashDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Unit based off its states
+        // if there was a change in the location...
+        if (current.x !== next.x || current.y !== next.y) {
+            // get the angle between the two points(fancy stuff here)
+            const rot = Math.atan2(next.y - current.y, next.x - current.x);
+            // apply rotation with consideration to offset we did in initialization.
+            this.jobSprite.rotation = rot + this.rotationOffset;
+        }
         // <<-- /Creer-Merge: state-updated -->>
     }
 
@@ -212,7 +256,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public attack(enemy: IUnitState, callback?: (returned: boolean) => void): void {
+    public attack(
+        enemy: IUnitState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("attack", {enemy}, callback);
     }
 
@@ -224,23 +271,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public dash(x: number, y: number, callback?: (returned: boolean) => void): void {
-        this.runOnServer("dash", {x, y}, callback);
-    }
-
-    /**
-     * tells you if your ship can dash to that location from where it is without
-     * clipping the sun.
-     * @param x The x position of the location you wish to arrive.
-     * @param y The y position of the location you wish to arrive.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if pathable by this unit,
-     * false otherwise.
-     */
-    public isDashable(x: number, y: number, callback?: (returned: boolean) =>
-                      void,
+    public dash(
+        x: number,
+        y: number,
+        callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("isDashable", {x, y}, callback);
+        this.runOnServer("dash", {x, y}, callback);
     }
 
     /**
@@ -250,7 +286,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully acted,
      * false otherwise.
      */
-    public mine(body: IBodyState, callback?: (returned: boolean) => void): void {
+    public mine(
+        body: IBodyState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("mine", {body}, callback);
     }
 
@@ -262,20 +301,28 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(x: number, y: number, callback?: (returned: boolean) => void): void {
+    public move(
+        x: number,
+        y: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", {x, y}, callback);
     }
 
     /**
-     * tells you if your ship can move to that location from were it is landing
-     * in the sun.
+     * tells you if your ship can move to that location from were it is without
+     * clipping the sun.
      * @param x The x position of the location you wish to arrive.
      * @param y The y position of the location you wish to arrive.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if pathable by this unit,
      * false otherwise.
      */
-    public safe(x: number, y: number, callback?: (returned: boolean) => void): void {
+    public safe(
+        x: number,
+        y: number,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("safe", {x, y}, callback);
     }
 
@@ -286,8 +333,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
-    public shootdown(missile: IProjectileState, callback?: (returned: boolean)
-                     => void,
+    public shootdown(
+        missile: IProjectileState,
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("shootdown", {missile}, callback);
     }
@@ -303,8 +351,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully taken,
      * false otherwise.
      */
-    public transfer(unit: IUnitState, amount: number, material: string,
-                    callback?: (returned: boolean) => void,
+    public transfer(
+        unit: IUnitState,
+        amount: number,
+        material: "genarium" | "rarium" | "legendarium" | "mythicite",
+        callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("transfer", {unit, amount, material}, callback);
     }

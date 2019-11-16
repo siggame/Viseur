@@ -1,4 +1,4 @@
-// This is where you build your the Human player interactions with Viseur for the Anarchy game.
+// This is where you build your the Human player interactions with Viseur for the Chess game.
 import { BaseHumanPlayer } from "src/viseur/game";
 import { Game } from "./game";
 
@@ -7,7 +7,7 @@ import { Game } from "./game";
 // <<-- /Creer-Merge: imports -->>
 
 /**
- * This is the class to play the Anarchy game as a human.
+ * This is the class to play the Chess game as a human.
  * This is similar to building an "AI", but you need to query the human player
  * for things and then use callback actions to send values to the game server.
  */
@@ -48,7 +48,7 @@ export class HumanPlayer extends BaseHumanPlayer {
      * This is called every time it is this AI.player's turn to make a move.
      * @param callback The callback that eventually returns the return value
      * from the server. - The first argument to the callback is the return
-     * value: A string in Standard Algebriac Notation (SAN) for the move you
+     * value: A string in Standard Algebraic Notation (SAN) for the move you
      * want to make. If the move is invalid or not properly formatted you will
      * lose the game.
      */
