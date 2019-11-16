@@ -352,6 +352,11 @@ export interface ITowerState extends IGameObjectState {
     attacked: boolean;
 
     /**
+     * How many turns are left before it can fire again.
+     */
+    cooldown: number;
+
+    /**
      * How much remaining health this tower has.
      */
     health: number;
