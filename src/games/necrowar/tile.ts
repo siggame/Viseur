@@ -36,8 +36,14 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public readonly castle: PIXI.Sprite | undefined;
     /** grass */
     public readonly grass: PIXI.Sprite | undefined;
+    /** islandGoldMine */
+    public readonly islandGoldmine: PIXI.Sprite | undefined;
     /** goldmine */
     public readonly goldmine: PIXI.Sprite | undefined;
+    /** unitSpawn */
+    public readonly unitSpawn: PIXI.Sprite | undefined;
+    /** workerSpawn */
+    public readonly workerSpawn: PIXI.Sprite | undefined;
     /** path */
     public readonly path: PIXI.Sprite | undefined;
     /** river */
@@ -70,10 +76,19 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.unitContainer.position.copy(this.container.position);
 
         if (state.isCastle) {
+            this.castle = this.addSprite.path({container: this.container});
             this.castle = this.addSprite.castle({ container: this.unitContainer });
+            this.unitContainer.position.x -= .5;
+            this.unitContainer.position.y -= .7;
+            this.unitContainer.scale.x *= 2;
+            this.unitContainer.scale.y *= 2;
+
         }
         if (state.isIslandGoldMine) {
-            this.goldmine = this.addSprite.goldMine({ container: this.unitContainer});
+            this.islandGoldmine = this.addSprite.islandGoldmine({ container: this.unitContainer});
+        }
+        if (state.isGoldMine) {
+            this.goldmine = this.addSprite.islandGoldmine({ container: this.unitContainer });
         }
         if (state.isGrass) {
             this.grass = this.addSprite.grass();
@@ -81,8 +96,15 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.isPath) {
             this.path = this.addSprite.path();
         }
-        if (state.isRiver) {
+        else if (state.isRiver) {
             this.river = this.addSprite.water();
+        }
+        if (state.isUnitSpawn) {
+            this.unitSpawn = this.addSprite.grass();
+            this.unitSpawn = this.addSprite.unitSpawn();
+        }
+        if (state.isWorkerSpawn) {
+            this.workerSpawn = this.addSprite.workerSpawn();
         }
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -108,6 +130,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->
+
         // <<-- /Creer-Merge: render -->>
     }
 

@@ -8,7 +8,9 @@ import { GameObject } from "./game-object";
 import { ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-import { ease } from "src/utils";
+import { ease, isObject, pixiFade , updown } from "src/utils";
+import { GameBar } from "src/viseur/game";
+import { Tile } from "./tile";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -51,16 +53,17 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public readonly wraith: PIXI.Sprite | undefined;
     /** zombie */
     public readonly zombie: PIXI.Sprite | undefined;
-
+    /** jobSprite for recoloring */
+    public readonly jobSprite: PIXI.Sprite;
     // <<-- Creer-Merge: variables -->>
     /** The id of the owner of this unit, for recoloring */
     public ownerID: string;
 
-    // /** The tile state of the tile we are attacking, if we are. */
-    // public attackingTile?: ITileState;
+    /** The tile state of the tile we are attacking, if we are. */
+    public attackingTile?: ITileState;
 
-    // /** Our health bar */
-    // public readonly healthBar: GameBar;
+    /** Our health bar */
+    public readonly healthBar: GameBar;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -76,35 +79,50 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         this.ownerID = state.owner.id;
         this.container.scale.set(OVER_SCALE + 1, OVER_SCALE + 1);
-        this.container.position.x -= OVER_SCALE / 2;
         this.container.setParent(this.game.layers.game);
 
+        this.jobSprite = new PIXI.Sprite();
         if (state.job.title === "abomination") {
+
             this.abomination = this.addSprite.abomination();
+            this.jobSprite = this.abomination;
         }
         else if (state.job.title === "hound") {
             this.dog = this.addSprite.dog();
+            this.jobSprite = this.dog;
         }
         else if (state.job.title === "ghoul") {
-            this.ghoul = this.addSprite.ghould();
+            this.ghoul = this.addSprite.ghoul();
+            this.jobSprite = this.ghoul;
         }
         else if (state.job.title === "zombie") {
             this.zombie = this.addSprite.zombie();
+            this.jobSprite = this.zombie;
         }
         else if (state.job.title === "wraith") {
-            this.abomination = this.addSprite.wraith();
+            this.wraith = this.addSprite.wraith();
+            this.jobSprite = this.wraith;
         }
         else if (state.job.title === "horseman") {
             this.horseman = this.addSprite.horseman();
+            this.jobSprite = this.horseman;
         }
         else if (state.job.title === "worker") {
             this.worker = this.addSprite.necromancer();
+            this.jobSprite = this.worker;
         }
 
         if (state.owner.id === this.game.players[0].id) {
             this.container.scale.x *= -1;
-            this.container.position.x += 1;
         }
+
+        const barContainer = new PIXI.Container();
+        barContainer.setParent(this.container);
+        barContainer.position.y -= 0.25;
+
+        this.healthBar = new GameBar(barContainer, {
+            max: state.job.health,
+        });
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -136,9 +154,21 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         this.container.visible = true;
         this.container.position.set(
-            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.x, next.tile.x, dt) + Number(this.ownerID === this.game.players[0].id),
             ease(current.tile.y, next.tile.y, dt),
-        );
+          );
+
+        this.healthBar.update(ease(current.health, next.health, dt));
+        pixiFade(this.container, dt, current.health, next.health);
+
+        if (this.attackingTile) {
+            const d = updown(dt);
+            const dx = (this.attackingTile.x - current.tile.x) / 2;
+            const dy = (this.attackingTile.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -150,7 +180,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
+        const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.jobSprite.tint = color;
+        this.healthBar.recolor(color);
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -186,7 +218,20 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Unit based off its states
+        this.attackingTile = undefined;
+        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+            if (nextDelta.data.returned) {
+                const { run } = nextDelta.data;
+                const tile = this.game.gameObjects[String(
+                    isObject(run.args.tile) && run.args.tile.id,
+                )];
+
+                switch (run.functionName) {
+                    case "attack":
+                        this.attackingTile = tile && (tile as Tile).getNextMostState();
+                }
+            }
+        }
         // <<-- /Creer-Merge: state-updated -->>
     }
 

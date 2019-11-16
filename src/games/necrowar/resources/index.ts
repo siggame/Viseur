@@ -5,12 +5,13 @@ export const GameResources = createResources("Necrowar", {
     // <<-- Creer-Merge: resources -->>
     test: load("test.png"),
     archerTower: load("archerTower.png"),
-    arrow: load("arrow.png"),
+    aoe: load("aoeTower.png"),
     ballistaArrow: load("ballistaArrow.png"),
-    ballistaTower: load("ballitsaTower.png"),
+    ballistaTower: load("ballistaTower.png"),
     castle: load("castle.png"),
     cleansingTower: load("cleansingTower.png"),
-    goldMine: load("goldMine.png"),
+    goldMine: load("goldmine1.png"),
+    islandGoldmine: load("goldmine.png"),
     grass: load("grass.png"),
     manaFish: load("manaFish.png"),
     path: load("path.png"),
@@ -18,13 +19,15 @@ export const GameResources = createResources("Necrowar", {
     water: load("water.png"),
     abomination: load("abomination.png"),
     dog: load("dog.png"),
-    ghould: load("ghoul.png"),
+    ghoul: load("ghoul.png"),
     zombie: load("zombie.png"),
     horde: load("horde.png"),
     horseman: load("horseman.png"),
     necromancer: load("necromancer.png"),
     skeleton: load("skeleton.png"),
     wraith: load("wraith.png"),
+    unitSpawn: load("spawn.png"),
+    workerSpawn: load("spawn1.png"),
 
    // <<-- /Creer-Merge: resources -->>
 });

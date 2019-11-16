@@ -8,12 +8,12 @@ import { GameObject } from "./game-object";
 import { ITileState, ITowerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -23,15 +23,22 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
-
     /** The current state of the Tower (dt = 0) */
     public current: ITowerState | undefined;
 
     /** The next state of the Tower (dt = 1) */
     public next: ITowerState | undefined;
-
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
+    /** archer */
+    public readonly archer: PIXI.Sprite | undefined;
+    /** aoe */
+    public readonly aoe: PIXI.Sprite | undefined;
+    /** cleansing */
+    public readonly cleansing: PIXI.Sprite | undefined;
+    /** ballista */
+    public readonly ballista: PIXI.Sprite | undefined;
+    /** The id of the owner of this unit, for recoloring */
+    public ownerID: string;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -45,7 +52,22 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Tower here.
+        this.ownerID = state.owner.id;
+        this.container.setParent(this.game.layers.game);
+
+        if (state.job.title === "archer") {
+            this.archer = this.addSprite.archerTower();
+        }
+        else if (state.job.title === "aoe") {
+            this.aoe = this.addSprite.aoe();
+        }
+        else if (state.job.title === "cleansing") {
+            this.cleansing = this.addSprite.cleansingTower();
+        }
+        else if (state.job.title === "ballista") {
+            this.ballista = this.addSprite.ballistaTower();
+        }
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -70,7 +92,16 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Tower is
+        if (!next.tile) {
+            this.container.visible = false;
+
+            return;
+        }
+        this.container.visible = true;
+        this.container.position.set(
+            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.y, next.tile.y, dt),
+        );
         // <<-- /Creer-Merge: render -->>
     }
 
