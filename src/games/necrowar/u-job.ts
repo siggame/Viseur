@@ -5,12 +5,11 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IuJobState } from "./state-interfaces";
+import { IUnitJobState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
-
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
 const SHOULD_RENDER = undefined;
@@ -25,13 +24,12 @@ export class uJob extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the uJob (dt = 0) */
-    public current: IuJobState | undefined;
+    public current: IUnitJobState | undefined;
 
     /** The next state of the uJob (dt = 1) */
-    public next: IuJobState | undefined;
+    public next: IUnitJobState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -41,11 +39,9 @@ export class uJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this uJob.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IuJobState, viseur: Viseur) {
+    constructor(state: IUnitJobState, viseur: Viseur) {
         super(state, viseur);
-
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new uJob here.
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -62,8 +58,8 @@ export class uJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IuJobState>,
-        next: Immutable<IuJobState>,
+        current: Immutable<IUnitJobState>,
+        next: Immutable<IUnitJobState>,
         delta: Immutable<Delta>,
         nextDelta: Immutable<Delta>,
     ): void {
@@ -110,8 +106,8 @@ export class uJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IuJobState>,
-        next: Immutable<IuJobState>,
+        current: Immutable<IUnitJobState>,
+        next: Immutable<IUnitJobState>,
         delta: Immutable<Delta>,
         nextDelta: Immutable<Delta>,
     ): void {

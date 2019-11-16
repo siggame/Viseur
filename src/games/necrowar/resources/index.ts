@@ -7,7 +7,7 @@ export const GameResources = createResources("Necrowar", {
     archerTower: load("archerTower.png"),
     arrow: load("arrow.png"),
     ballistaArrow: load("ballistaArrow.png"),
-    ballistaTower: load("ballistaTower.png"),
+    ballistaTower: load("ballitsaTower.png"),
     castle: load("castle.png"),
     cleansingTower: load("cleansingTower.png"),
     goldMine: load("goldMine.png"),
@@ -16,7 +16,15 @@ export const GameResources = createResources("Necrowar", {
     path: load("path.png"),
     pentagram: load("pentagram.png"),
     water: load("water.png"),
-    // load files like this,
-                            // and remember to remove these lines and file!
-    // <<-- /Creer-Merge: resources -->>
+    abomination: load("abomination.png"),
+    dog: load("dog.png"),
+    ghould: load("ghoul.png"),
+    zombie: load("zombie.png"),
+    horde: load("horde.png"),
+    horseman: load("horseman.png"),
+    necromancer: load("necromancer.png"),
+    skeleton: load("skeleton.png"),
+    wraith: load("wraith.png"),
+
+   // <<-- /Creer-Merge: resources -->>
 });

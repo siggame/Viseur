@@ -30,16 +30,20 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: ITileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+    /** The ID of the owner of this tile */
+    // private readonly ownerID?: string;
     /** castle */
     public readonly castle: PIXI.Sprite | undefined;
     /** grass */
-    public readonly grass: PIXI.Sprite | undefined
+    public readonly grass: PIXI.Sprite | undefined;
     /** goldmine */
     public readonly goldmine: PIXI.Sprite | undefined;
     /** path */
     public readonly path: PIXI.Sprite | undefined;
     /** river */
     public readonly river: PIXI.Sprite | undefined;
+    /** The container for all unit sprites */
+    private readonly unitContainer: PIXI.Container;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -55,21 +59,29 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.background);
-        this.container.position.set(state.x, state.y)
+        this.container.position.set(state.x, state.y);
+
+        // if (state.owner) {
+        //     this.ownerID = state.owner.id;
+        // }
+
+        this.unitContainer = new PIXI.Container();
+        this.unitContainer.setParent(this.game.layers.game);
+        this.unitContainer.position.copy(this.container.position);
 
         if (state.isCastle) {
-            this.castle = this.addSprite.castle();
+            this.castle = this.addSprite.castle({ container: this.unitContainer });
         }
-        else if (state.isGrass) {
+        if (state.isIslandGoldMine) {
+            this.goldmine = this.addSprite.goldMine({ container: this.unitContainer});
+        }
+        if (state.isGrass) {
             this.grass = this.addSprite.grass();
         }
-        else if (state.isGoldMine) {
-            this.goldmine = this.addSprite.goldMine();
-        }
-        else if (state.isPath) {
+        if (state.isPath) {
             this.path = this.addSprite.path();
         }
-        else if (state.isRiver) {
+        if (state.isRiver) {
             this.river = this.addSprite.water();
         }
         // <<-- /Creer-Merge: constructor -->>
@@ -95,8 +107,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
-        // <<-- Creer-Merge: render -->>
-        // render where the Tile is
+        // <<-- Creer-Merge: render -->
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -108,7 +119,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
     }
 
