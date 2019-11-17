@@ -131,7 +131,7 @@ export class TimeManager {
             const current = this.getCurrentTime();
             if (Math.abs(value - current.index - current.dt) > 0.10) {
                 // the change in time was too great, they probably clicked far away
-                this.pause(index, dt);
+                this.setTime(index, dt);
             }
         });
 
