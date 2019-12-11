@@ -74,7 +74,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         this.oreContainer = new PIXI.Container();
         this.oreContainer.setParent(this.game.layers.ore);
-        this.oreContainer.position.copy(this.container.position);
+        this.oreContainer.position.copyFrom(this.container.position);
 
         state.type === "conveyor"
             ? this.addSprite.conveyor()
