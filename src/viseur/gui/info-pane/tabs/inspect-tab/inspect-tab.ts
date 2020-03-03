@@ -37,7 +37,7 @@ export class InspectTab extends Tab {
         this.viseur = args.viseur;
         this.viseur.events.ready.once(({ gamelog }) => {
             this.settingsTreeView.setGameName(gamelog.gameName);
-            this.settingsTreeView.display(gamelog.settings);
+            this.settingsTreeView.display(gamelog.settings as {});
 
             this.gameTreeView.setGameName(gamelog.gameName);
             this.refreshTree(this.viseur.getCurrentState());
