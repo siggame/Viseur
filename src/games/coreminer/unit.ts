@@ -130,17 +130,16 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     //       If it does not, feel free to ignore these Joueur functions.
 
     /**
-     * Builds a support, shield, ladder, or bomb on Unit's tile, or an adjacent
-     * Tile.
+     * Builds a support, shield, or ladder on Unit's tile, or an adjacent Tile.
      * @param tile The Tile to build on.
-     * @param type The structure to build (support, ladder, shield, or bomb).
+     * @param type The structure to build (support, ladder, or shield).
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully built,
      * False otherwise.
      */
     public build(
         tile: ITileState,
-        type: "support" | "bomb" | "ladder" | "shield",
+        type: "support" | "ladder" | "shield",
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("build", {tile, type}, callback);
@@ -149,7 +148,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Dumps materials from cargo to an adjacent tile.
      * @param tile The tile the materials will be dumped on.
-     * @param material The material the Unit will drop. 'dirt' or 'ore'.
+     * @param material The material the Unit will drop. 'dirt', 'ore', or
+     * 'bomb'.
      * @param amount The number of materials to drop. Amounts <= 0 will drop all
      * the materials.
      * @param callback? The callback that eventually returns the return value
@@ -158,7 +158,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public dump(
         tile: ITileState,
-        material: "dirt" | "ore",
+        material: "dirt" | "ore" | "bomb",
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {

@@ -311,6 +311,11 @@ export interface ITileState extends IGameObjectState {
     tileWest: ITileState;
 
     /**
+     * An array of the Units on this Tile.
+     */
+    units: IUnitState[];
+
+    /**
      * The x (horizontal) position of this Tile.
      */
     x: number;
@@ -421,10 +426,9 @@ export type GameObjectLogRanDelta = IRanDelta & {
 };
 
 /**
- * The delta about what happened when a 'Player' ran their 'spawnMiner'
- * function.
+ * The delta about what happened when a 'Tile' ran their 'spawnMiner' function.
  */
-export type PlayerSpawnMinerRanDelta = IRanDelta & {
+export type TileSpawnMinerRanDelta = IRanDelta & {
     /** Data about why the run/ran occurred. */
     data: {
         /** The player that requested this game logic be ran. */
@@ -433,13 +437,13 @@ export type PlayerSpawnMinerRanDelta = IRanDelta & {
         /** The data about what was requested be run. */
         run: {
             /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IPlayerState>; // tslint:disable-line:no-banned-terms
+            caller: GameObjectInstance<ITileState>; // tslint:disable-line:no-banned-terms
 
             /** The name of the function of the caller to run. */
             functionName: "spawnMiner";
 
             /**
-             * The arguments to Player.spawnMiner,
+             * The arguments to Tile.spawnMiner,
              * as a map of the argument name to its value.
              */
             args: {
@@ -480,9 +484,9 @@ export type UnitBuildRanDelta = IRanDelta & {
                  */
                 tile: GameObjectInstance<ITileState>;
                 /**
-                 * The structure to build (support, ladder, shield, or bomb).
+                 * The structure to build (support, ladder, or shield).
                  */
-                type: "support" | "bomb" | "ladder" | "shield";
+                type: "support" | "ladder" | "shield";
             };
         };
 
@@ -520,9 +524,9 @@ export type UnitDumpRanDelta = IRanDelta & {
                  */
                 tile: GameObjectInstance<ITileState>;
                 /**
-                 * The material the Unit will drop. 'dirt' or 'ore'.
+                 * The material the Unit will drop. 'dirt', 'ore', or 'bomb'.
                  */
-                material: "dirt" | "ore";
+                material: "dirt" | "ore" | "bomb";
                 /**
                  * The number of materials to drop. Amounts <= 0 will drop all
                  * the materials.
@@ -685,7 +689,7 @@ export type AIRunTurnFinishedDelta = IFinishedDelta & {
 /** All the possible specific deltas in Coreminer. */
 export type CoreminerSpecificDelta =
     GameObjectLogRanDelta
-    | PlayerSpawnMinerRanDelta
+    | TileSpawnMinerRanDelta
     | UnitBuildRanDelta
     | UnitDumpRanDelta
     | UnitMineRanDelta
