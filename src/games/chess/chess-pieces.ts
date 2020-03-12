@@ -1,5 +1,6 @@
 import * as chessJs from "chess.js";
 import { mapValues } from "lodash";
+import * as PIXI from "pixi.js";
 import { ease, IPoint } from "src/utils";
 import { ASCII_A, BOARD_LENGTH, BOARD_MARGIN } from "./chess-board-background";
 import { Game } from "./game";
