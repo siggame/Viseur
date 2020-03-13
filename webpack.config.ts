@@ -105,6 +105,9 @@ export default (// tslint:disable-line:no-default-export
             "process.env.GIT_COMMIT_HASH": JSON.stringify(gitRevisionPlugin.commithash()),
             "process.env.GIT_BRANCH": JSON.stringify(gitRevisionPlugin.branch()),
         }),
+        new webpack.ProvidePlugin({
+            PIXI: "pixi.js", // TypeScript definitions inject this into global scope, so let's make that true at runtime
+        }),
     ],
     optimization: {
         sideEffects: true,

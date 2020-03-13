@@ -7,6 +7,7 @@ import { GameObject } from "./game-object";
 import { ITileState, NewtonianDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+import * as PIXI from "pixi.js";
 import { pixiFade } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 

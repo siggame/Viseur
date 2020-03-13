@@ -7,7 +7,7 @@ import { GameObject } from "./game-object";
 import { IBodyState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import * as PIXI from "pixi.js";
 import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
