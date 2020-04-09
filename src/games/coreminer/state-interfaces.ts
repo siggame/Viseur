@@ -17,6 +17,11 @@ export interface IGameState extends IBaseGame {
     bombCost: number;
 
     /**
+     * The amount of cargo space taken up by a bomb.
+     */
+    bombSize: number;
+
+    /**
      * The price of buying building materials.
      */
     buildingMaterialCost: number;
