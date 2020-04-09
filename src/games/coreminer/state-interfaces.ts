@@ -12,6 +12,16 @@ import { GameObjectInstance, GameSpecificDelta } from "src/viseur/game/base-delt
  */
 export interface IGameState extends IBaseGame {
     /**
+     * The price of buying a bomb.
+     */
+    bombCost: number;
+
+    /**
+     * The price of buying building materials.
+     */
+    buildingMaterialCost: number;
+
+    /**
      * The player whose turn it is currently. That player can send commands.
      * Other players cannot.
      */
