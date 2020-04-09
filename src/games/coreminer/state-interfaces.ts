@@ -39,6 +39,11 @@ export interface IGameState extends IBaseGame {
     jobs: IJobState[];
 
     /**
+     * The amount of building material required to build a ladder.
+     */
+    ladderCost: number;
+
+    /**
      * The number of Tiles in the map along the y (vertical) axis.
      */
     mapHeight: number;
@@ -67,6 +72,16 @@ export interface IGameState extends IBaseGame {
      * A unique identifier for the game instance that is being played.
      */
     session: string;
+
+    /**
+     * The amount of building material required to shield a Tile.
+     */
+    shieldCost: number;
+
+    /**
+     * The amount of building material required to build a support.
+     */
+    supportCost: number;
 
     /**
      * All the tiles in the map, stored in Row-major order. Use `x + y *
@@ -123,44 +138,29 @@ export interface IGameObjectState extends IBaseGameObject {
  */
 export interface IJobState extends IGameObjectState {
     /**
-     * The amount of cargo capacity this Unit starts with.
+     * The amount of cargo capacity this Unit starts with per level.
      */
-    cargoCapacity: number;
+    cargoCapacity: number[];
 
     /**
-     * The amount of starting health this Job has.
+     * The cost of spawning a Unit with this Job.
      */
-    health: number;
+    cost: number;
 
     /**
-     * The maximum amount of cargo capacity this Unit can have.
+     * The amount of starting health this Job has per level.
      */
-    maxCargoCapacity: number;
+    health: number[];
 
     /**
-     * The maximum amount of health this Job can have.
+     * The amount of mining power this Unit has per turn per level.
      */
-    maxHealth: number;
+    miningPower: number[];
 
     /**
-     * The maximum amount of mining power this Unit can have.
+     * The number of moves this Job can make per turn per level.
      */
-    maxMiningPower: number;
-
-    /**
-     * The maximum number of moves this Job can have.
-     */
-    maxMoves: number;
-
-    /**
-     * The amount of mining power this Unit has per turn.
-     */
-    miningPower: number;
-
-    /**
-     * The number of moves this Job can make per turn.
-     */
-    moves: number;
+    moves: number[];
 
     /**
      * The Job title. 'miner' or 'bomb'.
@@ -179,10 +179,25 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     baseTile: ITileState;
 
     /**
+     * The bombs stored in the Player's supply.
+     */
+    bombs: number;
+
+    /**
+     * The building material stored in the Player's supply.
+     */
+    buildingMaterials: number;
+
+    /**
      * What type of client this is, e.g. 'Python', 'JavaScript', or some other
      * language. For potential data mining purposes.
      */
     clientType: string;
+
+    /**
+     * The dirt stored in the Player's supply.
+     */
+    dirt: number;
 
     /**
      * The Tiles this Player's hoppers are on.
@@ -193,6 +208,11 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
      * If the player lost the game or not.
      */
     lost: boolean;
+
+    /**
+     * The amount of money this Player currently has.
+     */
+    money: number;
 
     /**
      * The name of the player.
@@ -213,6 +233,16 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
      * The reason why the player won the game.
      */
     reasonWon: string;
+
+    /**
+     * The Tiles on this Player's side of the map.
+     */
+    side: ITileState[];
+
+    /**
+     * The Tiles this Player may spawn Units on.
+     */
+    spawnTiles: ITileState[];
 
     /**
      * The amount of time (in ns) remaining for this AI to send commands.
@@ -256,7 +286,7 @@ export interface ITileState extends IGameObjectState {
     isFalling: boolean;
 
     /**
-     * Whether or not a hopper is placed on this Tile.
+     * Whether or not a hopper is on this Tile.
      */
     isHopper: boolean;
 
@@ -276,8 +306,8 @@ export interface ITileState extends IGameObjectState {
     ore: number;
 
     /**
-     * The owner of this Tile, or null if owned by no-one. Only for bases and
-     * hoppers.
+     * The owner of this Tile, or undefined if owned by no-one. Only for bases
+     * and hoppers.
      */
     owner: IPlayerState;
 
@@ -360,6 +390,26 @@ export interface IUnitState extends IGameObjectState {
     job: IJobState;
 
     /**
+     * The maximum amount of cargo this Unit can carry.
+     */
+    maxCargoCapacity: number;
+
+    /**
+     * The maximum health of this Unit.
+     */
+    maxHealth: number;
+
+    /**
+     * The maximum mining power of this Unit.
+     */
+    maxMiningPower: number;
+
+    /**
+     * The maximum moves this Unit can have.
+     */
+    maxMoves: number;
+
+    /**
      * The remaining mining power this Unit has this turn.
      */
     miningPower: number;
@@ -422,6 +472,90 @@ export type GameObjectLogRanDelta = IRanDelta & {
          * This run delta does not return a value.
          */
         returned: void;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Player' ran their 'buy' function.
+ */
+export type PlayerBuyRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IPlayerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "buy";
+
+            /**
+             * The arguments to Player.buy,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The type of resource to buy.
+                 */
+                resource: "dirt" | "bomb" | "buildingMaterials";
+                /**
+                 * The amount of resource to buy.
+                 */
+                amount: number;
+            };
+        };
+
+        /**
+         * True if successfully purchased, false otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Player' ran their 'transfer' function.
+ */
+export type PlayerTransferRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IPlayerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "transfer";
+
+            /**
+             * The arguments to Player.transfer,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The Unit to transfer materials to.
+                 */
+                unit: GameObjectInstance<IUnitState>;
+                /**
+                 * The type of resource to transfer.
+                 */
+                resource: "dirt" | "bomb" | "buildingMaterials";
+                /**
+                 * The amount of resource to transfer.
+                 */
+                amount: number;
+            };
+        };
+
+        /**
+         * True if successfully transfered, false otherwise.
+         */
+        returned: boolean;
     };
 };
 
@@ -689,6 +823,8 @@ export type AIRunTurnFinishedDelta = IFinishedDelta & {
 /** All the possible specific deltas in Coreminer. */
 export type CoreminerSpecificDelta =
     GameObjectLogRanDelta
+    | PlayerBuyRanDelta
+    | PlayerTransferRanDelta
     | TileSpawnMinerRanDelta
     | UnitBuildRanDelta
     | UnitDumpRanDelta

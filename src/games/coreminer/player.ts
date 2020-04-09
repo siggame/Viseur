@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CoreminerDelta, IPlayerState } from "./state-interfaces";
+import { CoreminerDelta, IPlayerState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -124,6 +124,46 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
+
+    // <Joueur functions> --- functions invoked for human playable client
+    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
+    //       If it does not, feel free to ignore these Joueur functions.
+
+    /**
+     * Purchases a resource and adds it to the Player's supply.
+     * @param resource The type of resource to buy.
+     * @param amount The amount of resource to buy.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully purchased,
+     * false otherwise.
+     */
+    public buy(
+        resource: "dirt" | "bomb" | "buildingMaterials",
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
+        this.runOnServer("buy", {resource, amount}, callback);
+    }
+
+    /**
+     * Transfers a resource from the Player's supply to a Unit.
+     * @param unit The Unit to transfer materials to.
+     * @param resource The type of resource to transfer.
+     * @param amount The amount of resource to transfer.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully transfered,
+     * false otherwise.
+     */
+    public transfer(
+        unit: IUnitState,
+        resource: "dirt" | "bomb" | "buildingMaterials",
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
+        this.runOnServer("transfer", {unit, resource, amount}, callback);
+    }
+
+    // </Joueur functions>
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
