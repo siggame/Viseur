@@ -116,6 +116,26 @@ export interface IGameState extends IBaseGame {
     units: IUnitState[];
 
     /**
+     * The cost to upgrade a Unit's cargo capacity.
+     */
+    upgradeCargoCapacityCost: number;
+
+    /**
+     * The cost to upgrade a Unit's health.
+     */
+    upgradeHealthCost: number;
+
+    /**
+     * The cost to upgrade a Unit's mining power.
+     */
+    upgradeMiningPowerCost: number;
+
+    /**
+     * The cost to upgrade a Unit's movement speed.
+     */
+    upgradeMovesCost: number;
+
+    /**
      * The amount of victory points required to win.
      */
     victoryAmount: number;
