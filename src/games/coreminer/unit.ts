@@ -7,12 +7,16 @@ import { GameObject } from "./game-object";
 import { CoreminerDelta, ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+// <<-- Creer-Merge: imports -->>
+import { ease, pixiFade , updown } from "src/utils";
+import { GameBar } from "src/viseur/game";
+const OVER_SCALE = 0.1;
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -30,6 +34,20 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IUnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+
+    public readonly miner: PIXI.Sprite | undefined;
+
+    public readonly bomb: PIXI.Sprite | undefined;
+
+    /** The id of the owner of this unit, for recoloring */
+    public ownerID: string;
+
+    /** The tile state of the tile we are attacking, if we are. */
+    public attackingTile?: ITileState;
+
+    /** Our health bar */
+    public readonly healthBar: GameBar;
+
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
@@ -44,6 +62,65 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
+
+        this.ownerID = state.owner.id;
+        this.container.scale.set(OVER_SCALE + 1, OVER_SCALE + 1);
+        this.container.setParent(this.game.layers.game);
+
+
+        if (state.job.title === "miner"){
+            if ((state.job.health.indexOf(state.maxHealth) === 0) && (state.job.health.indexOf(state.maxCargoCapacity) === 0) && (state.job.health.indexOf(state.maxMiningPower) === 0) && (state.job.health.indexOf(state.maxMoves) === 0)){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.defaultMinerP1(): this.addSprite.defaultMinerP2());
+            }
+            else if (state.job.health.indexOf(state.maxHealth) === 1){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerHealthUp1P1(): this.addSprite.minerHealthUp1P2());
+            }
+            else if (state.job.health.indexOf(state.maxHealth) === 2){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerHealthUp2P1(): this.addSprite.minerHealthUp2P2());
+            }
+            else if (state.job.health.indexOf(state.maxHealth) === 3){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerHealthUp3P1(): this.addSprite.minerHealthUp3P2());
+            }
+
+            else if (state.job.health.indexOf(state.maxCargoCapacity) === 1){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerCargoUp1P1(): this.addSprite.minerCargoUp1P2());
+            }
+            else if (state.job.health.indexOf(state.maxCargoCapacity) === 2){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerCargoUp2P1(): this.addSprite.minerCargoUp2P2());
+            }
+            else if (state.job.health.indexOf(state.maxCargoCapacity) === 3){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerCargoUp3P1(): this.addSprite.minerCargoUp3P2());
+            }
+
+            else if (state.job.health.indexOf(state.maxMiningPower) === 1){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerPowerUp1P1(): this.addSprite.minerPowerUp1P2());
+            }
+            else if (state.job.health.indexOf(state.maxMiningPower) === 2){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerPowerUp2P1(): this.addSprite.minerPowerUp2P2());
+            }
+            else if (state.job.health.indexOf(state.maxMiningPower) === 3){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerPowerUp3P1(): this.addSprite.minerPowerUp3P2());
+            }
+
+            else if (state.job.health.indexOf(state.maxMoves) === 1){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerMoveUp1P1(): this.addSprite.minerMoveUp1P2());
+            }
+            else if (state.job.health.indexOf(state.maxMoves) === 2){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerMoveUp2P1(): this.addSprite.minerMoveUp2P2());
+            }
+            else if (state.job.health.indexOf(state.maxMoves) === 3){
+                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerMoveUp3P1(): this.addSprite.minerMoveUp3P2());
+            }
+        }
+
+        else if (state.job.title === "bomb"){
+            this.bomb = this.addSprite.bomb();
+        }
+        //Flip
+        if (state.owner.id === this.game.players[1].id) {
+            this.container.scale.x *= -1;
+        }
+
         // You can initialize your new Unit here.
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -67,7 +144,28 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<CoreminerDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
+        if (!next.tile) {
+            this.container.visible = false;
 
+            return;
+        }
+        this.container.visible = true;
+        this.container.position.set(
+            ease(current.tile.x, next.tile.x, dt) + Number(this.ownerID === this.game.players[0].id),
+            ease(current.tile.y, next.tile.y, dt),
+          );
+
+        this.healthBar.update(ease(current.health, next.health, dt));
+        pixiFade(this.container, dt, current.health, next.health);
+
+        if (this.attackingTile) {
+            const d = updown(dt);
+            const dx = (this.attackingTile.x - current.tile.x) / 2;
+            const dy = (this.attackingTile.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }
         // <<-- Creer-Merge: render -->>
         // render where the Unit is
         // <<-- /Creer-Merge: render -->>

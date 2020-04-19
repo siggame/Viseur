@@ -31,6 +31,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+
+    public readonly base: PIXI.Sprite | undefined;
+
+    public readonly hopper: PIXI.Sprite | undefined;
+
+    public readonly dirt: PIXI.Sprite | undefined;
+
+    public readonly ladder: PIXI.Sprite | undefined;
+
+    public readonly support: PIXI.Sprite | undefined;
+
+    public readonly ore: PIXI.Sprite | undefined;
+
+    public readonly shield: PIXI.Sprite | undefined;
+
+    private readonly unitContainer: PIXI.Container;
+
+    public ownerID: string;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -46,6 +64,17 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Tile here.
         // <<-- /Creer-Merge: constructor -->>
+        this.ownerID = state.owner.id;
+        this.container.setParent(this.game.layers.background);
+        this.container.position.set(state.x, state.y);
+
+        // if (state.owner) {
+        //     this.ownerID = state.owner.id;
+        // }
+
+        this.unitContainer = new PIXI.Container();
+        this.unitContainer.setParent(this.game.layers.game);
+        this.unitContainer.position.copy(this.container.position);
     }
 
     /**
