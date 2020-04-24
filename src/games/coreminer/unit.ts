@@ -1,5 +1,6 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
+import * as PIXI from "pixi.js";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
