@@ -84,7 +84,7 @@ export class Game extends BaseGame {
         return {
             // <<-- Creer-Merge: get-size -->>
             width: state.mapWidth, // Change these. Probably read in the map's width
-            height: state.mapWidth, // and height from the initial state here.
+            height: state.mapHeight, // and height from the initial state here.
             // <<-- /Creer-Merge: get-size -->>
         };
     }
