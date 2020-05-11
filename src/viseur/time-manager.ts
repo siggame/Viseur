@@ -173,7 +173,7 @@ export class TimeManager {
         }
 
         // check if we need to pause and go back a very small amount
-        const backPause = (this.gamelog.streaming && this.currentIndex === this.gamelog.deltas.length - 1);
+        const backPause = (this.gamelog.streaming && this.currentIndex === this.gamelog.deltas.length);
 
         if (!backPause) {
             this.events.newIndex.emit(this.currentIndex);
