@@ -5,7 +5,7 @@ import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { TypedObject } from "src/utils";
 import { Viseur } from "src/viseur";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import * as rendererHbs from "./renderer.hbs";
 import "./renderer.scss";
 
@@ -60,7 +60,7 @@ export class Renderer extends BaseElement {
         texturesLoaded: new Event<TypedObject<PIXI.LoaderResource>>(),
 
         /** Triggered when a specific id key is changed */
-        rendering: new Signal(),
+        rendering: new Event(),
     });
 
     /** The scene (root) of all PIXI objects we will render */

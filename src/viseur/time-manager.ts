@@ -2,7 +2,7 @@ import { IGamelog } from "@cadre/ts-utils/cadre";
 import { Timer } from "src/core/timer";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur/";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { IViseurGamelog } from "./game";
 
 /** Simple container for the current time of the time manager */
@@ -24,13 +24,13 @@ export class TimeManager {
         newIndex: new Event<number>(),
 
         /** Triggered when we starting ticking (playing) */
-        playing: new Signal(),
+        playing: new Event(),
 
         /** Triggered when we stop ticking (pause) */
-        paused: new Signal(),
+        paused: new Event(),
 
         /** Triggered when we reach the end of the indexes we can iterate through */
-        ended: new Signal(),
+        ended: new Event(),
     });
 
     /** The current index  to render */

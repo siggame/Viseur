@@ -1,12 +1,12 @@
 import { clamp } from "lodash";
-import { events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 
 /** Ticks at a custom rate to a number of steps. */
 export class Timer {
     /** Events this class emits */
     public readonly events = events({
         /** Emitted when this timer finishes ticking */
-        finished: new Signal(),
+        finished: new Event(),
     });
 
     /** Last timer progress before being paused */

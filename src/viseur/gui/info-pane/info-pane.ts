@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
 import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { GUI } from "../gui";
 import * as infoPaneHbs from "./info-pane.hbs";
 import "./info-pane.scss";
@@ -34,10 +34,10 @@ export class InfoPane extends BaseElement {
         }>>(),
 
         /** Emitted when this starts resizing */
-        resizeStart: new Signal(),
+        resizeStart: new Event(),
 
         /** Emitted when this stops resizing */
-        resizeEnd: new Signal(),
+        resizeEnd: new Event(),
     });
 
     /** The GUI this InfoPane is a part of */

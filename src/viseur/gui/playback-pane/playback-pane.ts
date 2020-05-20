@@ -5,7 +5,7 @@ import * as inputs from "src/core/ui/inputs";
 import { Viseur } from "src/viseur";
 import { viseurConstructed } from "src/viseur/constructed";
 import { IGamelogWithReverses } from "src/viseur/game/gamelog";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { KEYS } from "../keys";
 import * as playbackPaneHbs from "./playback-pane.hbs";
 import "./playback-pane.scss";
@@ -18,16 +18,16 @@ export class PlaybackPane extends BaseElement {
         playbackSlide: new Event<number>(),
 
         /** Emitted when fullscreen is toggled */
-        toggleFullscreen: new Signal(),
+        toggleFullscreen: new Event(),
 
         /** Emitted when we want to go to the next state */
-        next: new Signal(),
+        next: new Event(),
 
         /** Emitted when we want to go to the previous state */
-        back: new Signal(),
+        back: new Event(),
 
         /** Emitted when we want play or pause (toggled) */
-        playPause: new Signal(),
+        playPause: new Event(),
     });
 
     /** The Viseur instance that controls this */

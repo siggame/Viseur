@@ -1,6 +1,6 @@
 import { partial } from "src/core/partial";
 import { Viseur } from "src/viseur";
-import { events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { BaseElement, IBaseElementArgs } from "../base-element";
 import * as tabContentHbs from "./tab-content.hbs";
 import * as tabHbs from "./tab.hbs";
@@ -26,7 +26,7 @@ export class Tab extends BaseElement {
     /** The events this class emits. */
     public readonly events = events({
         /** Emitted when this tab's tab is selected. */
-        selected: new Signal(),
+        selected: new Event(),
     });
 
     /** The clickable tab on the tabular that shows the content in the tabular. */

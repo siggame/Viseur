@@ -3,7 +3,7 @@ import * as ServerEvents from "@cadre/ts-utils/cadre/events/server";
 import { FirstArgument, Immutable, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { IViseurGamelog } from "src/viseur/game";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import * as serializer from "./serializer";
 
 // handy types to access the "data" property of our events
@@ -44,7 +44,7 @@ export class Joueur {
         error: new Event<Error>(),
 
         /** Emitted once this initially connects to the tournament server */
-        connected: new Signal(),
+        connected: new Event(),
 
         /** Emitted once the connection is closed */
         closed: new Event<{

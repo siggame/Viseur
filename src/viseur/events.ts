@@ -1,5 +1,5 @@
 import { Immutable } from "src/utils";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { BaseGame } from "./game/base-game";
 import { IGamelogWithReverses } from "./game/gamelog";
 import { IViseurGameState } from "./game/interfaces";
@@ -17,7 +17,7 @@ export const ViseurEvents = events({
     timeUpdated: new Event<Immutable<ICurrentTime>>(),
 
     /** Triggers literally 1 second after the ready event */
-    delayedReady: new Signal(),
+    delayedReady: new Event(),
 
     /** Triggers when all async events are done and we are ready to being normal operations */
     ready: new Event<Readonly<{
@@ -55,7 +55,7 @@ export const ViseurEvents = events({
     // -- connection events -- \\
 
     /** Triggers when a connection event occurs and we have some message to send */
-    connectionConnected: new Signal(),
+    connectionConnected: new Event(),
 
     /** Triggers when a connection event occurs and we have some message to send */
     connectionMessage: new Event<string>(),

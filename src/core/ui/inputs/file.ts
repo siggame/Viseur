@@ -1,4 +1,4 @@
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
 /** An input for files */
@@ -6,7 +6,7 @@ export class FileInput extends BaseInput<undefined> {
     /** Events this class emits */
     public readonly events = events.concat(super.events, {
         /** Triggered when the button is clicked */
-        loading: new Signal(),
+        loading: new Event(),
 
         /** Triggered once a file has been loaded */
         loaded: new Event<string>(),

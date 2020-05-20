@@ -1,5 +1,5 @@
 import { Immutable } from "src/utils";
-import { events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { DisableableElement, IDisableableElementArgs } from "../../disableable-element";
 import * as buttonHbs from "./button.hbs";
 
@@ -8,7 +8,7 @@ export class Button extends DisableableElement {
     /** Events this class emits */
     public readonly events = events({
         /** Emitted when this button is clicked */
-        clicked: new Signal(),
+        clicked: new Event(),
     });
 
     /**

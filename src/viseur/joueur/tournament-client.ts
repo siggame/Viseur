@@ -1,6 +1,6 @@
 import { FirstArgument, Immutable, isObject } from "src/utils";
 import { Viseur } from "src/viseur";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 
 /** Data sent from the Tournament server detailing how to connect to play */
 export interface ITournamentPlayData {
@@ -29,10 +29,10 @@ export class TournamentClient {
         error: new Event<Error>(),
 
         /** Emitted once this initially connects to the tournament server */
-        connected: new Signal(),
+        connected: new Event(),
 
         /** Emitted once the connection is closed */
-        closed: new Signal(),
+        closed: new Event(),
 
         /** Emitted any time the tournament server sends a message */
         messaged: new Event<string>(),
