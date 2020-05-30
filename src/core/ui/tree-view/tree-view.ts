@@ -69,10 +69,12 @@ export class TreeView extends BaseElement {
      *
      * @param args - The base input args.
      */
-    constructor(args: IBaseElementArgs & {
-        /** The name of the root */
-        name: string;
-    }) {
+    constructor(
+        args: IBaseElementArgs & {
+            /** The name of the root */
+            name: string;
+        },
+    ) {
         super(args, treeViewHbs);
 
         this.name = args.name;
@@ -104,8 +106,7 @@ export class TreeView extends BaseElement {
         let formatted = String(value);
         if (Array.isArray(value)) {
             formatted = `Array[${value.length}]`;
-        }
-        else if (isObject(value)) {
+        } else if (isObject(value)) {
             formatted = "Object";
         }
 
@@ -119,10 +120,11 @@ export class TreeView extends BaseElement {
      * @param parent - the parent node. If none then this is assume to be the root node.
      * @returns The newly created node, inserted as necessary.
      */
-    protected createNewNode(key: string | number, parent?: ITreeViewNode): ITreeViewNode {
-        const $parent = parent
-            ? parent.$children
-            : this.element;
+    protected createNewNode(
+        key: string | number,
+        parent?: ITreeViewNode,
+    ): ITreeViewNode {
+        const $parent = parent ? parent.$children : this.element;
         const $element = partial(treeViewNodeHbs, { key }, $parent);
 
         const node = {
@@ -162,8 +164,7 @@ export class TreeView extends BaseElement {
 
             if (a === b) {
                 return 0;
-            }
-            else {
+            } else {
                 return a < b ? -1 : 1;
             }
         });
@@ -176,8 +177,13 @@ export class TreeView extends BaseElement {
      * @param parentNode - The parent node of the Treeable, if a child node with the given key is not found, this will
      * have a new child added to it.
      */
-    private deepDisplay(key: string | number, treeable: Treeable, parentNode: ITreeViewNode): void {
-        const node = parentNode.children[key] || this.createNewNode(key, parentNode);
+    private deepDisplay(
+        key: string | number,
+        treeable: Treeable,
+        parentNode: ITreeViewNode,
+    ): void {
+        const node =
+            parentNode.children[key] || this.createNewNode(key, parentNode);
         node.flag = this.currentUnusedFlag;
 
         if (node.children !== undefined) {
@@ -221,8 +227,7 @@ export class TreeView extends BaseElement {
             for (const key of keys) {
                 this.deepDisplay(key, tree[key], node);
             }
-        }
-        else {
+        } else {
             node.$children.empty();
             node.children = {};
         }
@@ -247,7 +252,9 @@ export class TreeView extends BaseElement {
             for (const key of keys) {
                 const child = node.children[key];
                 if (!child) {
-                    throw new Error(`tree view ${key} should never have undefined children!`);
+                    throw new Error(
+                        `tree view ${key} should never have undefined children!`,
+                    );
                 }
 
                 this.pruneUnusedNodes(child);

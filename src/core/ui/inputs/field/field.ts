@@ -1,11 +1,14 @@
 import { BaseElement } from "src/core/ui/base-element";
-import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
+import {
+    DisableableElement,
+    IDisableableElementArgs,
+} from "src/core/ui/disableable-element";
 import * as fieldHbs from "./field.hbs";
 import "./field.scss";
 
-/** A wrapper for an Input that gives it a label */
+/** A wrapper for an Input that gives it a label. */
 export class Field extends DisableableElement {
-    /** The input this is a field for */
+    /** The input this is a field for. */
     public readonly input: BaseElement;
 
     /**
@@ -13,16 +16,20 @@ export class Field extends DisableableElement {
      *
      * @param args - This must include an input and label for the field.
      */
-    constructor(args: Readonly<IDisableableElementArgs & {
-        /** the input this is a field for */
-        input: BaseElement;
+    constructor(
+        args: Readonly<
+            IDisableableElementArgs & {
+                /** The input this is a field for. */
+                input: BaseElement;
 
-        /** the label text */
-        label: string;
+                /** The label text. */
+                label: string;
 
-        /** the title for the label */
-        hint?: string;
-    }>) {
+                /** The title for the label. */
+                hint?: string;
+            }
+        >,
+    ) {
         super(args, fieldHbs);
 
         this.input = args.input;

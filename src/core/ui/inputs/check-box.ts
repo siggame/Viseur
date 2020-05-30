@@ -1,7 +1,7 @@
 import { Immutable } from "src/utils";
 import { BaseInput, IBaseInputArgs } from "./base-input";
 
-/** a checkbox for booleans */
+/** A checkbox for booleans. */
 export class CheckBox extends BaseInput<boolean> {
     /**
      * Creates a checkbox for boolean values.

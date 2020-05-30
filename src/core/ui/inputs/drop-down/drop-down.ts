@@ -5,10 +5,10 @@ import * as dropDownOptionHbs from "./drop-down-option.hbs";
 import * as dropDownHbs from "./drop-down.hbs";
 /** An option on the drop down. */
 export interface IDropDownOption<T> {
-    /** the display text */
+    /** The display text. */
     text: string;
 
-    /** the selected value */
+    /** The selected value. */
     value: T;
 }
 
@@ -18,9 +18,9 @@ export interface IDropDownArgs<T> extends IBaseInputArgs<T> {
     options: Array<string | IDropDownOption<T>>;
 }
 
-/** A select with options input */
+/** A select with options input. */
 export class DropDown<T extends string = string> extends BaseInput<T> {
-    /** The options available on this drop down menu */
+    /** The options available on this drop down menu. */
     private readonly options: Array<IDropDownOption<T>> = [];
 
     constructor(args: Immutable<IDropDownArgs<T>>) {
@@ -34,7 +34,7 @@ export class DropDown<T extends string = string> extends BaseInput<T> {
     /**
      * Sets the value to an item in the drop down.
      *
-     * @param newValue - the new value to set the drop down to.
+     * @param newValue - The new value to set the drop down to.
      */
     public set value(newValue: T) {
         if (!this.options) {
@@ -73,10 +73,10 @@ export class DropDown<T extends string = string> extends BaseInput<T> {
         this.element.html("");
 
         for (const option of options) {
-            const opt = typeof option === "string"
-                // tslint:disable-next-line:no-any no-unsafe-any
-                ? { text: option, value: option as any } // T is string
-                : option;
+            const opt: IDropDownOption<T> =
+                typeof option === "string"
+                    ? { text: option, value: option as T } // T is string
+                    : option;
 
             this.options.push(opt);
             partial(dropDownOptionHbs, opt, this.element);
@@ -84,8 +84,7 @@ export class DropDown<T extends string = string> extends BaseInput<T> {
 
         if (defaultValue !== undefined) {
             this.value = defaultValue;
-        }
-        else if (this.options[0]) {
+        } else if (this.options[0]) {
             this.value = this.options[0].value;
         }
     }

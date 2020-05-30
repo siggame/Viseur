@@ -15,13 +15,13 @@ export function partial(
     parent?: JQuery,
 ): JQuery {
     const html = hbsTemplate(args);
-    // TODO: figure out jQuery type changes and fix this any hack, or remove
-    // jQuery all together :P
-    const element = $($.parseHTML(html)) as any; // tslint:disable-line:no-any
+    const element = $($.parseHTML(html));
 
     if (parent) {
-        element.appendTo(parent); // tslint:disable-line:no-unsafe-any
+        element.appendTo(parent);
     }
 
-    return element; // tslint:disable-line:no-unsafe-any
+    // TODO: figure out jQuery type changes and fix this any hack, or remove
+    // jQuery all together :P
+    return (element as unknown) as JQuery;
 }

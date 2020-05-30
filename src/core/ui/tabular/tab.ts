@@ -50,7 +50,11 @@ export class Tab extends BaseElement {
         super(args, tabContentHbs);
 
         this.tabular = args.tabular;
-        this.content = partial(args.contentTemplate || tabContentHbs, args, this.element);
+        this.content = partial(
+            args.contentTemplate || tabContentHbs,
+            args,
+            this.element,
+        );
 
         const title = args.title || "TAB_TITLE";
         this.title = title;

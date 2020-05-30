@@ -39,9 +39,7 @@ export class Modal extends BaseElement {
             }
         });
 
-        this.content
-            .html("")
-            .append(element);
+        this.content.html("").append(element);
     }
 
     /** Hides the modal. */

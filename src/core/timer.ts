@@ -3,28 +3,28 @@ import { Event, events } from "ts-typed-events";
 
 /** Ticks at a custom rate to a number of steps. */
 export class Timer {
-    /** Events this class emits */
+    /** Events this class emits. */
     public readonly events = events({
-        /** Emitted when this timer finishes ticking */
+        /** Emitted when this timer finishes ticking. */
         finished: new Event(),
     });
 
-    /** Last timer progress before being paused */
-    private lastProgress: number = 0;
+    /** Last timer progress before being paused. */
+    private lastProgress = 0;
 
-    /** The last time (epoch) that this ticked */
-    private lastTime: number = 0;
+    /** The last time (epoch) that this ticked. */
+    private lastTime = 0;
 
-    /** The last tick callback */
+    /** The last tick callback. */
     private timeout?: number;
 
-    /** The speed at which we tick (in ms) */
-    private speed: number = 1;
+    /** The speed at which we tick (in ms). */
+    private speed = 1;
 
     /**
      * Creates a timer at some initial speed.
      *
-     * @param speed The initial speed to set to, can be changed later.
+     * @param speed - The initial speed to set to, can be changed later.
      */
     constructor(speed?: number) {
         this.setSpeed(Number(speed) || 1000);
@@ -33,7 +33,8 @@ export class Timer {
     /**
      * Sets the ticking speed of the timer, in ms.
      *
-     * @param speed - The speed to tick at, in ms. Current speed will be recalculated.
+     * @param speed - The speed to tick at, in ms.
+     * Current speed will be recalculated.
      */
     public setSpeed(speed: number): void {
         const wasTicking = this.isTicking();
@@ -53,7 +54,8 @@ export class Timer {
     /**
      * Sets the progress (how far it is to finishing).
      *
-     * @param time - Must be between [0, 1], with 0 being no progress at all, 0.5 being half, etc.
+     * @param time - Must be between [0, 1], with 0 being no progress at all,
+     * 0.5 being half, etc.
      */
     public setProgress(time: number): void {
         const wasTicking = this.isTicking();
@@ -71,7 +73,7 @@ export class Timer {
     /**
      * Restarts the timer, resetting progress to 0 then starting it back up.
      *
-     * @returns true if started ticking, false if already ticking so this did
+     * @returns True if started ticking, false if already ticking so this did
      * nothing.
      */
     public restart(): boolean {
@@ -83,7 +85,7 @@ export class Timer {
     /**
      * Starts ticking, taking saved progress into account.
      *
-     * @returns true if started ticking, false if already ticking so this did nothing.
+     * @returns True if started ticking, false if already ticking so this did nothing.
      */
     public tick(): boolean {
         if (this.timeout || this.lastProgress >= 1) {
@@ -103,7 +105,7 @@ export class Timer {
     /**
      * Checks if this timer is already ticking.
      *
-     * @returns true if ticking, false otherwise.
+     * @returns True if ticking, false otherwise.
      */
     public isTicking(): boolean {
         return this.timeout !== undefined;
@@ -112,7 +114,8 @@ export class Timer {
     /**
      * Pauses the timer.
      *
-     * @returns True if the timer was paused, false if it was not paused because it was not playing.
+     * @returns True if the timer was paused, false if it was not paused
+     * because it was not playing.
      */
     public pause(): boolean {
         if (this.timeout === undefined) {
@@ -155,8 +158,7 @@ export class Timer {
             this.pause();
 
             return true; // as we are not paused
-        }
-        else {
+        } else {
             this.tick();
 
             return false; // as we are now running

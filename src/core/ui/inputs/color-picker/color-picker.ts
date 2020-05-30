@@ -3,7 +3,7 @@ import { Immutable } from "src/utils";
 import { BaseInput, IBaseInputArgs } from "../base-input";
 import "./color-picker.scss";
 
-/** An input for colors */
+/** An input for colors. */
 export class ColorPicker extends BaseInput<string> {
     /**
      * Initializes the Color Picker Input, which only allows hex color strings.
@@ -24,8 +24,7 @@ export class ColorPicker extends BaseInput<string> {
         let parsedColor: Color;
         try {
             parsedColor = Color(newValue);
-        }
-        catch (err) {
+        } catch (err) {
             // that color is invalid, reset to white
             parsedColor = Color("white");
         }
