@@ -1,4 +1,4 @@
-import { euclideanDistance, IPoint } from "@cadre/ts-utils";
+import { euclideanDistance, Point } from "@cadre/ts-utils";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { ease } from "./easing";
@@ -11,67 +11,66 @@ export interface IPixiSpriteOptions {
     /** The container to put the sprite into. */
     container?: PIXI.Container;
 
-    /** The width to set the sprite to */
+    /** The width to set the sprite to. */
     width?: number;
 
-    /** The height to set the sprite to */
+    /** The height to set the sprite to. */
     height?: number;
 
-    /** The rotation to set the sprite to (in radians) */
+    /** The rotation to set the sprite to (in radians). */
     rotation?: number;
 
-    /** The position of the sprite */
-    position?: number | IPoint;
+    /** The position of the sprite. */
+    position?: number | Point;
 
-    /** The skew of the sprite */
-    skew?: IPoint;
+    /** The skew of the sprite. */
+    skew?: Point;
 
-    /** The pivot position for the sprite */
-    pivot?: number | IPoint;
+    /** The pivot position for the sprite. */
+    pivot?: number | Point;
 
-    /** The color to tint the sprite */
+    /** The color to tint the sprite. */
     tint?: ColorTint;
 
-    /** The relative pivot as either a single number used for the x and y, or the tuple */
-    relativePivot?: number | IPoint;
+    /** The relative pivot as either a single number used for the x and y, or the tuple. */
+    relativePivot?: number | Point;
 
-    /** Sets the blend mode */
+    /** Sets the blend mode. */
     blendMode?: number;
 
-    /** The alpha value (opacity) of the sprite */
+    /** The alpha value (opacity) of the sprite. */
     alpha?: number;
 
-    /** A name to attach to the new sprite */
+    /** A name to attach to the new sprite. */
     name?: string;
 
-    /** if set toggles visibility */
+    /** If set toggles visibility. */
     visible?: boolean;
 
-    /** The anchor for this sprite */
-    anchor?: number | IPoint;
+    /** The anchor for this sprite. */
+    anchor?: number | Point;
 
-    /** The scale, multiplied byt he current scale instead of static */
-    relativeScale?: number | IPoint;
+    /** The scale, multiplied byt he current scale instead of static. */
+    relativeScale?: number | Point;
 
-    /** A callback for if this sprite is clicked */
+    /** A callback for if this sprite is clicked. */
     onClick?(): void;
 }
 
 /**
  * Gets a tint number from a color like variable.
  *
- * @param color - A color like variable, can be the number (passed through), string color name, or the Color instance.
+ * @param color - A color like variable, can be the number (passed through),
+ * string color name, or the Color instance.
  * @returns A number that represents a color tint, such as 0xFF000 for red.
  * @example Color("red") -> 0xFF000
  */
 export function getTintFromColor(color: ColorTint): number {
-    if (typeof(color) === "number") {
+    if (typeof color === "number") {
         return color;
-    }
-    else if (typeof(color) === "string") {
+    } else if (typeof color === "string") {
         return Color(color).rgbNumber();
-    }
-    else {
+    } else {
         return color.rgbNumber();
     }
 }
@@ -105,11 +104,10 @@ export function setPixiOptions(
     let x: number;
     let y: number;
     if (options.position !== undefined) {
-        if (typeof(options.position) === "number") {
+        if (typeof options.position === "number") {
             x = options.position;
             y = options.position;
-        }
-        else {
+        } else {
             x = options.position.x;
             y = options.position.y;
         }
@@ -117,11 +115,10 @@ export function setPixiOptions(
     }
 
     if (options.skew !== undefined) {
-        if (typeof(options.skew) === "number") {
+        if (typeof options.skew === "number") {
             x = options.skew;
             y = options.skew;
-        }
-        else {
+        } else {
             x = options.skew.x;
             y = options.skew.y;
         }
@@ -129,11 +126,10 @@ export function setPixiOptions(
     }
 
     if (options.pivot !== undefined) {
-        if (typeof(options.pivot) === "number") {
+        if (typeof options.pivot === "number") {
             x = options.pivot;
             y = options.pivot;
-        }
-        else {
+        } else {
             x = options.pivot.x;
             y = options.pivot.y;
         }
@@ -155,11 +151,10 @@ export function setPixiOptions(
     }
 
     if (options.relativePivot !== undefined) {
-        if (typeof(options.relativePivot) === "number") {
+        if (typeof options.relativePivot === "number") {
             x = options.relativePivot;
             y = options.relativePivot;
-        }
-        else {
+        } else {
             x = options.relativePivot.x;
             y = options.relativePivot.y;
         }
@@ -189,11 +184,10 @@ export function setPixiOptions(
     }
 
     if (options.relativeScale) {
-        if (typeof(options.relativeScale) === "number") {
+        if (typeof options.relativeScale === "number") {
             x = options.relativeScale;
             y = options.relativeScale;
-        }
-        else {
+        } else {
             x = options.relativeScale.x;
             y = options.relativeScale.y;
         }
@@ -203,11 +197,10 @@ export function setPixiOptions(
     }
 
     if (options.anchor) {
-        if (typeof(options.anchor) === "number") {
+        if (typeof options.anchor === "number") {
             x = options.anchor;
             y = options.anchor;
-        }
-        else {
+        } else {
             x = options.anchor.x;
             y = options.anchor.y;
         }
@@ -229,12 +222,12 @@ export function setPixiOptions(
  */
 export function setRelativePivot(
     obj: PIXI.Container | PIXI.Sprite,
-    relativeX: number = 0.5,
-    relativeY: number = 0.5,
+    relativeX = 0.5,
+    relativeY = 0.5,
 ): PIXI.Container {
     obj.pivot.set(
-        relativeX * obj.width / obj.scale.x,
-        relativeY * obj.height / obj.scale.y,
+        (relativeX * obj.width) / obj.scale.x,
+        (relativeY * obj.height) / obj.scale.y,
     );
 
     return obj;
@@ -251,8 +244,8 @@ export function setRelativePivot(
  */
 export function renderSpriteBetween(
     sprite: PIXI.Sprite,
-    pointA: Readonly<IPoint>,
-    pointB: Readonly<IPoint>,
+    pointA: Readonly<Point>,
+    pointB: Readonly<Point>,
 ): void {
     const distance = euclideanDistance(pointA, pointB);
     sprite.width = distance;
@@ -277,8 +270,8 @@ export function renderSpriteBetween(
  */
 export function renderSpriteRotatedTowards(
     sprite: PIXI.Sprite,
-    pointA: Readonly<IPoint>,
-    pointB: Readonly<IPoint>,
+    pointA: Readonly<Point>,
+    pointB: Readonly<Point>,
 ): void {
     setRelativePivot(sprite, 0.5, 0.5);
 
@@ -294,24 +287,30 @@ export function renderSpriteRotatedTowards(
  * - Both > 0 :: fully visible all the time
  * - Both = 0 :: fully invisible all the time
  * - Current != 0, Next = 0 :: fade out
- * - Next != 0, Current = 0 :: fade in
+ * - Next != 0, Current = 0 :: fade in.
  *
  * @param sprite - The sprite to fade in or out.
  * @param dt - The current amount to fade in or out [0, 1). ) means no fade, 0.9999 would be almost fully faded.
  * @param current - The current number.
  * @param next - The next number.
  */
-export function pixiFade(sprite: PIXI.Container, dt: number, current: number, next: number): void {
-    if (current === 0 && next === 0) { // hide
+export function pixiFade(
+    sprite: PIXI.Container,
+    dt: number,
+    current: number,
+    next: number,
+): void {
+    if (current === 0 && next === 0) {
+        // hide
         sprite.alpha = 0;
-    }
-    else if (current !== 0 && next !== 0) { // show
+    } else if (current !== 0 && next !== 0) {
+        // show
         sprite.alpha = 1;
-    }
-    else if (current === 0 && next !== 0) { // fade in
+    } else if (current === 0 && next !== 0) {
+        // fade in
         sprite.alpha = ease(dt);
-    }
-    else { // must be fade out
+    } else {
+        // must be fade out
         sprite.alpha = ease(1 - dt);
     }
 }

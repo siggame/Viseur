@@ -11,15 +11,18 @@ import { isObject, UnknownObject } from "@cadre/ts-utils";
 export function hasGameObjectWithID<
     TObj extends UnknownObject,
     TName extends string,
-    TID extends string,
+    TID extends string
 >(
     obj: TObj,
     name: TName,
     id: TID,
-): obj is TObj & ({ [K in TName]: {
-    /** The id of the GameObject. */
-    id: TID;
-} }) {
+): obj is TObj &
+    {
+        [K in TName]: {
+            /** The id of the GameObject. */
+            id: TID;
+        };
+    } {
     const gameObject = obj[name];
     if (!isObject(gameObject)) {
         return false;
