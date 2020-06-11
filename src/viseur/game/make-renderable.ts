@@ -1,9 +1,15 @@
-import { Delta, IBaseGameObject } from "@cadre/ts-utils/cadre";
+import {
+    Delta,
+    BaseGameObject as CadreBaseGameObject,
+} from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";
 import { Constructor, ease, Immutable } from "src/utils/";
-import { createResourcesFor, ResourcesForGameObject } from "src/viseur/renderer";
+import {
+    createResourcesFor,
+    ResourcesForGameObject,
+} from "src/viseur/renderer";
 import { BaseGameObject } from "./base-game-object";
 
 /** The base constructor for any GameObject. */
@@ -15,7 +21,7 @@ type GameObjectConstructor = Constructor<BaseGameObject>;
  * @param GameObjectClass - The class constructor to mix in with.
  * @returns A new class, extends from the passed in class, now renderable.
  */
-// tslint:disable-next-line:typedef - mixin return type
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function mixRenderableGameObject<T extends GameObjectConstructor>(
     GameObjectClass: T,
 ) {
@@ -30,12 +36,18 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
         public readonly renderer = this.game.renderer;
 
         /** Factories to create new sprites as a part of this game object's container. */
-        public readonly addSprite: ResourcesForGameObject<{}> = createResourcesFor(this, this.game.resources);
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        public readonly addSprite: ResourcesForGameObject<{}> = createResourcesFor(
+            this,
+            this.game.resources,
+        );
 
-        /** Pixi text to display the last logged string */
+        /** Pixi text to display the last logged string. */
         private loggedPixiText: PIXI.Text | undefined;
 
-        constructor(...args: any[]) { // tslint:disable-line:no-any - required for mixins
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        constructor(...args: any[]) {
+            // tslint:disable-line:no-any - required for mixins
             super(...args);
 
             // initialize the container that will be rendered!
@@ -50,7 +62,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
             const onClick = (e: PIXI.interaction.InteractionEvent) => {
                 this.clicked(e);
             };
-            /** spell-checker:disable */
+            /* Spell-checker:disable */
             this.container.on("mouseupoutside", onClick);
             this.container.on("mouseup", onClick);
             this.container.on("touchend", onClick);
@@ -61,7 +73,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
             };
             this.container.on("rightup", onRightClick);
             this.container.on("rightupoutside", onRightClick);
-            /** spell-checker:enable */
+            /* Spell-checker:enable */
         }
 
         /**
@@ -77,8 +89,8 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
          */
         public render(
             dt: number,
-            current: Immutable<IBaseGameObject>,
-            next: Immutable<IBaseGameObject>,
+            current: Immutable<CadreBaseGameObject>,
+            next: Immutable<CadreBaseGameObject>,
             delta: Immutable<Delta>,
             nextDelta: Immutable<Delta>,
         ): void {
@@ -115,11 +127,12 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
          *
          * @param event - The click event.
          */
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         private clicked(event: PIXI.interaction.InteractionEvent): void {
             const menu = this.getContextMenu();
             if (menu.length > 0) {
                 const item = menu[0];
-                if (typeof(item) === "object") {
+                if (typeof item === "object") {
                     item.callback();
                 }
             }
@@ -188,7 +201,9 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
                 {
                     icon: "code",
                     text: "Inspect",
-                    description: "Reveals this GameObject in the Inspector so you can examine variable values.",
+                    description:
+                        "Reveals this GameObject in the Inspector so you can examine variable values.",
+                    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
                     callback: () => {
                         // TODO: implement
                         // this.emit("inspect");
@@ -206,16 +221,18 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
          */
         private renderLogs(
             dt: number,
-            current: Immutable<IBaseGameObject>,
-            next: Immutable<IBaseGameObject>,
+            current: Immutable<CadreBaseGameObject>,
+            next: Immutable<CadreBaseGameObject>,
         ): void {
             if (this.container && next && next.logs) {
-                if (next.logs.length > 0
-                    && this.viseur.settings.showLoggedText.get()
+                if (
+                    next.logs.length > 0 &&
+                    this.viseur.settings.showLoggedText.get()
                 ) {
-                    const alpha = (current.logs.length < next.logs.length)
-                        ? ease(dt, "cubicInOut") // fade it in
-                        : 1; // fully visible
+                    const alpha =
+                        current.logs.length < next.logs.length
+                            ? ease(dt, "cubicInOut") // fade it in
+                            : 1; // fully visible
 
                     // then they logged a string, so show it above their head
                     const str = next.logs[next.logs.length - 1];
@@ -234,8 +251,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
                     this.loggedPixiText.visible = true;
                     this.loggedPixiText.alpha = alpha;
                     this.loggedPixiText.text = str;
-                }
-                else if (this.loggedPixiText) {
+                } else if (this.loggedPixiText) {
                     this.loggedPixiText.visible = false;
                 }
             }
@@ -247,7 +263,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
 type MixedRenderableGameObject = ReturnType<typeof mixRenderableGameObject>;
 
 /** An interface of a game object that has been mixed with renderable. */
-interface IRenderableGameObject extends MixedRenderableGameObject {}
+type IRenderableGameObject = MixedRenderableGameObject;
 
 /** A GameObject class that has been mixed the Renderable class mixin. */
 export type RenderableGameObjectClass<
@@ -261,15 +277,21 @@ export type RenderableGameObjectClass<
  * @param shouldRender - If it should be mixed.
  * @returns When shouldRender is false, it passes base the GameObjectClass, otherwise that class is mixed and returned.
  */
-export function makeRenderable<T extends GameObjectConstructor, B extends boolean | undefined>(
+export function makeRenderable<
+    T extends GameObjectConstructor,
+    B extends boolean | undefined
+>(
     GameObjectClass: T,
     shouldRender: B,
-): B extends true ? RenderableGameObjectClass<T>
+): B extends true
+    ? RenderableGameObjectClass<T>
     : T extends IRenderableGameObject
-        ? RenderableGameObjectClass<T>
-        : T {
-    return (shouldRender && !(GameObjectClass as unknown as typeof BaseGameObject).shouldRender
+    ? RenderableGameObjectClass<T>
+    : T {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return (shouldRender &&
+    !((GameObjectClass as unknown) as typeof BaseGameObject).shouldRender
         ? mixRenderableGameObject(GameObjectClass)
-        : GameObjectClass
-    ) as any; // tslint:disable-line:no-any no-unsafe-any - that return conditional type mate
+        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          GameObjectClass) as any; // that return conditional type mate
 }

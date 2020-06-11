@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IFurnishingState, SaloonDelta } from "./state-interfaces";
+import { FurnishingState, SaloonDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -24,10 +24,10 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Furnishing (dt = 0) */
-    public current: IFurnishingState | undefined;
+    public current: FurnishingState | undefined;
 
     /** The next state of the Furnishing (dt = 1) */
-    public next: IFurnishingState | undefined;
+    public next: FurnishingState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** Our y position */
@@ -54,7 +54,7 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Furnishing.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IFurnishingState, viseur: Viseur) {
+    constructor(state: FurnishingState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -62,15 +62,13 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.y = y;
         this.x = x;
 
-        state.isPiano
-            ? this.addSprite.piano()
-            : this.addSprite.furnishing();
+        state.isPiano ? this.addSprite.piano() : this.addSprite.furnishing();
 
         if (state.isPiano) {
             // then it needs music sprites too
             this.musicSprite = this.addSprite.music({
                 container: this.game.layers.music,
-                position: {x, y: 0},
+                position: { x, y: 0 },
             });
         }
 
@@ -78,7 +76,7 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         this.healthBar = new GameBar(this.container, {
             visibilitySetting: this.game.settings.showHealthBars,
-            foregroundColor: 0x43AA72,
+            foregroundColor: 0x43aa72,
             max: state.health,
         });
 
@@ -103,8 +101,8 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IFurnishingState>,
-        next: Immutable<IFurnishingState>,
+        current: Immutable<FurnishingState>,
+        next: Immutable<FurnishingState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {
@@ -126,14 +124,16 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
         // else we are visible!
         this.container.visible = true;
 
-        this.healthBar.update(ease(current.health, next.health, dt, "cubicInOut"));
+        this.healthBar.update(
+            ease(current.health, next.health, dt, "cubicInOut"),
+        );
 
         // display the hit if took damage
-        const randomRotation = (current.tile.x + current.tile.y); // random-ish
+        const randomRotation = current.tile.x + current.tile.y; // random-ish
         if (current.health === next.health) {
             this.hitSprite.visible = false;
-        }
-        else { // we got hit!
+        } else {
+            // we got hit!
             this.hitSprite.visible = true;
             this.hitSprite.alpha = ease(1 - dt, "cubicInOut"); // fade it out
             this.hitSprite.rotation = randomRotation;
@@ -150,22 +150,22 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
 
                 let alpha = 1;
                 let y = this.y;
-                if (!current.isPlaying && next.isPlaying) { // music notes need to move up
+                if (!current.isPlaying && next.isPlaying) {
+                    // music notes need to move up
                     alpha = ease(dt, "cubicInOut");
                     y -= alpha / 2;
-                }
-                else if (current.isPlaying && !next.isPlaying) { // music notes need to move down
+                } else if (current.isPlaying && !next.isPlaying) {
+                    // music notes need to move down
                     alpha = ease(1 - dt, "cubicInOut");
                     y -= alpha / 2;
-                }
-                else { // current and next isPlaying
+                } else {
+                    // current and next isPlaying
                     y -= 0.5;
                 }
 
                 this.musicSprite.alpha = alpha;
                 this.musicSprite.y = y;
-            }
-            else {
+            } else {
                 this.musicSprite.visible = false;
             }
         }
@@ -211,8 +211,8 @@ export class Furnishing extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IFurnishingState>,
-        next: Immutable<IFurnishingState>,
+        current: Immutable<FurnishingState>,
+        next: Immutable<FurnishingState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {

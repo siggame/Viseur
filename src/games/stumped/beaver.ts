@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBeaverState, ISpawnerState, ITileState, StumpedDelta } from "./state-interfaces";
+import { BeaverState, SpawnerState, StumpedDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, updown } from "src/utils";
@@ -25,10 +25,10 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Beaver (dt = 0) */
-    public current: IBeaverState | undefined;
+    public current: BeaverState | undefined;
 
     /** The next state of the Beaver (dt = 1) */
-    public next: IBeaverState | undefined;
+    public next: BeaverState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -68,7 +68,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Beaver.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IBeaverState, viseur: Viseur) {
+    constructor(state: BeaverState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -84,7 +84,9 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         if (state.job.title !== "Basic") {
             const jobTitle = state.job.title.replace(" ", "");
-            const jobResource = (this.addSprite[`job${jobTitle}` as "jobBuilder"]); // sketchy
+            const jobResource = this.addSprite[
+                `job${jobTitle}` as "jobBuilder"
+            ]; // sketchy
 
             jobResource();
         }
@@ -115,8 +117,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IBeaverState>,
-        next: Immutable<IBeaverState>,
+        current: Immutable<BeaverState>,
+        next: Immutable<BeaverState>,
         delta: Immutable<StumpedDelta>,
         nextDelta: Immutable<StumpedDelta>,
     ): void {
@@ -124,7 +126,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
 
-        if (current.health === 0) {  // Then beaver is dead.
+        if (current.health === 0) {
+            // Then beaver is dead.
             this.container.visible = false;
 
             return; // No need to render a dead beaver.
@@ -143,8 +146,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
             // so use the one they had before.
             nextTile = currentTile;
             this.container.alpha = ease(1 - dt, "cubicInOut"); // fade the beaver sprite
-        }
-        else {
+        } else {
             this.container.alpha = 1; // ITS ALIVE
         }
 
@@ -163,18 +165,17 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.gettingFoodSprite.visible = false;
         this.distractedSprite.visible = current.turnsDistracted > 0;
 
-        let bumpInto: undefined | ITileState; // Find something to bump into
+        let bumpInto: undefined | TileState; // Find something to bump into
 
         if (this.attacking) {
             this.attackingSprite.visible = true;
             bumpInto = this.attacking.getCurrentMostState().tile;
-        }
-        else if (this.harvesting) {
+        } else if (this.harvesting) {
             const harvesting = this.harvesting.getCurrentMostState();
             if (harvesting.type === "food") {
                 this.gettingFoodSprite.visible = true;
-            }
-            else { // tree branches
+            } else {
+                // tree branches
                 this.gettingBranchSprite.visible = true;
             }
 
@@ -232,8 +233,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IBeaverState>,
-        next: Immutable<IBeaverState>,
+        current: Immutable<BeaverState>,
+        next: Immutable<BeaverState>,
         delta: Immutable<StumpedDelta>,
         nextDelta: Immutable<StumpedDelta>,
     ): void {
@@ -243,19 +244,27 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.attacking = undefined;
         this.harvesting = undefined;
 
-        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+        if (
+            nextDelta.type === "ran" &&
+            nextDelta.data.run.caller.id === this.id
+        ) {
             const { run } = nextDelta.data;
 
             if (run.functionName === "attack" && nextDelta.data.returned) {
                 // This beaver gonna fite sumthin
-                this.attacking = this.game.getGameObject(run.args.beaver, Beaver);
+                this.attacking = this.game.getGameObject(
+                    run.args.beaver,
+                    Beaver,
+                );
             }
 
             if (run.functionName === "harvest" && nextDelta.data.returned) {
                 // This beaver getting some food!
-                this.harvesting = this.game.getGameObject(run.args.spawner, Spawner);
+                this.harvesting = this.game.getGameObject(
+                    run.args.spawner,
+                    Spawner,
+                );
             }
-
         }
         // <<-- /Creer-Merge: state-updated -->>
     }
@@ -276,7 +285,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public attack(
-        beaver: IBeaverState,
+        beaver: BeaverState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {beaver}, callback);
@@ -306,7 +315,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * resource, false otherwise.
      */
     public drop(
-        tile: ITileState,
+        tile: TileState,
         resource: "branches" | "food",
         amount: number,
         callback?: (returned: boolean) => void,
@@ -323,7 +332,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public harvest(
-        spawner: ISpawnerState,
+        spawner: SpawnerState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("harvest", {spawner}, callback);
@@ -337,7 +346,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * otherwise.
      */
     public move(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("move", {tile}, callback);
@@ -355,7 +364,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * resource, false otherwise.
      */
     public pickup(
-        tile: ITileState,
+        tile: TileState,
         resource: "branches" | "food",
         amount: number,
         callback?: (returned: boolean) => void,

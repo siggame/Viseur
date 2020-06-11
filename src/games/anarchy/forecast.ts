@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { AnarchyDelta, IForecastState } from "./state-interfaces";
+import { AnarchyDelta, ForecastState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Forecast extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Forecast (dt = 0) */
-    public current: IForecastState | undefined;
+    public current: ForecastState | undefined;
 
     /** The next state of the Forecast (dt = 1) */
-    public next: IForecastState | undefined;
+    public next: ForecastState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Forecast extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Forecast.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IForecastState, viseur: Viseur) {
+    constructor(state: ForecastState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class Forecast extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IForecastState>,
-        next: Immutable<IForecastState>,
+        current: Immutable<ForecastState>,
+        next: Immutable<ForecastState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class Forecast extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IForecastState>,
-        next: Immutable<IForecastState>,
+        current: Immutable<ForecastState>,
+        next: Immutable<ForecastState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {

@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { AnarchyDelta, IBuildingState, IFireDepartmentState } from "./state-interfaces";
+import { AnarchyDelta, BuildingState, FireDepartmentState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,15 +24,15 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the FireDepartment (dt = 0) */
-    public current: IFireDepartmentState | undefined;
+    public current: FireDepartmentState | undefined;
 
     /** The next state of the FireDepartment (dt = 1) */
-    public next: IFireDepartmentState | undefined;
+    public next: FireDepartmentState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** the beam color name to use for beams */
     protected get beamColorName(): number {
-        return 0x00BFFF;
+        return 0x00bfff;
     }
     // <<-- /Creer-Merge: variables -->>
 
@@ -43,7 +43,7 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * @param state - The initial state of this FireDepartment.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IFireDepartmentState, viseur: Viseur) {
+    constructor(state: FireDepartmentState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -64,8 +64,8 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IFireDepartmentState>,
-        next: Immutable<IFireDepartmentState>,
+        current: Immutable<FireDepartmentState>,
+        next: Immutable<FireDepartmentState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -112,8 +112,8 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IFireDepartmentState>,
-        next: Immutable<IFireDepartmentState>,
+        current: Immutable<FireDepartmentState>,
+        next: Immutable<FireDepartmentState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -141,7 +141,7 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * otherwise.
      */
     public extinguish(
-        building: IBuildingState,
+        building: BuildingState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("extinguish", {building}, callback);

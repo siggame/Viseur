@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IPortState, PiratesDelta } from "./state-interfaces";
+import { PiratesDelta, PortState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -24,10 +24,10 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Port (dt = 0) */
-    public current: IPortState | undefined;
+    public current: PortState | undefined;
 
     /** The next state of the Port (dt = 1) */
-    public next: IPortState | undefined;
+    public next: PortState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -52,7 +52,7 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Port.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IPortState, viseur: Viseur) {
+    constructor(state: PortState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -90,8 +90,8 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IPortState>,
-        next: Immutable<IPortState>,
+        current: Immutable<PortState>,
+        next: Immutable<PortState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {
@@ -102,8 +102,16 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.rotatedSprite.visible = false;
         this.portColor.visible = true;
         this.rotatedPortColor.visible = false;
-        if (this.current && this.current.tile && this.current.tile.tileEast && this.current.tile.tileWest) {
-            if (this.current.tile.tileEast.type === "water" && this.current.tile.tileWest.type === "water") {
+        if (
+            this.current &&
+            this.current.tile &&
+            this.current.tile.tileEast &&
+            this.current.tile.tileWest
+        ) {
+            if (
+                this.current.tile.tileEast.type === "water" &&
+                this.current.tile.tileWest.type === "water"
+            ) {
                 this.rotatedSprite.visible = true;
                 this.rotatedPortColor.visible = true;
                 this.portColor.visible = false;
@@ -162,8 +170,8 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IPortState>,
-        next: Immutable<IPortState>,
+        current: Immutable<PortState>,
+        next: Immutable<PortState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {

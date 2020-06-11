@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IUnitJobState, NecrowarDelta } from "./state-interfaces";
+import { NecrowarDelta, UnitJobState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class UnitJob extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the UnitJob (dt = 0) */
-    public current: IUnitJobState | undefined;
+    public current: UnitJobState | undefined;
 
     /** The next state of the UnitJob (dt = 1) */
-    public next: IUnitJobState | undefined;
+    public next: UnitJobState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class UnitJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this UnitJob.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IUnitJobState, viseur: Viseur) {
+    constructor(state: UnitJobState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class UnitJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IUnitJobState>,
-        next: Immutable<IUnitJobState>,
+        current: Immutable<UnitJobState>,
+        next: Immutable<UnitJobState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class UnitJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IUnitJobState>,
-        next: Immutable<IUnitJobState>,
+        current: Immutable<UnitJobState>,
+        next: Immutable<UnitJobState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {

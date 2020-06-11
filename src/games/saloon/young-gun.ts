@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ICowboyState, IYoungGunState, SaloonDelta } from "./state-interfaces";
+import { CowboyState, SaloonDelta, YoungGunState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -24,10 +24,10 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the YoungGun (dt = 0) */
-    public current: IYoungGunState | undefined;
+    public current: YoungGunState | undefined;
 
     /** The next state of the YoungGun (dt = 1) */
-    public next: IYoungGunState | undefined;
+    public next: YoungGunState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -49,14 +49,15 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this YoungGun.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IYoungGunState, viseur: Viseur) {
+    constructor(state: YoungGunState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
 
         this.owner = this.game.gameObjects[state.owner.id] as Player;
 
-        if (state.owner.id === "0") { // then they are first player, so flip them
+        if (state.owner.id === "0") {
+            // then they are first player, so flip them
             this.spriteBottom.scale.x *= -1;
             this.spriteBottom.anchor.x += 1;
             this.spriteTop.scale.x *= -1;
@@ -79,8 +80,8 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IYoungGunState>,
-        next: Immutable<IYoungGunState>,
+        current: Immutable<YoungGunState>,
+        next: Immutable<YoungGunState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {
@@ -102,7 +103,9 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        this.spriteTop.tint = this.game.getPlayersColor(this.owner).rgbNumber();
+        this.spriteTop.tint = this.game
+            .getPlayersColor(this.owner)
+            .rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -130,8 +133,8 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IYoungGunState>,
-        next: Immutable<IYoungGunState>,
+        current: Immutable<YoungGunState>,
+        next: Immutable<YoungGunState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {
@@ -140,8 +143,7 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: state-updated -->>
         if (current.tile.tileSouth) {
             this.container.setParent(this.game.layers.game);
-        }
-        else {
+        } else {
             this.container.setParent(this.game.layers.balcony);
         }
         // <<-- /Creer-Merge: state-updated -->>
@@ -166,7 +168,7 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public callIn(
         job: "Bartender" | "Brawler" | "Sharpshooter",
-        callback?: (returned: ICowboyState) => void,
+        callback?: (returned: CowboyState) => void,
     ): void {
         this.runOnServer("callIn", {job}, callback);
     }

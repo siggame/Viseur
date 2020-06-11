@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, SaloonDelta } from "./state-interfaces";
+import { SaloonDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -23,10 +23,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    public current: TileState | undefined;
 
     /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -42,7 +42,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Tile.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -62,10 +62,11 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
                         y: state.y - 0.4,
                     },
                 });
-            }
-            else if ((state.tileEast && state.tileWest)
-                && (!state.tileNorth || !state.tileNorth.isBalcony)
-                && (!state.tileSouth || !state.tileSouth.isBalcony)
+            } else if (
+                state.tileEast &&
+                state.tileWest &&
+                (!state.tileNorth || !state.tileNorth.isBalcony) &&
+                (!state.tileSouth || !state.tileSouth.isBalcony)
             ) {
                 this.addSprite.railHorizontal({
                     container: railContainer,
@@ -88,15 +89,12 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
             if (state.tileNorth.isBalcony) {
                 this.addSprite.wallCorner();
-            }
-            else {
+            } else {
                 this.addSprite.shade();
             }
-        }
-        else if (state.tileNorth.isBalcony) {
+        } else if (state.tileNorth.isBalcony) {
             this.addSprite.wallSide();
-        }
-        else {
+        } else {
             this.addSprite.tile();
         }
 
@@ -121,8 +119,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {
@@ -169,8 +167,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {
@@ -179,15 +177,27 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: state-updated -->>
         if (this.current && this.next) {
             // If hazard removed
-            if (this.current.hasHazard && !this.next.hasHazard && this.hazardSprite) {
+            if (
+                this.current.hasHazard &&
+                !this.next.hasHazard &&
+                this.hazardSprite
+            ) {
                 this.hazardSprite.alpha = 0;
             }
             // If added and sprite already exists
-            else if (this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
+            else if (
+                this.hazardSprite &&
+                !this.current.hasHazard &&
+                this.next.hasHazard
+            ) {
                 this.hazardSprite.alpha = 1;
             }
             // If added and sprite doesn't exist
-            else if (!this.hazardSprite && !this.current.hasHazard && this.next.hasHazard) {
+            else if (
+                !this.hazardSprite &&
+                !this.current.hasHazard &&
+                this.next.hasHazard
+            ) {
                 this.hazardSprite = this.addSprite.hazardBrokenGlass();
             }
         }

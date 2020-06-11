@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CheckersDelta, ICheckerState } from "./state-interfaces";
+import { CheckerState, CheckersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, getContrastingColor } from "src/utils";
@@ -24,10 +24,10 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Checker (dt = 0) */
-    public current: ICheckerState | undefined;
+    public current: CheckerState | undefined;
 
     /** The next state of the Checker (dt = 1) */
-    public next: ICheckerState | undefined;
+    public next: CheckerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -49,7 +49,7 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Checker.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ICheckerState, viseur: Viseur) {
+    constructor(state: CheckerState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -75,8 +75,8 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ICheckerState>,
-        next: Immutable<ICheckerState>,
+        current: Immutable<CheckerState>,
+        next: Immutable<CheckerState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {
@@ -90,13 +90,13 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
         let kingedAlpha = 0;
         if (current.kinged && next.kinged) {
             kingedAlpha = 1;
-        }
-        else if (!current.kinged && next.kinged) {
+        } else if (!current.kinged && next.kinged) {
             // we are getting kinged next delta, so fade in the sprite
             kingedAlpha = ease(dt);
         }
         // else 0 is fine
-        this.kingedSprite.alpha = kingedAlpha * this.game.settings.kingedAlpha.get();
+        this.kingedSprite.alpha =
+            kingedAlpha * this.game.settings.kingedAlpha.get();
 
         // <<-- /Creer-Merge: render -->>
     }
@@ -140,8 +140,8 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ICheckerState>,
-        next: Immutable<ICheckerState>,
+        current: Immutable<CheckerState>,
+        next: Immutable<CheckerState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {
@@ -178,12 +178,12 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param y The y coordinate to move to.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is Returns the same checker that
-     * moved if the move was successful. null otherwise.
+     * moved if the move was successful. Otherwise null.
      */
     public move(
         x: number,
         y: number,
-        callback?: (returned: ICheckerState) => void,
+        callback?: (returned: CheckerState) => void,
     ): void {
         this.runOnServer("move", {x, y}, callback);
     }

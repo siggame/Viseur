@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CatastropheDelta, ITileState } from "./state-interfaces";
+import { CatastropheDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -24,10 +24,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    public current: TileState | undefined;
 
     /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** The grass sprite for this Tile. */
@@ -48,7 +48,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Tile.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -56,14 +56,21 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // Set the parent of the tile container as the background layer
         this.container.setParent(this.game.layers.background);
         // Set the container's sprite as the ground tile Sprite
-        const grassSpriteName = `grass${Math.abs(this.game.random.int32() % 3) + 1}` as "grass1" | "grass2" | "grass3";
+        const grassSpriteName = `grass${
+            Math.abs(this.game.random.int32() % 3) + 1
+        }` as "grass1" | "grass2" | "grass3";
         this.grass = this.addSprite[grassSpriteName]();
 
         // Change the resource here
         if (state.harvestRate > 0) {
             this.bush = this.addSprite.bush();
             this.berry = this.addSprite.berry();
-            const colors = [Color("purple"), Color("yellow"), Color("red"), Color("blue")]; // by ptm
+            const colors = [
+                Color("purple"),
+                Color("yellow"),
+                Color("red"),
+                Color("blue"),
+            ]; // by ptm
             const i = Math.abs(this.game.random.int32() % colors.length);
             this.berry.tint = colors[i].rgbNumber();
             // this.berry.tint = Color("blue").rgbNumber();
@@ -87,8 +94,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {
@@ -99,7 +106,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         if (this.bush && this.berry) {
             this.bush.visible = current.harvestRate > 0;
-            this.berry.visible = this.bush.visible && current.turnsToHarvest === 0;
+            this.berry.visible =
+                this.bush.visible && current.turnsToHarvest === 0;
         }
         /** */
         // <<-- /Creer-Merge: render -->>
@@ -141,8 +149,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {

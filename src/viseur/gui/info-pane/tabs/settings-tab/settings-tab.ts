@@ -5,19 +5,25 @@ import { BaseSetting, IBaseSettings } from "src/viseur/settings";
 import * as settingsTabHbs from "./settings-tab.hbs";
 import "./settings-tab.scss";
 
-/** The "Help" tab on the InfoPane, displaying settings (both for the core and by game) */
+/**
+ * The "Help" tab on the InfoPane,
+ * displaying settings (both for the core and by game).
+ */
 export class SettingsTab extends Tab {
-    /** The settings element for the core viseur settings */
+    /** The settings element for the core viseur settings. */
     private readonly coreSettingsElement = this.element.find(".core-settings");
 
-    /** The settings element for the game's settings */
-    private readonly gameSettingsElement = this.element.find(".game-settings")
+    /** The settings element for the game's settings. */
+    private readonly gameSettingsElement = this.element
+        .find(".game-settings")
         .addClass("collapsed");
 
-    /** The name of the game to be replaced */
-    private readonly gameNameElement = this.gameSettingsElement.find(".game-name");
+    /** The name of the game to be replaced. */
+    private readonly gameNameElement = this.gameSettingsElement.find(
+        ".game-name",
+    );
 
-    /** The player color picker inputs to enabled/disable */
+    /** The player color picker inputs to enabled/disable. */
     private readonly customColorInputs: Array<BaseInput<unknown>> = [];
 
     /**
@@ -25,10 +31,12 @@ export class SettingsTab extends Tab {
      *
      * @param args - Initialization args.
      */
-    constructor(args: ITabArgs & {
-        /** The Viseur instance we are a part of. */
-        viseur: Viseur;
-    }) {
+    constructor(
+        args: ITabArgs & {
+            /** The Viseur instance we are a part of. */
+            viseur: Viseur;
+        },
+    ) {
         super({
             contentTemplate: settingsTabHbs,
             title: "Settings",
@@ -41,7 +49,10 @@ export class SettingsTab extends Tab {
             this.gameNameElement.html(game.name);
             this.gameSettingsElement.removeClass("collapsed");
 
-            this.manageSettings(game.settings as IBaseSettings, this.gameSettingsElement);
+            this.manageSettings(
+                game.settings as IBaseSettings,
+                this.gameSettingsElement,
+            );
 
             this.setColorInputsEnabled(game.settings.customPlayerColors.get());
             game.settings.customPlayerColors.changed.on((enabled) => {
@@ -57,13 +68,16 @@ export class SettingsTab extends Tab {
      * @param baseSettings - The list of settings from a settings.js file.
      * @param parent - The jQuery parent element.
      */
-    private manageSettings(baseSettings: Readonly<IBaseSettings>, parent: JQuery): void {
+    private manageSettings(
+        baseSettings: Readonly<IBaseSettings>,
+        parent: JQuery,
+    ): void {
         const settings: BaseSetting[] = [];
         const playerColorSettings = new Set<BaseSetting>();
-        for (const [ key, settingOrSettings ] of Object.entries(baseSettings)) {
+        for (const [key, settingOrSettings] of Object.entries(baseSettings)) {
             const subSettings = Array.isArray(settingOrSettings)
                 ? settingOrSettings // it's an array of settings
-                : [ settingOrSettings ]; // it's a single setting
+                : [settingOrSettings]; // it's a single setting
 
             for (const setting of subSettings) {
                 if (setting) {
@@ -77,10 +91,7 @@ export class SettingsTab extends Tab {
         }
 
         if (settings.length === 0) {
-            parent.append($("<span>")
-                .addClass("no-settings")
-                .html("None"), // tslint:disable-line:no-inner-html - safe
-            );
+            parent.append($("<span>").addClass("no-settings").html("None"));
 
             return; // no settings to add, we're done here
         }
@@ -97,7 +108,7 @@ export class SettingsTab extends Tab {
         $("<button>")
             .appendTo(parent)
             .addClass("reset-to-defaults")
-            .html("Reset to Defaults") // tslint:disable-line:no-inner-html - safe
+            .html("Reset to Defaults")
             .on("click", () => {
                 this.resetToDefaults(settings);
             });

@@ -15,7 +15,7 @@ export const BOARD_MARGIN = 0.5;
 export const BOARD_LENGTH = 8; // 8x8 tiles for standard chess board
 
 /** // margin on each side, plus the 8 chess tiles */
-export const BOARD_LENGTH_WITH_MARGINS = (BOARD_MARGIN * 2) + BOARD_LENGTH;
+export const BOARD_LENGTH_WITH_MARGINS = BOARD_MARGIN * 2 + BOARD_LENGTH;
 
 function xToChar(x: number): string {
     return String.fromCharCode(ASCII_A + x);
@@ -33,7 +33,11 @@ export class ChessBoardBackground {
     public readonly boardContainer = new PIXI.Container();
 
     /** The random color used to make each board a little unique. */
-    public readonly randomColor = Color.hsl(this.game.random() * 360, 60, 40).whiten(1.5);
+    public readonly randomColor = Color.hsl(
+        this.game.random() * 360,
+        60,
+        40,
+    ).whiten(1.5);
 
     /** The complimentary color for this random color */
     public readonly randomColorCompliment = this.randomColor.rotate(180);
@@ -83,7 +87,11 @@ export class ChessBoardBackground {
         for (const ranks of this.gridStrings.rank) {
             // vertical ranks, 1, 2, 3, ...8
             for (let rank = 1; rank <= 8; rank++) {
-                const rankText = this.game.renderer.newPixiText(String(rank), this.game.layers.background, textOptions);
+                const rankText = this.game.renderer.newPixiText(
+                    String(rank),
+                    this.game.layers.background,
+                    textOptions,
+                );
                 rankText.alpha = 0.75;
                 rankText.anchor.set(0.5);
 
@@ -96,7 +104,11 @@ export class ChessBoardBackground {
             // horizontal files, a, b, c, ...h
             for (let file = 1; file <= 8; file++) {
                 const character = xToChar(file - 1);
-                const fileText = this.game.renderer.newPixiText(character, this.game.layers.background, textOptions);
+                const fileText = this.game.renderer.newPixiText(
+                    character,
+                    this.game.layers.background,
+                    textOptions,
+                );
                 fileText.alpha = 0.75;
                 fileText.anchor.set(0.5);
 
@@ -108,14 +120,13 @@ export class ChessBoardBackground {
         for (let x = 0; x < 8; x++) {
             this.tileSprites[x] = [];
             for (let y = 0; y < 8; y++) {
-                const resource = this.game.resources[(x + y) % 2
-                    ? "tileBlack"
-                    : "tileWhite"
+                const resource = this.game.resources[
+                    (x + y) % 2 ? "tileBlack" : "tileWhite"
                 ];
                 const tile = resource.newSprite({
                     container: this.tileContainer,
                     onClick: () => {
-                        const square = xToChar(x) + String(8 - y) as Square;
+                        const square = (xToChar(x) + String(8 - y)) as Square;
                         // check to make certain above as Square check is valid
                         if (!this.game.currentChess.SQUARES.includes(square)) {
                             throw new Error(`Invalid square at (${x}, ${y})!`);
@@ -130,7 +141,9 @@ export class ChessBoardBackground {
         }
 
         this.flipBackground(this.game.settings.flipBoard.get());
-        this.game.settings.flipBoard.changed.on((flipped) => this.flipBackground(flipped));
+        this.game.settings.flipBoard.changed.on((flipped) =>
+            this.flipBackground(flipped),
+        );
 
         const recolor = () => this.recolor();
         this.game.settings.boardColor.changed.on(recolor);
@@ -143,15 +156,21 @@ export class ChessBoardBackground {
     public recolor(): void {
         const colorSetting = this.game.settings.boardColor.get();
 
-        const color = colorSetting === "#000000"
-            ? this.randomColor.darken(0.75)
-            : Color(colorSetting);
+        const color =
+            colorSetting === "#000000"
+                ? this.randomColor.darken(0.75)
+                : Color(colorSetting);
 
         // fill in the background, which displays the file/rank, and the "tiles"
         this.backgroundGraphics
             .clear()
             .beginFill(color.rgbNumber(), 1)
-            .drawRect(0, 0, BOARD_LENGTH_WITH_MARGINS, BOARD_LENGTH_WITH_MARGINS)
+            .drawRect(
+                0,
+                0,
+                BOARD_LENGTH_WITH_MARGINS,
+                BOARD_LENGTH_WITH_MARGINS,
+            )
             .endFill();
 
         const textColor = getContrastingColor(color);
@@ -167,9 +186,8 @@ export class ChessBoardBackground {
             const tiles = this.tileSprites[x];
             for (let y = 0; y < 8; y++) {
                 const tile = tiles[y];
-                const setting = this.game.settings[(x + y) % 2
-                    ? "blackSquareContrast"
-                    : "whiteSquareContrast"
+                const setting = this.game.settings[
+                    (x + y) % 2 ? "blackSquareContrast" : "whiteSquareContrast"
                 ];
 
                 tile.alpha = setting.get();

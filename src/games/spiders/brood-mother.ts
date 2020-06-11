@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spider } from "./spider";
-import { IBroodMotherState, ISpiderlingState, SpidersDelta } from "./state-interfaces";
+import { BroodMotherState, SpiderlingState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { setRelativePivot } from "src/utils";
@@ -24,10 +24,10 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the BroodMother (dt = 0) */
-    public current: IBroodMotherState | undefined;
+    public current: BroodMotherState | undefined;
 
     /** The next state of the BroodMother (dt = 1) */
-    public next: IBroodMotherState | undefined;
+    public next: BroodMotherState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -46,7 +46,7 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * @param state - The initial state of this BroodMother.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IBroodMotherState, viseur: Viseur) {
+    constructor(state: BroodMotherState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -76,8 +76,8 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IBroodMotherState>,
-        next: Immutable<IBroodMotherState>,
+        current: Immutable<BroodMotherState>,
+        next: Immutable<BroodMotherState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -127,8 +127,8 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IBroodMotherState>,
-        next: Immutable<IBroodMotherState>,
+        current: Immutable<BroodMotherState>,
+        next: Immutable<BroodMotherState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -157,7 +157,7 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * consumed. False otherwise.
      */
     public consume(
-        spiderling: ISpiderlingState,
+        spiderling: SpiderlingState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("consume", {spiderling}, callback);
@@ -174,7 +174,7 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      */
     public spawn(
         spiderlingType: "Spitter" | "Weaver" | "Cutter",
-        callback?: (returned: ISpiderlingState) => void,
+        callback?: (returned: SpiderlingState) => void,
     ): void {
         this.runOnServer("spawn", {spiderlingType}, callback);
     }

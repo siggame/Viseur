@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, NewtonianDelta } from "./state-interfaces";
+import { NewtonianDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -24,10 +24,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    public current: TileState | undefined;
 
     /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** Sprite for the wall on this tile */
@@ -62,7 +62,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Tile.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -82,17 +82,25 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             : this.addSprite.floor();
 
         if (this.ownerID !== undefined) {
-            this.ownerOverlay = state.type === "generator"
-                ? this.addSprite.genRoom()
-                : this.addSprite.spawn();
+            this.ownerOverlay =
+                state.type === "generator"
+                    ? this.addSprite.genRoom()
+                    : this.addSprite.spawn();
         }
 
         this.wall = this.addSprite.wall();
-        this.barSprite = this.addSprite.resourceBar({ container: this.oreContainer });
-        this.oreSprite = this.addSprite.resourceOre({ container: this.oreContainer });
+        this.barSprite = this.addSprite.resourceBar({
+            container: this.oreContainer,
+        });
+        this.oreSprite = this.addSprite.resourceOre({
+            container: this.oreContainer,
+        });
 
-        const isDoor = !state.isWall && this.ownerID === undefined &&
-                        state.type !== "conveyor" && state.decoration;
+        const isDoor =
+            !state.isWall &&
+            this.ownerID === undefined &&
+            state.type !== "conveyor" &&
+            state.decoration;
 
         if (isDoor) {
             const isEast = state.decoration === 2;
@@ -121,8 +129,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -133,15 +141,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         pixiFade(this.wall, dt, Number(next.isWall), Number(current.isWall));
 
         this.oreContainer.visible = true;
-        pixiFade(this.barSprite, dt, current.redium || current.blueium, next.redium || next.blueium);
-        pixiFade(this.oreSprite, dt, current.rediumOre || current.blueiumOre, next.rediumOre || next.blueiumOre);
+        pixiFade(
+            this.barSprite,
+            dt,
+            current.redium || current.blueium,
+            next.redium || next.blueium,
+        );
+        pixiFade(
+            this.oreSprite,
+            dt,
+            current.rediumOre || current.blueiumOre,
+            next.rediumOre || next.blueiumOre,
+        );
 
         if (this.door && this.openDoor) {
             if (!next.unit) {
                 this.door.visible = true;
                 this.openDoor.visible = false;
-            }
-            else {
+            } else {
                 this.door.visible = false;
                 this.openDoor.visible = true;
             }
@@ -163,7 +180,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.ownerOverlay.tint = ownerColor.rgbNumber();
         }
 
-        this.recolorResources(this.getCurrentMostState(), this.getNextMostState());
+        this.recolorResources(
+            this.getCurrentMostState(),
+            this.getNextMostState(),
+        );
 
         // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
@@ -193,8 +213,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -217,14 +237,27 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param current - The current tile state.
      * @param next - The next tile state.
      */
-    private recolorResources(current: Immutable<ITileState>, next: Immutable<ITileState>): void {
+    private recolorResources(
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
+    ): void {
         let colorIndex: number | undefined;
 
         switch (true) {
-            case Boolean(current.redium || next.redium || current.rediumOre || next.rediumOre):
+            case Boolean(
+                current.redium ||
+                    next.redium ||
+                    current.rediumOre ||
+                    next.rediumOre,
+            ):
                 colorIndex = 0;
                 break;
-            case Boolean(current.blueium || next.blueium || current.blueiumOre || next.blueiumOre):
+            case Boolean(
+                current.blueium ||
+                    next.blueium ||
+                    current.blueiumOre ||
+                    next.blueiumOre,
+            ):
                 colorIndex = 1;
         }
 
@@ -233,7 +266,9 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
 
         // Use the Player color on the ore so color blinded people can change the color to disinguish between them.
-        const color = this.game.getPlayersColor(this.game.players[colorIndex]).rgbNumber();
+        const color = this.game
+            .getPlayersColor(this.game.players[colorIndex])
+            .rgbNumber();
         this.barSprite.tint = color;
         this.oreSprite.tint = color;
     }

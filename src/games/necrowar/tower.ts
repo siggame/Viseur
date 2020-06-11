@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, ITowerState, NecrowarDelta } from "./state-interfaces";
+import { NecrowarDelta, TileState, TowerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -25,10 +25,10 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Tower (dt = 0) */
-    public current: ITowerState | undefined;
+    public current: TowerState | undefined;
 
     /** The next state of the Tower (dt = 1) */
-    public next: ITowerState | undefined;
+    public next: TowerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** archer */
@@ -50,7 +50,7 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Tower.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITowerState, viseur: Viseur) {
+    constructor(state: TowerState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -59,14 +59,11 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         if (state.job.title === "arrow") {
             this.archer = this.addSprite.archerTower();
-        }
-        else if (state.job.title === "aoe") {
+        } else if (state.job.title === "aoe") {
             this.aoe = this.addSprite.aoe();
-        }
-        else if (state.job.title === "cleansing") {
+        } else if (state.job.title === "cleansing") {
             this.cleansing = this.addSprite.cleansingTower();
-        }
-        else if (state.job.title === "ballista") {
+        } else if (state.job.title === "ballista") {
             this.ballista = this.addSprite.ballistaTower();
         }
 
@@ -86,8 +83,8 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITowerState>,
-        next: Immutable<ITowerState>,
+        current: Immutable<TowerState>,
+        next: Immutable<TowerState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -143,8 +140,8 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITowerState>,
-        next: Immutable<ITowerState>,
+        current: Immutable<TowerState>,
+        next: Immutable<TowerState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -171,7 +168,7 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public attack(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {tile}, callback);

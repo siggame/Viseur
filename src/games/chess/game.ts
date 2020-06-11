@@ -3,16 +3,19 @@
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
-import { IRendererSize } from "src/viseur/renderer";
+import { RendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { ChessDelta, IGameState } from "./state-interfaces";
+import { ChessDelta, GameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as chessJs from "chess.js";
-import { BOARD_LENGTH_WITH_MARGINS, ChessBoardBackground } from "./chess-board-background";
+import {
+    BOARD_LENGTH_WITH_MARGINS,
+    ChessBoardBackground,
+} from "./chess-board-background";
 import { ChessOverlay } from "./chess-overlay";
 import { ChessPieces } from "./chess-pieces";
 // <<-- /Creer-Merge: imports -->>
@@ -32,10 +35,10 @@ export class Game extends BaseGame {
     public static readonly numberOfPlayers = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: IGameState | undefined;
+    public current: GameState | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: IGameState | undefined;
+    public next: GameState | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
@@ -70,7 +73,7 @@ export class Game extends BaseGame {
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
-        // TODO: fix types, for some reason being exported weird
+    // TODO: fix types, for some reason being exported weird
     /** The current chess state */
     // tslint:disable-next-line no-any no-unsafe-any
     public readonly currentChess: chessJs.ChessInstance = new (chessJs as any)();
@@ -100,7 +103,7 @@ export class Game extends BaseGame {
      * @param state - The initialize state of the game.
      * @returns The {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): IRendererSize {
+    protected getSize(state: GameState): RendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
             width: BOARD_LENGTH_WITH_MARGINS,
@@ -115,7 +118,7 @@ export class Game extends BaseGame {
      *
      * @param state - The initialize state of the game.
      */
-    protected start(state: IGameState): void {
+    protected start(state: GameState): void {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
@@ -127,7 +130,7 @@ export class Game extends BaseGame {
      *
      * @param state - The initial state to use the render the background.
      */
-    protected createBackground(state: IGameState): void {
+    protected createBackground(state: GameState): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
@@ -148,8 +151,8 @@ export class Game extends BaseGame {
      */
     protected renderBackground(
         dt: number,
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<ChessDelta>,
         nextDelta: Immutable<ChessDelta>,
     ): void {
@@ -169,8 +172,8 @@ export class Game extends BaseGame {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     protected stateUpdated(
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<ChessDelta>,
         nextDelta: Immutable<ChessDelta>,
     ): void {
@@ -182,9 +185,7 @@ export class Game extends BaseGame {
 
         // if there is a new move, it will be at this index in next history, else null
         const nextModeSAN = next.history[current.history.length];
-        const result = nextModeSAN
-            ? this.nextChess.move(nextModeSAN)
-            : null;
+        const result = nextModeSAN ? this.nextChess.move(nextModeSAN) : null;
 
         this.chessPieces.update(this.currentChess, result);
 

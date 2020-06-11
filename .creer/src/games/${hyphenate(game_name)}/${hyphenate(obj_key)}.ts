@@ -8,7 +8,7 @@ if len(parent_classes) == 0:
     parent_classes.append('BaseGame' if obj_key == 'Game' else 'BaseGameObject')
 
 imports = {
-    './state-interfaces': ['I'+obj_key+'State', game_name+'Delta'],
+    './state-interfaces': [obj_key+'State', game_name+'Delta'],
     'src/utils': ['Immutable'],
     'src/viseur/game': [],
 }
@@ -26,7 +26,7 @@ if obj_key == 'Game':
     imports['./game-object-classes'] = ['GameObjectClasses']
     imports['./human-player'] = ['HumanPlayer']
     imports['color'] = [ '* as Color' ]
-    imports['src/viseur/renderer'] = ['IRendererSize']
+    imports['src/viseur/renderer'] = ['RendererSize']
 else:
     imports['src/viseur'] = ['Viseur']
     imports["src/viseur/game"].append('makeRenderable')
@@ -38,12 +38,12 @@ if obj['functions']:
     for function_name, function_parms in obj['functions'].items():
         for arg in function_parms['arguments']:
             arg_type = shared['vis']['type'](arg['type'])
-            if arg_type[0] == 'I': #// then it's an interface
+            if arg_type.endswith('State'):
                 if arg_type not in imports['./state-interfaces']:
                     imports['./state-interfaces'].append(arg_type)
         if function_parms['returns']:
             return_type = shared['vis']['type'](function_parms['returns']['type'])
-            if return_type[0] == 'I': #// then it's an interface
+            if return_type.endswith('State'):
                 if return_type not in imports['./state-interfaces']:
                     imports['./state-interfaces'].append(return_type)
 
@@ -79,10 +79,10 @@ ${merge("    // ", "static-functions", "    // you can add static functions here
 
 % endif
     /** The current state of the ${obj_key} (dt = 0) */
-    public current: I${obj_key}State | undefined;
+    public current: ${obj_key}State | undefined;
 
     /** The next state of the ${obj_key} (dt = 1) */
-    public next: I${obj_key}State | undefined;
+    public next: ${obj_key}State | undefined;
 % if obj_key == 'Game':
 
     /** The resource factories that can create sprites for this game */
@@ -129,7 +129,7 @@ ${merge("    // ", "public-functions", "    // You can add additional public fun
      * @param state - The initialize state of the game.
      * @returns The {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): IRendererSize {
+    protected getSize(state: GameState): RendererSize {
         return {
 ${merge("            // ", "get-size", """            width: 10, // Change these. Probably read in the map's width
             height: 10, // and height from the initial state here.""", help=False)}
@@ -142,7 +142,7 @@ ${merge("            // ", "get-size", """            width: 10, // Change these
      *
      * @param state - The initialize state of the game.
      */
-    protected start(state: IGameState): void {
+    protected start(state: GameState): void {
         super.start(state);
 
 ${merge("        // ", "start", "        // Initialize your variables here", help=False)}
@@ -153,7 +153,7 @@ ${merge("        // ", "start", "        // Initialize your variables here", hel
      *
      * @param state - The initial state to use the render the background.
      */
-    protected createBackground(state: IGameState): void {
+    protected createBackground(state: GameState): void {
         super.createBackground(state);
 
 ${merge("        // ", "create-background", """        // Initialize your background here if need be
@@ -190,8 +190,8 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
      */
     protected renderBackground(
         dt: number,
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<${game_name}Delta>,
         nextDelta: Immutable<${game_name}Delta>,
     ): void {
@@ -209,8 +209,8 @@ ${merge("        // ", "render-background", "        // update and re-render wha
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     protected stateUpdated(
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<${game_name}Delta>,
         nextDelta: Immutable<${game_name}Delta>,
     ): void {
@@ -226,7 +226,7 @@ ${merge("        // ", "state-updated", "        // update the Game based on its
      * @param state - The initial state of this ${obj_key}.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: I${obj_key}State, viseur: Viseur) {
+    constructor(state: ${obj_key}State, viseur: Viseur) {
         super(state, viseur);
 
 ${merge("        // ", "constructor", "        // You can initialize your new {} here.".format(obj_key), help=False)}
@@ -245,8 +245,8 @@ ${merge("        // ", "constructor", "        // You can initialize your new {}
      */
     public render(
         dt: number,
-        current: Immutable<I${obj_key}State>,
-        next: Immutable<I${obj_key}State>,
+        current: Immutable<${obj_key}State>,
+        next: Immutable<${obj_key}State>,
         delta: Immutable<${game_name}Delta>,
         nextDelta: Immutable<${game_name}Delta>,
     ): void {
@@ -287,8 +287,8 @@ ${merge("        // ", "hide-render", "        // hide anything outside of `this
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<I${obj_key}State>,
-        next: Immutable<I${obj_key}State>,
+        current: Immutable<${obj_key}State>,
+        next: Immutable<${obj_key}State>,
         delta: Immutable<${game_name}Delta>,
         nextDelta: Immutable<${game_name}Delta>,
     ): void {

@@ -1,16 +1,7 @@
 /** Functions to serialize and un-serialize json communications strings. */
 
-import { isEmptyExceptFor, isObject, objectHasProperty, UnknownObject } from "src/utils";
+import { isObject, objectHasProperty, UnknownObject } from "src/utils";
 import { BaseGame } from "src/viseur/game/base-game";
-
-/**
- * Checks if a given object is strictly a game object reference
- * @param obj the object to check if it only as an id
- * @returns true if appears to be a game object reference, false otherwise
- */
-export function isGameObjectReference(obj: object): boolean {
-    return isEmptyExceptFor(obj as {}, "id");
-}
 
 /**
  * Checks if an objects key is serializable.
@@ -19,7 +10,10 @@ export function isGameObjectReference(obj: object): boolean {
  * @param key - The key to check in obj.
  * @returns True if it is serializable, false otherwise.
  */
-export function isSerializable(obj: object, key: string): boolean {
+export function isSerializable(
+    obj: Record<string, unknown>,
+    key: string,
+): boolean {
     return isObject(obj) && objectHasProperty(obj, key);
 }
 
@@ -46,7 +40,9 @@ export function serialize(
         return { id: String(data.id) };
     }
 
-    const serialized: UnknownObject = Array.isArray(data) ? [] as {} : {};
+    const serialized: UnknownObject = Array.isArray(data)
+        ? ([] as Record<number, unknown>)
+        : {};
     for (const key of Object.keys(data)) {
         if (isSerializable(data, key)) {
             serialized[key] = serialize(data[key]);
@@ -67,9 +63,11 @@ export function serialize(
 export function deserialize<T extends unknown>(data: T, game?: BaseGame): T {
     if (isObject(data)) {
         // TODO: check for game object reference?
-        const result: UnknownObject = Array.isArray(data) ? [] as {} : {};
+        const result: UnknownObject = Array.isArray(data)
+            ? ([] as Record<number, unknown>)
+            : {};
 
-        for (const key of (Object.keys(data))) {
+        for (const key of Object.keys(data)) {
             result[key] = deserialize((data as UnknownObject)[key], game);
         }
 

@@ -10,7 +10,7 @@ if ai['functions']:
     for function_name, function_parms in ai['functions'].items():
         for arg in function_parms['arguments']:
             arg_type = shared['vis']['type'](arg['type'])
-            if arg_type[0] == 'I': #// then it's an interface
+            if arg['type'] and arg['type']['is_game_object']:
                 if arg_type not in imports['./state-interfaces']:
                     imports['./state-interfaces'].append(arg_type)
 

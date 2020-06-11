@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, StumpedDelta } from "./state-interfaces";
+import { StumpedDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -13,8 +13,18 @@ const RESOURCES: ["branches", "food"] = ["branches", "food"];
 
 // bit auto-tiling from:
 // https://gamedevelopment.tutsplus.com/tutorials/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673
-const DIRECTIONS: ["North", "South", "East", "West"] = ["North", "South", "East", "West"];
-const CORNERS = [["North", "West"], ["North", "East"], ["South", "West"], ["South", "East"]];
+const DIRECTIONS: ["North", "South", "East", "West"] = [
+    "North",
+    "South",
+    "East",
+    "West",
+];
+const CORNERS = [
+    ["North", "West"],
+    ["North", "East"],
+    ["South", "West"],
+    ["South", "East"],
+];
 
 const DIRECTION_BITS: { [direction: string]: number } = {
     NorthWest: 1,
@@ -84,9 +94,14 @@ const BIT_TO_INDEX: { [bit: number]: number } = {
  * @param direction2 - direction from the direction tile
  * @returns true if that is a land tile, false otherwise
  */
-function isLand(state: ITileState, direction: string, direction2?: string): boolean {
+function isLand(
+    state: TileState,
+    direction: string,
+    direction2?: string,
+): boolean {
     let neighbor = state[`tile${direction}` as "tileNorth"];
-    if (!neighbor) { // off map, just use our type as the off map type
+    if (!neighbor) {
+        // off map, just use our type as the off map type
         neighbor = state;
     }
 
@@ -117,10 +132,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    public current: TileState | undefined;
 
     /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -148,7 +163,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Tile.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -203,7 +218,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
                     this.flowSprite.y += 1;
                     break;
                 case "North":
-                    this.flowSprite.rotation += Math.PI * 3 / 2;
+                    this.flowSprite.rotation += (Math.PI * 3) / 2;
                     this.flowSprite.y += 1;
             }
         }
@@ -232,8 +247,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<StumpedDelta>,
         nextDelta: Immutable<StumpedDelta>,
     ): void {
@@ -243,25 +258,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // render resources
         for (const resource of RESOURCES) {
-            const sprite = resource === "branches"
-                ? this.branchesSprite
-                : this.foodSprite;
+            const sprite =
+                resource === "branches"
+                    ? this.branchesSprite
+                    : this.foodSprite;
 
             const currentAmount = current[resource];
             const nextAmount = next[resource];
 
             if (currentAmount === 0 && nextAmount === 0) {
                 sprite.visible = false;
-            }
-            else {
+            } else {
                 sprite.visible = true;
 
                 let opacity = 1;
                 if (currentAmount === 0) {
                     // fade in as it's going from 0 to N
                     opacity = dt;
-                }
-                else if (nextAmount === 0) {
+                } else if (nextAmount === 0) {
                     // fade out as it's going from N to 0
                     opacity = 1 - dt;
                 }
@@ -275,15 +289,16 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             // don't render the lodge, it's never used
             this.lodgeBottomSprite.visible = false;
             this.lodgeTopSprite.visible = false;
-        }
-        else {
+        } else {
             // the tile has a lodge on it at some point
 
             this.lodgeBottomSprite.visible = true;
             this.lodgeTopSprite.visible = true;
 
             // and color the top (flag part) of the lodge sprite based on the player's color
-            const color = this.game.getPlayersColor(current.lodgeOwner || next.lodgeOwner);
+            const color = this.game.getPlayersColor(
+                current.lodgeOwner || next.lodgeOwner,
+            );
             this.lodgeTopSprite.tint = color.rgbNumber();
 
             let alpha = 1;
@@ -291,8 +306,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
                 // then they are creating the lodge on the `next` state
                 // so fade in the lodge (fade from 0 to 1)
                 alpha = ease(dt, "cubicInOut");
-            }
-            else if (!next.lodgeOwner) {
+            } else if (!next.lodgeOwner) {
                 // then they lost the lodge on the `next` state
                 // so fade it out (1 to 0)
                 alpha = ease(1 - dt, "cubicInOut");
@@ -343,8 +357,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<StumpedDelta>,
         nextDelta: Immutable<StumpedDelta>,
     ): void {

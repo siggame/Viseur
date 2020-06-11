@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IMachineState, NewtonianDelta } from "./state-interfaces";
+import { MachineState, NewtonianDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -27,10 +27,10 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Machine (dt = 0) */
-    public current: IMachineState | undefined;
+    public current: MachineState | undefined;
 
     /** The next state of the Machine (dt = 1) */
-    public next: IMachineState | undefined;
+    public next: MachineState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** Bar showing how much work is done. */
@@ -51,18 +51,22 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Machine.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IMachineState, viseur: Viseur) {
+    constructor(state: MachineState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.machine);
         this.container.scale.set(CONTAINER_SCALE, CONTAINER_SCALE);
         const offset = (CONTAINER_SCALE - 1) / 2;
-        this.container.position.set(state.tile.x - offset, state.tile.y - offset - .2);
+        this.container.position.set(
+            state.tile.x - offset,
+            state.tile.y - offset - 0.2,
+        );
 
-        this.oreColorIndex = state.oreType.toLowerCase().charAt(0) === "r"
-            ? 0 // redium ore
-            : 1; // blueium ore
+        this.oreColorIndex =
+            state.oreType.toLowerCase().charAt(0) === "r"
+                ? 0 // redium ore
+                : 1; // blueium ore
 
         this.sprite = this.addSprite.machine();
 
@@ -90,8 +94,8 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IMachineState>,
-        next: Immutable<IMachineState>,
+        current: Immutable<MachineState>,
+        next: Immutable<MachineState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -111,7 +115,9 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: recolor -->>
         // use the color of the player from that side so it can be changed for color blindness.
-        this.sprite.tint = this.game.getPlayersColor(this.oreColorIndex).rgbNumber();
+        this.sprite.tint = this.game
+            .getPlayersColor(this.oreColorIndex)
+            .rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -139,8 +145,8 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IMachineState>,
-        next: Immutable<IMachineState>,
+        current: Immutable<MachineState>,
+        next: Immutable<MachineState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {

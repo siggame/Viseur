@@ -8,35 +8,37 @@ import * as gameOverScreenItemHbs from "./game-over-screen-item.hbs";
 import * as gameOverScreenHbs from "./game-over-screen.hbs";
 import "./game-over-screen.scss";
 
-/** A screen that overlays the renderer when the game is over */
+/** A screen that overlays the renderer when the game is over. */
 export class GameOverScreen extends BaseElement {
-    /** The game this is a game over screen for */
+    /** The game this is a game over screen for. */
     public readonly game: BaseGame;
 
-    /** The container to display winners in */
+    /** The container to display winners in. */
     private readonly winnersElement = this.element.find(".game-over-winners");
 
-    /** The container to display losers in */
+    /** The container to display losers in. */
     private readonly losersElement = this.element.find(".game-over-losers");
 
-    /** If this has been built (filled with the game over information) */
-    private built: boolean = false;
+    /** If this has been built (filled with the game over information). */
+    private built = false;
 
-    /** The items containing winners and losers */
+    /** The items containing winners and losers. */
     private readonly items: JQuery[] = [];
 
     /**
      * Initialized the game over screen.
      *
-     * @param args - BaseElement init args
+     * @param args - BaseElement init args.
      */
-    constructor(args: Immutable<IBaseElementArgs> & {
-        /** The game this will be a game over screen for */
-        game: BaseGame;
+    constructor(
+        args: Immutable<IBaseElementArgs> & {
+            /** The game this will be a game over screen for. */
+            game: BaseGame;
 
-        /** The Viseur instance we are a part of. */
-        viseur: Viseur;
-    }) {
+            /** The Viseur instance we are a part of. */
+            viseur: Viseur;
+        },
+    ) {
         super(args, gameOverScreenHbs);
 
         this.game = args.game;
@@ -68,10 +70,11 @@ export class GameOverScreen extends BaseElement {
             return; // nothing to recolor... yet
         }
 
-        for (const [ i, player ] of this.game.players.entries()) {
+        for (const [i, player] of this.game.players.entries()) {
             const color = this.game.getPlayersColor(player);
 
-            this.items[i].find(".bg-wrapper")
+            this.items[i]
+                .find(".bg-wrapper")
                 .css("background-color", color.opaquer(0.375).string())
                 .css("color", getContrastingColor(color).string());
         }
@@ -96,28 +99,30 @@ export class GameOverScreen extends BaseElement {
                 textColor: getContrastingColor(color).rgb(),
             };
 
-            const list = player.won
-                ? this.winnersElement
-                : this.losersElement;
+            const list = player.won ? this.winnersElement : this.losersElement;
 
             this.items.push(partial(gameOverScreenItemHbs, item, list));
         }
 
-        this.losersElement.css("display", this.losersElement.html() === ""
-            ? "none"
-            : "block",
+        this.losersElement.css(
+            "display",
+            this.losersElement.html() === "" ? "none" : "block",
         );
 
         if (this.winnersElement.html() === "") {
             // then there are no winners, it's a tie
-            partial(gameOverScreenItemHbs, {
-                name: "Game Over -",
-                wonOrLost: "Tie",
-                reason: gameState.players[0].reasonLost,
-                // For draws all players should have the same reasonLost
-                //  so using the last one's reasonLost should be the same for
-                //  any of them.
-            }, this.winnersElement);
+            partial(
+                gameOverScreenItemHbs,
+                {
+                    name: "Game Over -",
+                    wonOrLost: "Tie",
+                    reason: gameState.players[0].reasonLost,
+                    // For draws all players should have the same reasonLost
+                    //  so using the last one's reasonLost should be the same for
+                    //  any of them.
+                },
+                this.winnersElement,
+            );
         }
 
         this.recolor();

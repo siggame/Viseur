@@ -1,6 +1,6 @@
 // Do not modify this file
 // This is a simple lookup object for each GameObject class
-import { IGameObjectClasses } from "src/viseur/game/interfaces";
+import { BaseGameObjectClasses } from "src/viseur/game/interfaces";
 import { BroodMother } from "./brood-mother";
 import { Cutter } from "./cutter";
 import { GameObject } from "./game-object";
@@ -13,7 +13,7 @@ import { Weaver } from "./weaver";
 import { Web } from "./web";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<IGameObjectClasses> = Object.freeze({
+export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze({
     GameObject,
     Player,
     Nest,

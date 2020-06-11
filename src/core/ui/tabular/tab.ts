@@ -8,7 +8,7 @@ import { Tabular } from "./tabular";
 
 /** The interface arguments for a Tab can extend from. */
 export interface ITabArgs extends IBaseElementArgs {
-    /** The tabular this tab is to be a part of */
+    /** The tabular this tab is to be a part of. */
     tabular: Tabular;
 
     /** The Viseur instance we are in. */
@@ -21,7 +21,7 @@ export interface ITabArgs extends IBaseElementArgs {
     contentTemplate?: Handlebars;
 }
 
-/** A Tab in a Tabular */
+/** A Tab in a Tabular. */
 export class Tab extends BaseElement {
     /** The events this class emits. */
     public readonly events = events({

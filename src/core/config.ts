@@ -12,11 +12,11 @@ const defaults = {
     session: "",
 };
 
-if (!isObject(configJson) || !isObject(configJson.default)) {
+if (!isObject(configJson) || !isObject(configJson)) {
     throw new Error("config.json malformed!");
 }
 
-const config = configJson.default as JsonObject; // webpack emits as default export, but TS gets mad about that
+const config: JsonObject = configJson;
 
 /** The default config. */
 export const Config = mapValues(

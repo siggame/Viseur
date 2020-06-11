@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spider } from "./spider";
-import { ISpiderlingState, IWebState, SpidersDelta } from "./state-interfaces";
+import { SpiderlingState, SpidersDelta, WebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Spiderling (dt = 0) */
-    public current: ISpiderlingState | undefined;
+    public current: SpiderlingState | undefined;
 
     /** The next state of the Spiderling (dt = 1) */
-    public next: ISpiderlingState | undefined;
+    public next: SpiderlingState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
      * @param state - The initial state of this Spiderling.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ISpiderlingState, viseur: Viseur) {
+    constructor(state: SpiderlingState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ISpiderlingState>,
-        next: Immutable<ISpiderlingState>,
+        current: Immutable<SpiderlingState>,
+        next: Immutable<SpiderlingState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ISpiderlingState>,
-        next: Immutable<ISpiderlingState>,
+        current: Immutable<SpiderlingState>,
+        next: Immutable<SpiderlingState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -130,14 +130,14 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
     //       If it does not, feel free to ignore these Joueur functions.
 
     /**
-     * Attacks another Spiderling
+     * Attacks another Spiderling.
      * @param spiderling The Spiderling to attack.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if the attack was
      * successful, false otherwise.
      */
     public attack(
-        spiderling: ISpiderlingState,
+        spiderling: SpiderlingState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {spiderling}, callback);
@@ -151,7 +151,7 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
      * false otherwise.
      */
     public move(
-        web: IWebState,
+        web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("move", {web}, callback);

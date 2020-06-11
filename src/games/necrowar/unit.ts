@@ -4,11 +4,11 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, IUnitState, NecrowarDelta } from "./state-interfaces";
+import { NecrowarDelta, TileState, UnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
-import { ease, isObject, pixiFade , updown } from "src/utils";
+import { ease, isObject, pixiFade, updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
 import { Tile } from "./tile";
 const OVER_SCALE = 0.1;
@@ -28,10 +28,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Unit (dt = 0) */
-    public current: IUnitState | undefined;
+    public current: UnitState | undefined;
 
     /** The next state of the Unit (dt = 1) */
-    public next: IUnitState | undefined;
+    public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** abomination */
@@ -60,11 +60,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public ownerID: string;
 
     /** The tile state of the tile we are attacking, if we are. */
-    public attackingTile?: ITileState;
+    public attackingTile?: TileState;
 
     /** Our health bar */
     public readonly healthBar: GameBar;
-        // <<-- /Creer-Merge: variables -->>
+    // <<-- /Creer-Merge: variables -->>
 
     /**
      * Constructor for the Unit with basic logic as provided by the Creer
@@ -73,7 +73,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Unit.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IUnitState, viseur: Viseur) {
+    constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -83,31 +83,24 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         this.jobSprite = new PIXI.Sprite();
         if (state.job.title === "abomination") {
-
             this.abomination = this.addSprite.abomination();
             this.jobSprite = this.abomination;
-        }
-        else if (state.job.title === "hound") {
+        } else if (state.job.title === "hound") {
             this.dog = this.addSprite.dog();
             this.jobSprite = this.dog;
-        }
-        else if (state.job.title === "ghoul") {
+        } else if (state.job.title === "ghoul") {
             this.ghoul = this.addSprite.ghoul();
             this.jobSprite = this.ghoul;
-        }
-        else if (state.job.title === "zombie") {
+        } else if (state.job.title === "zombie") {
             this.zombie = this.addSprite.zombie();
             this.jobSprite = this.zombie;
-        }
-        else if (state.job.title === "wraith") {
+        } else if (state.job.title === "wraith") {
             this.wraith = this.addSprite.wraith();
             this.jobSprite = this.wraith;
-        }
-        else if (state.job.title === "horseman") {
+        } else if (state.job.title === "horseman") {
             this.horseman = this.addSprite.horseman();
             this.jobSprite = this.horseman;
-        }
-        else if (state.job.title === "worker") {
+        } else if (state.job.title === "worker") {
             this.worker = this.addSprite.necromancer();
             this.jobSprite = this.worker;
         }
@@ -139,8 +132,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -154,9 +147,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         this.container.visible = true;
         this.container.position.set(
-            ease(current.tile.x, next.tile.x, dt) + Number(this.ownerID === this.game.players[0].id),
+            ease(current.tile.x, next.tile.x, dt) +
+                Number(this.ownerID === this.game.players[0].id),
             ease(current.tile.y, next.tile.y, dt),
-          );
+        );
 
         this.healthBar.update(ease(current.health, next.health, dt));
         pixiFade(this.container, dt, current.health, next.health);
@@ -210,8 +204,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -219,16 +213,20 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: state-updated -->>
         this.attackingTile = undefined;
-        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+        if (
+            nextDelta.type === "ran" &&
+            nextDelta.data.run.caller.id === this.id
+        ) {
             if (nextDelta.data.returned) {
                 const { run } = nextDelta.data;
-                const tile = this.game.gameObjects[String(
-                    isObject(run.args.tile) && run.args.tile.id,
-                )];
+                const tile = this.game.gameObjects[
+                    String(isObject(run.args.tile) && run.args.tile.id)
+                ];
 
                 switch (run.functionName) {
                     case "attack":
-                        this.attackingTile = tile && (tile as Tile).getNextMostState();
+                        this.attackingTile =
+                            tile && (tile as Tile).getNextMostState();
                 }
             }
         }
@@ -251,7 +249,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public attack(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {tile}, callback);
@@ -280,7 +278,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * fishing for mana, false otherwise.
      */
     public fish(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("fish", {tile}, callback);
@@ -294,7 +292,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * mine and began mining, false otherwise.
      */
     public mine(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("mine", {tile}, callback);
@@ -308,7 +306,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * otherwise.
      */
     public move(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("move", {tile}, callback);

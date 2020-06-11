@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IWebState, SpidersDelta } from "./state-interfaces";
+import { SpidersDelta, WebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, renderSpriteBetween } from "src/utils";
@@ -24,10 +24,10 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Web (dt = 0) */
-    public current: IWebState | undefined;
+    public current: WebState | undefined;
 
     /** The next state of the Web (dt = 1) */
-    public next: IWebState | undefined;
+    public next: WebState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Web.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IWebState, viseur: Viseur) {
+    constructor(state: WebState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -69,8 +69,8 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IWebState>,
-        next: Immutable<IWebState>,
+        current: Immutable<WebState>,
+        next: Immutable<WebState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -122,8 +122,8 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IWebState>,
-        next: Immutable<IWebState>,
+        current: Immutable<WebState>,
+        next: Immutable<WebState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {

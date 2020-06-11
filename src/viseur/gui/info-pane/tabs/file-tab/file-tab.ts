@@ -2,7 +2,16 @@ import * as fileSaver from "file-saver";
 import { capitalize, escape, range } from "lodash";
 import { toWordsOrdinal } from "number-to-words";
 import { Config } from "src/core/config";
-import { Button, CheckBox, DropDown, FileInput, ITabArgs, NumberInput, Tab, TextBox } from "src/core/ui";
+import {
+    Button,
+    CheckBox,
+    DropDown,
+    FileInput,
+    ITabArgs,
+    NumberInput,
+    Tab,
+    TextBox,
+} from "src/core/ui";
 import { sortedAscending } from "src/utils";
 import { Viseur } from "src/viseur";
 import * as fileTabHbs from "./file-tab.hbs";
@@ -17,23 +26,27 @@ import "./file-tab.scss";
  */
 function numberToWords(num: number): string {
     return toWordsOrdinal(num)
-        .split(" ").map(capitalize).join(" ") // capitalize each word in between spaces,
-        .split("-").map(capitalize).join("-"); // and dashes
+        .split(" ")
+        .map(capitalize)
+        .join(" ") // capitalize each word in between spaces,
+        .split("-")
+        .map(capitalize)
+        .join("-"); // and dashes
 }
 
 /**
  * The "File" tab on the InfoPane, handles gamelog file I/O.
  */
 export class FileTab extends Tab {
-    /** The instance of Viseur that controls everything */
+    /** The instance of Viseur that controls everything. */
     private readonly viseur: Viseur;
 
     // ---- Local Gamelog Section ---- \\
 
-    /** The wrapper for the local gamelog section */
+    /** The wrapper for the local gamelog section. */
     private readonly localGamelogWrapper = this.element.find(".local-gamelog");
 
-    /** The file input to load a local gamelog */
+    /** The file input to load a local gamelog. */
     private readonly gamelogInput = new FileInput({
         id: "local-gamelog-input",
         parent: this.localGamelogWrapper,
@@ -42,10 +55,12 @@ export class FileTab extends Tab {
 
     // ---- Remote Gamelog Section ---- \\
 
-    /** The wrapper for the [remote] gamelog section */
-    private readonly remoteGamelogWrapper = this.element.find(".remote-gamelog");
+    /** The wrapper for the [remote] gamelog section. */
+    private readonly remoteGamelogWrapper = this.element.find(
+        ".remote-gamelog",
+    );
 
-    /** The url input for the remote gamelog to load */
+    /** The url input for the remote gamelog to load. */
     private readonly remoteGamelogInput = new TextBox({
         id: "remote-gamelog-input",
         label: "Url",
@@ -53,7 +68,7 @@ export class FileTab extends Tab {
         parent: this.remoteGamelogWrapper,
     });
 
-    /** The button to click to load the remote gamelog and visualize it */
+    /** The button to click to load the remote gamelog and visualize it. */
     private readonly remoteVisualizeButton = new Button({
         id: "remote-gamelog-button",
         text: "Visualize",
@@ -63,30 +78,35 @@ export class FileTab extends Tab {
 
     // ---- Connect Section ---- \\
 
-    /** The wrapper for the connection section */
-    private readonly connectionWrapper = this.element.find(".connection-info")
+    /** The wrapper for the connection section. */
+    private readonly connectionWrapper = this.element
+        .find(".connection-info")
         .addClass("collapsed");
 
-    /** The log of all connection events */
-    private readonly connectionLog = this.connectionWrapper.find(".connection-log");
+    /** The log of all connection events. */
+    private readonly connectionLog = this.connectionWrapper.find(
+        ".connection-log",
+    );
 
-    /** The wrapper for the connect form */
+    /** The wrapper for the connect form. */
     private readonly connectWrapper = this.element.find(".connect");
 
-    /** The drop down to select the connection type */
-    private readonly connectTypeInput = new DropDown<"Arena" | "Human" | "Spectate" | "Tournament">({
+    /** The drop down to select the connection type. */
+    private readonly connectTypeInput = new DropDown<
+        "Arena" | "Human" | "Spectate" | "Tournament"
+    >({
         id: "connect-type",
         label: "Connection Type",
         parent: this.connectWrapper,
-        options: [ "Arena", "Human", "Spectate", "Tournament" ],
+        options: ["Arena", "Human", "Spectate", "Tournament"],
     });
 
     // - connection inputs - \\
 
-    /** The names of all the games sorted */
+    /** The names of all the games sorted. */
     private readonly gameNames: string[];
 
-    /** The names of all the games that are playable by humans, sorted */
+    /** The names of all the games that are playable by humans, sorted. */
     private readonly humanGameNames: string[];
 
     /** The game [name] input field. */
@@ -173,22 +193,27 @@ export class FileTab extends Tab {
 
     // ---- Download Section ---- \\
 
-    /** The section element for the downloads */
-    private readonly gamelogDownloadSection = this.element.find(".download-gamelog")
+    /** The section element for the downloads. */
+    private readonly gamelogDownloadSection = this.element
+        .find(".download-gamelog")
         .addClass("collapsed");
 
-    /** The link to download the gamelog */
-    private readonly gamelogDownloadLink = this.element.find(".download-gamelog-link");
+    /** The link to download the gamelog. */
+    private readonly gamelogDownloadLink = this.element.find(
+        ".download-gamelog-link",
+    );
 
     /**
      * Creates the File Tab.
      *
      * @param args - The tab arguments.
      */
-    constructor(args: ITabArgs & {
-        /** The Viseur instance we are a part of. */
-        viseur: Viseur;
-    }) {
+    constructor(
+        args: ITabArgs & {
+            /** The Viseur instance we are a part of. */
+            viseur: Viseur;
+        },
+    ) {
         super({
             contentTemplate: fileTabHbs,
             title: "File",
@@ -200,9 +225,7 @@ export class FileTab extends Tab {
         this.humanGameNames = this.gameNames.filter((name) => {
             const game = this.viseur.games[name];
 
-            return game
-                ? game.HumanPlayer.implemented
-                : false; // should not ever happen, this means no game for the name
+            return game ? game.HumanPlayer.implemented : false; // should not ever happen, this means no game for the name
         });
 
         // -- gamelog section -- \\
@@ -227,7 +250,7 @@ export class FileTab extends Tab {
         });
 
         // -- connection section -- \\
-        this.viseur.events.gamelogIsRemote.on((url) => {
+        this.viseur.events.gamelogIsRemote.on(() => {
             this.log("Downloading remote gamelog.");
         });
 
@@ -262,16 +285,22 @@ export class FileTab extends Tab {
                 // otherwise it is being streamed so the gamelog in memory is incomplete
                 this.gamelogDownloadLink.on("click", () => {
                     const blob = new Blob(
-                        [this.viseur.unparsedGamelog || JSON.stringify({ error: "No gamelog!" })],
+                        [
+                            this.viseur.unparsedGamelog ||
+                                JSON.stringify({ error: "No gamelog!" }),
+                        ],
                         { type: "application/json;charset=utf-8" },
                     );
-                    fileSaver.saveAs(blob, `${data.gamelog.gameName}-${data.gamelog.gameSession}.json`);
+                    fileSaver.saveAs(
+                        blob,
+                        `${data.gamelog.gameName}-${data.gamelog.gameSession}.json`,
+                    );
                 });
 
                 this.log("Gamelog successfully loaded.");
                 this.gamelogDownloadSection.removeClass("collapsed");
-            }
-            else { // don't show them the download section until the gamelog is finished streaming in
+            } else {
+                // don't show them the download section until the gamelog is finished streaming in
                 this.viseur.events.gamelogFinalized.on((finalized) => {
                     this.gamelogDownloadLink.attr("href", finalized.url);
                     this.gamelogDownloadSection.removeClass("collapsed");
@@ -326,27 +355,39 @@ export class FileTab extends Tab {
                 humanPlayable = true;
         }
 
-        this.gameInput.setOptions(humanPlayable
-            ? this.humanGameNames
-            : this.gameNames,
+        this.gameInput.setOptions(
+            humanPlayable ? this.humanGameNames : this.gameNames,
         );
 
         this.serverInput.value = server;
         this.portInput.value = port;
 
-        // tslint:disable:no-non-null-assertion - TODO: make field better so this is not needed
+        /* eslint-disable @typescript-eslint/no-non-null-assertion */
+        // TODO: make field better so this is not needed
         this.portInput.field!.element.toggleClass("collapsed", !showPort);
 
         this.nameInput.field!.element.toggleClass("collapsed", !showName);
-        this.sessionInput.field!.element.toggleClass("collapsed", !showSession);
+        this.sessionInput.field!.element.toggleClass(
+            "collapsed",
+            !showSession,
+        );
 
         this.gameInput.field!.element.toggleClass("collapsed", !showGame);
-        this.gameSettingsInput.field!.element.toggleClass("collapsed", !showGameSettings);
-        this.playerIndexInput.field!.element.toggleClass("collapsed", !showPlayerIndex);
+        this.gameSettingsInput.field!.element.toggleClass(
+            "collapsed",
+            !showGameSettings,
+        );
+        this.playerIndexInput.field!.element.toggleClass(
+            "collapsed",
+            !showPlayerIndex,
+        );
 
         this.legacyInput.field!.element.toggleClass("collapsed", !showLegacy);
-        this.presentationInput.field!.element.toggleClass("collapsed", !showPresentation);
-        // tslint:enable:no-non-null-assertion
+        this.presentationInput.field!.element.toggleClass(
+            "collapsed",
+            !showPresentation,
+        );
+        /* eslint-enable @typescript-eslint/no-non-null-assertion */
     }
 
     /**
@@ -357,23 +398,21 @@ export class FileTab extends Tab {
     private onGameChange(gameName: string): void {
         const namespace = this.viseur.games[gameName];
 
-        const n = namespace
-            ? namespace.Game.numberOfPlayers
-            : 2;
+        const n = namespace ? namespace.Game.numberOfPlayers : 2;
 
-        this.playerIndexInput.setOptions([{ text: "Any", value: "" }, ...(namespace
-            ? range(n).map((i) => (
-                {
-                    text: numberToWords(i + 1),
-                    value: String(i),
-                }
-            ))
-            : []
-        )]);
+        this.playerIndexInput.setOptions([
+            { text: "Any", value: "" },
+            ...(namespace
+                ? range(n).map((i) => ({
+                      text: numberToWords(i + 1),
+                      value: String(i),
+                  }))
+                : []),
+        ]);
     }
 
     /**
-     * Invoked when the connect button is pressed
+     * Invoked when the connect button is pressed.
      */
     private connect(): void {
         this.connectWrapper.addClass("collapsed");
@@ -392,12 +431,18 @@ export class FileTab extends Tab {
         });
 
         this.viseur.events.connectionError.on((err) => {
-            this.log(`Unexpected error occurred in connection. ${err}`, true);
+            this.log(
+                `Unexpected error occurred in connection. '${err.name}' - '${err.message}'`,
+                true,
+            );
         });
 
         this.viseur.events.connectionClosed.once((data) => {
             if (data.timedOut) {
-                this.log("You timed out and were forcibly disconnected.", true);
+                this.log(
+                    "You timed out and were forcibly disconnected.",
+                    true,
+                );
             }
             this.log("Connection closed.");
         });
@@ -408,7 +453,11 @@ export class FileTab extends Tab {
                 this.viseur.connectToTournament(server, port, playerName);
                 break;
             case "Arena":
-                this.viseur.startArenaMode(server, this.presentationInput.value, this.legacyInput.value);
+                this.viseur.startArenaMode(
+                    server,
+                    this.presentationInput.value,
+                    this.legacyInput.value,
+                );
                 break;
             case "Human":
                 this.viseur.playAsHuman({
@@ -425,7 +474,9 @@ export class FileTab extends Tab {
                 this.viseur.spectate(server, port, gameName, session);
                 break;
             default:
-                throw new Error(`Connection type ${type} unexpected`);
+                throw new Error(
+                    `Connection type '${String(type)}' unexpected`,
+                );
         }
     }
 

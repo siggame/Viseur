@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spiderling } from "./spiderling";
-import { ICutterState, IWebState, SpidersDelta } from "./state-interfaces";
+import { CutterState, SpidersDelta, WebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Cutter extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Cutter (dt = 0) */
-    public current: ICutterState | undefined;
+    public current: CutterState | undefined;
 
     /** The next state of the Cutter (dt = 1) */
-    public next: ICutterState | undefined;
+    public next: CutterState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Cutter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * @param state - The initial state of this Cutter.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ICutterState, viseur: Viseur) {
+    constructor(state: CutterState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class Cutter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ICutterState>,
-        next: Immutable<ICutterState>,
+        current: Immutable<CutterState>,
+        next: Immutable<CutterState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class Cutter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ICutterState>,
-        next: Immutable<ICutterState>,
+        current: Immutable<CutterState>,
+        next: Immutable<CutterState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -138,7 +138,7 @@ export class Cutter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * started, false otherwise.
      */
     public cut(
-        web: IWebState,
+        web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("cut", {web}, callback);

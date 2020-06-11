@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spiderling } from "./spiderling";
-import { IWeaverState, IWebState, SpidersDelta } from "./state-interfaces";
+import { SpidersDelta, WeaverState, WebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Weaver (dt = 0) */
-    public current: IWeaverState | undefined;
+    public current: WeaverState | undefined;
 
     /** The next state of the Weaver (dt = 1) */
-    public next: IWeaverState | undefined;
+    public next: WeaverState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * @param state - The initial state of this Weaver.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IWeaverState, viseur: Viseur) {
+    constructor(state: WeaverState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IWeaverState>,
-        next: Immutable<IWeaverState>,
+        current: Immutable<WeaverState>,
+        next: Immutable<WeaverState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IWeaverState>,
-        next: Immutable<IWeaverState>,
+        current: Immutable<WeaverState>,
+        next: Immutable<WeaverState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -138,7 +138,7 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * successfully started, false otherwise.
      */
     public strengthen(
-        web: IWebState,
+        web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("strengthen", {web}, callback);
@@ -153,7 +153,7 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * successfully started, false otherwise.
      */
     public weaken(
-        web: IWebState,
+        web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("weaken", {web}, callback);

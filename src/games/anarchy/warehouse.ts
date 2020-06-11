@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { AnarchyDelta, IBuildingState, IWarehouseState } from "./state-interfaces";
+import { AnarchyDelta, BuildingState, WarehouseState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Warehouse (dt = 0) */
-    public current: IWarehouseState | undefined;
+    public current: WarehouseState | undefined;
 
     /** The next state of the Warehouse (dt = 1) */
-    public next: IWarehouseState | undefined;
+    public next: WarehouseState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /**
@@ -35,7 +35,7 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
      * @returns An RGB number to make the color from. Use hex format for ease.
      */
     protected get beamColorName(): number {
-        return 0xFF8C00;
+        return 0xff8c00;
     }
     // <<-- /Creer-Merge: variables -->>
 
@@ -46,7 +46,7 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
      * @param state - The initial state of this Warehouse.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IWarehouseState, viseur: Viseur) {
+    constructor(state: WarehouseState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -67,8 +67,8 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IWarehouseState>,
-        next: Immutable<IWarehouseState>,
+        current: Immutable<WarehouseState>,
+        next: Immutable<WarehouseState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -115,8 +115,8 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IWarehouseState>,
-        next: Immutable<IWarehouseState>,
+        current: Immutable<WarehouseState>,
+        next: Immutable<WarehouseState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -145,7 +145,7 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
      * Building's exposure. -1 is returned if there was an error.
      */
     public ignite(
-        building: IBuildingState,
+        building: BuildingState,
         callback?: (returned: number) => void,
     ): void {
         this.runOnServer("ignite", {building}, callback);

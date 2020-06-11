@@ -17,7 +17,8 @@ export const GameSettings = {
     pawnPromotion: new Settings.DropDownSetting<"q" | "n" | "r" | "b">({
         id: "pawn-promotion",
         label: "Pawn Promotion",
-        hint: "When making moves as a human player, the type of piece to promote pawns to automatically",
+        hint:
+            "When making moves as a human player, the type of piece to promote pawns to automatically",
         options: [
             { text: "Queen", value: "q" },
             { text: "Knight", value: "n" },

@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spiderling } from "./spiderling";
-import { INestState, ISpitterState, SpidersDelta } from "./state-interfaces";
+import { NestState, SpidersDelta, SpitterState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Spitter (dt = 0) */
-    public current: ISpitterState | undefined;
+    public current: SpitterState | undefined;
 
     /** The next state of the Spitter (dt = 1) */
-    public next: ISpitterState | undefined;
+    public next: SpitterState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * @param state - The initial state of this Spitter.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ISpitterState, viseur: Viseur) {
+    constructor(state: SpitterState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ISpitterState>,
-        next: Immutable<ISpitterState>,
+        current: Immutable<SpitterState>,
+        next: Immutable<SpitterState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ISpitterState>,
-        next: Immutable<ISpitterState>,
+        current: Immutable<SpitterState>,
+        next: Immutable<SpitterState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -139,7 +139,7 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * false otherwise.
      */
     public spit(
-        nest: INestState,
+        nest: NestState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("spit", {nest}, callback);

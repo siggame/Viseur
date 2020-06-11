@@ -3,12 +3,12 @@
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
-import { IRendererSize } from "src/viseur/renderer";
+import { RendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { IGameState, PiratesDelta } from "./state-interfaces";
+import { GameState, PiratesDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -29,10 +29,10 @@ export class Game extends BaseGame {
     public static readonly numberOfPlayers = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: IGameState | undefined;
+    public current: GameState | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: IGameState | undefined;
+    public next: GameState | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
@@ -82,7 +82,7 @@ export class Game extends BaseGame {
      * @param state - The initialize state of the game.
      * @returns The {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): IRendererSize {
+    protected getSize(state: GameState): RendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
             width: state.mapWidth, // Change these. Probably read in the map's width
@@ -97,7 +97,7 @@ export class Game extends BaseGame {
      *
      * @param state - The initialize state of the game.
      */
-    protected start(state: IGameState): void {
+    protected start(state: GameState): void {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
@@ -110,7 +110,7 @@ export class Game extends BaseGame {
      *
      * @param state - The initial state to use the render the background.
      */
-    protected createBackground(state: IGameState): void {
+    protected createBackground(state: GameState): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
@@ -147,8 +147,8 @@ export class Game extends BaseGame {
      */
     protected renderBackground(
         dt: number,
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {
@@ -168,8 +168,8 @@ export class Game extends BaseGame {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     protected stateUpdated(
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {

@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ISpiderState, SpidersDelta } from "./state-interfaces";
+import { SpiderState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { setRelativePivot } from "src/utils";
@@ -24,10 +24,10 @@ export class Spider extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Spider (dt = 0) */
-    public current: ISpiderState | undefined;
+    public current: SpiderState | undefined;
 
     /** The next state of the Spider (dt = 1) */
-    public next: ISpiderState | undefined;
+    public next: SpiderState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Spider extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Spider.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ISpiderState, viseur: Viseur) {
+    constructor(state: SpiderState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -62,8 +62,8 @@ export class Spider extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ISpiderState>,
-        next: Immutable<ISpiderState>,
+        current: Immutable<SpiderState>,
+        next: Immutable<SpiderState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -110,8 +110,8 @@ export class Spider extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ISpiderState>,
-        next: Immutable<ISpiderState>,
+        current: Immutable<SpiderState>,
+        next: Immutable<SpiderState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {

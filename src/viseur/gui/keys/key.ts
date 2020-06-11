@@ -1,11 +1,11 @@
 import { Event } from "ts-typed-events";
 
-/** Represents a key on the keyboard */
+/** Represents a key on the keyboard. */
 export class Key {
-    /** Emitted when this key goes up (after a down) */
+    /** Emitted when this key goes up (after a down). */
     public readonly up = new Event<KeyboardEvent>();
 
-    /** Emitted when this key goes down */
+    /** Emitted when this key goes down. */
     public readonly down = new Event<KeyboardEvent>();
 
     /**

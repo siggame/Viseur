@@ -5,7 +5,7 @@ import { Viseur } from "src/viseur";
 import { BaseGameObject, makeRenderable } from "src/viseur/game";
 import { ResourcesForGameObject } from "src/viseur/renderer";
 import { Game } from "./game";
-import { IGameObjectState, NecrowarDelta } from "./state-interfaces";
+import { GameObjectState, NecrowarDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -31,10 +31,10 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     public readonly addSprite!: ResourcesForGameObject<Game["resources"]> | undefined;
 
     /** The current state of the GameObject (dt = 0) */
-    public current: IGameObjectState | undefined;
+    public current: GameObjectState | undefined;
 
     /** The next state of the GameObject (dt = 1) */
-    public next: IGameObjectState | undefined;
+    public next: GameObjectState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -47,7 +47,7 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
      * @param state - The initial state of this GameObject.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IGameObjectState, viseur: Viseur) {
+    constructor(state: GameObjectState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -68,8 +68,8 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IGameObjectState>,
-        next: Immutable<IGameObjectState>,
+        current: Immutable<GameObjectState>,
+        next: Immutable<GameObjectState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -116,8 +116,8 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IGameObjectState>,
-        next: Immutable<IGameObjectState>,
+        current: Immutable<GameObjectState>,
+        next: Immutable<GameObjectState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {

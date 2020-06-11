@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, IUnitState, PiratesDelta } from "./state-interfaces";
+import { PiratesDelta, TileState, UnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -27,10 +27,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Unit (dt = 0) */
-    public current: IUnitState | undefined;
+    public current: UnitState | undefined;
 
     /** The next state of the Unit (dt = 1) */
-    public next: IUnitState | undefined;
+    public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -63,7 +63,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Unit.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IUnitState, viseur: Viseur) {
+    constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -89,8 +89,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
             this.container.visible = true;
-        }
-        else {
+        } else {
             this.container.position.set(-1, -1);
             this.container.visible = false;
         }
@@ -115,8 +114,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {
@@ -141,8 +140,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.shirt.visible = true;
             this.flag.visible = false;
             this.shipSprite.visible = false;
-        }
-        else {
+        } else {
             this.pirateSprite.visible = false;
             this.shirt.visible = false;
         }
@@ -152,8 +150,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.flag.visible = true;
             this.shirt.visible = false;
             this.pirateSprite.visible = false;
-        }
-        else {
+        } else {
             this.shipSprite.visible = false;
             this.flag.visible = false;
         }
@@ -186,9 +183,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        const color = this.ownerID === undefined
-            ? WHITE_COLOR
-            : this.game.getPlayersColor(this.ownerID).rgbNumber();
+        const color =
+            this.ownerID === undefined
+                ? WHITE_COLOR
+                : this.game.getPlayersColor(this.ownerID).rgbNumber();
 
         this.shirt.tint = color;
         this.flag.tint = color;
@@ -219,8 +217,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {
@@ -249,7 +247,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public attack(
-        tile: ITileState,
+        tile: TileState,
         target: "crew" | "ship",
         callback?: (returned: boolean) => void,
     ): void {
@@ -258,7 +256,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /**
      * Buries gold on this Unit's Tile. Gold must be a certain distance away for
-     * it to get interest (Game.minInterestDistance).
+     * it to get interest (`Game.minInterestDistance`).
      * @param amount How much gold this Unit should bury. Amounts <= 0 will bury
      * as much as possible.
      * @param callback? The callback that eventually returns the return value
@@ -315,7 +313,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * otherwise.
      */
     public move(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("move", {tile}, callback);
@@ -346,7 +344,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public split(
-        tile: ITileState,
+        tile: TileState,
         amount: number,
         gold: number,
         callback?: (returned: boolean) => void,

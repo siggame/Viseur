@@ -26,7 +26,7 @@ export class HumanPlayer extends BaseHumanPlayer {
     }
 
     //  <<-- Creer-Merge: variables -->>
-        // construct this human player
+    // construct this human player
     //  <<-- /Creer-Merge: variables -->>
 
     /**

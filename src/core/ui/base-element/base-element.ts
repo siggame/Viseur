@@ -3,7 +3,7 @@ import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
 import * as baseElementHbs from "./base-element.hbs";
 
-/** BaseElement constructor args */
+/** BaseElement constructor args. */
 export interface IBaseElementArgs {
     /** Id to assign to. */
     id?: string;

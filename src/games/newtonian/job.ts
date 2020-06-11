@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IJobState, NewtonianDelta } from "./state-interfaces";
+import { JobState, NewtonianDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Job (dt = 0) */
-    public current: IJobState | undefined;
+    public current: JobState | undefined;
 
     /** The next state of the Job (dt = 1) */
-    public next: IJobState | undefined;
+    public next: JobState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Job.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IJobState, viseur: Viseur) {
+    constructor(state: JobState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IJobState>,
-        next: Immutable<IJobState>,
+        current: Immutable<JobState>,
+        next: Immutable<JobState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IJobState>,
-        next: Immutable<IJobState>,
+        current: Immutable<JobState>,
+        next: Immutable<JobState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {

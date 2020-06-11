@@ -1,18 +1,18 @@
 import { ITabArgs, Tab } from "src/core/ui";
 import { Viseur } from "src/viseur";
-import { IViseurGameState } from "src/viseur/game";
+import { ViseurGameState } from "src/viseur/game";
 import * as inspectTabHbs from "./inspect-tab.hbs";
 import "./inspect-tab.scss";
 import { InspectTreeView } from "./inspect-tree";
 
 /**
- * The "Inspect" tab on the InfoPane
+ * The "Inspect" tab on the InfoPane.
  */
 export class InspectTab extends Tab {
     /** Main treeview for the game. */
     private readonly gameTreeView: InspectTreeView;
 
-    /** Three view for the settings. Never updated once set */
+    /** Three view for the settings. Never updated once set. */
     private readonly settingsTreeView: InspectTreeView;
 
     /** The viseur instance. */
@@ -32,20 +32,28 @@ export class InspectTab extends Tab {
 
         const parent = this.element.find(".inspect-tree-root");
         this.gameTreeView = new InspectTreeView({ parent, name: "game" });
-        this.settingsTreeView = new InspectTreeView({ parent, name: "settings" });
+        this.settingsTreeView = new InspectTreeView({
+            parent,
+            name: "settings",
+        });
 
         this.viseur = args.viseur;
         this.viseur.events.ready.once(({ gamelog }) => {
             this.settingsTreeView.setGameName(gamelog.gameName);
+            // eslint-disable-next-line @typescript-eslint/ban-types
             this.settingsTreeView.display(gamelog.settings as {});
 
             this.gameTreeView.setGameName(gamelog.gameName);
             this.refreshTree(this.viseur.getCurrentState());
 
-            this.viseur.events.stateChanged.on((state) => this.refreshTree(state));
+            this.viseur.events.stateChanged.on((state) =>
+                this.refreshTree(state),
+            );
         });
 
-        this.tabular.events.tabChanged.on(() => this.refreshTree(this.viseur.getCurrentState()));
+        this.tabular.events.tabChanged.on(() =>
+            this.refreshTree(this.viseur.getCurrentState()),
+        );
     }
 
     /**
@@ -53,11 +61,12 @@ export class InspectTab extends Tab {
      *
      * @param state - The new game states to use to re-build the tree.
      */
-    private refreshTree(state: IViseurGameState): void {
+    private refreshTree(state: ViseurGameState): void {
         if (this.tabular.getActiveTab() !== this) {
             return;
         }
 
-        this.gameTreeView.display(state.game as {}); // TODO: sketchy cast
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        this.gameTreeView.display(state.game as {});
     }
 }

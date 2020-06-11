@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CatastropheDelta, IStructureState } from "./state-interfaces";
+import { CatastropheDelta, StructureState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Structure (dt = 0) */
-    public current: IStructureState | undefined;
+    public current: StructureState | undefined;
 
     /** The next state of the Structure (dt = 1) */
-    public next: IStructureState | undefined;
+    public next: StructureState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -43,7 +43,7 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Structure.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IStructureState, viseur: Viseur) {
+    constructor(state: StructureState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -60,8 +60,11 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         if (state.type === "road") {
             this.sprite = this.addSprite.road();
-            if (state.tile.tileSouth != null && state.tile.tileSouth.structure != null
-                && state.tile.tileSouth.structure.type === "road") {
+            if (
+                state.tile.tileSouth != null &&
+                state.tile.tileSouth.structure != null &&
+                state.tile.tileSouth.structure.type === "road"
+            ) {
                 this.sprite.anchor.y = 1;
                 this.sprite.scale.y *= -1;
             }
@@ -93,8 +96,8 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IStructureState>,
-        next: Immutable<IStructureState>,
+        current: Immutable<StructureState>,
+        next: Immutable<StructureState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {
@@ -104,7 +107,7 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
         // render where the Structure is
 
         // Convert next.tile to a boolean value
-        this.container.visible = !(!next.tile);
+        this.container.visible = !!next.tile;
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -144,8 +147,8 @@ export class Structure extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IStructureState>,
-        next: Immutable<IStructureState>,
+        current: Immutable<StructureState>,
+        next: Immutable<StructureState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {

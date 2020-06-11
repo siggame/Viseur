@@ -55,7 +55,9 @@ export class HumanPlayer extends BaseHumanPlayer {
     public makeMove(callback: (returned: string) => void): void {
         // <<-- Creer-Merge: makeMove -->>
         this.game.chessOverlay.events.moveSelected.once((move) => {
-            const promotion = move.promotion && this.game.settings.pawnPromotion.get() || "";
+            const promotion =
+                (move.promotion && this.game.settings.pawnPromotion.get()) ||
+                "";
             const longSAN = move.from + move.to + promotion;
             callback(longSAN);
         });

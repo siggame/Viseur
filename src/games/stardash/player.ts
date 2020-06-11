@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IPlayerState, StardashDelta } from "./state-interfaces";
+import { PlayerState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Player (dt = 0) */
-    public current: IPlayerState | undefined;
+    public current: PlayerState | undefined;
 
     /** The next state of the Player (dt = 1) */
-    public next: IPlayerState | undefined;
+    public next: PlayerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Player.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IPlayerState, viseur: Viseur) {
+    constructor(state: PlayerState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IPlayerState>,
-        next: Immutable<IPlayerState>,
+        current: Immutable<PlayerState>,
+        next: Immutable<PlayerState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IPlayerState>,
-        next: Immutable<IPlayerState>,
+        current: Immutable<PlayerState>,
+        next: Immutable<PlayerState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {

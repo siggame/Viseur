@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { AnarchyDelta, IPoliceDepartmentState, IWarehouseState } from "./state-interfaces";
+import { AnarchyDelta, PoliceDepartmentState, WarehouseState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the PoliceDepartment (dt = 0) */
-    public current: IPoliceDepartmentState | undefined;
+    public current: PoliceDepartmentState | undefined;
 
     /** The next state of the PoliceDepartment (dt = 1) */
-    public next: IPoliceDepartmentState | undefined;
+    public next: PoliceDepartmentState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** the beam color name to use for beams */
@@ -43,7 +43,7 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * @param state - The initial state of this PoliceDepartment.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IPoliceDepartmentState, viseur: Viseur) {
+    constructor(state: PoliceDepartmentState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -64,8 +64,8 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IPoliceDepartmentState>,
-        next: Immutable<IPoliceDepartmentState>,
+        current: Immutable<PoliceDepartmentState>,
+        next: Immutable<PoliceDepartmentState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -112,8 +112,8 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IPoliceDepartmentState>,
-        next: Immutable<IPoliceDepartmentState>,
+        current: Immutable<PoliceDepartmentState>,
+        next: Immutable<PoliceDepartmentState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -141,7 +141,7 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * the warehouse, or -1 if there was an error.
      */
     public raid(
-        warehouse: IWarehouseState,
+        warehouse: WarehouseState,
         callback?: (returned: number) => void,
     ): void {
         this.runOnServer("raid", {warehouse}, callback);

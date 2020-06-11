@@ -5,11 +5,11 @@ import { Tab } from "./tab";
 import * as tabularHbs from "./tabular.hbs";
 import "./tabular.scss";
 
-/** a block of content accessed via Tabs */
+/** A block of content accessed via Tabs. */
 export class Tabular extends BaseElement {
     /** The events the tabular emits about its Tabs. */
     public readonly events = events({
-        /** Triggered when the active tab changes from one to another */
+        /** Triggered when the active tab changes from one to another. */
         tabChanged: new Event<
             Readonly<{
                 /** The Tab that is now active. */
@@ -21,20 +21,20 @@ export class Tabular extends BaseElement {
         >(),
     });
 
-    /** all the tabs in this tabular */
+    /** All the tabs in this tabular. */
     private readonly tabs: Tab[] = [];
 
-    /** the currently selected tab */
+    /** The currently selected tab. */
     private activeTab!: Tab; // will always be at least the first tab
 
-    /** parent container to store tab's tab item in */
+    /** Parent container to store tab's tab item in. */
     private readonly tabsElement = this.element.find(".tabular-tabs");
 
-    /** parent container to store tab's contents in */
+    /** Parent container to store tab's contents in. */
     private readonly contentsElement = this.element.find(".tabular-content");
 
-    /** if this is fading in or out a tab */
-    private fading: boolean = false;
+    /** If this is fading in or out a tab. */
+    private fading = false;
 
     constructor(
         args: IBaseElementArgs & {
@@ -50,8 +50,9 @@ export class Tabular extends BaseElement {
     }
 
     /**
-     * Attaches tabs to this tabular
-     * @param tabs list of tabs to attach, only call once
+     * Attaches tabs to this tabular.
+     *
+     * @param tabs - List of tabs to attach, only call once.
      */
     public attachTabs(tabs: Tab[]): void {
         for (const tab of tabs) {

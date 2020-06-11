@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IProjectileState, StardashDelta } from "./state-interfaces";
+import { ProjectileState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -25,10 +25,10 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Projectile (dt = 0) */
-    public current: IProjectileState | undefined;
+    public current: ProjectileState | undefined;
 
     /** The next state of the Projectile (dt = 1) */
-    public next: IProjectileState | undefined;
+    public next: ProjectileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -46,7 +46,7 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Projectile.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IProjectileState, viseur: Viseur) {
+    constructor(state: ProjectileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -55,12 +55,10 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.container.scale.set(1, 1);
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
-        this.jobSprite = this.addSprite.beam(
-            {
-                relativeScale: this.game.scaler * 5,
-            },
-        );
-        this.jobSprite.scale.set(.1, .1);
+        this.jobSprite = this.addSprite.beam({
+            relativeScale: this.game.scaler * 5,
+        });
+        this.jobSprite.scale.set(0.1, 0.1);
 
         // state.gameObjectName
         // <<-- /Creer-Merge: constructor -->>
@@ -79,8 +77,8 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IProjectileState>,
-        next: Immutable<IProjectileState>,
+        current: Immutable<ProjectileState>,
+        next: Immutable<ProjectileState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {
@@ -137,8 +135,8 @@ export class Projectile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IProjectileState>,
-        next: Immutable<IProjectileState>,
+        current: Immutable<ProjectileState>,
+        next: Immutable<ProjectileState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {

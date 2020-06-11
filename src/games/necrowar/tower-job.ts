@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITowerJobState, NecrowarDelta } from "./state-interfaces";
+import { NecrowarDelta, TowerJobState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class TowerJob extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the TowerJob (dt = 0) */
-    public current: ITowerJobState | undefined;
+    public current: TowerJobState | undefined;
 
     /** The next state of the TowerJob (dt = 1) */
-    public next: ITowerJobState | undefined;
+    public next: TowerJobState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class TowerJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this TowerJob.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITowerJobState, viseur: Viseur) {
+    constructor(state: TowerJobState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,8 +61,8 @@ export class TowerJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITowerJobState>,
-        next: Immutable<ITowerJobState>,
+        current: Immutable<TowerJobState>,
+        next: Immutable<TowerJobState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -109,8 +109,8 @@ export class TowerJob extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITowerJobState>,
-        next: Immutable<ITowerJobState>,
+        current: Immutable<TowerJobState>,
+        next: Immutable<TowerJobState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {

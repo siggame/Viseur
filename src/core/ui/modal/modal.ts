@@ -4,9 +4,9 @@ import { BaseElement, IBaseElementArgs } from "../base-element";
 import * as modalHbs from "./modal.hbs";
 import "./modal.scss";
 
-/** A modal that floats above the screen and blocks out all other input */
+/** A modal that floats above the screen and blocks out all other input. */
 export class Modal extends BaseElement {
-    /** the content of the modal */
+    /** The content of the modal. */
     private readonly content: JQuery;
 
     /**

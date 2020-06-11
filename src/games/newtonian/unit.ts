@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, IUnitState, NewtonianDelta } from "./state-interfaces";
+import { NewtonianDelta, TileState, UnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -28,10 +28,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Unit (dt = 0) */
-    public current: IUnitState | undefined;
+    public current: UnitState | undefined;
 
     /** The next state of the Unit (dt = 1) */
-    public next: IUnitState | undefined;
+    public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** The id of the owner of this unit, for recoloring */
@@ -41,7 +41,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public jobSprite: PIXI.Sprite;
 
     /** The tile state of the tile we are attacking, if we are. */
-    public attackingTile?: ITileState;
+    public attackingTile?: TileState;
 
     /** Our health bar */
     public readonly healthBar: GameBar;
@@ -55,7 +55,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Unit.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IUnitState, viseur: Viseur) {
+    constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -66,8 +66,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
-        this.addSprite[`${state.job.title}Bottom` as "internBottom"]({ container: jobContainer });
-        this.jobSprite = this.addSprite[`${state.job.title}Top` as "internTop"]({ container: jobContainer });
+        this.addSprite[`${state.job.title}Bottom` as "internBottom"]({
+            container: jobContainer,
+        });
+        this.jobSprite = this.addSprite[
+            `${state.job.title}Top` as "internTop"
+        ]({ container: jobContainer });
 
         if (state.owner.id === this.game.players[0].id) {
             // flip the first player's job sprite
@@ -99,8 +103,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -173,8 +177,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -183,16 +187,20 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: state-updated -->>
         // update the Unit based off its states
         this.attackingTile = undefined;
-        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+        if (
+            nextDelta.type === "ran" &&
+            nextDelta.data.run.caller.id === this.id
+        ) {
             if (nextDelta.data.returned) {
                 const { run } = nextDelta.data;
-                const tile = this.game.gameObjects[String(
-                    isObject(run.args.tile) && run.args.tile.id,
-                )];
+                const tile = this.game.gameObjects[
+                    String(isObject(run.args.tile) && run.args.tile.id)
+                ];
 
                 switch (run.functionName) {
                     case "attack":
-                        this.attackingTile = tile && (tile as Tile).getNextMostState();
+                        this.attackingTile =
+                            tile && (tile as Tile).getNextMostState();
                 }
             }
         }
@@ -217,7 +225,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public act(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("act", {tile}, callback);
@@ -231,7 +239,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public attack(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {tile}, callback);
@@ -249,7 +257,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public drop(
-        tile: ITileState,
+        tile: TileState,
         amount: number,
         material: "redium ore" | "redium" | "blueium" | "blueium ore",
         callback?: (returned: boolean) => void,
@@ -265,7 +273,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * otherwise.
      */
     public move(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("move", {tile}, callback);
@@ -283,7 +291,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public pickup(
-        tile: ITileState,
+        tile: TileState,
         amount: number,
         material: "redium ore" | "redium" | "blueium" | "blueium ore",
         callback?: (returned: boolean) => void,

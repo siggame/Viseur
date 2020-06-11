@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { AnarchyDelta, IWeatherStationState } from "./state-interfaces";
+import { AnarchyDelta, WeatherStationState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -25,10 +25,10 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the WeatherStation (dt = 0) */
-    public current: IWeatherStationState | undefined;
+    public current: WeatherStationState | undefined;
 
     /** The next state of the WeatherStation (dt = 1) */
-    public next: IWeatherStationState | undefined;
+    public next: WeatherStationState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -47,20 +47,20 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
      * @param state - The initial state of this WeatherStation.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IWeatherStationState, viseur: Viseur) {
+    constructor(state: WeatherStationState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.intensitySprite = this.addSprite.arrow({
             container: this.game.layers.beams,
             relativePivot: 0.5,
-            position: {x: state.x + 0.5, y: state.y + 0.5},
+            position: { x: state.x + 0.5, y: state.y + 0.5 },
         });
 
         this.rotationSprite = this.addSprite.rotation({
             container: this.game.layers.beams,
             relativePivot: 0.5,
-            position: {x: state.x + 0.5, y: state.y + 0.5},
+            position: { x: state.x + 0.5, y: state.y + 0.5 },
         });
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -78,8 +78,8 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IWeatherStationState>,
-        next: Immutable<IWeatherStationState>,
+        current: Immutable<WeatherStationState>,
+        next: Immutable<WeatherStationState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -88,12 +88,14 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
         // <<-- Creer-Merge: render -->>
         if (this.rotationSprite.visible) {
             const direction = this.rotationSprite.scale.x > 0 ? 1 : -1;
-            this.rotationSprite.rotation = direction * Math.PI * ease(dt, "cubicIn");
+            this.rotationSprite.rotation =
+                direction * Math.PI * ease(dt, "cubicIn");
         }
 
         if (this.intensitySprite.visible) {
             const direction = this.intensitySprite.rotation === 0 ? 1 : -1;
-            this.intensitySprite.y = current.y - direction * ease(dt, "cubicIn");
+            this.intensitySprite.y =
+                current.y - direction * ease(dt, "cubicIn");
         }
         // <<-- /Creer-Merge: render -->>
     }
@@ -134,8 +136,8 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IWeatherStationState>,
-        next: Immutable<IWeatherStationState>,
+        current: Immutable<WeatherStationState>,
+        next: Immutable<WeatherStationState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -148,15 +150,19 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
         this.intensitySprite.visible = false;
         this.intensitySprite.rotation = 0;
 
-        if (nextDelta.type === "ran"
-         && nextDelta.data.run.caller.id === this.id
-         && nextDelta.data.returned
+        if (
+            nextDelta.type === "ran" &&
+            nextDelta.data.run.caller.id === this.id &&
+            nextDelta.data.returned
         ) {
             if (nextDelta.data.run.functionName === "rotate") {
                 this.rotationSprite.visible = true;
-                this.rotationSprite.scale.x *= nextDelta.data.run.args.counterclockwise ? -1 : 1;
-            }
-            else { // functionName === "intensify"
+                this.rotationSprite.scale.x *= nextDelta.data.run.args
+                    .counterclockwise
+                    ? -1
+                    : 1;
+            } else {
+                // functionName === "intensify"
                 this.intensitySprite.visible = true;
                 const negative = nextDelta.data.run.args.negative;
                 // rotate the arrow 180 degrees, so flip is basically
@@ -175,7 +181,7 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
     //       If it does not, feel free to ignore these Joueur functions.
 
     /**
-     * Bribe the weathermen to intensity the next Forecast by 1 or -1
+     * Bribe the weathermen to intensity the next Forecast by 1 or -1.
      * @param negative By default the intensity will be increased by 1, setting
      * this to true decreases the intensity by 1.
      * @param callback? The callback that eventually returns the return value

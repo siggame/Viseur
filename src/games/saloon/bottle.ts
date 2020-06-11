@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBottleState, SaloonDelta } from "./state-interfaces";
+import { BottleState, SaloonDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -23,10 +23,10 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Bottle (dt = 0) */
-    public current: IBottleState | undefined;
+    public current: BottleState | undefined;
 
     /** The next state of the Bottle (dt = 1) */
-    public next: IBottleState | undefined;
+    public next: BottleState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -49,7 +49,7 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Bottle.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IBottleState, viseur: Viseur) {
+    constructor(state: BottleState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -69,8 +69,8 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IBottleState>,
-        next: Immutable<IBottleState>,
+        current: Immutable<BottleState>,
+        next: Immutable<BottleState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {
@@ -100,7 +100,7 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (this.lastDT !== dt) {
             this.lastDT = dt;
             // rotate at a constant rate, not dependent on dt
-            this.sprite.rotation = Math.PI * new Date().getTime() * 2 / 1000;
+            this.sprite.rotation = (Math.PI * new Date().getTime() * 2) / 1000;
         }
 
         this.container.position.set(
@@ -146,8 +146,8 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IBottleState>,
-        next: Immutable<IBottleState>,
+        current: Immutable<BottleState>,
+        next: Immutable<BottleState>,
         delta: Immutable<SaloonDelta>,
         nextDelta: Immutable<SaloonDelta>,
     ): void {

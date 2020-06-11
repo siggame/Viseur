@@ -1,7 +1,7 @@
 import * as chessJs from "chess.js";
 import { mapValues } from "lodash";
 import * as PIXI from "pixi.js";
-import { ease, IPoint } from "src/utils";
+import { ease, Point } from "src/utils";
 import { ASCII_A, BOARD_LENGTH, BOARD_MARGIN } from "./chess-board-background";
 import { Game } from "./game";
 
@@ -57,7 +57,7 @@ type SpritesCache = {
  * @param square - The square to convert.
  * @returns A point for the given square.
  */
-export function squareToXY(square: chessJs.Square): IPoint {
+export function squareToXY(square: chessJs.Square): Point {
     return {
         x: square.charCodeAt(0) - ASCII_A,
         y: BOARD_LENGTH - Number(square.charAt(1)),
@@ -71,11 +71,17 @@ export class ChessPieces {
 
     /** The cache of unused piece sprites in memory ready to be re-used. */
     // tslint:disable-next-line:no-any no-unsafe-any - lodash has bad types, and loses keyof type information
-    private readonly pieceSpriteCache = mapValues(CHESS_PIECE_INDEXES, () => ({ b: [], w: [] })) as any as SpritesCache;
+    private readonly pieceSpriteCache = (mapValues(
+        CHESS_PIECE_INDEXES,
+        () => ({ b: [], w: [] }),
+    ) as any) as SpritesCache;
 
     /** The cache of uses pieces being rendered on the board. */
     // tslint:disable-next-line:no-any no-unsafe-any - lodash has bad types, and loses keyof type information
-    private readonly pieceSpriteUsed = mapValues(CHESS_PIECE_INDEXES, () => ({ b: [], w: [] })) as any as SpritesCache;
+    private readonly pieceSpriteUsed = (mapValues(CHESS_PIECE_INDEXES, () => ({
+        b: [],
+        w: [],
+    })) as any) as SpritesCache;
 
     /** A mapping of the square or promotion square to render information built during updates. */
     private renders = new Map<chessJs.Square | "promotion", IPieceRender>();
@@ -96,7 +102,10 @@ export class ChessPieces {
      * @param chess - chess.js instance of the current state
      * @param move - if a move occurs AFTER the current state, the result of that move, else null for no move.
      */
-    public update(chess: chessJs.ChessInstance, move: chessJs.Move | null): void {
+    public update(
+        chess: chessJs.ChessInstance,
+        move: chessJs.Move | null,
+    ): void {
         this.renders.clear();
         this.unRenderPieces();
 
@@ -117,10 +126,11 @@ export class ChessPieces {
         if (move) {
             // first, let's check if something got captured
             let capturedSquare: chessJs.Square | undefined;
-            if (move.flags.includes("e")) { // en passant capture
-                capturedSquare = move.to[0] + move.from[1] as chessJs.Square;
-            }
-            else if (move.captured) { // normal capture via moving to captured piece
+            if (move.flags.includes("e")) {
+                // en passant capture
+                capturedSquare = (move.to[0] + move.from[1]) as chessJs.Square;
+            } else if (move.captured) {
+                // normal capture via moving to captured piece
                 capturedSquare = move.to;
             }
 
@@ -129,15 +139,21 @@ export class ChessPieces {
             }
 
             // now check for casteling, if so we need to animate the Rook moving with the King
-            if (move.flags.includes("q") || move.flags.includes("k")) { // queen or king side castle
+            if (move.flags.includes("q") || move.flags.includes("k")) {
+                // queen or king side castle
                 const file = move.flags === "q" ? "a" : "h"; // queenside rook at file "a", kingside at "h"
                 const rank = move.to[1];
                 // queenside castle ends up at file "d", kingside at "f"
-                const newRookSquare = (move.flags === "q" ? "d" : "f") + rank as chessJs.Square;
+                const newRookSquare = ((move.flags === "q" ? "d" : "f") +
+                    rank) as chessJs.Square;
 
-                const rookRender = this.getRenderUnsafe(file + rank).to = newRookSquare;
+                const rookRender = (this.getRenderUnsafe(
+                    file + rank,
+                ).to = newRookSquare);
                 if (!rookRender) {
-                    throw new Error(`No rook for castling to render at ${rank}${file}!`);
+                    throw new Error(
+                        `No rook for castling to render at ${rank}${file}!`,
+                    );
                 }
             }
 
@@ -172,7 +188,9 @@ export class ChessPieces {
 
                 cache.push({
                     container,
-                    bottom: this.game.resources.piecesBottom.newSprite(options), // bottom first to render below top
+                    bottom: this.game.resources.piecesBottom.newSprite(
+                        options,
+                    ), // bottom first to render below top
                     top: this.game.resources.piecesTop.newSprite(options),
                 });
             }
@@ -202,8 +220,7 @@ export class ChessPieces {
             if (!render.to) {
                 // going to null, fade out
                 alpha = ease(1 - dt);
-            }
-            else if (!render.from) {
+            } else if (!render.from) {
                 // coming from null, fade in
                 alpha = ease(dt);
             }
@@ -221,7 +238,7 @@ export class ChessPieces {
                 }
             }
 
-            const position = from || to as IPoint; // one has to exist
+            const position = from || (to as Point); // one has to exist
             if (to && from && (to.x !== from.x || to.y !== from.y)) {
                 // it's moving from a position to a position
                 position.x = ease(from.x, to.x, dt);
@@ -239,21 +256,26 @@ export class ChessPieces {
     public recolor(): void {
         for (const key of Object.keys(CHESS_PIECE_INDEXES)) {
             const safeKey = key as keyof typeof CHESS_PIECE_INDEXES;
-            for (const colors of [this.pieceSpriteCache[safeKey], this.pieceSpriteUsed[safeKey]]) {
+            for (const colors of [
+                this.pieceSpriteCache[safeKey],
+                this.pieceSpriteUsed[safeKey],
+            ]) {
                 for (const [color, pieceSprites] of Object.entries(colors)) {
                     for (const sprites of pieceSprites) {
-                        sprites.bottom.tint = color === "b"
-                            ? 0x000000 // black
-                            : 0xFFFFFF; // white
+                        sprites.bottom.tint =
+                            color === "b"
+                                ? 0x000000 // black
+                                : 0xffffff; // white
 
                         // get the top color, if it is pure black or white, step it down for contrast,
                         // otherwise it looks solid with the background
-                        let topColor = this.game.getPlayersColor(color === "b" ? 1 : 0).rgbNumber();
+                        let topColor = this.game
+                            .getPlayersColor(color === "b" ? 1 : 0)
+                            .rgbNumber();
                         if (topColor === 0) {
                             topColor = 0x555555;
-                        }
-                        else if (topColor === 0xFFFFFF) {
-                            topColor = 0xAAAAAA;
+                        } else if (topColor === 0xffffff) {
+                            topColor = 0xaaaaaa;
                         }
                         sprites.top.tint = topColor;
                     }
@@ -281,15 +303,21 @@ export class ChessPieces {
      * Remove all pieces currently being rendered, and caches them for re-use later.
      */
     private unRenderPieces(): void {
-        for (const [t, usedSpritesByColor] of Object.entries(this.pieceSpriteUsed)) {
+        for (const [t, usedSpritesByColor] of Object.entries(
+            this.pieceSpriteUsed,
+        )) {
             const typeSafe = t as keyof typeof CHESS_PIECE_INDEXES;
-            for (const [color, usedSprites] of Object.entries(usedSpritesByColor)) {
+            for (const [color, usedSprites] of Object.entries(
+                usedSpritesByColor,
+            )) {
                 const colorSafe = color as keyof typeof usedSpritesByColor;
 
                 for (const sprite of usedSprites) {
                     sprite.container.visible = false;
                 }
-                this.pieceSpriteCache[typeSafe][colorSafe].push(...usedSprites);
+                this.pieceSpriteCache[typeSafe][colorSafe].push(
+                    ...usedSprites,
+                );
                 usedSprites.length = 0;
             }
         }

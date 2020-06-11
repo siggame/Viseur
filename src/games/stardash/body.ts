@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBodyState, StardashDelta } from "./state-interfaces";
+import { BodyState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -25,10 +25,10 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Body (dt = 0) */
-    public current: IBodyState | undefined;
+    public current: BodyState | undefined;
 
     /** The next state of the Body (dt = 1) */
-    public next: IBodyState | undefined;
+    public next: BodyState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** TODO: document */
@@ -45,7 +45,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Body.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IBodyState, viseur: Viseur) {
+    constructor(state: BodyState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -53,30 +53,22 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         const bodiesContainer = new PIXI.Container();
         bodiesContainer.setParent(this.container);
         if (state.materialType === "genarium") {
-            this.bodiesSprite = this.addSprite.genarium(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else if (state.materialType === "rarium") {
-            this.bodiesSprite = this.addSprite.rarium(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else if (state.materialType === "legendarium") {
-            this.bodiesSprite = this.addSprite.legendarium(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else if (state.materialType === "mythicite") {
-            this.bodiesSprite = this.addSprite.mythicite(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else {
+            this.bodiesSprite = this.addSprite.genarium({
+                relativePivot: 0.5,
+            });
+        } else if (state.materialType === "rarium") {
+            this.bodiesSprite = this.addSprite.rarium({
+                relativePivot: 0.5,
+            });
+        } else if (state.materialType === "legendarium") {
+            this.bodiesSprite = this.addSprite.legendarium({
+                relativePivot: 0.5,
+            });
+        } else if (state.materialType === "mythicite") {
+            this.bodiesSprite = this.addSprite.mythicite({
+                relativePivot: 0.5,
+            });
+        } else {
             this.bodiesSprite = this.addSprite.blank();
         }
         this.bodiesSprite.scale.x *= state.radius * this.game.scaler;
@@ -98,8 +90,8 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IBodyState>,
-        next: Immutable<IBodyState>,
+        current: Immutable<BodyState>,
+        next: Immutable<BodyState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {
@@ -115,8 +107,8 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
             return;
         }
         this.bodiesSprite.position.set(
-           ease(current.x, next.x, dt),
-           ease(current.y, next.y, dt),
+            ease(current.x, next.x, dt),
+            ease(current.y, next.y, dt),
         );
         // <<-- /Creer-Merge: render -->>
     }
@@ -157,8 +149,8 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IBodyState>,
-        next: Immutable<IBodyState>,
+        current: Immutable<BodyState>,
+        next: Immutable<BodyState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {

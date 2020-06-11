@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, PiratesDelta } from "./state-interfaces";
+import { PiratesDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    public current: TileState | undefined;
 
     /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -67,7 +67,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Tile.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -84,9 +84,9 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.grass = this.addSprite.grass(hide);
         this.isDecoration = state.decoration;
 
-        this.isTree = this.game.random() < .03;
+        this.isTree = this.game.random() < 0.03;
         this.tree = this.addSprite.tree(hide);
-        this.isPlants = this.game.random() > .97;
+        this.isPlants = this.game.random() > 0.97;
         this.plants = this.addSprite.plants(hide);
 
         this.container.position.set(state.x, state.y);
@@ -107,8 +107,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {
@@ -118,11 +118,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.goldLand.visible = Boolean(this.current && this.current.gold > 0);
 
         if (this.isWater) {
-            (this.isDecoration
-                ? this.water2
-                : this.water).visible = true;
-        }
-        else {
+            (this.isDecoration ? this.water2 : this.water).visible = true;
+        } else {
             // if (this.isDecoration) {
             //     this.grass.visible = true;
             // }
@@ -175,8 +172,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<PiratesDelta>,
         nextDelta: Immutable<PiratesDelta>,
     ): void {

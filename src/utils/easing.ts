@@ -1,6 +1,6 @@
 import * as eases from "eases";
 
-/** Useful map to look up valid easing names for the ease function */
+/** Useful map to look up valid easing names for the ease function. */
 export type ValidEases = ValidEaseNames | ((t: number) => number);
 
 /** The names of eases. */

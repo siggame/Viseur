@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { INestState, SpidersDelta } from "./state-interfaces";
+import { NestState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -24,10 +24,10 @@ export class Nest extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Nest (dt = 0) */
-    public current: INestState | undefined;
+    public current: NestState | undefined;
 
     /** The next state of the Nest (dt = 1) */
-    public next: INestState | undefined;
+    public next: NestState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -40,7 +40,7 @@ export class Nest extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Nest.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: INestState, viseur: Viseur) {
+    constructor(state: NestState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -66,8 +66,8 @@ export class Nest extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<INestState>,
-        next: Immutable<INestState>,
+        current: Immutable<NestState>,
+        next: Immutable<NestState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -114,8 +114,8 @@ export class Nest extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<INestState>,
-        next: Immutable<INestState>,
+        current: Immutable<NestState>,
+        next: Immutable<NestState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {

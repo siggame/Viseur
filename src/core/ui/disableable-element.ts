@@ -3,7 +3,7 @@ import { BaseElement, IBaseElementArgs } from "./base-element";
 
 /** The extra arguments for an element that can be disabled. */
 export interface IDisableableElementArgs extends IBaseElementArgs {
-    /** True if it should be disabled upon initialization, false otherwise */
+    /** True if it should be disabled upon initialization, false otherwise. */
     disabled?: boolean;
 }
 

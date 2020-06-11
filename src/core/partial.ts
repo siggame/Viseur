@@ -11,6 +11,7 @@ import * as $ from "jquery";
  */
 export function partial(
     hbsTemplate: Handlebars,
+    // eslint-disable-next-line @typescript-eslint/ban-types
     args?: {},
     parent?: JQuery,
 ): JQuery {

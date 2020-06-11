@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, NecrowarDelta } from "./state-interfaces";
+import { NecrowarDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -24,10 +24,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    public current: TileState | undefined;
 
     /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** The ID of the owner of this tile */
@@ -60,7 +60,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Tile.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -77,27 +77,31 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.unitContainer.position.y = this.container.position.y;
 
         if (state.isCastle) {
-            this.castle = this.addSprite.path({container: this.container});
-            this.castle = this.addSprite.castle({ container: this.unitContainer });
-            this.unitContainer.position.x -= .5;
-            this.unitContainer.position.y -= .7;
+            this.castle = this.addSprite.path({ container: this.container });
+            this.castle = this.addSprite.castle({
+                container: this.unitContainer,
+            });
+            this.unitContainer.position.x -= 0.5;
+            this.unitContainer.position.y -= 0.7;
             this.unitContainer.scale.x *= 2;
             this.unitContainer.scale.y *= 2;
-
         }
         if (state.isIslandGoldMine) {
-            this.islandGoldmine = this.addSprite.islandGoldmine({ container: this.unitContainer});
+            this.islandGoldmine = this.addSprite.islandGoldmine({
+                container: this.unitContainer,
+            });
         }
         if (state.isGoldMine) {
-            this.goldmine = this.addSprite.islandGoldmine({ container: this.unitContainer });
+            this.goldmine = this.addSprite.islandGoldmine({
+                container: this.unitContainer,
+            });
         }
         if (state.isGrass) {
             this.grass = this.addSprite.grass();
         }
         if (state.isPath) {
             this.path = this.addSprite.path();
-        }
-        else if (state.isRiver) {
+        } else if (state.isRiver) {
             this.river = this.addSprite.water();
         }
         if (state.isUnitSpawn) {
@@ -123,8 +127,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {
@@ -171,8 +175,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<NecrowarDelta>,
         nextDelta: Immutable<NecrowarDelta>,
     ): void {

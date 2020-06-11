@@ -1,4 +1,4 @@
-import { IBasePlayer } from "@cadre/ts-utils/cadre/base-player";
+import { BasePlayer } from "@cadre/ts-utils/cadre";
 import * as Color from "color";
 
 /**
@@ -6,10 +6,10 @@ import * as Color from "color";
  *
  * Note: this is a partial class, it must be inherited with BaseGameObject for GAME_NAME.Player instances.
  */
-export interface IBasePlayerInstance extends IBasePlayer {
-    /** the index of this player in the game.players array */
+export interface IBasePlayerInstance extends BasePlayer {
+    /** The index of this player in the game.players array. */
     playersIndex: number;
 
-    /** Gets the current color of this player */
+    /** Gets the current color of this player. */
     getColor(): Color;
 }

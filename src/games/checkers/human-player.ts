@@ -1,7 +1,7 @@
 // This is where you build your the Human player interactions with Viseur for the Checkers game.
 import { BaseHumanPlayer } from "src/viseur/game";
 import { Game } from "./game";
-import { ICheckerState } from "./state-interfaces";
+import { CheckerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -52,7 +52,7 @@ export class HumanPlayer extends BaseHumanPlayer {
      * @param callback The callback that eventually returns the return value
      * from the server.
      */
-    public gotCaptured(checker: ICheckerState, callback: (returned: void) => void): void {
+    public gotCaptured(checker: CheckerState, callback: (returned: void) => void): void {
         // <<-- Creer-Merge: gotCaptured -->>
         // Put your game logic here for gotCaptured
         // <<-- /Creer-Merge: gotCaptured -->>

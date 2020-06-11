@@ -3,12 +3,12 @@
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
-import { IRendererSize } from "src/viseur/renderer";
+import { RendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { IGameState, SpidersDelta } from "./state-interfaces";
+import { GameState, SpidersDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 const overScan = 10; // over-scan 5% additional area on all sides to look better
@@ -29,10 +29,10 @@ export class Game extends BaseGame {
     public static readonly numberOfPlayers = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: IGameState | undefined;
+    public current: GameState | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: IGameState | undefined;
+    public next: GameState | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
@@ -43,8 +43,8 @@ export class Game extends BaseGame {
     /** The default player colors for this game, there must be one for each player */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
-        Color(0xFF2200),
-        Color(0x00DDFF),
+        Color(0xff2200),
+        Color(0x00ddff),
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
@@ -84,11 +84,11 @@ export class Game extends BaseGame {
      * @param state - The initialize state of the game.
      * @returns The {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): IRendererSize {
+    protected getSize(state: GameState): RendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: Math.max(...state.nests.map((n) => n.x)) + (overScan * 2),
-            height: Math.max(...state.nests.map((n) => n.y)) + (overScan * 2),
+            width: Math.max(...state.nests.map((n) => n.x)) + overScan * 2,
+            height: Math.max(...state.nests.map((n) => n.y)) + overScan * 2,
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -99,12 +99,16 @@ export class Game extends BaseGame {
      *
      * @param state - The initialize state of the game.
      */
-    protected start(state: IGameState): void {
+    protected start(state: GameState): void {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
         // we've over-scanned the map, so re-position these correctly
-        for (const layer of [this.layers.game, this.layers.spiders, this.layers.webs]) {
+        for (const layer of [
+            this.layers.game,
+            this.layers.spiders,
+            this.layers.webs,
+        ]) {
             layer.position.set(overScan, overScan);
         }
         // <<-- /Creer-Merge: start -->>
@@ -115,7 +119,7 @@ export class Game extends BaseGame {
      *
      * @param state - The initial state to use the render the background.
      */
-    protected createBackground(state: IGameState): void {
+    protected createBackground(state: GameState): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
@@ -141,8 +145,8 @@ export class Game extends BaseGame {
      */
     protected renderBackground(
         dt: number,
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -162,8 +166,8 @@ export class Game extends BaseGame {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     protected stateUpdated(
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {

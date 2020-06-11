@@ -3,12 +3,12 @@
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
-import { IRendererSize } from "src/viseur/renderer";
+import { RendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { CheckersDelta, IGameState } from "./state-interfaces";
+import { CheckersDelta, GameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -29,10 +29,10 @@ export class Game extends BaseGame {
     public static readonly numberOfPlayers = 2;
 
     /** The current state of the Game (dt = 0) */
-    public current: IGameState | undefined;
+    public current: GameState | undefined;
 
     /** The next state of the Game (dt = 1) */
-    public next: IGameState | undefined;
+    public next: GameState | undefined;
 
     /** The resource factories that can create sprites for this game */
     public readonly resources = GameResources;
@@ -80,7 +80,7 @@ export class Game extends BaseGame {
      * @param state - The initialize state of the game.
      * @returns The {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): IRendererSize {
+    protected getSize(state: GameState): RendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
             width: state.boardWidth,
@@ -95,7 +95,7 @@ export class Game extends BaseGame {
      *
      * @param state - The initialize state of the game.
      */
-    protected start(state: IGameState): void {
+    protected start(state: GameState): void {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
@@ -108,17 +108,19 @@ export class Game extends BaseGame {
      *
      * @param state - The initial state to use the render the background.
      */
-    protected createBackground(state: IGameState): void {
+    protected createBackground(state: GameState): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
         // generate a random color based on the game's random seed so each
         // background color for each game has a slight different hue
-        const randomColor = Color().hsl(
-            this.random() * 360, // hue, random number 0 to 360
-            60, // saturation
-            40, // luminosity
-        ).whiten(1.5);
+        const randomColor = Color()
+            .hsl(
+                this.random() * 360, // hue, random number 0 to 360
+                60, // saturation
+                40, // luminosity
+            )
+            .whiten(1.5);
 
         for (let x = 0; x < state.boardWidth; x++) {
             for (let y = 0; y < state.boardHeight; y++) {
@@ -129,8 +131,11 @@ export class Game extends BaseGame {
                     : this.resources.tileRed
                 ).newSprite({
                     container: this.layers.background,
-                    position: {x, y},
-                    tint: Color(black ? "black" : "red").mix(randomColor, 0.85),
+                    position: { x, y },
+                    tint: Color(black ? "black" : "red").mix(
+                        randomColor,
+                        0.85,
+                    ),
                 });
             }
         }
@@ -149,8 +154,8 @@ export class Game extends BaseGame {
      */
     protected renderBackground(
         dt: number,
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {
@@ -170,8 +175,8 @@ export class Game extends BaseGame {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     protected stateUpdated(
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {

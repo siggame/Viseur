@@ -4,14 +4,14 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CatastropheDelta, ITileState, IUnitState } from "./state-interfaces";
+import { CatastropheDelta, TileState, UnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 import * as Color from "color";
 import { ease, updown } from "src/utils"; // updown
 import { GameBar } from "src/viseur/game";
-import { IJobState } from "./state-interfaces";
+import { JobState } from "./state-interfaces";
 import { Tile } from "./tile";
 
 const WHITE_COLOR = Color("white").rgbNumber();
@@ -31,17 +31,17 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Unit (dt = 0) */
-    public current: IUnitState | undefined;
+    public current: UnitState | undefined;
 
     /** The next state of the Unit (dt = 1) */
-    public next: IUnitState | undefined;
+    public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** The id of the owner of the unit */
     public ownerID?: string;
 
     /** Our job */
-    public job: IJobState["title"];
+    public job: JobState["title"];
 
     // Base sprite of the unit
     /** The cat sprite. */
@@ -65,11 +65,11 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // State Change Variables
     /** The tile we are attacking, if we are. */
-    public attackingTile?: ITileState;
+    public attackingTile?: TileState;
     /** The tile we are harvesting from, if we are. */
-    public harvestTile?: ITileState;
+    public harvestTile?: TileState;
     /** the job we changed to, if we did. */
-    public jobChanged?: IJobState["title"];
+    public jobChanged?: JobState["title"];
     /** The id of the player we are changing to, if we are. */
     public playerChange?: string;
     /** The direction we are facing. */
@@ -93,7 +93,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Unit.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IUnitState, viseur: Viseur) {
+    constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -121,8 +121,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
             this.container.visible = true;
-        }
-        else {
+        } else {
             this.container.position.set(-1, -1);
             this.container.visible = false;
         }
@@ -154,8 +153,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {
@@ -168,18 +167,23 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.container.visible = false;
 
             return;
-        }
-        else {
+        } else {
             this.container.visible = true;
         }
 
-        if (current.tile.tileWest && current.tile.tileWest.id === next.tile.id) {
+        if (
+            current.tile.tileWest &&
+            current.tile.tileWest.id === next.tile.id
+        ) {
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.container.scale.x *= -1;
             }
         }
-        if (current.tile.tileEast && current.tile.tileEast.id === next.tile.id) {
+        if (
+            current.tile.tileEast &&
+            current.tile.tileEast.id === next.tile.id
+        ) {
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.container.scale.x *= -1;
@@ -203,12 +207,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.recolor();
         }
 
-        if (this.jobChanged) { // If Job Changed called by player and returned true
+        if (this.jobChanged) {
+            // If Job Changed called by player and returned true
             if (this.jobChanged !== this.job) {
                 this.setJob(this.jobChanged);
             }
-        }
-        else { // This would be a unit losing loyalty/ or the game state jumps
+        } else {
+            // This would be a unit losing loyalty/ or the game state jumps
             if (this.job !== next.job.title) {
                 this.setJob(next.job.title);
             }
@@ -219,21 +224,26 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (this.job === "fresh human" && !this.ownerID) {
             currEnergy = current.turnsToDie / 10; // Magic number 10 is max turns to die
             nextEnergy = next.turnsToDie / 10;
-        }
-        else {
+        } else {
             currEnergy = current.energy / this.maxEnergy;
             nextEnergy = next.energy / this.maxEnergy;
         }
         this.healthBar.update(ease(currEnergy, nextEnergy, dt));
 
         if (this.attackingTile) {
-            if (current.tile.tileEast && current.tile.tileEast.id === this.attackingTile.id) {
+            if (
+                current.tile.tileEast &&
+                current.tile.tileEast.id === this.attackingTile.id
+            ) {
                 if (this.facing !== "right") {
                     this.facing = "right";
                     this.container.scale.x *= -1;
                 }
             }
-            if (current.tile.tileWest && current.tile.tileWest.id === this.attackingTile.id) {
+            if (
+                current.tile.tileWest &&
+                current.tile.tileWest.id === this.attackingTile.id
+            ) {
                 if (this.facing !== "left") {
                     this.facing = "left";
                     this.container.scale.x *= -1;
@@ -246,16 +256,22 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
             this.container.x += dx * d;
             this.container.y += dy * d;
-        }/**/
+        } /**/
 
         if (this.harvestTile) {
-            if (current.tile.tileEast && current.tile.tileEast.id === this.harvestTile.id) {
+            if (
+                current.tile.tileEast &&
+                current.tile.tileEast.id === this.harvestTile.id
+            ) {
                 if (this.facing !== "right") {
                     this.facing = "right";
                     this.container.scale.x *= -1;
                 }
             }
-            if (current.tile.tileWest && current.tile.tileWest.id === this.harvestTile.id) {
+            if (
+                current.tile.tileWest &&
+                current.tile.tileWest.id === this.harvestTile.id
+            ) {
                 if (this.facing !== "left") {
                     this.facing = "left";
                     this.container.scale.x *= -1;
@@ -268,7 +284,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
             this.container.x += dx * d;
             this.container.y += dy * d;
-        }/**/
+        } /**/
 
         // <<-- /Creer-Merge: render -->>
     }
@@ -281,9 +297,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        this.dropShadow.tint = this.ownerID === undefined
-            ? WHITE_COLOR
-            : this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.dropShadow.tint =
+            this.ownerID === undefined
+                ? WHITE_COLOR
+                : this.game.getPlayersColor(this.ownerID).rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -311,8 +328,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {
@@ -322,25 +339,29 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.attackingTile = undefined;
         this.harvestTile = undefined;
         this.jobChanged = undefined;
-        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+        if (
+            nextDelta.type === "ran" &&
+            nextDelta.data.run.caller.id === this.id
+        ) {
             const { data } = nextDelta;
             const tile = this.game.getGameObject(data.run.args.tile, Tile);
 
             if (data.run.functionName === "attack" && data.returned) {
                 this.attackingTile = tile && tile.getCurrentMostState();
-            }
-            else if (data.run.functionName === "changeJob" && data.returned) {
-                this.jobChanged = String(data.run.args.job) as IJobState["title"];
-            }
-            else if (data.run.functionName === "harvest" && data.returned) {
+            } else if (
+                data.run.functionName === "changeJob" &&
+                data.returned
+            ) {
+                this.jobChanged = String(
+                    data.run.args.job,
+                ) as JobState["title"];
+            } else if (data.run.functionName === "harvest" && data.returned) {
                 this.harvestTile = tile && tile.getCurrentMostState();
                 this.indicatorSprite.visible = true;
-            }
-            else if (data.run.functionName === "drop" && data.returned) {
+            } else if (data.run.functionName === "drop" && data.returned) {
                 this.indicatorSprite.visible = false;
-            }
-            else if (data.run.functionName !== "move" && data.returned) {
-                // console.log(run.functionName);
+            } else if (data.run.functionName !== "move" && data.returned) {
+                // nothing special to render
             }
         }
         // <<-- /Creer-Merge: state-updated -->>
@@ -354,7 +375,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      *
      * @param job - The title of the job we now have.
      */
-    public setJob(job: IJobState["title"]): void {
+    public setJob(job: JobState["title"]): void {
         if (this.spriteInUse) {
             this.spriteInUse.visible = false;
         }
@@ -402,14 +423,14 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public attack(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {tile}, callback);
     }
 
     /**
-     * Changes this Unit's Job. Must be at max energy (100.0) to change Jobs.
+     * Changes this Unit's Job. Must be at max energy (100) to change Jobs.
      * @param job The name of the Job to change to.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully changed
@@ -432,7 +453,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * a structure, false otherwise.
      */
     public construct(
-        tile: ITileState,
+        tile: TileState,
         type: "neutral" | "shelter" | "monument" | "wall" | "road",
         callback?: (returned: boolean) => void,
     ): void {
@@ -447,7 +468,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public convert(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("convert", {tile}, callback);
@@ -455,14 +476,14 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /**
      * Removes materials from an adjacent Tile's Structure. You cannot
-     * deconstruct friendly structures (see Unit.attack).
+     * deconstruct friendly structures (see `Unit.attack`).
      * @param tile The Tile to deconstruct. It must have a Structure on it.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully
      * deconstructed, false otherwise.
      */
     public deconstruct(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("deconstruct", {tile}, callback);
@@ -480,7 +501,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * resource, false otherwise.
      */
     public drop(
-        tile: ITileState,
+        tile: TileState,
         resource: "materials" | "food",
         amount: number,
         callback?: (returned: boolean) => void,
@@ -496,7 +517,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public harvest(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("harvest", {tile}, callback);
@@ -510,7 +531,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * otherwise.
      */
     public move(
-        tile: ITileState,
+        tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("move", {tile}, callback);
@@ -528,7 +549,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * resource, false otherwise.
      */
     public pickup(
-        tile: ITileState,
+        tile: TileState,
         resource: "materials" | "food",
         amount: number,
         callback?: (returned: boolean) => void,

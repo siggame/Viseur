@@ -27,7 +27,9 @@ export class ChessOverlay {
      * @param game - The game this is overlaying.
      */
     constructor(private readonly game: Game) {
-        this.game.chessBackground.events.tileClicked.on((square) => this.tileClicked(square));
+        this.game.chessBackground.events.tileClicked.on((square) =>
+            this.tileClicked(square),
+        );
 
         this.game.settings.flipBoard.changed.on(() => this.deSelect());
     }
@@ -60,17 +62,17 @@ export class ChessOverlay {
 
         this.validSquares = movesFromSquare;
 
-        const yOffset = (y: number) => this.game.settings.flipBoard.get()
-        ? BOARD_LENGTH - y - 1
-        : y;
+        const yOffset = (y: number) =>
+            this.game.settings.flipBoard.get() ? BOARD_LENGTH - y - 1 : y;
 
         const from = squareToXY(square);
         const fromOverlay = this.getNextOverlay();
         fromOverlay.position.set(from.x, yOffset(from.y));
         fromOverlay.alpha = 0.25;
-        fromOverlay.tint = movesFromSquare.length > 0
-            ? this.game.chessBackground.randomColorCompliment.rgbNumber()
-            : 0xFFFFFF;
+        fromOverlay.tint =
+            movesFromSquare.length > 0
+                ? this.game.chessBackground.randomColorCompliment.rgbNumber()
+                : 0xffffff;
 
         for (const move of movesFromSquare) {
             const overlay = this.getNextOverlay();

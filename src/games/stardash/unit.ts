@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IBodyState, IProjectileState, IUnitState, StardashDelta } from "./state-interfaces";
+import { BodyState, ProjectileState, StardashDelta, UnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -26,10 +26,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Unit (dt = 0) */
-    public current: IUnitState | undefined;
+    public current: UnitState | undefined;
 
     /** The next state of the Unit (dt = 1) */
-    public next: IUnitState | undefined;
+    public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
@@ -56,7 +56,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param state - The initial state of this Unit.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IUnitState, viseur: Viseur) {
+    constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -66,61 +66,49 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         const jobContainer = new PIXI.Container();
         jobContainer.setParent(this.container);
 
-        this.shield = this.addSprite.shield(
-            {
-
-                relativeScale: this.game.scaler * 105,
-                relativePivot: 0.5,
-            });
+        this.shield = this.addSprite.shield({
+            relativeScale: this.game.scaler * 105,
+            relativePivot: 0.5,
+        });
         this.shield.setParent(this.game.layers.shield);
         this.shield.tint = this.game.getPlayersColor(this.ownerID).rgbNumber();
         this.shield.alpha = 0.6;
         this.shield.visible = false;
 
         if (state.job.id === "2") {
-            this.jobSprite = this.addSprite.corvette(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else if (state.job.id === "3") {
-            this.jobSprite = this.addSprite.missleboat(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else if (state.job.id === "4") {
-            this.jobSprite = this.addSprite.martyr(
-                {
-                    relativePivot: 0.5,
-                });
+            this.jobSprite = this.addSprite.corvette({
+                relativePivot: 0.5,
+            });
+        } else if (state.job.id === "3") {
+            this.jobSprite = this.addSprite.missleboat({
+                relativePivot: 0.5,
+            });
+        } else if (state.job.id === "4") {
+            this.jobSprite = this.addSprite.martyr({
+                relativePivot: 0.5,
+            });
             this.shield.visible = true;
             this.shield.x = this.container.x;
             this.shield.y = this.container.y;
-        }
-        else if (state.job.id === "5") {
-            this.jobSprite = this.addSprite.transport(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else if (state.job.id === "6") {
-            this.jobSprite = this.addSprite.miner(
-                {
-                    relativePivot: 0.5,
-                });
-        }
-        else {
-            this.jobSprite = this.addSprite.test(
-                {
-                    relativePivot: 0.5,
-                });
+        } else if (state.job.id === "5") {
+            this.jobSprite = this.addSprite.transport({
+                relativePivot: 0.5,
+            });
+        } else if (state.job.id === "6") {
+            this.jobSprite = this.addSprite.miner({
+                relativePivot: 0.5,
+            });
+        } else {
+            this.jobSprite = this.addSprite.test({
+                relativePivot: 0.5,
+            });
         }
         this.jobSprite.scale.x *= this.game.scaler * 20;
         this.jobSprite.scale.y *= this.game.scaler * 20;
 
         // offset ships to point to the sun when spawned.
-        this.jobSprite.rotation += (this.rotationOffset * (this.ownerID === "1" ? -1 : 1));
+        this.jobSprite.rotation +=
+            this.rotationOffset * (this.ownerID === "1" ? -1 : 1);
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
@@ -149,8 +137,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {
@@ -174,8 +162,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.shield.visible = true;
             this.shield.x = this.container.x;
             this.shield.y = this.container.y;
-        }
-        else {
+        } else {
             this.shield.visible = false;
         }
 
@@ -222,8 +209,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<StardashDelta>,
         nextDelta: Immutable<StardashDelta>,
     ): void {
@@ -257,7 +244,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public attack(
-        enemy: IUnitState,
+        enemy: UnitState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", {enemy}, callback);
@@ -280,14 +267,14 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * allows a miner to mine a asteroid
+     * Allows a miner to mine a asteroid.
      * @param body The object to be mined.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully acted,
      * false otherwise.
      */
     public mine(
-        body: IBodyState,
+        body: BodyState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("mine", {body}, callback);
@@ -310,7 +297,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * tells you if your ship can move to that location from were it is without
+     * Tells you if your ship can move to that location from were it is without
      * clipping the sun.
      * @param x The x position of the location you wish to arrive.
      * @param y The y position of the location you wish to arrive.
@@ -334,7 +321,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public shootdown(
-        missile: IProjectileState,
+        missile: ProjectileState,
         callback?: (returned: boolean) => void,
     ): void {
         this.runOnServer("shootdown", {missile}, callback);
@@ -352,7 +339,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public transfer(
-        unit: IUnitState,
+        unit: UnitState,
         amount: number,
         material: "genarium" | "rarium" | "legendarium" | "mythicite",
         callback?: (returned: boolean) => void,

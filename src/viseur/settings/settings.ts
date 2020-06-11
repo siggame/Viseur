@@ -1,31 +1,30 @@
 import { BaseSetting } from "./setting";
 
-/** The base settings interface for viseur/game */
+/** The base settings interface for viseur/game. */
 export interface IBaseSettings {
-    /** Name lookup for a setting */
+    /** Name lookup for a setting. */
     [settingName: string]: BaseSetting | BaseSetting[] | undefined;
 }
 
 /**
  * You MUST call this when creating settings, it's essentially a typed factory.
  * This will take an object of created settings, and formats them.
- * The returned object is a readonly ready to use settings object
- * @param namespace the string used to store the settings in browser
- * @param settings an object of string keys to BaseSetting values
- * @returns settings now formatted for use
+ * The returned object is a readonly ready to use settings object.
+ *
+ * @param namespace - The string used to store the settings in browser.
+ * @param settings - An object of string keys to BaseSetting values.
+ * @returns Settings now formatted for use.
  */
 export function createSettings<T extends IBaseSettings>(
     namespace: string,
     settings: T,
 ): Readonly<T> {
-    for (const [ key, obj ] of Object.entries(settings)) {
+    for (const [key, obj] of Object.entries(settings)) {
         if (!obj) {
             throw new Error(`Setting ${key} cannot be undefined`);
         }
 
-        const someSettings = Array.isArray(obj)
-            ? obj
-            : [ obj ];
+        const someSettings = Array.isArray(obj) ? obj : [obj];
 
         for (const setting of someSettings) {
             setting.setNamespace(namespace);
