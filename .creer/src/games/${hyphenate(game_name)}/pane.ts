@@ -39,7 +39,9 @@ ${merge("    // ", "public-functions", "    // If you want to add more public fu
      * An array of number tuples is treated as individual bars alternatively
      * left and right aligned scaling from the first to the max second value.
      */
-    protected getPlayersScores(state: Immutable<GameState>): Array<[number, number]> | number[] | undefined {
+    protected getPlayersScores(
+        state: Immutable<GameState>,
+    ): Array<[number, number]> | number[] | undefined {
         super.getPlayersScores(state);
 
 ${merge("        // ", "get-player-scores", "        return undefined; // change to return the states scores for each player", help=False)}
@@ -52,7 +54,9 @@ ${merge("        // ", "get-player-scores", "        return undefined; // change
      * @param state the initial state of the game
      * @returns All the PaneStats to display on this BasePane for the game.
      */
-    protected getGameStats(state: Immutable<GameState>): Array<PaneStat<GameState>> {
+    protected getGameStats(
+        state: Immutable<GameState>,
+    ): Array<PaneStat<GameState>> {
         const stats = super.getGameStats(state);
 
 ${merge("        // ", "game-stats", "        // add stats for games to show up here", help=False)}
@@ -65,7 +69,9 @@ ${merge("        // ", "game-stats", "        // add stats for games to show up 
      * @param state the initial state of the game
      * @returns All the PaneStats to display on this BasePane for the player.
      */
-    protected getPlayerStats(state: Immutable<GameState>): Array<PaneStat<PlayerState>> {
+    protected getPlayerStats(
+        state: Immutable<GameState>,
+    ): Array<PaneStat<PlayerState>> {
         const stats = super.getPlayerStats(state);
 
 ${merge("        // ", "player-stats", "        // add stats for players to show up here", help=False)}

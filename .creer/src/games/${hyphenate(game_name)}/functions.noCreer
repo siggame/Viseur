@@ -16,7 +16,7 @@ if not 'vis' in shared:
             return ' | '.join(literals)
 
         if base_type == "dictionary":
-            return "{[id: " + vis_type(type_obj['keyType']) + "]: " + vis_type(type_obj['valueType']) + "}"
+            return "{ [id: " + vis_type(type_obj['keyType']) + "]: " + vis_type(type_obj['valueType']) + " }"
         elif base_type == "list":
             ret = vis_type(type_obj['valueType'], False)
             if ' ' in ret:

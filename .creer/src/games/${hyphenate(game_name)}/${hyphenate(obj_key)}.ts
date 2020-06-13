@@ -75,7 +75,9 @@ ${merge("    // ", "static-functions", "    // you can add static functions here
     public readonly game!: Game;
 
     /** The factory that will build sprites for this game object */
-    public readonly addSprite!: ResourcesForGameObject${'<'}Game["resources"]> | undefined;
+    public readonly addSprite!:
+        | ResourcesForGameObject${'<'}Game["resources"]>
+        | undefined;
 
 % endif
     /** The current state of the ${obj_key} (dt = 0) */

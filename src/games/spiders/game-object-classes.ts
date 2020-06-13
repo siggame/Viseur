@@ -13,15 +13,17 @@ import { Weaver } from "./weaver";
 import { Web } from "./web";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze({
-    GameObject,
-    Player,
-    Nest,
-    Web,
-    Spider,
-    BroodMother,
-    Spiderling,
-    Spitter,
-    Weaver,
-    Cutter,
-});
+export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
+    {
+        GameObject,
+        Player,
+        Nest,
+        Web,
+        Spider,
+        BroodMother,
+        Spiderling,
+        Spitter,
+        Weaver,
+        Cutter,
+    },
+);

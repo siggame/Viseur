@@ -28,7 +28,9 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
     public readonly game!: Game;
 
     /** The factory that will build sprites for this game object */
-    public readonly addSprite!: ResourcesForGameObject<Game["resources"]> | undefined;
+    public readonly addSprite!:
+        | ResourcesForGameObject<Game["resources"]>
+        | undefined;
 
     /** The current state of the GameObject (dt = 0) */
     public current: GameObjectState | undefined;

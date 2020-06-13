@@ -9,11 +9,13 @@ import { Spawner } from "./spawner";
 import { Tile } from "./tile";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze({
-    GameObject,
-    Player,
-    Tile,
-    Spawner,
-    Beaver,
-    Job,
-});
+export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
+    {
+        GameObject,
+        Player,
+        Tile,
+        Spawner,
+        Beaver,
+        Job,
+    },
+);

@@ -8,10 +8,12 @@ import { Tile } from "./tile";
 import { Unit } from "./unit";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze({
-    GameObject,
-    Player,
-    Tile,
-    Port,
-    Unit,
-});
+export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
+    {
+        GameObject,
+        Player,
+        Tile,
+        Port,
+        Unit,
+    },
+);

@@ -10,12 +10,14 @@ import { Tile } from "./tile";
 import { YoungGun } from "./young-gun";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze({
-    GameObject,
-    Player,
-    Tile,
-    Cowboy,
-    Furnishing,
-    Bottle,
-    YoungGun,
-});
+export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
+    {
+        GameObject,
+        Player,
+        Tile,
+        Cowboy,
+        Furnishing,
+        Bottle,
+        YoungGun,
+    },
+);

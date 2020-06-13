@@ -20,9 +20,9 @@ export class HumanPlayer extends BaseHumanPlayer {
      * human players. Leave as false to ignore that functionality
      */
     public static get implemented(): boolean {
-    //  <<-- Creer-Merge: implemented -->>
+        //  <<-- Creer-Merge: implemented -->>
         return false;
-    //  <<-- /Creer-Merge: implemented -->>
+        //  <<-- /Creer-Merge: implemented -->>
     }
 
     //  <<-- Creer-Merge: variables -->>

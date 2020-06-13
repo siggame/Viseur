@@ -9,11 +9,13 @@ import { Projectile } from "./projectile";
 import { Unit } from "./unit";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze({
-    GameObject,
-    Player,
-    Body,
-    Projectile,
-    Unit,
-    Job,
-});
+export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
+    {
+        GameObject,
+        Player,
+        Body,
+        Projectile,
+        Unit,
+        Job,
+    },
+);

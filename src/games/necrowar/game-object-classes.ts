@@ -10,12 +10,14 @@ import { Unit } from "./unit";
 import { UnitJob } from "./unit-job";
 
 /** All the non Game classes in this game */
-export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze({
-    GameObject,
-    Player,
-    Tile,
-    Tower,
-    Unit,
-    UnitJob,
-    TowerJob,
-});
+export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
+    {
+        GameObject,
+        Player,
+        Tile,
+        Tower,
+        Unit,
+        UnitJob,
+        TowerJob,
+    },
+);

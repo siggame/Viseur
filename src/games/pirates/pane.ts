@@ -47,7 +47,9 @@ export class Pane extends BasePane<GameState, PlayerState> {
      * An array of number tuples is treated as individual bars alternatively
      * left and right aligned scaling from the first to the max second value.
      */
-    protected getPlayersScores(state: Immutable<GameState>): Array<[number, number]> | number[] | undefined {
+    protected getPlayersScores(
+        state: Immutable<GameState>,
+    ): Array<[number, number]> | number[] | undefined {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
@@ -62,7 +64,9 @@ export class Pane extends BasePane<GameState, PlayerState> {
      * @param state the initial state of the game
      * @returns All the PaneStats to display on this BasePane for the game.
      */
-    protected getGameStats(state: Immutable<GameState>): Array<PaneStat<GameState>> {
+    protected getGameStats(
+        state: Immutable<GameState>,
+    ): Array<PaneStat<GameState>> {
         const stats = super.getGameStats(state);
 
         // <<-- Creer-Merge: game-stats -->>
@@ -76,7 +80,9 @@ export class Pane extends BasePane<GameState, PlayerState> {
      * @param state the initial state of the game
      * @returns All the PaneStats to display on this BasePane for the player.
      */
-    protected getPlayerStats(state: Immutable<GameState>): Array<PaneStat<PlayerState>> {
+    protected getPlayerStats(
+        state: Immutable<GameState>,
+    ): Array<PaneStat<PlayerState>> {
         const stats = super.getPlayerStats(state);
 
         // <<-- Creer-Merge: player-stats -->>

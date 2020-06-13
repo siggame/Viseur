@@ -35,7 +35,7 @@ export class HumanPlayer extends BaseHumanPlayer {
      * human players. Leave as false to ignore that functionality
      */
     public static get implemented(): boolean {
-${merge("    //  ", "implemented", "        return false; // set this to true if humans can play this game", help=False)}
+${merge("        //  ", "implemented", "        return false; // set this to true if humans can play this game", help=False)}
     }
 
 ${merge("    //  ", "variables", "    // any additional variables you want to add for the HumanPlayer", help=False)}
