@@ -60,13 +60,13 @@ export interface ${game_obj_name}State extends ${', '.join(parent_classes)} {
 % endfor
 
 // -- Run Deltas -- \\\
-<% deltaNames = []%>
+<% delta_names = []%>
 % for game_obj_name in game_obj_names + ['AI']:
 %   for function_name in sorted(delta_objs[game_obj_name]['functions']):
 <%
         is_ai = game_obj_name == 'AI'
         deltaName = game_obj_name + upcase_first(function_name) + ('Finished' if is_ai else 'Ran') + 'Delta'
-        deltaNames.append(deltaName)
+        delta_names.append(deltaName)
 
         function_parms = delta_objs[game_obj_name]['functions'][function_name]
         function_returns = function_parms['returns'] if function_parms['returns'] else {
@@ -92,8 +92,8 @@ export type ${deltaName} = ${'Finished' if is_ai else 'Ran'}Delta & {
 %           if not is_ai:
             /** The reference to the game object requesting a function to be run. */
             caller: GameObjectInstance<${game_obj_name}State>; // tslint:disable-line:no-banned-terms
-%           endif
 
+%           endif
             /** The name of the function of the caller to run. */
             ${'name' if is_ai else 'functionName'}: "${function_name}";
 
@@ -125,10 +125,9 @@ ${shared['vis']['block_comment'](
 % endfor
 /** All the possible specific deltas in ${game_name}. */
 export type ${game_name}SpecificDelta =
-% for i, deltaName in enumerate(deltaNames):
-    | ${deltaName}
+% for i, delta_name in enumerate(delta_names):
+    | ${delta_name}${';' if i+1 == len(delta_names) else ''}
 % endfor
-;
 
 /** The possible delta objects in ${game_name}. */
 export type ${game_name}Delta = GameSpecificDelta<${game_name}SpecificDelta>;

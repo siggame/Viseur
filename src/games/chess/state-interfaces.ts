@@ -176,7 +176,6 @@ export type AIMakeMoveFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "makeMove";
 
@@ -199,8 +198,7 @@ export type AIMakeMoveFinishedDelta = FinishedDelta & {
 /** All the possible specific deltas in Chess. */
 export type ChessSpecificDelta =
     | GameObjectLogRanDelta
-    | AIMakeMoveFinishedDelta
-;
+    | AIMakeMoveFinishedDelta;
 
 /** The possible delta objects in Chess. */
 export type ChessDelta = GameSpecificDelta<ChessSpecificDelta>;

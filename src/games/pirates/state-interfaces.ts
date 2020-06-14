@@ -803,7 +803,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -834,8 +833,7 @@ export type PiratesSpecificDelta =
     | UnitRestRanDelta
     | UnitSplitRanDelta
     | UnitWithdrawRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Pirates. */
 export type PiratesDelta = GameSpecificDelta<PiratesSpecificDelta>;

@@ -881,7 +881,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -912,8 +911,7 @@ export type NecrowarSpecificDelta =
     | UnitFishRanDelta
     | UnitMineRanDelta
     | UnitMoveRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Necrowar. */
 export type NecrowarDelta = GameSpecificDelta<NecrowarSpecificDelta>;

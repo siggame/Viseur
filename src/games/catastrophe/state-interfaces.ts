@@ -895,7 +895,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -927,8 +926,7 @@ export type CatastropheSpecificDelta =
     | UnitMoveRanDelta
     | UnitPickupRanDelta
     | UnitRestRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Catastrophe. */
 export type CatastropheDelta = GameSpecificDelta<CatastropheSpecificDelta>;

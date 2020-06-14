@@ -739,7 +739,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -766,8 +765,7 @@ export type NewtonianSpecificDelta =
     | UnitDropRanDelta
     | UnitMoveRanDelta
     | UnitPickupRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Newtonian. */
 export type NewtonianDelta = GameSpecificDelta<NewtonianSpecificDelta>;

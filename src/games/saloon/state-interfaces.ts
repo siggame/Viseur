@@ -658,7 +658,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -684,8 +683,7 @@ export type SaloonSpecificDelta =
     | CowboyPlayRanDelta
     | GameObjectLogRanDelta
     | YoungGunCallInRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Saloon. */
 export type SaloonDelta = GameSpecificDelta<SaloonSpecificDelta>;

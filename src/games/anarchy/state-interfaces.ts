@@ -590,7 +590,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -617,8 +616,7 @@ export type AnarchySpecificDelta =
     | WarehouseIgniteRanDelta
     | WeatherStationIntensifyRanDelta
     | WeatherStationRotateRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Anarchy. */
 export type AnarchyDelta = GameSpecificDelta<AnarchySpecificDelta>;

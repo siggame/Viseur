@@ -728,7 +728,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -758,8 +757,7 @@ export type SpidersSpecificDelta =
     | SpitterSpitRanDelta
     | WeaverStrengthenRanDelta
     | WeaverWeakenRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Spiders. */
 export type SpidersDelta = GameSpecificDelta<SpidersSpecificDelta>;

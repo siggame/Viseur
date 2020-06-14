@@ -734,7 +734,6 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
         /** The data about what was requested be run. */
         order: {
-
             /** The name of the function of the caller to run. */
             name: "runTurn";
 
@@ -763,8 +762,7 @@ export type StumpedSpecificDelta =
     | BeaverPickupRanDelta
     | GameObjectLogRanDelta
     | JobRecruitRanDelta
-    | AIRunTurnFinishedDelta
-;
+    | AIRunTurnFinishedDelta;
 
 /** The possible delta objects in Stumped. */
 export type StumpedDelta = GameSpecificDelta<StumpedSpecificDelta>;
