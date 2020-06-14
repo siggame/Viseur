@@ -110,7 +110,6 @@ export interface GameState extends BaseGame {
      * Every Web in the game.
      */
     webs: WebState[];
-
 }
 
 /**
@@ -128,7 +127,6 @@ export interface BroodMotherState extends SpiderState {
      * and her owner loses.
      */
     health: number;
-
 }
 
 /**
@@ -139,7 +137,6 @@ export interface CutterState extends SpiderlingState {
      * The Web that this Cutter is trying to cut. Null if not cutting.
      */
     cuttingWeb: WebState;
-
 }
 
 /**
@@ -165,7 +162,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -198,7 +194,6 @@ export interface NestState extends GameObjectState {
      * The Y coordinate of the Nest. Used for distance calculations.
      */
     y: number;
-
 }
 
 /**
@@ -265,7 +260,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -286,7 +280,6 @@ export interface SpiderState extends GameObjectState {
      * The Player that owns this Spider, and can command it.
      */
     owner: PlayerState;
-
 }
 
 /**
@@ -320,7 +313,6 @@ export interface SpiderlingState extends SpiderState {
      * See docs for the Work forumla.
      */
     workRemaining: number;
-
 }
 
 /**
@@ -333,7 +325,6 @@ export interface SpitterState extends SpiderlingState {
      * them. Null if not spitting.
      */
     spittingWebToNest: NestState;
-
 }
 
 /**
@@ -350,7 +341,6 @@ export interface WeaverState extends SpiderlingState {
      * The Web that this Weaver is weakening. Null if not weakening.
      */
     weakeningWeb: WebState;
-
 }
 
 /**
@@ -389,7 +379,6 @@ export interface WebState extends GameObjectState {
      * and all the Spiders on it.
      */
     strength: number;
-
 }
 
 // -- Run Deltas -- \\
@@ -747,8 +736,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -761,7 +749,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Spiders. */
 export type SpidersSpecificDelta =
-    BroodMotherConsumeRanDelta
+    | BroodMotherConsumeRanDelta
     | BroodMotherSpawnRanDelta
     | CutterCutRanDelta
     | GameObjectLogRanDelta

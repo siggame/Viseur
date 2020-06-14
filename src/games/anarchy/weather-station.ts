@@ -192,7 +192,7 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
         negative: boolean,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("intensify", {negative}, callback);
+        this.runOnServer("intensify", { negative }, callback);
     }
 
     /**
@@ -209,7 +209,7 @@ export class WeatherStation extends makeRenderable(Building, SHOULD_RENDER) {
         counterclockwise: boolean,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("rotate", {counterclockwise}, callback);
+        this.runOnServer("rotate", { counterclockwise }, callback);
     }
 
     // </Joueur functions>

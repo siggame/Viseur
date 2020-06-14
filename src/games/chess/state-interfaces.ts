@@ -48,7 +48,6 @@ export interface GameState extends BaseGame {
      * A unique identifier for the game instance that is being played.
      */
     session: string;
-
 }
 
 /**
@@ -74,7 +73,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -127,7 +125,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 // -- Run Deltas -- \\
@@ -187,8 +184,7 @@ export type AIMakeMoveFinishedDelta = FinishedDelta & {
              * The arguments to AI.makeMove,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -202,7 +198,7 @@ export type AIMakeMoveFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Chess. */
 export type ChessSpecificDelta =
-    GameObjectLogRanDelta
+    | GameObjectLogRanDelta
     | AIMakeMoveFinishedDelta
 ;
 

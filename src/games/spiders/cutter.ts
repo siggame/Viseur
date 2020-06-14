@@ -141,7 +141,7 @@ export class Cutter extends makeRenderable(Spiderling, SHOULD_RENDER) {
         web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("cut", {web}, callback);
+        this.runOnServer("cut", { web }, callback);
     }
 
     // </Joueur functions>

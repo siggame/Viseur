@@ -170,7 +170,7 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
         job: "Bartender" | "Brawler" | "Sharpshooter",
         callback?: (returned: CowboyState) => void,
     ): void {
-        this.runOnServer("callIn", {job}, callback);
+        this.runOnServer("callIn", { job }, callback);
     }
 
     // </Joueur functions>

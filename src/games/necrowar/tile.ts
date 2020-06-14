@@ -206,7 +206,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         num: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("res", {num}, callback);
+        this.runOnServer("res", { num }, callback);
     }
 
     /**
@@ -220,7 +220,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         title: string,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("spawnUnit", {title}, callback);
+        this.runOnServer("spawnUnit", { title }, callback);
     }
 
     /**
@@ -232,7 +232,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public spawnWorker(
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("spawnWorker", {}, callback);
+        this.runOnServer("spawnWorker", {  }, callback);
     }
 
     // </Joueur functions>

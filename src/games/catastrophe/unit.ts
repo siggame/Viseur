@@ -426,7 +426,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {tile}, callback);
+        this.runOnServer("attack", { tile }, callback);
     }
 
     /**
@@ -440,7 +440,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         job: "soldier" | "gatherer" | "builder" | "missionary",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("changeJob", {job}, callback);
+        this.runOnServer("changeJob", { job }, callback);
     }
 
     /**
@@ -457,7 +457,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         type: "neutral" | "shelter" | "monument" | "wall" | "road",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("construct", {tile, type}, callback);
+        this.runOnServer("construct", { tile, type }, callback);
     }
 
     /**
@@ -471,7 +471,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("convert", {tile}, callback);
+        this.runOnServer("convert", { tile }, callback);
     }
 
     /**
@@ -486,7 +486,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("deconstruct", {tile}, callback);
+        this.runOnServer("deconstruct", { tile }, callback);
     }
 
     /**
@@ -506,7 +506,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("drop", {tile, resource, amount}, callback);
+        this.runOnServer("drop", { tile, resource, amount }, callback);
     }
 
     /**
@@ -520,7 +520,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("harvest", {tile}, callback);
+        this.runOnServer("harvest", { tile }, callback);
     }
 
     /**
@@ -534,7 +534,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {tile}, callback);
+        this.runOnServer("move", { tile }, callback);
     }
 
     /**
@@ -554,7 +554,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("pickup", {tile, resource, amount}, callback);
+        this.runOnServer("pickup", { tile, resource, amount }, callback);
     }
 
     /**
@@ -567,7 +567,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public rest(
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("rest", {}, callback);
+        this.runOnServer("rest", {  }, callback);
     }
 
     // </Joueur functions>

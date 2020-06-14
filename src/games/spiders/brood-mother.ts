@@ -160,7 +160,7 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
         spiderling: SpiderlingState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("consume", {spiderling}, callback);
+        this.runOnServer("consume", { spiderling }, callback);
     }
 
     /**
@@ -176,7 +176,7 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
         spiderlingType: "Spitter" | "Weaver" | "Cutter",
         callback?: (returned: SpiderlingState) => void,
     ): void {
-        this.runOnServer("spawn", {spiderlingType}, callback);
+        this.runOnServer("spawn", { spiderlingType }, callback);
     }
 
     // </Joueur functions>

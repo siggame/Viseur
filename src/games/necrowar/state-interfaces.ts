@@ -114,7 +114,6 @@ export interface GameState extends BaseGame {
      * Every Unit in the game.
      */
     units: UnitState[];
-
 }
 
 /**
@@ -140,7 +139,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -222,7 +220,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -350,7 +347,6 @@ export interface TileState extends GameObjectState {
      * The y (vertical) position of this Tile.
      */
     y: number;
-
 }
 
 /**
@@ -386,7 +382,6 @@ export interface TowerState extends GameObjectState {
      * The Tile this Tower is on.
      */
     tile: TileState;
-
 }
 
 /**
@@ -433,7 +428,6 @@ export interface TowerJobState extends GameObjectState {
      * How many turns have to take place between this type's attacks.
      */
     turnsBetweenAttacks: number;
-
 }
 
 /**
@@ -471,7 +465,6 @@ export interface UnitState extends GameObjectState {
      * The Tile this Unit is on.
      */
     tile: TileState;
-
 }
 
 /**
@@ -518,7 +511,6 @@ export interface UnitJobState extends GameObjectState {
      * 'wraith' or 'horseman'.
      */
     title: "worker" | "zombie" | "ghoul" | "hound" | "abomination" | "wraith" | "horseman";
-
 }
 
 // -- Run Deltas -- \\
@@ -652,8 +644,7 @@ export type TileSpawnWorkerRanDelta = RanDelta & {
              * The arguments to Tile.spawnWorker,
              * as a map of the argument name to its value.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -898,8 +889,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -912,7 +902,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Necrowar. */
 export type NecrowarSpecificDelta =
-    GameObjectLogRanDelta
+    | GameObjectLogRanDelta
     | TileResRanDelta
     | TileSpawnUnitRanDelta
     | TileSpawnWorkerRanDelta

@@ -160,7 +160,6 @@ export interface GameState extends BaseGame {
      * The number of materials in a wall.
      */
     wallMaterials: number;
-
 }
 
 /**
@@ -186,7 +185,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -223,7 +221,6 @@ export interface JobState extends GameObjectState {
      * food for every Unit, all Units become starved and do not consume food.
      */
     upkeep: number;
-
 }
 
 /**
@@ -297,7 +294,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -331,7 +327,6 @@ export interface StructureState extends GameObjectState {
      * 'neutral').
      */
     type: "neutral" | "shelter" | "monument" | "wall" | "road";
-
 }
 
 /**
@@ -401,7 +396,6 @@ export interface TileState extends GameObjectState {
      * The y (vertical) position of this Tile.
      */
     y: number;
-
 }
 
 /**
@@ -472,7 +466,6 @@ export interface UnitState extends GameObjectState {
      * fresh humans created from combat. Otherwise, 0.
      */
     turnsToDie: number;
-
 }
 
 // -- Run Deltas -- \\
@@ -881,8 +874,7 @@ export type UnitRestRanDelta = RanDelta & {
              * The arguments to Unit.rest,
              * as a map of the argument name to its value.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -911,8 +903,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -925,7 +916,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Catastrophe. */
 export type CatastropheSpecificDelta =
-    GameObjectLogRanDelta
+    | GameObjectLogRanDelta
     | UnitAttackRanDelta
     | UnitChangeJobRanDelta
     | UnitConstructRanDelta

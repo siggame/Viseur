@@ -194,7 +194,6 @@ export interface GameState extends BaseGame {
      * Every Unit in the game.
      */
     units: UnitState[];
-
 }
 
 /**
@@ -236,7 +235,6 @@ export interface BodyState extends GameObjectState {
      * The y value this celestial body is on.
      */
     y: number;
-
 }
 
 /**
@@ -262,7 +260,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -309,7 +306,6 @@ export interface JobState extends GameObjectState {
      * How much money it costs to spawn a unit.
      */
     unitCost: number;
-
 }
 
 /**
@@ -383,7 +379,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -419,7 +414,6 @@ export interface ProjectileState extends GameObjectState {
      * The y value this projectile is on.
      */
     y: number;
-
 }
 
 /**
@@ -510,7 +504,6 @@ export interface UnitState extends GameObjectState {
      * The y value this unit is on.
      */
     y: number;
-
 }
 
 // -- Run Deltas -- \\
@@ -960,8 +953,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -974,7 +966,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Stardash. */
 export type StardashSpecificDelta =
-    BodyNextXRanDelta
+    | BodyNextXRanDelta
     | BodyNextYRanDelta
     | BodySpawnRanDelta
     | GameObjectLogRanDelta

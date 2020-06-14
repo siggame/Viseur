@@ -165,7 +165,6 @@ export interface GameState extends BaseGame {
      * Every Unit in the game. Merchant units have targetPort set to a port.
      */
     units: UnitState[];
-
 }
 
 /**
@@ -191,7 +190,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -258,7 +256,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -287,7 +284,6 @@ export interface PortState extends GameObjectState {
      * The Tile this Port is on.
      */
     tile: TileState;
-
 }
 
 /**
@@ -353,7 +349,6 @@ export interface TileState extends GameObjectState {
      * The y (vertical) position of this Tile.
      */
     y: number;
-
 }
 
 /**
@@ -419,7 +414,6 @@ export interface UnitState extends GameObjectState {
      * The Tile this Unit is on.
      */
     tile: TileState;
-
 }
 
 // -- Run Deltas -- \\
@@ -705,8 +699,7 @@ export type UnitRestRanDelta = RanDelta & {
              * The arguments to Unit.rest,
              * as a map of the argument name to its value.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -818,8 +811,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -832,7 +824,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Pirates. */
 export type PiratesSpecificDelta =
-    GameObjectLogRanDelta
+    | GameObjectLogRanDelta
     | PortSpawnRanDelta
     | UnitAttackRanDelta
     | UnitBuryRanDelta

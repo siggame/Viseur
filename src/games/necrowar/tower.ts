@@ -171,7 +171,7 @@ export class Tower extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {tile}, callback);
+        this.runOnServer("attack", { tile }, callback);
     }
 
     // </Joueur functions>

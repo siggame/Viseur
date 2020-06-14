@@ -169,7 +169,7 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
     public isMine(
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("isMine", {}, callback);
+        this.runOnServer("isMine", {  }, callback);
     }
 
     /**
@@ -185,7 +185,7 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
         y: number,
         callback?: (returned: CheckerState) => void,
     ): void {
-        this.runOnServer("move", {x, y}, callback);
+        this.runOnServer("move", { x, y }, callback);
     }
 
     // </Joueur functions>

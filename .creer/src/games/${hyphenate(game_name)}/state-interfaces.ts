@@ -48,14 +48,13 @@ elif game_obj_name == 'Game':
 %>
 ${shared['vis']['block_comment']('', game_obj['description'])}
 export interface ${game_obj_name}State extends ${', '.join(parent_classes)} {
-% for attr_name in game_obj['attribute_names']:
+% for i, attr_name in enumerate(game_obj['attribute_names']):
 <%
     attrs = game_obj['attributes'][attr_name]
     #if 'serverPredefined' in attrs and attrs['serverPredefined']:
     #    continue
-%>${shared['vis']['block_comment']('    ', attrs['description'])}
+%>${'\n' if i > 0 else ''}${shared['vis']['block_comment']('    ', attrs['description'])}
     ${attr_name}: ${shared['vis']['type'](attrs['type'])};
-
 % endfor
 }
 % endfor
@@ -102,12 +101,16 @@ export type ${deltaName} = ${'Finished' if is_ai else 'Ran'}Delta & {
              * The arguments to ${game_obj_name}.${function_name},
              * as a ${'positional array of arguments send to the AI' if is_ai else 'map of the argument name to its value'}.
              */
+%           if function_parms['arguments']:
             args: {
-%           for i, arg in enumerate(function_parms['arguments']):
+%               for i, arg in enumerate(function_parms['arguments']):
 ${shared['vis']['block_comment']('                ', arg['description'])}
                 ${i if is_ai else arg['name']}: ${state_obj_type(arg)};
-%           endfor
+%               endfor
             };
+%           else:
+            args: {};
+%           endif
         };
 
 ${shared['vis']['block_comment'](
@@ -123,7 +126,7 @@ ${shared['vis']['block_comment'](
 /** All the possible specific deltas in ${game_name}. */
 export type ${game_name}SpecificDelta =
 % for i, deltaName in enumerate(deltaNames):
-    ${'' if i == 0 else '| '}${deltaName}
+    | ${deltaName}
 % endfor
 ;
 

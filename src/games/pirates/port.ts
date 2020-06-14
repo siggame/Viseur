@@ -201,7 +201,7 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
         type: "crew" | "ship",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("spawn", {type}, callback);
+        this.runOnServer("spawn", { type }, callback);
     }
 
     // </Joueur functions>

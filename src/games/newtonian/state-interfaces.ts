@@ -141,7 +141,6 @@ export interface GameState extends BaseGame {
      * The amount of combined heat and pressure that you need to win.
      */
     victoryAmount: number;
-
 }
 
 /**
@@ -167,7 +166,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -198,7 +196,6 @@ export interface JobState extends GameObjectState {
      * The Job title. 'intern', 'manager', or 'physicist'.
      */
     title: "intern" | "manager" | "physicist";
-
 }
 
 /**
@@ -237,7 +234,6 @@ export interface MachineState extends GameObjectState {
      * Tracks how many times this machine has been worked. (0 to refineTime).
      */
     worked: number;
-
 }
 
 /**
@@ -326,7 +322,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -424,7 +419,6 @@ export interface TileState extends GameObjectState {
      * The y (vertical) position of this Tile.
      */
     y: number;
-
 }
 
 /**
@@ -494,7 +488,6 @@ export interface UnitState extends GameObjectState {
      * The Tile this Unit is on.
      */
     tile: TileState;
-
 }
 
 // -- Run Deltas -- \\
@@ -754,8 +747,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -768,7 +760,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Newtonian. */
 export type NewtonianSpecificDelta =
-    GameObjectLogRanDelta
+    | GameObjectLogRanDelta
     | UnitActRanDelta
     | UnitAttackRanDelta
     | UnitDropRanDelta

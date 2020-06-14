@@ -467,7 +467,7 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         drunkDirection: "" | "North" | "East" | "South" | "West",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("act", {tile, drunkDirection}, callback);
+        this.runOnServer("act", { tile, drunkDirection }, callback);
     }
 
     /**
@@ -481,7 +481,7 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {tile}, callback);
+        this.runOnServer("move", { tile }, callback);
     }
 
     /**
@@ -495,7 +495,7 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
         piano: FurnishingState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("play", {piano}, callback);
+        this.runOnServer("play", { piano }, callback);
     }
 
     // </Joueur functions>

@@ -115,7 +115,6 @@ export interface GameState extends BaseGame {
      * turn.
      */
     timeAddedPerTurn: number;
-
 }
 
 /**
@@ -172,7 +171,6 @@ export interface BeaverState extends GameObjectState {
      * Number of turns this Beaver is distracted for (0 means not distracted).
      */
     turnsDistracted: number;
-
 }
 
 /**
@@ -198,7 +196,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -254,7 +251,6 @@ export interface JobState extends GameObjectState {
      * The Job title.
      */
     title: string;
-
 }
 
 /**
@@ -316,7 +312,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -344,7 +339,6 @@ export interface SpawnerState extends GameObjectState {
      * What type of resource this is ('food' or 'branches').
      */
     type: "food" | "branches";
-
 }
 
 /**
@@ -420,7 +414,6 @@ export interface TileState extends GameObjectState {
      * The y (vertical) position of this Tile.
      */
     y: number;
-
 }
 
 // -- Run Deltas -- \\
@@ -482,8 +475,7 @@ export type BeaverBuildLodgeRanDelta = RanDelta & {
              * The arguments to Beaver.buildLodge,
              * as a map of the argument name to its value.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -750,8 +742,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -764,7 +755,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Stumped. */
 export type StumpedSpecificDelta =
-    BeaverAttackRanDelta
+    | BeaverAttackRanDelta
     | BeaverBuildLodgeRanDelta
     | BeaverDropRanDelta
     | BeaverHarvestRanDelta

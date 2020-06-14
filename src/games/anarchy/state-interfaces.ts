@@ -105,7 +105,6 @@ export interface GameState extends BaseGame {
      * turn.
      */
     timeAddedPerTurn: number;
-
 }
 
 /**
@@ -176,7 +175,6 @@ export interface BuildingState extends GameObjectState {
      * The location of the Building along the y-axis.
      */
     y: number;
-
 }
 
 /**
@@ -188,7 +186,6 @@ export interface FireDepartmentState extends BuildingState {
      * building.
      */
     fireExtinguished: number;
-
 }
 
 /**
@@ -213,7 +210,6 @@ export interface ForecastState extends GameObjectState {
      * Forecast. Fire is duplicated (copied), not moved (transfered).
      */
     intensity: number;
-
 }
 
 /**
@@ -239,7 +235,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -324,7 +319,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * If the player won the game or not.
      */
     won: boolean;
-
 }
 
 /**
@@ -350,7 +344,6 @@ export interface WarehouseState extends BuildingState {
      * Headquarters add more fire than normal Warehouses.
      */
     fireAdded: number;
-
 }
 
 /**
@@ -605,8 +598,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -619,7 +611,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Anarchy. */
 export type AnarchySpecificDelta =
-    FireDepartmentExtinguishRanDelta
+    | FireDepartmentExtinguishRanDelta
     | GameObjectLogRanDelta
     | PoliceDepartmentRaidRanDelta
     | WarehouseIgniteRanDelta

@@ -144,7 +144,7 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
         warehouse: WarehouseState,
         callback?: (returned: number) => void,
     ): void {
-        this.runOnServer("raid", {warehouse}, callback);
+        this.runOnServer("raid", { warehouse }, callback);
     }
 
     // </Joueur functions>

@@ -141,7 +141,7 @@ export class Job extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: BeaverState) => void,
     ): void {
-        this.runOnServer("recruit", {tile}, callback);
+        this.runOnServer("recruit", { tile }, callback);
     }
 
     // </Joueur functions>

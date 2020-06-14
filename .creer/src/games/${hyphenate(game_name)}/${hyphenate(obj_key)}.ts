@@ -337,7 +337,7 @@ docstring = shared['vis']['block_comment']('    ', returnless)
         ${parm['name']}: ${shared['vis']['type'](parm['type'])},
 % endfor
     ): void {
-        this.runOnServer("${function_name}", {${', '.join(a['name'] for a in returnless['arguments'][:-1])}}, callback);
+        this.runOnServer("${function_name}", ${'{}' if not returnless['arguments'] else '{{ {} }}'.format(', '.join(a['name'] for a in returnless['arguments'][:-1]))}, callback);
     }
 
 % endfor

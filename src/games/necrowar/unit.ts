@@ -252,7 +252,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {tile}, callback);
+        this.runOnServer("attack", { tile }, callback);
     }
 
     /**
@@ -267,7 +267,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         title: string,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("build", {title}, callback);
+        this.runOnServer("build", { title }, callback);
     }
 
     /**
@@ -281,7 +281,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("fish", {tile}, callback);
+        this.runOnServer("fish", { tile }, callback);
     }
 
     /**
@@ -295,7 +295,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("mine", {tile}, callback);
+        this.runOnServer("mine", { tile }, callback);
     }
 
     /**
@@ -309,7 +309,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {tile}, callback);
+        this.runOnServer("move", { tile }, callback);
     }
 
     // </Joueur functions>

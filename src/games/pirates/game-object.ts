@@ -149,7 +149,7 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
         message: string,
         callback?: (returned: void) => void,
     ): void {
-        this.runOnServer("log", {message}, callback);
+        this.runOnServer("log", { message }, callback);
     }
 
     // </Joueur functions>

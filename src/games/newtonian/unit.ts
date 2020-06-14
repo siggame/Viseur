@@ -228,7 +228,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("act", {tile}, callback);
+        this.runOnServer("act", { tile }, callback);
     }
 
     /**
@@ -242,7 +242,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {tile}, callback);
+        this.runOnServer("attack", { tile }, callback);
     }
 
     /**
@@ -262,7 +262,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         material: "redium ore" | "redium" | "blueium" | "blueium ore",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("drop", {tile, amount, material}, callback);
+        this.runOnServer("drop", { tile, amount, material }, callback);
     }
 
     /**
@@ -276,7 +276,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {tile}, callback);
+        this.runOnServer("move", { tile }, callback);
     }
 
     /**
@@ -296,7 +296,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         material: "redium ore" | "redium" | "blueium" | "blueium ore",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("pickup", {tile, amount, material}, callback);
+        this.runOnServer("pickup", { tile, amount, material }, callback);
     }
 
     // </Joueur functions>

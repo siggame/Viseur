@@ -141,7 +141,7 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
         web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("strengthen", {web}, callback);
+        this.runOnServer("strengthen", { web }, callback);
     }
 
     /**
@@ -156,7 +156,7 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
         web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("weaken", {web}, callback);
+        this.runOnServer("weaken", { web }, callback);
     }
 
     // </Joueur functions>

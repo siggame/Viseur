@@ -148,7 +148,7 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
         building: BuildingState,
         callback?: (returned: number) => void,
     ): void {
-        this.runOnServer("ignite", {building}, callback);
+        this.runOnServer("ignite", { building }, callback);
     }
 
     // </Joueur functions>

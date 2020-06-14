@@ -142,7 +142,7 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
         nest: NestState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("spit", {nest}, callback);
+        this.runOnServer("spit", { nest }, callback);
     }
 
     // </Joueur functions>

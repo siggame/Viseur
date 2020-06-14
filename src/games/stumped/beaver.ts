@@ -288,7 +288,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         beaver: BeaverState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {beaver}, callback);
+        this.runOnServer("attack", { beaver }, callback);
     }
 
     /**
@@ -300,7 +300,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     public buildLodge(
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("buildLodge", {}, callback);
+        this.runOnServer("buildLodge", {  }, callback);
     }
 
     /**
@@ -320,7 +320,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("drop", {tile, resource, amount}, callback);
+        this.runOnServer("drop", { tile, resource, amount }, callback);
     }
 
     /**
@@ -335,7 +335,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         spawner: SpawnerState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("harvest", {spawner}, callback);
+        this.runOnServer("harvest", { spawner }, callback);
     }
 
     /**
@@ -349,7 +349,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {tile}, callback);
+        this.runOnServer("move", { tile }, callback);
     }
 
     /**
@@ -369,7 +369,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("pickup", {tile, resource, amount}, callback);
+        this.runOnServer("pickup", { tile, resource, amount }, callback);
     }
 
     // </Joueur functions>

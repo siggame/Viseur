@@ -181,7 +181,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         num: number,
         callback?: (returned: number) => void,
     ): void {
-        this.runOnServer("nextX", {num}, callback);
+        this.runOnServer("nextX", { num }, callback);
     }
 
     /**
@@ -196,7 +196,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         num: number,
         callback?: (returned: number) => void,
     ): void {
-        this.runOnServer("nextY", {num}, callback);
+        this.runOnServer("nextY", { num }, callback);
     }
 
     /**
@@ -214,7 +214,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
         title: string,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("spawn", {x, y, title}, callback);
+        this.runOnServer("spawn", { x, y, title }, callback);
     }
 
     // </Joueur functions>

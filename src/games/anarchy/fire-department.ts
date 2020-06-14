@@ -144,7 +144,7 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
         building: BuildingState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("extinguish", {building}, callback);
+        this.runOnServer("extinguish", { building }, callback);
     }
 
     // </Joueur functions>

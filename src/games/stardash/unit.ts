@@ -247,7 +247,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         enemy: UnitState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {enemy}, callback);
+        this.runOnServer("attack", { enemy }, callback);
     }
 
     /**
@@ -263,7 +263,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         y: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("dash", {x, y}, callback);
+        this.runOnServer("dash", { x, y }, callback);
     }
 
     /**
@@ -277,7 +277,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         body: BodyState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("mine", {body}, callback);
+        this.runOnServer("mine", { body }, callback);
     }
 
     /**
@@ -293,7 +293,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         y: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {x, y}, callback);
+        this.runOnServer("move", { x, y }, callback);
     }
 
     /**
@@ -310,7 +310,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         y: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("safe", {x, y}, callback);
+        this.runOnServer("safe", { x, y }, callback);
     }
 
     /**
@@ -324,7 +324,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         missile: ProjectileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("shootdown", {missile}, callback);
+        this.runOnServer("shootdown", { missile }, callback);
     }
 
     /**
@@ -344,7 +344,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         material: "genarium" | "rarium" | "legendarium" | "mythicite",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("transfer", {unit, amount, material}, callback);
+        this.runOnServer("transfer", { unit, amount, material }, callback);
     }
 
     // </Joueur functions>

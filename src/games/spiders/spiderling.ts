@@ -140,7 +140,7 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
         spiderling: SpiderlingState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {spiderling}, callback);
+        this.runOnServer("attack", { spiderling }, callback);
     }
 
     /**
@@ -154,7 +154,7 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
         web: WebState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {web}, callback);
+        this.runOnServer("move", { web }, callback);
     }
 
     // </Joueur functions>

@@ -132,7 +132,6 @@ export interface GameState extends BaseGame {
      * How many turns a Cowboy will be drunk for if a bottle breaks on it.
      */
     turnsDrunk: number;
-
 }
 
 /**
@@ -161,7 +160,6 @@ export interface BottleState extends GameObjectState {
      * The Tile this bottle is currently flying over.
      */
     tile: TileState;
-
 }
 
 /**
@@ -227,7 +225,6 @@ export interface CowboyState extends GameObjectState {
      * can `act()` or `play()` again.
      */
     turnsBusy: number;
-
 }
 
 /**
@@ -259,7 +256,6 @@ export interface FurnishingState extends GameObjectState {
      * The Tile that this Furnishing is located on.
      */
     tile: TileState;
-
 }
 
 /**
@@ -285,7 +281,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -364,7 +359,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * The YoungGun this Player uses to call in new Cowboys.
      */
     youngGun: YoungGunState;
-
 }
 
 /**
@@ -436,7 +430,6 @@ export interface TileState extends GameObjectState {
      * The YoungGun on this tile, null otherwise.
      */
     youngGun: YoungGunState;
-
 }
 
 /**
@@ -464,7 +457,6 @@ export interface YoungGunState extends GameObjectState {
      * The Tile this YoungGun is currently on.
      */
     tile: TileState;
-
 }
 
 // -- Run Deltas -- \\
@@ -674,8 +666,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -688,7 +679,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Saloon. */
 export type SaloonSpecificDelta =
-    CowboyActRanDelta
+    | CowboyActRanDelta
     | CowboyMoveRanDelta
     | CowboyPlayRanDelta
     | GameObjectLogRanDelta

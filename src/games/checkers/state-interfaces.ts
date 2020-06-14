@@ -84,7 +84,6 @@ export interface GameState extends BaseGame {
      * turn.
      */
     timeAddedPerTurn: number;
-
 }
 
 /**
@@ -110,7 +109,6 @@ export interface CheckerState extends GameObjectState {
      * The y coordinate of the checker.
      */
     y: number;
-
 }
 
 /**
@@ -136,7 +134,6 @@ export interface GameObjectState extends BaseGameObject {
      * Any strings logged will be stored here. Intended for debugging.
      */
     logs: string[];
-
 }
 
 /**
@@ -193,7 +190,6 @@ export interface PlayerState extends GameObjectState, BasePlayer {
      * The direction your checkers must go along the y-axis until kinged.
      */
     yDirection: number;
-
 }
 
 // -- Run Deltas -- \\
@@ -218,8 +214,7 @@ export type CheckerIsMineRanDelta = RanDelta & {
              * The arguments to Checker.isMine,
              * as a map of the argument name to its value.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -360,8 +355,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
              * The arguments to AI.runTurn,
              * as a positional array of arguments send to the AI.
              */
-            args: {
-            };
+            args: {};
         };
 
         /**
@@ -374,7 +368,7 @@ export type AIRunTurnFinishedDelta = FinishedDelta & {
 
 /** All the possible specific deltas in Checkers. */
 export type CheckersSpecificDelta =
-    CheckerIsMineRanDelta
+    | CheckerIsMineRanDelta
     | CheckerMoveRanDelta
     | GameObjectLogRanDelta
     | AIGotCapturedFinishedDelta

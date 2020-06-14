@@ -251,7 +251,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         target: "crew" | "ship",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {tile, target}, callback);
+        this.runOnServer("attack", { tile, target }, callback);
     }
 
     /**
@@ -267,7 +267,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("bury", {amount}, callback);
+        this.runOnServer("bury", { amount }, callback);
     }
 
     /**
@@ -284,7 +284,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("deposit", {amount}, callback);
+        this.runOnServer("deposit", { amount }, callback);
     }
 
     /**
@@ -299,7 +299,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("dig", {amount}, callback);
+        this.runOnServer("dig", { amount }, callback);
     }
 
     /**
@@ -316,7 +316,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("move", {tile}, callback);
+        this.runOnServer("move", { tile }, callback);
     }
 
     /**
@@ -328,7 +328,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public rest(
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("rest", {}, callback);
+        this.runOnServer("rest", {  }, callback);
     }
 
     /**
@@ -349,7 +349,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         gold: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("split", {tile, amount, gold}, callback);
+        this.runOnServer("split", { tile, amount, gold }, callback);
     }
 
     /**
@@ -364,7 +364,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         amount: number,
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("withdraw", {amount}, callback);
+        this.runOnServer("withdraw", { amount }, callback);
     }
 
     // </Joueur functions>
