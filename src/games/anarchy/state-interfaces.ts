@@ -324,8 +324,7 @@ export interface PlayerState extends GameObjectState, BasePlayer {
 /**
  * Used to keep cities under control and raid Warehouses.
  */
-export interface PoliceDepartmentState extends BuildingState {
-}
+export interface PoliceDepartmentState extends BuildingState {}
 
 /**
  * A typical abandoned warehouse that anarchists hang out in and can be bribed
@@ -349,8 +348,7 @@ export interface WarehouseState extends BuildingState {
 /**
  * Can be bribed to change the next Forecast in some way.
  */
-export interface WeatherStationState extends BuildingState {
-}
+export interface WeatherStationState extends BuildingState {}
 
 // -- Run Deltas -- \\
 /**

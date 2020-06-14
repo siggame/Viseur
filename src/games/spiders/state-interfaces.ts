@@ -290,7 +290,14 @@ export interface SpiderlingState extends SpiderState {
      * When empty string this Spiderling is not busy, and can act. Otherwise a
      * string representing what it is busy with, e.g. 'Moving', 'Attacking'.
      */
-    busy: "" | "Moving" | "Attacking" | "Strengthening" | "Weakening" | "Cutting" | "Spitting";
+    busy:
+        | ""
+        | "Moving"
+        | "Attacking"
+        | "Strengthening"
+        | "Weakening"
+        | "Cutting"
+        | "Spitting";
 
     /**
      * The Web this Spiderling is using to move. Null if it is not moving.

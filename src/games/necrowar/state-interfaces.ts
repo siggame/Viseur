@@ -510,7 +510,14 @@ export interface UnitJobState extends GameObjectState {
      * The type title. 'worker', 'zombie', 'ghoul', 'hound', 'abomination',
      * 'wraith' or 'horseman'.
      */
-    title: "worker" | "zombie" | "ghoul" | "hound" | "abomination" | "wraith" | "horseman";
+    title:
+        | "worker"
+        | "zombie"
+        | "ghoul"
+        | "hound"
+        | "abomination"
+        | "wraith"
+        | "horseman";
 }
 
 // -- Run Deltas -- \\

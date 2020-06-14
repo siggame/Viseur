@@ -47,16 +47,31 @@ elif game_obj_name == 'Game':
 
 %>
 ${shared['vis']['block_comment']('', game_obj['description'])}
-export interface ${game_obj_name}State extends ${', '.join(parent_classes)} {
-% for i, attr_name in enumerate(game_obj['attribute_names']):
+export interface ${game_obj_name}State extends ${', '.join(parent_classes)} {${'}' if not game_obj['attribute_names'] else ''}
+% if game_obj['attribute_names']:
+%     for i, attr_name in enumerate(game_obj['attribute_names']):
 <%
     attrs = game_obj['attributes'][attr_name]
     #if 'serverPredefined' in attrs and attrs['serverPredefined']:
     #    continue
+    field_dec = '    {}:'.format(attr_name)
+    type_str = shared['vis']['type'](attrs['type'])
+    one_line = '{} {};'.format(field_dec, type_str)
+    if len(one_line) > 80:
+        one_line = field_dec
+        indent = '        '
+        if 'literals' in attrs['type'] and attrs['type']['literals']:
+            indent = ''
+            literals = list(attrs['type']['literals'])
+            if attrs['type']['name'] == 'string':
+                literals = [ '"{}"'.format(l) for l in literals ]
+            type_str = '\n'.join(['        | {}'.format(l) for l in literals])
+        one_line += '\n' + indent + type_str + ';'
 %>${'\n' if i > 0 else ''}${shared['vis']['block_comment']('    ', attrs['description'])}
-    ${attr_name}: ${shared['vis']['type'](attrs['type'])};
-% endfor
+${one_line}
+%     endfor
 }
+% endif
 % endfor
 
 // -- Run Deltas -- \\\
