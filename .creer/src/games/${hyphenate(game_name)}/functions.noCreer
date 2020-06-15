@@ -115,5 +115,16 @@ if not 'vis' in shared:
         return doc
     shared['vis']['imports'] = vis_imports
 
+    def vis_function_top(func_name, func):
+        docstring = shared['vis']['block_comment']('    ', func)
+        dec_start = '    public {}('.format(func_name)
+        dec_end = '): void {'
+        strs = ['{}: {}'.format(parm['name'], shared['vis']['type'](parm['type'])) for parm in func['arguments']]
+        dec_line = dec_start + ', '.join(strs) + dec_end
+        if len(dec_line) >= 80:
+            dec_line = dec_start + ''.join(['\n        {},'.format(s) for s in strs]) + '\n    ' + dec_end
+        return docstring + '\n' + dec_line
+    shared['vis']['function_top'] = vis_function_top
+
     shared['vis']['TextWrapper'] = TextWrapper
 %>

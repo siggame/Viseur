@@ -52,7 +52,10 @@ export class HumanPlayer extends BaseHumanPlayer {
      * @param callback The callback that eventually returns the return value
      * from the server.
      */
-    public gotCaptured(checker: CheckerState, callback: (returned: void) => void): void {
+    public gotCaptured(
+        checker: CheckerState,
+        callback: (returned: void) => void,
+    ): void {
         // <<-- Creer-Merge: gotCaptured -->>
         // Put your game logic here for gotCaptured
         // <<-- /Creer-Merge: gotCaptured -->>

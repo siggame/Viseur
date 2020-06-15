@@ -77,23 +77,7 @@ arguments.append({
 
 })
 returnless['arguments'] = arguments
-docstring = shared['vis']['block_comment']('    ', returnless)
-
-formatted_name = '    public '+function_name+'('
-formatted_args = ', '.join([(a['name']+': '+shared['vis']['type'](a['type'])) for a in arguments])
-
-wrapper = shared['vis']['TextWrapper'](
-    subsequent_indent=' ' * len(formatted_name),
-    width=80,
-)
-
-formatted_args = '\n'.join(wrapper.wrap(formatted_args))
-
-if '\n' in formatted_args:
-    formatted_args += '\n    '
-
-%>${docstring}
-${formatted_name}${formatted_args}): void {
+%>${shared['vis']['function_top'](function_name, returnless)}
 ${merge("        // ", function_name, "        // Put your game logic here for " + function_name, help=False)}
     }
 
