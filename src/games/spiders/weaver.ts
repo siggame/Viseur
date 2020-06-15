@@ -152,7 +152,10 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * from the server. - The returned value is True if the weaken was
      * successfully started, false otherwise.
      */
-    public weaken(web: WebState, callback?: (returned: boolean) => void): void {
+    public weaken(
+        web: WebState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("weaken", { web }, callback);
     }
 

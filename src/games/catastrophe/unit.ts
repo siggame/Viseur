@@ -530,7 +530,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(tile: TileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: TileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", { tile }, callback);
     }
 

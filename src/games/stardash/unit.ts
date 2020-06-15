@@ -278,7 +278,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully acted,
      * false otherwise.
      */
-    public mine(body: BodyState, callback?: (returned: boolean) => void): void {
+    public mine(
+        body: BodyState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("mine", { body }, callback);
     }
 

@@ -274,7 +274,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully began
      * fishing for mana, false otherwise.
      */
-    public fish(tile: TileState, callback?: (returned: boolean) => void): void {
+    public fish(
+        tile: TileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("fish", { tile }, callback);
     }
 
@@ -285,7 +288,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully entered
      * mine and began mining, false otherwise.
      */
-    public mine(tile: TileState, callback?: (returned: boolean) => void): void {
+    public mine(
+        tile: TileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("mine", { tile }, callback);
     }
 
@@ -296,7 +302,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(tile: TileState, callback?: (returned: boolean) => void): void {
+    public move(
+        tile: TileState,
+        callback?: (returned: boolean) => void,
+    ): void {
         this.runOnServer("move", { tile }, callback);
     }
 
