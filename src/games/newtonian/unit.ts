@@ -224,10 +224,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully acted,
      * false otherwise.
      */
-    public act(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public act(tile: TileState, callback?: (returned: boolean) => void): void {
         this.runOnServer("act", { tile }, callback);
     }
 
@@ -272,10 +269,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(tile: TileState, callback?: (returned: boolean) => void): void {
         this.runOnServer("move", { tile }, callback);
     }
 

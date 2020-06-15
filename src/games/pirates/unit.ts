@@ -263,10 +263,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully buried,
      * false otherwise.
      */
-    public bury(
-        amount: number,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public bury(amount: number, callback?: (returned: boolean) => void): void {
         this.runOnServer("bury", { amount }, callback);
     }
 
@@ -295,10 +292,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully dug up,
      * false otherwise.
      */
-    public dig(
-        amount: number,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public dig(amount: number, callback?: (returned: boolean) => void): void {
         this.runOnServer("dig", { amount }, callback);
     }
 
@@ -312,10 +306,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(tile: TileState, callback?: (returned: boolean) => void): void {
         this.runOnServer("move", { tile }, callback);
     }
 
@@ -325,9 +316,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully rested,
      * false otherwise.
      */
-    public rest(
-        callback?: (returned: boolean) => void,
-    ): void {
+    public rest(callback?: (returned: boolean) => void): void {
         this.runOnServer("rest", {  }, callback);
     }
 

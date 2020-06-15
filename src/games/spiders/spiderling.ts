@@ -150,10 +150,7 @@ export class Spiderling extends makeRenderable(Spider, SHOULD_RENDER) {
      * from the server. - The returned value is True if the move was successful,
      * false otherwise.
      */
-    public move(
-        web: WebState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(web: WebState, callback?: (returned: boolean) => void): void {
         this.runOnServer("move", { web }, callback);
     }
 

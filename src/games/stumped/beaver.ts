@@ -302,9 +302,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully built a
      * lodge, false otherwise.
      */
-    public buildLodge(
-        callback?: (returned: boolean) => void,
-    ): void {
+    public buildLodge(callback?: (returned: boolean) => void): void {
         this.runOnServer("buildLodge", {  }, callback);
     }
 
@@ -350,10 +348,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if the move worked, false
      * otherwise.
      */
-    public move(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(tile: TileState, callback?: (returned: boolean) => void): void {
         this.runOnServer("move", { tile }, callback);
     }
 

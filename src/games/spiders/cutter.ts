@@ -137,10 +137,7 @@ export class Cutter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * from the server. - The returned value is True if the cut was successfully
      * started, false otherwise.
      */
-    public cut(
-        web: WebState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public cut(web: WebState, callback?: (returned: boolean) => void): void {
         this.runOnServer("cut", { web }, callback);
     }
 

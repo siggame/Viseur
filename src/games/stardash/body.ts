@@ -177,10 +177,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is The x position of the body the
      * input number of turns in the future.
      */
-    public nextX(
-        num: number,
-        callback?: (returned: number) => void,
-    ): void {
+    public nextX(num: number, callback?: (returned: number) => void): void {
         this.runOnServer("nextX", { num }, callback);
     }
 
@@ -192,10 +189,7 @@ export class Body extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is The x position of the body the
      * input number of turns in the future.
      */
-    public nextY(
-        num: number,
-        callback?: (returned: number) => void,
-    ): void {
+    public nextY(num: number, callback?: (returned: number) => void): void {
         this.runOnServer("nextY", { num }, callback);
     }
 

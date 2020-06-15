@@ -331,12 +331,15 @@ returnless['arguments'].append({
 
 docstring = shared['vis']['block_comment']('    ', returnless)
 
+dec_start = '    public {}('.format(function_name)
+dec_end = '): void {'
+rparam_strings = ['{}: {}'.format(parm['name'], shared['vis']['type'](parm['type'])) for parm in returnless['arguments']]
+dec_line = dec_start + ', '.join(rparam_strings) + dec_end
+if len(dec_line) > 80:
+    dec_line = dec_start + ''.join(['\n        {},'.format(s) for s in rparam_strings]) + '\n    ' + dec_end
+
 %>${docstring}
-    public ${function_name}(
-% for parm in returnless['arguments']:
-        ${parm['name']}: ${shared['vis']['type'](parm['type'])},
-% endfor
-    ): void {
+${dec_line}
         this.runOnServer("${function_name}", ${'{}' if not returnless['arguments'] else '{{ {} }}'.format(', '.join(a['name'] for a in returnless['arguments'][:-1]))}, callback);
     }
 

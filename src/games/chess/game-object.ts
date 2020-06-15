@@ -145,10 +145,7 @@ export class GameObject extends makeRenderable(BaseGameObject, SHOULD_RENDER) {
      * debugging.
      * @param callback?
      */
-    public log(
-        message: string,
-        callback?: (returned: void) => void,
-    ): void {
+    public log(message: string, callback?: (returned: void) => void): void {
         this.runOnServer("log", { message }, callback);
     }
 

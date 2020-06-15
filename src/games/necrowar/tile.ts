@@ -202,10 +202,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successful res, false
      * otherwise.
      */
-    public res(
-        num: number,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public res(num: number, callback?: (returned: boolean) => void): void {
         this.runOnServer("res", { num }, callback);
     }
 
@@ -229,9 +226,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * from the server. - The returned value is True if successfully spawned,
      * false otherwise.
      */
-    public spawnWorker(
-        callback?: (returned: boolean) => void,
-    ): void {
+    public spawnWorker(callback?: (returned: boolean) => void): void {
         this.runOnServer("spawnWorker", {  }, callback);
     }
 
