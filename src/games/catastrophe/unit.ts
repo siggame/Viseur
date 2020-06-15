@@ -565,7 +565,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public rest(callback?: (returned: boolean) => void): void {
-        this.runOnServer("rest", {  }, callback);
+        this.runOnServer("rest", {}, callback);
     }
 
     // </Joueur functions>

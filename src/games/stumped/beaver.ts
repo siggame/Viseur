@@ -303,7 +303,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * lodge, false otherwise.
      */
     public buildLodge(callback?: (returned: boolean) => void): void {
-        this.runOnServer("buildLodge", {  }, callback);
+        this.runOnServer("buildLodge", {}, callback);
     }
 
     /**

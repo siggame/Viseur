@@ -340,7 +340,7 @@ if len(dec_line) >= 80:
 
 %>${docstring}
 ${dec_line}
-        this.runOnServer("${function_name}", ${'{}' if not returnless['arguments'] else '{{ {} }}'.format(', '.join(a['name'] for a in returnless['arguments'][:-1]))}, callback);
+        this.runOnServer("${function_name}", ${'{}' if not returnless['arguments'][:-1] else '{{ {} }}'.format(', '.join(a['name'] for a in returnless['arguments'][:-1]))}, callback);
     }
 
 % endfor

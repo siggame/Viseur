@@ -167,7 +167,7 @@ export class Checker extends makeRenderable(GameObject, SHOULD_RENDER) {
      * is not yours.
      */
     public isMine(callback?: (returned: boolean) => void): void {
-        this.runOnServer("isMine", {  }, callback);
+        this.runOnServer("isMine", {}, callback);
     }
 
     /**

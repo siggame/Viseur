@@ -227,7 +227,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * false otherwise.
      */
     public spawnWorker(callback?: (returned: boolean) => void): void {
-        this.runOnServer("spawnWorker", {  }, callback);
+        this.runOnServer("spawnWorker", {}, callback);
     }
 
     // </Joueur functions>
