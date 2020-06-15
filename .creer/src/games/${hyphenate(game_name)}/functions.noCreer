@@ -99,12 +99,19 @@ if not 'vis' in shared:
 
         doc = ''
         for pair in pairs:
-            importFrom = pair[0]
-            imports = ', '.join(sorted(pair[1]))
+            import_from = pair[0]
+            import_names = sorted(pair[1])
+            imports = ', '.join(import_names)
             if imports[0] != '*':
                 imports = '{ ' + imports + ' }'
-
-            doc += 'import {} from "{}";\n'.format(imports, importFrom)
+            one_line = 'import {} from "{}";'.format(imports, import_from)
+            if len(one_line) <= 80:
+                doc += one_line + '\n'
+            else:
+                doc += 'import {'
+                for name in import_names:
+                    doc += '\n    {},'.format(name)
+                doc += '\n}} from "{}";\n'.format(import_from)
         return doc
     shared['vis']['imports'] = vis_imports
 

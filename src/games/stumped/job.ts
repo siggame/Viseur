@@ -4,7 +4,12 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { BeaverState, JobState, StumpedDelta, TileState } from "./state-interfaces";
+import {
+    BeaverState,
+    JobState,
+    StumpedDelta,
+    TileState,
+} from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs

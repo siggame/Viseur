@@ -4,7 +4,12 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CowboyState, FurnishingState, SaloonDelta, TileState } from "./state-interfaces";
+import {
+    CowboyState,
+    FurnishingState,
+    SaloonDelta,
+    TileState,
+} from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";

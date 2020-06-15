@@ -4,7 +4,11 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spider } from "./spider";
-import { BroodMotherState, SpiderlingState, SpidersDelta } from "./state-interfaces";
+import {
+    BroodMotherState,
+    SpiderlingState,
+    SpidersDelta,
+} from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { setRelativePivot } from "src/utils";

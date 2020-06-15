@@ -4,7 +4,11 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Building } from "./building";
-import { AnarchyDelta, BuildingState, WarehouseState } from "./state-interfaces";
+import {
+    AnarchyDelta,
+    BuildingState,
+    WarehouseState,
+} from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
