@@ -7,23 +7,26 @@ import { Game } from "./game";
 
 /** The SAN character for a chess piece type to their index in the sprite sheet. */
 const CHESS_PIECE_INDEXES = {
-    /** Bishop */
+    /** Bishop. */
     b: 0,
-    /** King */
+    /** King. */
     k: 1,
-    /** Knight */
+    /** Knight. */
     n: 2,
-    /** Pawn */
+    /** Pawn. */
     p: 3,
-    /** Queen */
+    /** Queen. */
     q: 4,
-    /** Rook */
+    /** Rook. */
     r: 5,
 };
 
 /** A collection of PIXI components that make up a Piece being rendered. */
-interface IPieceSprites {
-    /** The bottom sprite, should always be solid black/white based on player color */
+interface PieceSprites {
+    /**
+     * The bottom sprite, should always be solid black/white based on player
+     * color.
+     */
     bottom: PIXI.Sprite;
     /** The top color, should change based on player color/custom color. */
     top: PIXI.Sprite;
@@ -32,22 +35,27 @@ interface IPieceSprites {
 }
 
 /** An object detailing a piece that needs to be rendered. */
-interface IPieceRender extends chessJs.Piece {
+interface PieceRender extends chessJs.Piece {
     /** Square moving from. Null when coming into existence (promotion). */
     from: chessJs.Square | null;
-    /** Square moving to. Null when being captured or being promoted away from. */
+    /**
+     * Square moving to. Null when being captured or being promoted away from.
+     */
     to: chessJs.Square | null;
     /** The sprites used to render this info. */
-    sprites: IPieceSprites;
+    sprites: PieceSprites;
 }
 
-/** An object that maps to player colors that maps to an array of cached PIXI sprites for that piece/color combo. */
+/**
+ * An object that maps to player colors that maps to an array of cached
+ * PIXI sprites for that piece/color combo.
+ */
 type SpritesCache = {
     [key in keyof typeof CHESS_PIECE_INDEXES]: {
         /** Black player's pieces of this type. */
-        b: IPieceSprites[];
+        b: PieceSprites[];
         /** White player's piece of this type. */
-        w: IPieceSprites[];
+        w: PieceSprites[];
     };
 };
 
@@ -66,25 +74,26 @@ export function squareToXY(square: chessJs.Square): Point {
 
 /** Manager class that maintains state of chess pieces to render via PIXI. */
 export class ChessPieces {
-    /** The container holding all pieces */
+    /** The container holding all pieces. */
     private readonly container = new PIXI.Container();
 
     /** The cache of unused piece sprites in memory ready to be re-used. */
-    // tslint:disable-next-line:no-any no-unsafe-any - lodash has bad types, and loses keyof type information
-    private readonly pieceSpriteCache = (mapValues(
-        CHESS_PIECE_INDEXES,
-        () => ({ b: [], w: [] }),
-    ) as any) as SpritesCache;
-
-    /** The cache of uses pieces being rendered on the board. */
-    // tslint:disable-next-line:no-any no-unsafe-any - lodash has bad types, and loses keyof type information
-    private readonly pieceSpriteUsed = (mapValues(CHESS_PIECE_INDEXES, () => ({
+    private readonly pieceSpriteCache = mapValues(CHESS_PIECE_INDEXES, () => ({
         b: [],
         w: [],
-    })) as any) as SpritesCache;
+    })) as SpritesCache;
 
-    /** A mapping of the square or promotion square to render information built during updates. */
-    private renders = new Map<chessJs.Square | "promotion", IPieceRender>();
+    /** The cache of uses pieces being rendered on the board. */
+    private readonly pieceSpriteUsed = mapValues(CHESS_PIECE_INDEXES, () => ({
+        b: [],
+        w: [],
+    })) as SpritesCache;
+
+    /**
+     * A mapping of the square or promotion square to render information
+     * built during updates.
+     */
+    private renders = new Map<chessJs.Square | "promotion", PieceRender>();
 
     /**
      * Creates a new piece render manager.
@@ -97,10 +106,12 @@ export class ChessPieces {
     }
 
     /**
-     * Update the states rendering. Pre-calculates as much as possible so render times are slim.
+     * Update the states rendering. Pre-calculates as much as possible so
+     * render times are slim.
      *
-     * @param chess - chess.js instance of the current state
-     * @param move - if a move occurs AFTER the current state, the result of that move, else null for no move.
+     * @param chess - Chess.js instance of the current state.
+     * @param move - If a move occurs AFTER the current state, the result of
+     * that move, else null for no move.
      */
     public update(
         chess: chessJs.ChessInstance,
@@ -196,7 +207,7 @@ export class ChessPieces {
             }
 
             // now there has to be a free sprite in the cache for us to use
-            const sprites = cache.pop() as IPieceSprites;
+            const sprites = cache.pop() as PieceSprites;
             this.pieceSpriteUsed[render.type][render.color].push(sprites);
 
             sprites.container.visible = true; // must be visible this whole timespan
@@ -211,7 +222,7 @@ export class ChessPieces {
     /**
      * Renders the current states given a time delta.
      *
-     * @param dt - The time delta, [0, 1)
+     * @param dt - The time delta, [0, 1).
      */
     public render(dt: number): void {
         for (const render of this.renders.values()) {
@@ -290,7 +301,7 @@ export class ChessPieces {
      * @param square - The chess square to get the render at.
      * @returns The render at that square. Throws if none.
      */
-    private getRenderUnsafe(square: string): IPieceRender {
+    private getRenderUnsafe(square: string): PieceRender {
         const render = this.renders.get(square as chessJs.Square);
         if (!render) {
             throw new Error(`No piece at ${square} to render to get!`);

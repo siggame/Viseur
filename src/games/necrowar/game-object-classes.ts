@@ -9,7 +9,7 @@ import { TowerJob } from "./tower-job";
 import { Unit } from "./unit";
 import { UnitJob } from "./unit-job";
 
-/** All the non Game classes in this game */
+/** All the non Game classes in this game. */
 export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
     {
         GameObject,

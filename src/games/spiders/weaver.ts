@@ -23,10 +23,10 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Weaver (dt = 0) */
+    /** The current state of the Weaver (dt = 0). */
     public current: WeaverState | undefined;
 
-    /** The next state of the Weaver (dt = 1) */
+    /** The next state of the Weaver (dt = 1). */
     public next: WeaverState | undefined;
 
     // <<-- Creer-Merge: variables -->>
@@ -34,11 +34,13 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Weaver with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Weaver with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Weaver.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: WeaverState, viseur: Viseur) {
         super(state, viseur);
@@ -49,15 +51,19 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Weaver instances.
+     * Called approx 60 times a second to update and render Weaver
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -90,7 +96,8 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -103,10 +110,13 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<WeaverState>,
@@ -126,36 +136,36 @@ export class Weaver extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Weaves more silk into an existing Web to strengthen it.
-     * @param web The web you want to strengthen. Must be connected to the Nest
-     * this Weaver is currently on.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param web - The web you want to strengthen. Must be connected to the
+     * Nest this Weaver is currently on.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the strengthen was
      * successfully started, false otherwise.
      */
     public strengthen(
         web: WebState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("strengthen", { web }, callback);
     }
 
     /**
      * Weaves more silk into an existing Web to strengthen it.
-     * @param web The web you want to weaken. Must be connected to the Nest this
-     * Weaver is currently on.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param web - The web you want to weaken. Must be connected to the Nest
+     * this Weaver is currently on.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the weaken was
      * successfully started, false otherwise.
      */
-    public weaken(
-        web: WebState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public weaken(web: WebState, callback: (returned: boolean) => void): void {
         this.runOnServer("weaken", { web }, callback);
     }
 

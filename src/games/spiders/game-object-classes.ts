@@ -12,7 +12,7 @@ import { Spitter } from "./spitter";
 import { Weaver } from "./weaver";
 import { Web } from "./web";
 
-/** All the non Game classes in this game */
+/** All the non Game classes in this game. */
 export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
     {
         GameObject,

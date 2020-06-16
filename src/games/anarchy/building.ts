@@ -31,14 +31,14 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Building (dt = 0) */
+    /** The current state of the Building (dt = 0). */
     public current: BuildingState | undefined;
 
-    /** The next state of the Building (dt = 1) */
+    /** The next state of the Building (dt = 1). */
     public next: BuildingState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** the beam color name to use for beams */
+    /** The beam color name to use for beams. */
     protected get beamColorName(): number {
         return 0xffffff;
     }
@@ -46,47 +46,49 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * The "alive" building will have a top and bottom sprite, which we can
      * put in this container and threat them as one "object" for the
-     * purposes for hiding and showing
+     * purposes for hiding and showing.
      */
     private readonly aliveContainer = new PIXI.Container();
 
-    /** The owner of this building */
+    /** The owner of this building. */
     private readonly ownerID: string;
 
-    /** The front of the building (colored according to owner) */
+    /** The front of the building (colored according to owner). */
     private readonly buildingSpriteFront: PIXI.Sprite;
 
-    /** The sprite we display when we are dead */
+    /** The sprite we display when we are dead. */
     private readonly deadSprite: PIXI.Sprite;
 
-    /** The bar that displays our health */
+    /** The bar that displays our health. */
     private readonly healthBar: GameBar;
 
-    /** The graphic used when we are targeted by an enemy */
+    /** The graphic used when we are targeted by an enemy. */
     private readonly targetedSprite: PIXI.Sprite;
 
-    /** Sprite we use when we are beaming some other building */
+    /** Sprite we use when we are beaming some other building. */
     private readonly beamSprite: PIXI.Sprite | undefined;
 
-    /** All the sprites from the fire spreadsheet to animate fire */
+    /** All the sprites from the fire spreadsheet to animate fire. */
     private readonly fireSprites: PIXI.Sprite[] = [];
 
-    /** Random X number used to animate fire */
+    /** Random X number used to animate fire. */
     private readonly randomX =
         this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
-    /** Random Y number used to animate fire */
+    /** Random Y number used to animate fire. */
     private readonly randomY =
         this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Building with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Building with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Building.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: BuildingState, viseur: Viseur) {
         super(state, viseur);
@@ -167,15 +169,19 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Building instances.
+     * Called approx 60 times a second to update and render Building
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -284,7 +290,8 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -297,10 +304,13 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<BuildingState>,

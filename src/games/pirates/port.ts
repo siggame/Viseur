@@ -23,10 +23,10 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Port (dt = 0) */
+    /** The current state of the Port (dt = 0). */
     public current: PortState | undefined;
 
-    /** The next state of the Port (dt = 1) */
+    /** The next state of the Port (dt = 1). */
     public next: PortState | undefined;
 
     // <<-- Creer-Merge: variables -->>
@@ -46,11 +46,13 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Port with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Port with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Port.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: PortState, viseur: Viseur) {
         super(state, viseur);
@@ -78,15 +80,19 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Port instances.
+     * Called approx 60 times a second to update and render Port
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -151,7 +157,8 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -164,10 +171,13 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<PortState>,
@@ -187,19 +197,21 @@ export class Port extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Spawn a Unit on this port.
-     * @param type What type of Unit to create ('crew' or 'ship').
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param type - What type of Unit to create ('crew' or 'ship').
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if Unit was created
      * successfully, false otherwise.
      */
     public spawn(
         type: "crew" | "ship",
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("spawn", { type }, callback);
     }

@@ -27,25 +27,27 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the PoliceDepartment (dt = 0) */
+    /** The current state of the PoliceDepartment (dt = 0). */
     public current: PoliceDepartmentState | undefined;
 
-    /** The next state of the PoliceDepartment (dt = 1) */
+    /** The next state of the PoliceDepartment (dt = 1). */
     public next: PoliceDepartmentState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** the beam color name to use for beams */
+    /** The beam color name to use for beams. */
     protected get beamColorName(): number {
         return 0x222222;
     }
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the PoliceDepartment with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the PoliceDepartment with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this PoliceDepartment.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: PoliceDepartmentState, viseur: Viseur) {
         super(state, viseur);
@@ -56,15 +58,19 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render PoliceDepartment instances.
+     * Called approx 60 times a second to update and render PoliceDepartment
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -97,7 +103,8 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -110,10 +117,13 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<PoliceDepartmentState>,
@@ -133,20 +143,22 @@ export class PoliceDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Bribe the police to raid a Warehouse, dealing damage equal based on the
      * Warehouse's current exposure, and then resetting it to 0.
-     * @param warehouse The warehouse you want to raid.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param warehouse - The warehouse you want to raid.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is The amount of damage dealt to
      * the warehouse, or -1 if there was an error.
      */
     public raid(
         warehouse: WarehouseState,
-        callback?: (returned: number) => void,
+        callback: (returned: number) => void,
     ): void {
         this.runOnServer("raid", { warehouse }, callback);
     }

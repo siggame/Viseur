@@ -22,32 +22,34 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Bottle (dt = 0) */
+    /** The current state of the Bottle (dt = 0). */
     public current: BottleState | undefined;
 
-    /** The next state of the Bottle (dt = 1) */
+    /** The next state of the Bottle (dt = 1). */
     public next: BottleState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
-    /** The bottle's display as a sprite */
+    /** The bottle's display as a sprite. */
     private readonly sprite = this.addSprite.bottle({
         anchor: 0.5,
         position: { x: 0.5, y: 0.5 },
         relativeScale: 0.75,
     });
 
-    /** The last DT so pausing doesn't cause us to jump in time */
+    /** The last DT so pausing doesn't cause us to jump in time. */
     private lastDT = 0;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Bottle with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Bottle with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Bottle.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: BottleState, viseur: Viseur) {
         super(state, viseur);
@@ -57,15 +59,19 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Bottle instances.
+     * Called approx 60 times a second to update and render Bottle
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -127,7 +133,8 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -140,10 +147,13 @@ export class Bottle extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<BottleState>,

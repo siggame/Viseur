@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-types, @typescript-eslint/no-empty-interface */
+
 // These are the interfaces for all the states in this game
 <%include file="functions.noCreer" />import {
     BaseGame,

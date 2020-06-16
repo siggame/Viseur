@@ -19,7 +19,7 @@ for (const key of requireGameResource.keys()) {
 }
 
 const games: { [gameName: string]: BaseGameNamespace | undefined } = {};
-const req = require.context("./", true, /\.\/([^\/]+)\/index.ts/); // match ./*/index.ts, but only 1 directory.
+const req = require.context("./", true, /\.\/([^/]+)\/index.ts/); // match ./*/index.ts, but only 1 directory.
 
 for (const key of req.keys()) {
     const required = req(key) as IGameExport;
@@ -35,5 +35,5 @@ for (const key of req.keys()) {
     }
 }
 
-/** All the game namespaces that can be loaded by this instance */
+/** All the game namespaces that can be loaded by this instance. */
 export const GAMES = Object.freeze(games);

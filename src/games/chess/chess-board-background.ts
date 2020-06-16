@@ -11,25 +11,31 @@ export const ASCII_A = "a".charCodeAt(0);
 /** The margin around the board. */
 export const BOARD_MARGIN = 0.5;
 
-/** The length of the board, 8x8 */
+/** The length of the board, 8x8. */
 export const BOARD_LENGTH = 8; // 8x8 tiles for standard chess board
 
-/** // margin on each side, plus the 8 chess tiles */
+/** The margin on each side, plus the 8 chess tiles. */
 export const BOARD_LENGTH_WITH_MARGINS = BOARD_MARGIN * 2 + BOARD_LENGTH;
 
+/**
+ * Converts an number 0-8 -> a-h.
+ *
+ * @param x - The number to convert.
+ * @returns The number as string a-h.
+ */
 function xToChar(x: number): string {
     return String.fromCharCode(ASCII_A + x);
 }
 
 /** Manager class that maintains state about the chess board background. */
 export class ChessBoardBackground {
-    /** The events this board emits */
+    /** The events this board emits. */
     public readonly events = events({
         /** Emitted when a tile is clicked. The square clicked is emitted. */
         tileClicked: new Event<Square>(),
     });
 
-    /** The container for the board itself */
+    /** The container for the board itself. */
     public readonly boardContainer = new PIXI.Container();
 
     /** The random color used to make each board a little unique. */
@@ -39,13 +45,13 @@ export class ChessBoardBackground {
         40,
     ).whiten(1.5);
 
-    /** The complimentary color for this random color */
+    /** The complimentary color for this random color. */
     public readonly randomColorCompliment = this.randomColor.rotate(180);
 
     /** The color of the rank/file text. */
     private readonly textColor = Color.rgb(222, 222, 222);
 
-    /** The background color overlay */
+    /** The background color overlay. */
     private readonly backgroundGraphics = new PIXI.Graphics();
 
     // private readonly tileBorderLength = 0.9;
@@ -152,7 +158,7 @@ export class ChessBoardBackground {
         this.recolor();
     }
 
-    /** Recolors the board based on settings */
+    /** Recolors the board based on settings. */
     public recolor(): void {
         const colorSetting = this.game.settings.boardColor.get();
 
@@ -196,9 +202,9 @@ export class ChessBoardBackground {
     }
 
     /**
-     * This is setup above to be called when the `flip-board` setting is changed
+     * This is setup above to be called when the `flip-board` setting is changed.
      *
-     * @param flipped - To render the background as flipped or not
+     * @param flipped - To render the background as flipped or not.
      */
     private flipBackground(flipped: boolean): void {
         // this._unselect();

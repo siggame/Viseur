@@ -13,7 +13,7 @@ export const GameSettings = {
         id: "flip-board",
     }),
 
-    /** Setting for human player pawn promotion type */
+    /** Setting for human player pawn promotion type. */
     pawnPromotion: new Settings.DropDownSetting<"q" | "n" | "r" | "b">({
         id: "pawn-promotion",
         label: "Pawn Promotion",
@@ -28,7 +28,7 @@ export const GameSettings = {
         default: "q",
     }),
 
-    /** Setting to control contrast between black squares */
+    /** Setting to control contrast between black squares. */
     blackSquareContrast: new Settings.SliderSetting({
         id: "black-square-contrast",
         label: "Black Square Contrast",
@@ -38,7 +38,7 @@ export const GameSettings = {
         max: 1,
     }),
 
-    /** Setting to control contrast between white squares */
+    /** Setting to control contrast between white squares. */
     whiteSquareContrast: new Settings.SliderSetting({
         id: "white-square-contrast",
         label: "White Square Contrast",
@@ -48,7 +48,10 @@ export const GameSettings = {
         max: 1,
     }),
 
-    /** Setting to manually control the board color. Black is treated as disabled */
+    /**
+     * Setting to manually control the board color.
+     * Black is treated as disabled.
+     */
     boardColor: new Settings.ColorSetting({
         id: "board-color",
         label: "Board Color",

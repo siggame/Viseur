@@ -8,7 +8,7 @@ import { Player } from "./player";
 import { Tile } from "./tile";
 import { Unit } from "./unit";
 
-/** All the non Game classes in this game */
+/** All the non Game classes in this game. */
 export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
     {
         GameObject,

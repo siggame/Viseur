@@ -30,36 +30,38 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Unit (dt = 0) */
+    /** The current state of the Unit (dt = 0). */
     public current: UnitState | undefined;
 
-    /** The next state of the Unit (dt = 1) */
+    /** The next state of the Unit (dt = 1). */
     public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
-    /** TODO: document */
+    /** The owner's ID. */
     public ownerID: string;
 
-    /** TODO: document */
+    /** The sprite of the job. */
     public jobSprite: PIXI.Sprite;
 
-    /** TODO: document */
+    /** The health bar. */
     public healthBar: GameBar;
 
-    /** TODO: document */
+    /** The shield sprite. */
     public shield: PIXI.Sprite;
 
-    /** TODO: document */
+    /** The offset for rotation. */
     public readonly rotationOffset: number = Math.asin(1);
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Unit with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Unit with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Unit.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
@@ -130,15 +132,19 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Unit instances.
+     * Called approx 60 times a second to update and render Unit
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -195,7 +201,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -208,10 +215,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<UnitState>,
@@ -238,65 +248,67 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks the specified unit.
-     * @param enemy The Unit being attacked.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param enemy - The Unit being attacked.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
     public attack(
         enemy: UnitState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", { enemy }, callback);
     }
 
     /**
      * Causes the unit to dash towards the designated destination.
-     * @param x The x value of the destination's coordinates.
-     * @param y The y value of the destination's coordinates.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param x - The x value of the destination's coordinates.
+     * @param y - The y value of the destination's coordinates.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
     public dash(
         x: number,
         y: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("dash", { x, y }, callback);
     }
 
     /**
      * Allows a miner to mine a asteroid.
-     * @param body The object to be mined.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param body - The object to be mined.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully acted,
      * false otherwise.
      */
-    public mine(
-        body: BodyState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public mine(body: BodyState, callback: (returned: boolean) => void): void {
         this.runOnServer("mine", { body }, callback);
     }
 
     /**
      * Moves this Unit from its current location to the new location specified.
-     * @param x The x value of the destination's coordinates.
-     * @param y The y value of the destination's coordinates.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param x - The x value of the destination's coordinates.
+     * @param y - The y value of the destination's coordinates.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
     public move(
         x: number,
         y: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("move", { x, y }, callback);
     }
@@ -304,42 +316,45 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Tells you if your ship can move to that location from were it is without
      * clipping the sun.
-     * @param x The x position of the location you wish to arrive.
-     * @param y The y position of the location you wish to arrive.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param x - The x position of the location you wish to arrive.
+     * @param y - The y position of the location you wish to arrive.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if pathable by this unit,
      * false otherwise.
      */
     public safe(
         x: number,
         y: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("safe", { x, y }, callback);
     }
 
     /**
      * Attacks the specified projectile.
-     * @param missile The projectile being shot down.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param missile - The projectile being shot down.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
     public shootdown(
         missile: ProjectileState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("shootdown", { missile }, callback);
     }
 
     /**
      * Grab materials from a friendly unit. Doesn't use a action.
-     * @param unit The unit you are grabbing the resources from.
-     * @param amount The amount of materials to you with to grab. Amounts <= 0
+     *
+     * @param unit - The unit you are grabbing the resources from.
+     * @param amount - The amount of materials to you with to grab. Amounts <= 0
      * will pick up all the materials that the unit can.
-     * @param material The material the unit will pick up. 'genarium', 'rarium',
-     * 'legendarium', or 'mythicite'.
-     * @param callback? The callback that eventually returns the return value
+     * @param material - The material the unit will pick up. 'genarium',
+     * 'rarium', 'legendarium', or 'mythicite'.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully taken,
      * false otherwise.
      */
@@ -347,7 +362,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         unit: UnitState,
         amount: number,
         material: "genarium" | "rarium" | "legendarium" | "mythicite",
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("transfer", { unit, amount, material }, callback);
     }

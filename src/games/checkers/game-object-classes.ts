@@ -5,7 +5,7 @@ import { Checker } from "./checker";
 import { GameObject } from "./game-object";
 import { Player } from "./player";
 
-/** All the non Game classes in this game */
+/** All the non Game classes in this game. */
 export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
     {
         GameObject,

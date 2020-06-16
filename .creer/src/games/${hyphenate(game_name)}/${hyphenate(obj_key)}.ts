@@ -67,33 +67,39 @@ ${merge("    // ", "static-functions", "    // you can add static functions here
     /** The static name of this game. */
     public static readonly gameName = "${obj['name']}";
 
-    /** The number of players in this game. the players array should be this same size */
+    /**
+     * The number of players in this game.
+     * The players array should be this same size.
+     */
     public static readonly numberOfPlayers = ${obj['numberOfPlayers']};
 
 % elif obj_key == 'GameObject':
-    /** The instance of the game this game object is a part of */
+    /** The instance of the game this game object is a part of. */
     public readonly game!: Game;
 
-    /** The factory that will build sprites for this game object */
+    /** The factory that will build sprites for this game object. */
     public readonly addSprite!:
         | ResourcesForGameObject${'<'}Game["resources"]>
         | undefined;
 
 % endif
-    /** The current state of the ${obj_key} (dt = 0) */
+    /** The current state of the ${obj_key} (dt = 0). */
     public current: ${obj_key}State | undefined;
 
-    /** The next state of the ${obj_key} (dt = 1) */
+    /** The next state of the ${obj_key} (dt = 1). */
     public next: ${obj_key}State | undefined;
 % if obj_key == 'Game':
 
-    /** The resource factories that can create sprites for this game */
+    /** The resource factories that can create sprites for this game. */
     public readonly resources = GameResources;
 
-    /** The human player playing this game */
+    /** The human player playing this game. */
     public readonly humanPlayer: HumanPlayer | undefined;
 
-    /** The default player colors for this game, there must be one for each player */<%
+    /**
+     * The default player colors for this game,
+     * there must be one for each player.
+     */<%
     lines = []
     for i in range(game['numberOfPlayers']):
         lines.append("        this.defaultPlayerColors[{0}], // Player {0}".format(i))
@@ -102,21 +108,24 @@ ${merge("    // ", "static-functions", "    // you can add static functions here
 ${merge("        // ", "default-player-colors", "\n".join(lines), help=False)}
     ];
 
-    /** The custom settings for this game */
+    /** The custom settings for this game. */
     public readonly settings = this.createSettings(GameSettings);
 
-    /** The layers in the game */
+    /** The layers in the game. */
     public readonly layers = this.createLayers({
 ${merge("        // ", "layers",
-"""        /** Bottom most layer, for background elements */
+"""        /** Bottom most layer, for background elements. */
         background: this.createLayer(),
-        /** Middle layer, for moving game objects */
+        /** Middle layer, for moving game objects. */
         game: this.createLayer(),
-        /** Top layer, for UI elements above the game */
+        /** Top layer, for UI elements above the game. */
         ui: this.createLayer(),""", help=False)}
     });
 
-    /** Mapping of the class names to their class for all sub game object classes */
+    /**
+     * Mapping of the class names to their class for all
+     * sub game object classes.
+     */
     public readonly gameObjectClasses = GameObjectClasses;
 % endif
 
@@ -126,7 +135,8 @@ ${merge("    // ", "variables", "    // You can add additional member variables 
 ${merge("    // ", "public-functions", "    // You can add additional public functions here", help=False)}
 
     /**
-     * Invoked when the first game state is ready to setup the size of the renderer.
+     * Invoked when the first game state is ready to setup the size of the
+     * renderer.
      *
      * @param state - The initialize state of the game.
      * @returns The {height, width} you for the game's size.
@@ -140,7 +150,8 @@ ${merge("            // ", "get-size", """            width: 10, // Change these
 
     /**
      * Called when Viseur is ready and wants to start rendering the game.
-     * This is where you should initialize your state variables that rely on game data.
+     * This is where you should initialize your state variables that rely on
+     * game data.
      *
      * @param state - The initialize state of the game.
      */
@@ -151,7 +162,8 @@ ${merge("        // ", "start", "        // Initialize your variables here", hel
     }
 
     /**
-     * Initializes the background. It is drawn once automatically after this step.
+     * Initializes the background. It is drawn once automatically after this
+     * step.
      *
      * @param state - The initial state to use the render the background.
      */
@@ -184,11 +196,15 @@ ${merge("        // ", "create-background", """        // Initialize your backgr
      * Called approx 60 times a second to update and render the background.
      * Leave empty if the background is static.
      *
-     * @param dt - A floating point number [0, 1) which represents how far into the next turn to render at.
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param dt - A floating point number [0, 1) which represents how far
+     * into the next turn to render at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     protected renderBackground(
         dt: number,
@@ -205,10 +221,13 @@ ${merge("        // ", "render-background", "        // update and re-render wha
     /**
      * Invoked when the game state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     protected stateUpdated(
         current: Immutable<GameState>,
@@ -222,11 +241,13 @@ ${merge("        // ", "state-updated", "        // update the Game based on its
     }
 % else:
     /**
-     * Constructor for the ${obj_key} with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the ${obj_key} with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this ${obj_key}.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: ${obj_key}State, viseur: Viseur) {
         super(state, viseur);
@@ -235,15 +256,19 @@ ${merge("        // ", "constructor", "        // You can initialize your new {}
     }
 
     /**
-     * Called approx 60 times a second to update and render ${obj_key} instances.
+     * Called approx 60 times a second to update and render ${obj_key}
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -272,7 +297,8 @@ ${merge("        // ", "recolor", "        // replace with code to recolor sprit
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -283,10 +309,13 @@ ${merge("        // ", "hide-render", "        // hide anything outside of `this
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<${obj_key}State>,
@@ -303,8 +332,9 @@ ${merge("    // ", "public-functions", "    // You can add additional public fun
 
 % if len(obj['function_names']) > 0:
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
 % for function_name in obj['function_names']:
 <%
@@ -320,7 +350,7 @@ if function_parms['returns']:
     returnless.pop('returns', None)
 
 returnless['arguments'].append({
-    'name': 'callback?',
+    'name': 'callback',
     'type': {
         'name': '(returned: ' + return_type + ') => void',
         'is_game_object': False,

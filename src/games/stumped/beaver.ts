@@ -29,49 +29,51 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Beaver (dt = 0) */
+    /** The current state of the Beaver (dt = 0). */
     public current: BeaverState | undefined;
 
-    /** The next state of the Beaver (dt = 1) */
+    /** The next state of the Beaver (dt = 1). */
     public next: BeaverState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
-    /** The owning player */
+    /** The owning player. */
     private readonly ownerID: string;
 
-    /** The beaver this is attacking, if any */
+    /** The beaver this is attacking, if any. */
     private attacking?: Beaver;
 
-    /** The spawner this is harvesting, if any */
+    /** The spawner this is harvesting, if any. */
     private harvesting?: Spawner;
 
-    /** The tail part of our sprite stack */
+    /** The tail part of our sprite stack. */
     private readonly tailSprite: PIXI.Sprite;
 
-    /** Sprite indicating that we are attacking something */
+    /** Sprite indicating that we are attacking something. */
     private readonly attackingSprite: PIXI.Sprite;
 
-    /** Sprite indicating that we are getting branches */
+    /** Sprite indicating that we are getting branches. */
     private readonly gettingBranchSprite: PIXI.Sprite;
 
-    /** Sprite indicating that we are getting food */
+    /** Sprite indicating that we are getting food. */
     private readonly gettingFoodSprite: PIXI.Sprite;
 
-    /** Sprite indicating that we are distracted */
+    /** Sprite indicating that we are distracted. */
     private readonly distractedSprite: PIXI.Sprite;
 
-    /** The bar that displays our health */
+    /** The bar that displays our health. */
     private readonly healthBar: GameBar;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Beaver with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Beaver with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Beaver.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: BeaverState, viseur: Viseur) {
         super(state, viseur);
@@ -110,15 +112,19 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Beaver instances.
+     * Called approx 60 times a second to update and render Beaver
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -219,7 +225,8 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -232,10 +239,13 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<BeaverState>,
@@ -279,41 +289,45 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks another adjacent beaver.
-     * @param beaver The Beaver to attack. Must be on an adjacent Tile.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param beaver - The Beaver to attack. Must be on an adjacent Tile.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
     public attack(
         beaver: BeaverState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", { beaver }, callback);
     }
 
     /**
      * Builds a lodge on the Beavers current Tile.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully built a
      * lodge, false otherwise.
      */
-    public buildLodge(callback?: (returned: boolean) => void): void {
+    public buildLodge(callback: (returned: boolean) => void): void {
         this.runOnServer("buildLodge", {}, callback);
     }
 
     /**
      * Drops some of the given resource on the beaver's Tile.
-     * @param tile The Tile to drop branches/food on. Must be the same Tile that
-     * the Beaver is on, or an adjacent one.
-     * @param resource The type of resource to drop ('branches' or 'food').
-     * @param amount The amount of the resource to drop, numbers <= 0 will drop
-     * all the resource type.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile to drop branches/food on. Must be the same Tile
+     * that the Beaver is on, or an adjacent one.
+     * @param resource - The type of resource to drop ('branches' or 'food').
+     * @param amount - The amount of the resource to drop, numbers <= 0 will
+     * drop all the resource type.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully dropped the
      * resource, false otherwise.
      */
@@ -321,48 +335,48 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         resource: "branches" | "food",
         amount: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("drop", { tile, resource, amount }, callback);
     }
 
     /**
      * Harvests the branches or food from a Spawner on an adjacent Tile.
-     * @param spawner The Spawner you want to harvest. Must be on an adjacent
+     *
+     * @param spawner - The Spawner you want to harvest. Must be on an adjacent
      * Tile.
-     * @param callback? The callback that eventually returns the return value
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully harvested,
      * false otherwise.
      */
     public harvest(
         spawner: SpawnerState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("harvest", { spawner }, callback);
     }
 
     /**
      * Moves this Beaver from its current Tile to an adjacent Tile.
-     * @param tile The Tile this Beaver should move to.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile this Beaver should move to.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the move worked, false
      * otherwise.
      */
-    public move(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(tile: TileState, callback: (returned: boolean) => void): void {
         this.runOnServer("move", { tile }, callback);
     }
 
     /**
      * Picks up some branches or food on the beaver's tile.
-     * @param tile The Tile to pickup branches/food from. Must be the same Tile
-     * that the Beaver is on, or an adjacent one.
-     * @param resource The type of resource to pickup ('branches' or 'food').
-     * @param amount The amount of the resource to drop, numbers <= 0 will
+     *
+     * @param tile - The Tile to pickup branches/food from. Must be the same
+     * Tile that the Beaver is on, or an adjacent one.
+     * @param resource - The type of resource to pickup ('branches' or 'food').
+     * @param amount - The amount of the resource to drop, numbers <= 0 will
      * pickup all of the resource type.
-     * @param callback? The callback that eventually returns the return value
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully picked up a
      * resource, false otherwise.
      */
@@ -370,7 +384,7 @@ export class Beaver extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         resource: "branches" | "food",
         amount: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("pickup", { tile, resource, amount }, callback);
     }

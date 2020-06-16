@@ -30,17 +30,17 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Unit (dt = 0) */
+    /** The current state of the Unit (dt = 0). */
     public current: UnitState | undefined;
 
-    /** The next state of the Unit (dt = 1) */
+    /** The next state of the Unit (dt = 1). */
     public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** The id of the owner of the unit */
+    /** The id of the owner of the unit. */
     public ownerID?: string;
 
-    /** Our job */
+    /** Our job. */
     public job: JobState["title"];
 
     // Base sprite of the unit
@@ -68,30 +68,32 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public attackingTile?: TileState;
     /** The tile we are harvesting from, if we are. */
     public harvestTile?: TileState;
-    /** the job we changed to, if we did. */
+    /** The job we changed to, if we did. */
     public jobChanged?: JobState["title"];
     /** The id of the player we are changing to, if we are. */
     public playerChange?: string;
     /** The direction we are facing. */
     public facing: "left" | "right";
 
-    /** "Drop shadow" sprite */
+    /** Drop shadow" sprite. */
     public dropShadow: PIXI.Sprite;
 
     /** The maximum amount of energy we can have. */
     public maxEnergy: number;
 
-    /** The bar that display's this unit's health */
+    /** The bar that display's this unit's health. */
     private readonly healthBar: GameBar;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Unit with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Unit with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Unit.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
@@ -141,15 +143,19 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Unit instances.
+     * Called approx 60 times a second to update and render Unit
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -309,7 +315,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -322,10 +329,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<UnitState>,
@@ -409,67 +419,72 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks an adjacent Tile. Costs an action for each Unit in this Unit's
      * squad. Units in the squad without an action don't participate in combat.
      * Units in combat cannot move afterwards. Attacking structures will not
      * give materials.
-     * @param tile The Tile to attack.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile to attack.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
     public attack(
         tile: TileState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", { tile }, callback);
     }
 
     /**
      * Changes this Unit's Job. Must be at max energy (100) to change Jobs.
-     * @param job The name of the Job to change to.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param job - The name of the Job to change to.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully changed
      * Jobs, false otherwise.
      */
     public changeJob(
         job: "soldier" | "gatherer" | "builder" | "missionary",
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("changeJob", { job }, callback);
     }
 
     /**
      * Constructs a Structure on an adjacent Tile.
-     * @param tile The Tile to construct the Structure on. It must have enough
+     *
+     * @param tile - The Tile to construct the Structure on. It must have enough
      * materials on it for a Structure to be constructed.
-     * @param type The type of Structure to construct on that Tile.
-     * @param callback? The callback that eventually returns the return value
+     * @param type - The type of Structure to construct on that Tile.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully constructed
      * a structure, false otherwise.
      */
     public construct(
         tile: TileState,
         type: "neutral" | "shelter" | "monument" | "wall" | "road",
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("construct", { tile, type }, callback);
     }
 
     /**
      * Converts an adjacent Unit to your side.
-     * @param tile The Tile with the Unit to convert.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile with the Unit to convert.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully converted,
      * false otherwise.
      */
     public convert(
         tile: TileState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("convert", { tile }, callback);
     }
@@ -477,14 +492,15 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Removes materials from an adjacent Tile's Structure. You cannot
      * deconstruct friendly structures (see `Unit.attack`).
-     * @param tile The Tile to deconstruct. It must have a Structure on it.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile to deconstruct. It must have a Structure on it.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully
      * deconstructed, false otherwise.
      */
     public deconstruct(
         tile: TileState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("deconstruct", { tile }, callback);
     }
@@ -492,11 +508,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Drops some of the given resource on or adjacent to the Unit's Tile. Does
      * not count as an action.
-     * @param tile The Tile to drop materials/food on.
-     * @param resource The type of resource to drop ('materials' or 'food').
-     * @param amount The amount of the resource to drop. Amounts <= 0 will drop
-     * as much as possible.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile to drop materials/food on.
+     * @param resource - The type of resource to drop ('materials' or 'food').
+     * @param amount - The amount of the resource to drop. Amounts <= 0 will
+     * drop as much as possible.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully dropped the
      * resource, false otherwise.
      */
@@ -504,47 +521,47 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         resource: "materials" | "food",
         amount: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("drop", { tile, resource, amount }, callback);
     }
 
     /**
      * Harvests the food on an adjacent Tile.
-     * @param tile The Tile you want to harvest.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile you want to harvest.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully harvested,
      * false otherwise.
      */
     public harvest(
         tile: TileState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("harvest", { tile }, callback);
     }
 
     /**
      * Moves this Unit from its current Tile to an adjacent Tile.
-     * @param tile The Tile this Unit should move to.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile this Unit should move to.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(tile: TileState, callback: (returned: boolean) => void): void {
         this.runOnServer("move", { tile }, callback);
     }
 
     /**
      * Picks up some materials or food on or adjacent to the Unit's Tile. Does
      * not count as an action.
-     * @param tile The Tile to pickup materials/food from.
-     * @param resource The type of resource to pickup ('materials' or 'food').
-     * @param amount The amount of the resource to pickup. Amounts <= 0 will
+     *
+     * @param tile - The Tile to pickup materials/food from.
+     * @param resource - The type of resource to pickup ('materials' or 'food').
+     * @param amount - The amount of the resource to pickup. Amounts <= 0 will
      * pickup as much as possible.
-     * @param callback? The callback that eventually returns the return value
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully picked up a
      * resource, false otherwise.
      */
@@ -552,7 +569,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         tile: TileState,
         resource: "materials" | "food",
         amount: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("pickup", { tile, resource, amount }, callback);
     }
@@ -560,11 +577,12 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Regenerates energy. Must be in range of a friendly shelter to rest. Costs
      * an action. Units cannot move after resting.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully rested,
      * false otherwise.
      */
-    public rest(callback?: (returned: boolean) => void): void {
+    public rest(callback: (returned: boolean) => void): void {
         this.runOnServer("rest", {}, callback);
     }
 

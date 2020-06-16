@@ -27,51 +27,53 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Unit (dt = 0) */
+    /** The current state of the Unit (dt = 0). */
     public current: UnitState | undefined;
 
-    /** The next state of the Unit (dt = 1) */
+    /** The next state of the Unit (dt = 1). */
     public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** abomination */
+    /** If abomination sprite. */
     public readonly abomination: PIXI.Sprite | undefined;
-    /** dog */
+    /** If dog sprite. */
     public readonly dog: PIXI.Sprite | undefined;
-    /** ghoul */
+    /** If ghoul sprite. */
     public readonly ghoul: PIXI.Sprite | undefined;
-    /** horde */
+    /** If horde sprite. */
     public readonly horde: PIXI.Sprite | undefined;
-    /** horseman */
+    /** If horseman sprite. */
     public readonly horseman: PIXI.Sprite | undefined;
-    /** necromancer */
+    /** If necromancer sprite. */
     public readonly necromancer: PIXI.Sprite | undefined;
-    /** skeleton */
+    /** If skeleton sprite. */
     public readonly skeleton: PIXI.Sprite | undefined;
-    /** worker */
+    /** If worker sprite. */
     public readonly worker: PIXI.Sprite | undefined;
-    /** wraith */
+    /** If wraith sprite. */
     public readonly wraith: PIXI.Sprite | undefined;
-    /** zombie */
+    /** If zombie sprite. */
     public readonly zombie: PIXI.Sprite | undefined;
-    /** jobSprite for recoloring */
+    /** The jobSprite for recoloring. */
     public readonly jobSprite: PIXI.Sprite;
-    /** The id of the owner of this unit, for recoloring */
+    /** The id of the owner of this unit, for recoloring. */
     public ownerID: string;
 
     /** The tile state of the tile we are attacking, if we are. */
     public attackingTile?: TileState;
 
-    /** Our health bar */
+    /** Our health bar. */
     public readonly healthBar: GameBar;
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Unit with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Unit with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Unit.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
@@ -120,15 +122,19 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Unit instances.
+     * Called approx 60 times a second to update and render Unit
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -185,7 +191,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -198,10 +205,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<UnitState>,
@@ -238,19 +248,21 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks an enemy tower on an adjacent tile.
-     * @param tile The Tile to attack.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile to attack.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
     public attack(
         tile: TileState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("attack", { tile }, callback);
     }
@@ -258,54 +270,49 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Unit, if it is a worker, builds a tower on the tile it is on, only
      * workers can do this.
-     * @param title The tower type to build, as a string.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param title - The tower type to build, as a string.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully built,
      * false otherwise.
      */
-    public build(title: string, callback?: (returned: boolean) => void): void {
+    public build(title: string, callback: (returned: boolean) => void): void {
         this.runOnServer("build", { title }, callback);
     }
 
     /**
      * Stops adjacent to a river tile and begins fishing for mana.
-     * @param tile The tile the unit will stand on as it fishes.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The tile the unit will stand on as it fishes.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully began
      * fishing for mana, false otherwise.
      */
-    public fish(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public fish(tile: TileState, callback: (returned: boolean) => void): void {
         this.runOnServer("fish", { tile }, callback);
     }
 
     /**
      * Enters a mine and is put to work gathering resources.
-     * @param tile The tile the mine is located on.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The tile the mine is located on.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully entered
      * mine and began mining, false otherwise.
      */
-    public mine(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public mine(tile: TileState, callback: (returned: boolean) => void): void {
         this.runOnServer("mine", { tile }, callback);
     }
 
     /**
      * Moves this Unit from its current Tile to an adjacent Tile.
-     * @param tile The Tile this Unit should move to.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile this Unit should move to.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(tile: TileState, callback: (returned: boolean) => void): void {
         this.runOnServer("move", { tile }, callback);
     }
 

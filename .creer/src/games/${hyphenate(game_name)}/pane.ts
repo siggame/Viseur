@@ -8,7 +8,7 @@ ${merge("// ", "imports", "// Add additional imports you need here", help=False)
 
 /**
  * The visual pane that is displayed below the game and has text elements for
- * each player
+ * each player.
  */
 export class Pane extends BasePane<GameState, PlayerState> {
 ${merge("    // ", "variables", "    // if you need add more member class variables, do so here", help=False)}
@@ -51,8 +51,9 @@ ${merge("        // ", "get-player-scores", "        return undefined; // change
      * Gets the stats to show on the top bar of the pane,
      * which tracks stats in the game.
      * This is only called once, during initialization.
-     * @param state the initial state of the game
-     * @returns All the PaneStats to display on this BasePane for the game.
+     *
+     * @param state - The initial state of the game.
+     * @returns - All the PaneStats to display on this BasePane for the game.
      */
     protected getGameStats(
         state: Immutable<GameState>,
@@ -65,8 +66,10 @@ ${merge("        // ", "game-stats", "        // add stats for games to show up 
     }
 
     /**
-     * Gets the stats to show on each player pane, which tracks stats for that player
-     * @param state the initial state of the game
+     * Gets the stats to show on each player pane,
+     * which tracks stats for that player.
+     *
+     * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the player.
      */
     protected getPlayerStats(

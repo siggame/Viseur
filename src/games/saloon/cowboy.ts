@@ -32,70 +32,72 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Cowboy (dt = 0) */
+    /** The current state of the Cowboy (dt = 0). */
     public current: CowboyState | undefined;
 
-    /** The next state of the Cowboy (dt = 1) */
+    /** The next state of the Cowboy (dt = 1). */
     public next: CowboyState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
-    /** This cowboy's job */
+    /** This cowboy's job. */
     private readonly job: string;
 
-    /** The id of the player that owns this cowboy */
+    /** The id of the player that owns this cowboy. */
     private readonly ownerID: string;
 
-    /** The bar that display's this cowboy's health */
+    /** The bar that display's this cowboy's health. */
     private readonly healthBar: GameBar;
 
-    /** The bottom (non-colored) part of the cowboy */
+    /** The bottom (non-colored) part of the cowboy. */
     private readonly spriteBottom: PIXI.Sprite;
 
-    /** The top (colored) part of the cowboy */
+    /** The top (colored) part of the cowboy. */
     private readonly spriteTop: PIXI.Sprite;
 
-    /** The sprite that displays when we are hit */
+    /** The sprite that displays when we are hit. */
     private readonly hitSprite: PIXI.Sprite;
 
-    /** True when we are being rendered playing a piano */
+    /** True when we are being rendered playing a piano. */
     private playingPianoAt?: Point;
 
     // -- Sharpshooter Specific Variables -- \\
-    /** If the shot is visible */
-    private shotVisible: boolean = false;
+    /** If the shot is visible. */
+    private shotVisible = false;
 
-    /** The sprites that are used to generate the shot bullet trail */
+    /** The sprites that are used to generate the shot bullet trail. */
     private readonly shotSprites = new Array<PIXI.Sprite>();
 
-    /** Faded colors used to show sharpshooter's focus */
+    /** Faded colors used to show sharpshooter's focus. */
     private readonly focusTiles = new Array<{
-        /** The sprite used to show focus */
+        /** The sprite used to show focus. */
         sprite: PIXI.Sprite;
 
         /** If we are fading in or out. */
         fade?: "in" | "out";
     }>();
 
-    /** Focus sprites that are free to re-use */
+    /** Focus sprites that are free to re-use. */
     private readonly freeFocusSprites = new Array<PIXI.Sprite>();
 
-    /** All the focus sprites, even ones that are used */
+    /** All the focus sprites, even ones that are used. */
     private readonly allFocusSprites = new Array<PIXI.Sprite>();
 
     // -- Brawler Specific Variables --\\
 
-    /** The attack displayed when the brawler attacks */
+    /** The attack displayed when the brawler attacks. */
     private readonly brawlerAttack: PIXI.Sprite | undefined;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Cowboy with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Cowboy with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Cowboy.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: CowboyState, viseur: Viseur) {
         super(state, viseur);
@@ -157,15 +159,19 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Cowboy instances.
+     * Called approx 60 times a second to update and render Cowboy
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -306,7 +312,8 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -329,10 +336,13 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<CowboyState>,
@@ -455,50 +465,51 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Does their job's action on a Tile.
-     * @param tile The Tile you want this Cowboy to act on.
-     * @param drunkDirection The direction the bottle will cause drunk cowboys
+     *
+     * @param tile - The Tile you want this Cowboy to act on.
+     * @param drunkDirection - The direction the bottle will cause drunk cowboys
      * to be in, can be 'North', 'East', 'South', or 'West'.
-     * @param callback? The callback that eventually returns the return value
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the act worked, false
      * otherwise.
      */
     public act(
         tile: TileState,
         drunkDirection: "" | "North" | "East" | "South" | "West",
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("act", { tile, drunkDirection }, callback);
     }
 
     /**
      * Moves this Cowboy from its current Tile to an adjacent Tile.
-     * @param tile The Tile you want to move this Cowboy to.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile you want to move this Cowboy to.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the move worked, false
      * otherwise.
      */
-    public move(
-        tile: TileState,
-        callback?: (returned: boolean) => void,
-    ): void {
+    public move(tile: TileState, callback: (returned: boolean) => void): void {
         this.runOnServer("move", { tile }, callback);
     }
 
     /**
      * Sits down and plays a piano.
-     * @param piano The Furnishing that is a piano you want to play.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param piano - The Furnishing that is a piano you want to play.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the play worked, false
      * otherwise.
      */
     public play(
         piano: FurnishingState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("play", { piano }, callback);
     }
@@ -508,8 +519,9 @@ export class Cowboy extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: protected-private-functions -->>
 
     /**
-     * Gets a free focus sprite, or creates one
-     * @returns a focus sprite to use to display a sharpshooter's focus
+     * Gets a free focus sprite, or creates one.
+     *
+     * @returns A focus sprite to use to display a sharpshooter's focus.
      */
     private getFocusSprite(): PIXI.Sprite {
         const sprite = this.freeFocusSprites.pop();

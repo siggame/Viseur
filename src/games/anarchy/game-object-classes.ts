@@ -10,7 +10,7 @@ import { PoliceDepartment } from "./police-department";
 import { Warehouse } from "./warehouse";
 import { WeatherStation } from "./weather-station";
 
-/** All the non Game classes in this game */
+/** All the non Game classes in this game. */
 export const GameObjectClasses: Readonly<BaseGameObjectClasses> = Object.freeze(
     {
         GameObject,

@@ -4,21 +4,21 @@ import { BOARD_LENGTH } from "./chess-board-background";
 import { squareToXY } from "./chess-pieces";
 import { Game } from "./game";
 
-/** An overlay on chess to handle clicks and show moves */
+/** An overlay on chess to handle clicks and show moves. */
 export class ChessOverlay {
-    /** The events this overlay emits */
+    /** The events this overlay emits. */
     public readonly events = events({
         /** Emitted when a valid move is selected. */
         moveSelected: new Event<Move>(),
     });
 
-    /** re-usable pixi sprites to overlay on squares */
+    /** Re-usable pixi sprites to overlay on squares. */
     private readonly overlays = new Array<PIXI.Sprite>();
 
-    /** The currently selected square */
+    /** The currently selected square. */
     private currentlySelected: Square | undefined;
 
-    /** valid squares that represent a move */
+    /** Valid squares that represent a move. */
     private validSquares: Move[] = [];
 
     /**
@@ -85,7 +85,7 @@ export class ChessOverlay {
     /**
      * Hides all overlays, and returns what was selected.
      *
-     * @returns the square that was selected, if any
+     * @returns The square that was selected, if any.
      */
     private deSelect(): Square | undefined {
         for (const overlay of this.overlays) {

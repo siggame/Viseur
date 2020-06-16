@@ -74,10 +74,11 @@ if not 'vis' in shared:
             doc = {'description': doc}
         description = doc['description']
         lines = wrapper.wrap(doc['description'])
+        lines += [prefix + ' *']
 
         if 'arguments' in doc and doc['arguments']:
             for arg in doc['arguments']:
-                lines += wrapper.wrap('@param ' + arg['name'] + ' ' + arg['description'])
+                lines += wrapper.wrap('@param ' + arg['name'] + ' - ' + arg['description'])
         if 'returns' in doc and doc['returns']:
             lines += wrapper.wrap('@returns ' + doc['returns']['description'])
 

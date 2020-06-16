@@ -23,31 +23,33 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the YoungGun (dt = 0) */
+    /** The current state of the YoungGun (dt = 0). */
     public current: YoungGunState | undefined;
 
-    /** The next state of the YoungGun (dt = 1) */
+    /** The next state of the YoungGun (dt = 1). */
     public next: YoungGunState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
-    /** The player that control's this young gun */
+    /** The player that control's this young gun. */
     private readonly owner: Player;
 
-    /** The top part of the sprite (that is NOT colored) */
+    /** The top part of the sprite (that is NOT colored). */
     private readonly spriteBottom = this.addSprite.youngGunBottom();
 
-    /** The top part of the sprite (that is colored) */
+    /** The top part of the sprite (that is colored). */
     private readonly spriteTop = this.addSprite.youngGunTop();
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the YoungGun with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the YoungGun with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this YoungGun.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: YoungGunState, viseur: Viseur) {
         super(state, viseur);
@@ -68,15 +70,19 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render YoungGun instances.
+     * Called approx 60 times a second to update and render YoungGun
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -114,7 +120,8 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -127,10 +134,13 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<YoungGunState>,
@@ -154,21 +164,23 @@ export class YoungGun extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Tells the YoungGun to call in a new Cowboy of the given job to the open
      * Tile nearest to them.
-     * @param job The job you want the Cowboy being brought to have.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param job - The job you want the Cowboy being brought to have.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is The new Cowboy that was called
      * in if valid. They will not be added to any `cowboys` lists until the turn
      * ends. Null otherwise.
      */
     public callIn(
         job: "Bartender" | "Brawler" | "Sharpshooter",
-        callback?: (returned: CowboyState) => void,
+        callback: (returned: CowboyState) => void,
     ): void {
         this.runOnServer("callIn", { job }, callback);
     }

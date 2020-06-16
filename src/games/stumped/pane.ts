@@ -10,7 +10,7 @@ import { GameState, PlayerState } from "./state-interfaces";
 
 /**
  * The visual pane that is displayed below the game and has text elements for
- * each player
+ * each player.
  */
 export class Pane extends BasePane<GameState, PlayerState> {
     // <<-- Creer-Merge: variables -->>
@@ -63,8 +63,9 @@ export class Pane extends BasePane<GameState, PlayerState> {
      * Gets the stats to show on the top bar of the pane,
      * which tracks stats in the game.
      * This is only called once, during initialization.
-     * @param state the initial state of the game
-     * @returns All the PaneStats to display on this BasePane for the game.
+     *
+     * @param state - The initial state of the game.
+     * @returns - All the PaneStats to display on this BasePane for the game.
      */
     protected getGameStats(
         state: Immutable<GameState>,
@@ -79,8 +80,10 @@ export class Pane extends BasePane<GameState, PlayerState> {
     }
 
     /**
-     * Gets the stats to show on each player pane, which tracks stats for that player
-     * @param state the initial state of the game
+     * Gets the stats to show on each player pane,
+     * which tracks stats for that player.
+     *
+     * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the player.
      */
     protected getPlayerStats(

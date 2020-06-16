@@ -27,25 +27,27 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the FireDepartment (dt = 0) */
+    /** The current state of the FireDepartment (dt = 0). */
     public current: FireDepartmentState | undefined;
 
-    /** The next state of the FireDepartment (dt = 1) */
+    /** The next state of the FireDepartment (dt = 1). */
     public next: FireDepartmentState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** the beam color name to use for beams */
+    /** The beam color name to use for beams. */
     protected get beamColorName(): number {
         return 0x00bfff;
     }
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the FireDepartment with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the FireDepartment with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this FireDepartment.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
     constructor(state: FireDepartmentState, viseur: Viseur) {
         super(state, viseur);
@@ -56,15 +58,19 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render FireDepartment instances.
+     * Called approx 60 times a second to update and render FireDepartment
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
@@ -97,7 +103,8 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -110,10 +117,13 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
         current: Immutable<FireDepartmentState>,
@@ -133,20 +143,22 @@ export class FireDepartment extends makeRenderable(Building, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Bribes this FireDepartment to extinguish the some of the fire in a
      * building.
-     * @param building The Building you want to extinguish.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param building - The Building you want to extinguish.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the bribe worked, false
      * otherwise.
      */
     public extinguish(
         building: BuildingState,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
         this.runOnServer("extinguish", { building }, callback);
     }
