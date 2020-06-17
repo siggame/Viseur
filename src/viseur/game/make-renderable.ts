@@ -47,7 +47,6 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         constructor(...args: any[]) {
-            // tslint:disable-line:no-any - required for mixins
             super(...args);
 
             // initialize the container that will be rendered!

@@ -490,7 +490,7 @@ export class FileTab extends Tab {
         this.connectionWrapper.removeClass("collapsed");
 
         const li = document.createElement("li");
-        li.innerHTML = escape(message); // tslint:disable-line:no-inner-html - we are escaping the string above
+        li.innerHTML = escape(message);
         if (error) {
             li.classList.add("error");
         }

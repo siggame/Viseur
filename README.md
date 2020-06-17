@@ -64,7 +64,7 @@ You are free to use whatever development environment you want to work in Viseur,
 With the following extensions:
 
 - [cSpell spell checker](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker)
-- [tsliner](https://marketplace.visualstudio.com/items?itemName=eg2.tslint)
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 
 Those tools will help analyze your code and catch errors early, before you find them in run time.
 

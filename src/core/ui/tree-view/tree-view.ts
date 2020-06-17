@@ -109,7 +109,7 @@ export class TreeView extends BaseElement {
             formatted = "Object";
         }
 
-        node.$value.html(escape(formatted)); // tslint:disable-line:no-inner-html - safe with lodash escape
+        node.$value.html(escape(formatted));
     }
 
     /**

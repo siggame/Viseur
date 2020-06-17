@@ -11,7 +11,6 @@
  *   and from that class all the magic happens!
  */
 
-// tslint:disable:no-import-side-effect no-any no-unsafe-any no-require-imports
 import "font-awesome-sass-loader";
 import * as $ from "jquery";
 import * as PIXI from "pixi.js";

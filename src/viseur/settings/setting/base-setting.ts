@@ -16,7 +16,6 @@ export interface IBaseSettingArgs<T> {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export abstract class BaseSetting<T = any> {
-    // tslint:disable-line:no-any
     /** The index of the next new setting. */
     public static newIndex = 0;
 
@@ -110,8 +109,6 @@ export abstract class BaseSetting<T = any> {
      */
     public get(): T {
         const id = this.getID();
-
-        // tslint:disable-next-line:no-unsafe-any - they type it as any
         return this.transformValue(store.get(id));
     }
 

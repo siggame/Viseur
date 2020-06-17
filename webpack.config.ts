@@ -6,7 +6,6 @@ import * as webpack from "webpack";
 const gitRevisionPlugin = new GitRevisionPlugin();
 
 export default (
-    // tslint:disable-line:no-default-export
     env: undefined,
     options: webpack.Configuration,
 ): webpack.Configuration => ({

@@ -14,8 +14,6 @@ export interface ICurrentTime {
     dt: number;
 }
 
-/* tslint:enable:unified-signatures */
-
 /** Manages playback time and what the game state to show should look like. */
 export class TimeManager {
     /** Events this class emits. */

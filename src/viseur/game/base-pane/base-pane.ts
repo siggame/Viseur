@@ -503,7 +503,6 @@ export class BasePane<
                     .addClass("stat")
                     .addClass(`stat-${i}`)
                     .attr("title", stat.title || "")
-                    // tslint:disable-next-line:no-inner-html
                     .html(String(i)), // safe, it will always be a number
             );
         }

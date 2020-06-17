@@ -1,13 +1,9 @@
 import { Immutable } from "@cadre/ts-utils";
 import { Delta } from "@cadre/ts-utils/cadre";
 
-/* tslint:disable:no-empty-interface */
-
 /** The base structure of a state. */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface State {}
-
-/* tslint:enable:no-empty-interface */
 
 /**
  * An object in the game that has states that tween [0, 1)].

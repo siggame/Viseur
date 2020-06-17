@@ -1,5 +1,3 @@
-// tslint:disable:no-math-random insecure-random
-
 const REFRESH_DURATION = 20000;
 
 // source:
@@ -49,7 +47,7 @@ export class PrettyPolygons {
 
     /** The SVG we are manipulating. */
     private readonly svg = document.createElementNS(
-        "http://www.w3.org/2000/svg", // tslint:disable-line:no-http-string
+        "http://www.w3.org/2000/svg",
         "svg",
     );
 
@@ -174,7 +172,7 @@ export class PrettyPolygons {
                     );
 
                     const animate = document.createElementNS(
-                        "http://www.w3.org/2000/svg", // tslint:disable-line:no-http-string
+                        "http://www.w3.org/2000/svg",
                         "animate",
                     );
 
@@ -251,7 +249,6 @@ export class PrettyPolygons {
         this.randomize();
 
         const childNodes = this.svg.childNodes;
-        // tslint:disable-next-line:prefer-for-of - because it does not have an iterator symbol set
         for (let i = 0; i < childNodes.length; i++) {
             const polygon = childNodes[i] as Polygon;
             const animate = polygon.childNodes[0] as PolyNode;
