@@ -1,6 +1,6 @@
 import { Immutable } from "src/utils";
 import { onceTransitionEnds } from "src/utils/jquery";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import * as modalHbs from "./modal.hbs";
 import "./modal.scss";
 
@@ -14,7 +14,7 @@ export class Modal extends BaseElement {
      *
      * @param args - The arguments for the modal.
      */
-    constructor(args: Immutable<IBaseElementArgs>) {
+    constructor(args: Immutable<BaseElementArgs>) {
         super(args, modalHbs);
 
         this.content = this.element.find(".modal-content");

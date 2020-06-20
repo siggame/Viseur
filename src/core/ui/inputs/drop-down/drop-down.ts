@@ -1,10 +1,10 @@
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
-import { BaseInput, IBaseInputArgs } from "../base-input";
+import { BaseInput, BaseInputArgs } from "../base-input";
 import * as dropDownOptionHbs from "./drop-down-option.hbs";
 import * as dropDownHbs from "./drop-down.hbs";
 /** An option on the drop down. */
-export interface IDropDownOption<T> {
+export interface DropDownOption<T> {
     /** The display text. */
     text: string;
 
@@ -13,17 +13,17 @@ export interface IDropDownOption<T> {
 }
 
 /** Initialization args for drop down inputs. */
-export interface IDropDownArgs<T> extends IBaseInputArgs<T> {
+export interface DropDownArgs<T> extends BaseInputArgs<T> {
     /** The options for a drop down in order of display. */
-    options: Array<string | IDropDownOption<T>>;
+    options: Array<string | DropDownOption<T>>;
 }
 
 /** A select with options input. */
 export class DropDown<T extends string = string> extends BaseInput<T> {
     /** The options available on this drop down menu. */
-    private readonly options: Array<IDropDownOption<T>> = [];
+    private readonly options: Array<DropDownOption<T>> = [];
 
-    constructor(args: Immutable<IDropDownArgs<T>>) {
+    constructor(args: Immutable<DropDownArgs<T>>) {
         super(args, dropDownHbs);
 
         if (args.options) {
@@ -66,14 +66,14 @@ export class DropDown<T extends string = string> extends BaseInput<T> {
      * defaults to the first item of options when not set.
      */
     public setOptions(
-        options: Immutable<Array<string | IDropDownOption<T>>>,
+        options: Immutable<Array<string | DropDownOption<T>>>,
         defaultValue?: T,
     ): void {
         this.options.length = 0;
         this.element.html("");
 
         for (const option of options) {
-            const opt: IDropDownOption<T> =
+            const opt: DropDownOption<T> =
                 typeof option === "string"
                     ? { text: option, value: option as T } // T is string
                     : option;

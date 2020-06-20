@@ -6,7 +6,7 @@ import * as Color from "color";
  *
  * Note: this is a partial class, it must be inherited with BaseGameObject for GAME_NAME.Player instances.
  */
-export interface IBasePlayerInstance extends BasePlayer {
+export interface BasePlayerInstance extends BasePlayer {
     /** The index of this player in the game.players array. */
     playersIndex: number;
 

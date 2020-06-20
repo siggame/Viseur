@@ -1,6 +1,6 @@
 import { escape } from "lodash";
 import { partial } from "src/core/partial";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { getContrastingColor, Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "../base-game";
@@ -31,7 +31,7 @@ export class GameOverScreen extends BaseElement {
      * @param args - BaseElement init args.
      */
     constructor(
-        args: Immutable<IBaseElementArgs> & {
+        args: Immutable<BaseElementArgs> & {
             /** The game this will be a game over screen for. */
             game: BaseGame;
 

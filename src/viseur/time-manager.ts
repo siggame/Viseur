@@ -6,7 +6,7 @@ import { Event, events } from "ts-typed-events";
 import { ViseurGamelog } from "./game";
 
 /** Simple container for the current time of the time manager. */
-export interface ICurrentTime {
+export interface CurrentTime {
     /** The current index. */
     index: number;
 
@@ -69,7 +69,7 @@ export class TimeManager {
      *
      * @returns Contains the current `index` and `dt`.
      */
-    public getCurrentTime(): ICurrentTime {
+    public getCurrentTime(): CurrentTime {
         return {
             index: this.currentIndex,
             dt: this.timer.getProgress(),

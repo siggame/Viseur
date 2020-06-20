@@ -1,9 +1,9 @@
-import { INumberInputArgs, NumberInput } from "src/core/ui/inputs/number";
-import { BaseSetting, IBaseSettingArgs } from "./base-setting";
+import { NumberInput, NumberInputArgs } from "src/core/ui/inputs/number";
+import { BaseSetting, BaseSettingArgs } from "./base-setting";
 
 /** Represents a setting that is a number. */
 export class NumberSetting extends BaseSetting<number> {
-    constructor(args: INumberInputArgs & IBaseSettingArgs<number>) {
+    constructor(args: NumberInputArgs & BaseSettingArgs<number>) {
         super(args, NumberInput);
     }
 

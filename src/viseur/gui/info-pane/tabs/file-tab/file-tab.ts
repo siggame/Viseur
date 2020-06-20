@@ -7,10 +7,10 @@ import {
     CheckBox,
     DropDown,
     FileInput,
-    ITabArgs,
     NumberInput,
     Tab,
     TextBox,
+    TabArgs,
 } from "src/core/ui";
 import { sortedAscending } from "src/utils";
 import { Viseur } from "src/viseur";
@@ -209,7 +209,7 @@ export class FileTab extends Tab {
      * @param args - The tab arguments.
      */
     constructor(
-        args: ITabArgs & {
+        args: TabArgs & {
             /** The Viseur instance we are a part of. */
             viseur: Viseur;
         },

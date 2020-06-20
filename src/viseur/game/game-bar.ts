@@ -5,7 +5,7 @@ import { ViseurInstance } from "src/viseur/constructed";
 import { BaseSetting } from "src/viseur/settings";
 
 /** The optional args for a game bar. */
-export interface IGameBarOptions {
+export interface GameBarOptions {
     /** The width of the bar. */
     width?: number;
 
@@ -53,7 +53,7 @@ export class GameBar {
      */
     constructor(
         parent: PIXI.Container,
-        options: Immutable<IGameBarOptions> = {},
+        options: Immutable<GameBarOptions> = {},
     ) {
         const viseur = ViseurInstance;
         if (!viseur || !viseur.game) {

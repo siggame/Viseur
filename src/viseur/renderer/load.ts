@@ -1,6 +1,6 @@
 // This is a simple function to be used in games
 import { mapValues } from "lodash";
-import { FirstArgument, IPixiSpriteOptions } from "src/utils";
+import { FirstArgument, PixiSpriteOptions } from "src/utils";
 import { RenderableGameObjectClass } from "src/viseur/game";
 import blankPng from "src/viseur/images/blank.png";
 import {
@@ -8,7 +8,7 @@ import {
     BaseRendererResourceOptions,
 } from "./base-renderer-resource";
 import { RendererResource } from "./renderer-resource";
-import { ISheetData, RendererSheetResource } from "./renderer-sheet-resource";
+import { RendererSheetResource, SheetData } from "./renderer-sheet-resource";
 
 /** The base interface all renderer resources implement. */
 export interface BaseRendererResources {
@@ -38,9 +38,9 @@ export type ResourcesForGameObject<T extends BaseRendererResources> = Readonly<
 >;
 
 /** The options for a resource to be loaded for the Renderer. */
-export interface IResourceLoadOptions extends BaseRendererResourceOptions {
+export interface ResourceLoadOptions extends BaseRendererResourceOptions {
     /** The sheet data, if present this loads a sprite sheet. */
-    sheet?: ISheetData;
+    sheet?: SheetData;
 }
 
 /**
@@ -65,7 +65,7 @@ export function load(
  */
 export function load(
     texture: string,
-    options: IResourceLoadOptions,
+    options: ResourceLoadOptions,
 ): RendererSheetResource;
 
 /**
@@ -78,7 +78,7 @@ export function load(
  */
 export function load(
     texture: string,
-    options?: IResourceLoadOptions,
+    options?: ResourceLoadOptions,
 ): RendererResource | RendererSheetResource {
     const safeTexture = texture.replace("./", ""); // Remove un-needed dir part
 
@@ -132,7 +132,7 @@ export function createResourcesFor<T extends BaseRendererResources>(
             throw new Error(`Resource with key ${key} cannot be undefined`);
         }
 
-        return (options: IPixiSpriteOptions): PIXI.Sprite =>
+        return (options: PixiSpriteOptions): PIXI.Sprite =>
             resource.newSprite({
                 container: gameObject.container,
                 ...options,

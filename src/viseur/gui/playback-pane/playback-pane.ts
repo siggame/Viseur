@@ -1,5 +1,5 @@
 import { Immutable } from "@cadre/ts-utils";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
 import { Viseur } from "src/viseur";
@@ -83,7 +83,7 @@ export class PlaybackPane extends BaseElement {
     /** The fullscreen enable button. */
     private readonly fullscreenButton: inputs.Button;
 
-    constructor(args: Readonly<IBaseElementArgs>) {
+    constructor(args: Readonly<BaseElementArgs>) {
         super(args, playbackPaneHbs);
 
         this.element.addClass("collapsed");

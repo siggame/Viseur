@@ -3,7 +3,7 @@ import { Event, events } from "ts-typed-events";
 import { BaseGame } from "./game/base-game";
 import { GamelogWithReverses } from "./game/gamelog";
 import { ViseurGameState } from "./game/interfaces";
-import { ICurrentTime } from "./time-manager";
+import { CurrentTime } from "./time-manager";
 
 /** The events Viseur emits. */
 export const ViseurEvents = events({
@@ -17,7 +17,7 @@ export const ViseurEvents = events({
     stateChangedStep: new Event<Immutable<ViseurGameState>>(),
 
     /** Triggers when the timer ticks. */
-    timeUpdated: new Event<Immutable<ICurrentTime>>(),
+    timeUpdated: new Event<Immutable<CurrentTime>>(),
 
     /** Triggers literally 1 second after the ready event. */
     delayedReady: new Event(),

@@ -1,13 +1,13 @@
 import { partial } from "src/core/partial";
 import { Viseur } from "src/viseur";
 import { Event, events } from "ts-typed-events";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import * as tabContentHbs from "./tab-content.hbs";
 import * as tabHbs from "./tab.hbs";
 import { Tabular } from "./tabular";
 
 /** The interface arguments for a Tab can extend from. */
-export interface ITabArgs extends IBaseElementArgs {
+export interface TabArgs extends BaseElementArgs {
     /** The tabular this tab is to be a part of. */
     tabular: Tabular;
 
@@ -46,7 +46,7 @@ export class Tab extends BaseElement {
      *
      * @param args - The arguments to send to the Tab.
      */
-    constructor(args: ITabArgs) {
+    constructor(args: TabArgs) {
         super(args, tabContentHbs);
 
         this.tabular = args.tabular;

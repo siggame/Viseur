@@ -1,6 +1,6 @@
 import { Immutable } from "@cadre/ts-utils";
 import * as $ from "jquery";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
 import { Event, events } from "ts-typed-events";
@@ -76,7 +76,7 @@ export class InfoPane extends BaseElement {
      */
     constructor(
         args: Readonly<
-            IBaseElementArgs & {
+            BaseElementArgs & {
                 /** The GUI instance we are inside of. */
                 gui: GUI;
 

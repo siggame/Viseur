@@ -23,10 +23,10 @@ import {
 } from "src/viseur/renderer";
 import {
     BaseSetting,
+    BaseSettings,
     CheckBoxSetting,
     ColorSetting,
     createSettings,
-    IBaseSettings,
 } from "src/viseur/settings";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
@@ -527,7 +527,7 @@ export class BaseGame extends StateObject {
      * @param settings - The game's specific settings to setup.
      * @returns The game's settings extended with things!
      */
-    protected createSettings<T extends IBaseSettings>(
+    protected createSettings<T extends BaseSettings>(
         settings: T,
     ): Readonly<T & BaseGameSettings> {
         // Because other game's settings may have changed the

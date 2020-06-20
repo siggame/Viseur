@@ -4,7 +4,7 @@ const REFRESH_DURATION = 20000;
 // https://www.bypeople.com/svg-low-poly-background-css-js-snippet/
 
 /** A point used for Polygon node movement calculations. */
-interface IPolyPoint {
+interface PolyPoint {
     /** The x position. */
     x: number;
 
@@ -67,7 +67,7 @@ export class PrettyPolygons {
     private readonly unitHeight: number;
 
     /** The points we will manipulate. */
-    private readonly points: IPolyPoint[] = [];
+    private readonly points: PolyPoint[] = [];
 
     /**
      * Creates the pretty polygons inside some parent element.

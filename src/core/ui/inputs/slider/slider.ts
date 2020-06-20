@@ -1,4 +1,4 @@
-import { INumberInputArgs, NumberInput } from "../number";
+import { NumberInput, NumberInputArgs } from "../number";
 
 /** A range input for numbers. */
 export class Slider extends NumberInput {
@@ -7,7 +7,7 @@ export class Slider extends NumberInput {
      *
      * @param args - The args for the slider.
      */
-    constructor(args: Readonly<INumberInputArgs>) {
+    constructor(args: Readonly<NumberInputArgs>) {
         super({
             type: "range",
             step: "any",

@@ -1,9 +1,9 @@
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
-import { BaseInput, IBaseInputArgs } from "./base-input";
+import { BaseInput, BaseInputArgs } from "./base-input";
 
 /** Arguments to initialize a number input. */
-export interface INumberInputArgs extends IBaseInputArgs<number> {
+export interface NumberInputArgs extends BaseInputArgs<number> {
     /** The minimum accepted number. */
     min?: number;
 
@@ -30,12 +30,12 @@ export class NumberInput extends BaseInput<number> {
      *
      * @param args - The initialization args, can have min, max, and step.
      */
-    constructor(args: Readonly<INumberInputArgs>) {
+    constructor(args: Readonly<NumberInputArgs>) {
         super({
             value: 0,
             type: "number",
             ...args,
-        } as Immutable<INumberInputArgs>);
+        } as Immutable<NumberInputArgs>);
 
         this.setStep(args.step === undefined ? "any" : args.step);
         this.setMin(args.min);

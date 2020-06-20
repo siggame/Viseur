@@ -1,6 +1,6 @@
 import * as Color from "color";
 import { Immutable } from "src/utils";
-import { BaseInput, IBaseInputArgs } from "../base-input";
+import { BaseInput, BaseInputArgs } from "../base-input";
 import "./color-picker.scss";
 
 /** An input for colors. */
@@ -10,7 +10,7 @@ export class ColorPicker extends BaseInput<string> {
      *
      * @param args - The initialization args.
      */
-    constructor(args: Immutable<IBaseInputArgs<string>>) {
+    constructor(args: Immutable<BaseInputArgs<string>>) {
         super({
             type: "color",
             ...args,

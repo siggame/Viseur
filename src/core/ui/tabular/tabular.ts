@@ -1,6 +1,6 @@
 import { onceTransitionEnds } from "src/utils/jquery";
 import { Event, events } from "ts-typed-events";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
 import * as tabularHbs from "./tabular.hbs";
 import "./tabular.scss";
@@ -37,7 +37,7 @@ export class Tabular extends BaseElement {
     private fading = false;
 
     constructor(
-        args: IBaseElementArgs & {
+        args: BaseElementArgs & {
             /** The tabs in order to be displayed in this Tabular. */
             tabs?: Tab[];
         },

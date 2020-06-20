@@ -7,7 +7,7 @@ import { ease } from "./easing";
 export type ColorTint = Color | number | string;
 
 /** Options that can be used in the create sprite util functions. */
-export interface IPixiSpriteOptions {
+export interface PixiSpriteOptions {
     /** The container to put the sprite into. */
     container?: PIXI.Container;
 
@@ -83,7 +83,7 @@ export function getTintFromColor(color: ColorTint): number {
  */
 export function setPixiOptions(
     sprite: PIXI.Sprite | PIXI.Container,
-    options: Readonly<IPixiSpriteOptions>,
+    options: Readonly<PixiSpriteOptions>,
 ): void {
     if (options.container) {
         sprite.setParent(options.container);

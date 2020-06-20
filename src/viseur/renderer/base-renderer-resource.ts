@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import {
     Immutable,
-    IPixiSpriteOptions,
+    PixiSpriteOptions,
     setPixiOptions,
     TypedObject,
 } from "src/utils";
@@ -82,7 +82,7 @@ export abstract class BaseRendererResource {
      * @returns A sprite with the given texture key, added to the
      * parentContainer.
      */
-    public newSprite(options: Immutable<IPixiSpriteOptions>): PIXI.Sprite {
+    public newSprite(options: Immutable<PixiSpriteOptions>): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.texture);
 
         // Now scale the sprite, as it defaults to the dimensions of its texture's pixel size.

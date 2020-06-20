@@ -1,5 +1,5 @@
 import { Delta, BaseGame as CadreBaseGame } from "@cadre/ts-utils/cadre";
-import { CheckBoxSetting, ColorSetting, IBaseSettings } from "../settings";
+import { BaseSettings, CheckBoxSetting, ColorSetting } from "../settings";
 import { BaseGame } from "./base-game";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
@@ -64,7 +64,7 @@ export interface BaseGameNamespace<
 }
 
 /** The base settings all games have. */
-export interface BaseGameSettings extends IBaseSettings {
+export interface BaseGameSettings extends BaseSettings {
     /** If custom player colors are enabled. */
     customPlayerColors: CheckBoxSetting;
 

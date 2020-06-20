@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import { clamp } from "lodash";
 import * as PIXI from "pixi.js";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { isImportedResource, TypedObject } from "src/utils";
 import { Viseur } from "src/viseur";
@@ -113,7 +113,7 @@ export class Renderer extends BaseElement {
      * @param args - Initialization args.
      */
     constructor(
-        args: IBaseElementArgs & {
+        args: BaseElementArgs & {
             /**
              * The default font family to use and override the styled default.
              */

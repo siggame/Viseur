@@ -1,7 +1,7 @@
 import { escape } from "lodash";
 import { partial } from "src/core/partial";
 import { isObject } from "src/utils";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import * as treeViewNodeHbs from "./tree-view-node.hbs";
 import * as treeViewHbs from "./tree-view.hbs";
 import "./tree-view.scss";
@@ -70,7 +70,7 @@ export class TreeView extends BaseElement {
      * @param args - The base input args.
      */
     constructor(
-        args: IBaseElementArgs & {
+        args: BaseElementArgs & {
             /** The name of the root. */
             name: string;
         },

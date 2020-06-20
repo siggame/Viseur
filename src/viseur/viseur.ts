@@ -38,7 +38,7 @@ type QueryStringTypes = undefined | null | string | string[];
 type DeltaMergeableGameState = CadreBaseGame;
 
 /** Data required to play as a human player in a game. */
-interface IPlayAsHumanData
+interface PlayAsHumanData
     extends TournamentConnectionArgs,
         JoueurConnectionArgs {}
 
@@ -46,7 +46,7 @@ interface IPlayAsHumanData
  * The container for merged deltas. We only store 2 states as they get HUGE,
  * and if we stored every merged delta storage space could run out.
  */
-export interface IMergedDelta {
+export interface MergedDelta {
     /** The deltas index in the deltas array. */
     index: number;
 
@@ -107,7 +107,7 @@ export class Viseur {
     private readonly parser = new Parser();
 
     /** Our merged delta container. */
-    private mergedDelta!: IMergedDelta;
+    private mergedDelta!: MergedDelta;
 
     /** Our current merged game states and reasons. */
     private readonly currentState: ViseurGameState = {};
@@ -242,7 +242,7 @@ export class Viseur {
      *
      * @param args - The args to send to the joueur client.
      */
-    public playAsHuman(args: Immutable<IPlayAsHumanData>): void {
+    public playAsHuman(args: Immutable<PlayAsHumanData>): void {
         this.gui.modalMessage("Connecting to game server...");
 
         this.createJoueur(args);
@@ -692,7 +692,7 @@ export class Viseur {
      *
      * @param d - The current delta states.
      */
-    private updateStepped(d: Immutable<IMergedDelta>): void {
+    private updateStepped(d: Immutable<MergedDelta>): void {
         if (!this.rawGamelog) {
             return;
         }

@@ -1,7 +1,7 @@
 import { BaseSetting } from "./setting";
 
 /** The base settings interface for viseur/game. */
-export interface IBaseSettings {
+export interface BaseSettings {
     /** Name lookup for a setting. */
     [settingName: string]: BaseSetting | BaseSetting[] | undefined;
 }
@@ -15,7 +15,7 @@ export interface IBaseSettings {
  * @param settings - An object of string keys to BaseSetting values.
  * @returns Settings now formatted for use.
  */
-export function createSettings<T extends IBaseSettings>(
+export function createSettings<T extends BaseSettings>(
     namespace: string,
     settings: T,
 ): Readonly<T> {

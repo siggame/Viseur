@@ -1,5 +1,5 @@
 import { stringify } from "query-string";
-import { ITabArgs, Tab } from "src/core/ui";
+import { Tab, TabArgs } from "src/core/ui";
 import * as helpTabHbs from "./help-tab.hbs";
 import "./help-tab.scss";
 import exampleGamelog from "./example.gamelog";
@@ -27,7 +27,7 @@ export class HelpTab extends Tab {
      *
      * @param args - The arguments to create the tab.
      */
-    constructor(args: ITabArgs) {
+    constructor(args: TabArgs) {
         super({
             contentTemplate: helpTabHbs,
             title: "Help",

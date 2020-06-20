@@ -6,7 +6,7 @@ import {
 } from "./base-renderer-resource";
 
 /** Optional details about the sprite sheet. */
-export interface ISheetData {
+export interface SheetData {
     /** Major axis to start numbering from. */
     axis: "x" | "y";
 
@@ -20,7 +20,7 @@ export interface ISheetData {
 /** A resource that is a sprite sheet. */
 export class RendererSheetResource extends BaseRendererResource {
     /** If present this resource is a sprite sheet. */
-    private readonly sheet: ISheetData;
+    private readonly sheet: SheetData;
 
     /**
      * The mapped textures for each image in the sheet,
@@ -37,7 +37,7 @@ export class RendererSheetResource extends BaseRendererResource {
      */
     constructor(
         path: string,
-        sheet: ISheetData,
+        sheet: SheetData,
         options?: BaseRendererResourceOptions,
     ) {
         super(path, options);

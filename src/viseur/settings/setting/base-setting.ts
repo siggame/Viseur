@@ -1,10 +1,10 @@
 import { Constructor } from "@cadre/ts-utils";
-import { BaseInput, IBaseInputArgs } from "src/core/ui/inputs/base-input";
+import { BaseInput, BaseInputArgs } from "src/core/ui/inputs/base-input";
 import * as store from "store";
 import { Event } from "ts-typed-events";
 
 /** Additional arguments required for the base setting. */
-export interface IBaseSettingArgs<T> {
+export interface BaseSettingArgs<T> {
     /** The default value (synonymous with the value key). */
     default: T;
 }
@@ -38,7 +38,7 @@ export abstract class BaseSetting<T = any> {
      * @param inputClass - The class constructor for this setting's input.
      */
     protected constructor(
-        private readonly args: IBaseSettingArgs<T> & IBaseInputArgs<T>,
+        private readonly args: BaseSettingArgs<T> & BaseInputArgs<T>,
         private readonly inputClass: Constructor<BaseInput<T>>,
     ) {
         this.namespace = "";

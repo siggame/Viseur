@@ -1,4 +1,4 @@
-import { ITabArgs, Tab } from "src/core/ui";
+import { Tab, TabArgs } from "src/core/ui";
 import { Viseur } from "src/viseur";
 import { ViseurGameState } from "src/viseur/game";
 import * as inspectTabHbs from "./inspect-tab.hbs";
@@ -23,7 +23,7 @@ export class InspectTab extends Tab {
      *
      * @param args - The arguments to create the tab.
      */
-    constructor(args: ITabArgs) {
+    constructor(args: TabArgs) {
         super({
             contentTemplate: inspectTabHbs,
             title: "Inspect",

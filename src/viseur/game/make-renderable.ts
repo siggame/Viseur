@@ -58,7 +58,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
             // else make the container work for clicking
             this.container.interactive = true;
 
-            const onClick = (e: PIXI.interaction.InteractionEvent) => {
+            const onClick = (e: PIXI.InteractionEvent) => {
                 this.clicked(e);
             };
             /* Spell-checker:disable */
@@ -67,7 +67,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
             this.container.on("touchend", onClick);
             this.container.on("touchendoutside", onClick);
 
-            const onRightClick = (e: PIXI.interaction.InteractionEvent) => {
+            const onRightClick = (e: PIXI.InteractionEvent) => {
                 this.rightClicked(e);
             };
             this.container.on("rightup", onRightClick);
@@ -127,7 +127,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
          * @param event - The click event.
          */
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        private clicked(event: PIXI.interaction.InteractionEvent): void {
+        private clicked(event: PIXI.InteractionEvent): void {
             const menu = this.getContextMenu();
             if (menu.length > 0) {
                 const item = menu[0];
@@ -143,7 +143,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
          *
          * @param event - The pixi event from the right click.
          */
-        private rightClicked(event: PIXI.interaction.InteractionEvent): void {
+        private rightClicked(event: PIXI.InteractionEvent): void {
             const scale = this.viseur.settings.resolutionScale.get();
             this.showContextMenu(
                 event.data.global.x / scale,

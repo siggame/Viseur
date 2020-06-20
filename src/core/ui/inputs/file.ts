@@ -1,5 +1,5 @@
 import { Event, events } from "ts-typed-events";
-import { BaseInput, IBaseInputArgs } from "./base-input";
+import { BaseInput, BaseInputArgs } from "./base-input";
 
 /** An input for files. */
 export class FileInput extends BaseInput<undefined> {
@@ -17,7 +17,7 @@ export class FileInput extends BaseInput<undefined> {
      *
      * @param args - The initialization args.
      */
-    constructor(args: IBaseInputArgs<undefined>) {
+    constructor(args: BaseInputArgs<undefined>) {
         super({
             type: "file",
             ...args,

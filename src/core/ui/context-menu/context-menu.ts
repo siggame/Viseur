@@ -2,13 +2,13 @@ import * as $ from "jquery";
 import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Immutable } from "src/utils";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import * as contextMenuItemHbs from "./context-menu-item.hbs";
 import * as contextMenuHbs from "./context-menu.hbs";
 import "./context-menu.scss";
 
 /** A menu item in a ContextMenu. */
-export interface IMenuItem {
+export interface MenuItem {
     /** Hover over title. */
     description: string;
 
@@ -23,7 +23,7 @@ export interface IMenuItem {
 }
 
 /** An array of menu items to make a Context Menu from. */
-export type MenuItems = Array<"---" | IMenuItem>;
+export type MenuItems = Array<"---" | MenuItem>;
 
 /** A custom right click menu. */
 export class ContextMenu extends BaseElement {
@@ -34,9 +34,9 @@ export class ContextMenu extends BaseElement {
      */
     constructor(
         args: Immutable<
-            IBaseElementArgs & {
+            BaseElementArgs & {
                 /** The structure of the menu, by items and line breaks. */
-                structure?: Array<"---" | IMenuItem>;
+                structure?: Array<"---" | MenuItem>;
             }
         >,
     ) {

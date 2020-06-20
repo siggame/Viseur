@@ -2,7 +2,7 @@ import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import {
     DisableableElement,
-    IDisableableElementArgs,
+    DisableableElementArgs,
 } from "../../disableable-element";
 import * as buttonHbs from "./button.hbs";
 
@@ -21,7 +21,7 @@ export class Button extends DisableableElement {
      */
     constructor(
         args: Immutable<
-            IDisableableElementArgs & {
+            DisableableElementArgs & {
                 /** Text string to place on the button. */
                 text?: string;
             }

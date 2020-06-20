@@ -1,6 +1,6 @@
 import {
     DisableableElement,
-    IDisableableElementArgs,
+    DisableableElementArgs,
 } from "src/core/ui/disableable-element";
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
@@ -8,7 +8,7 @@ import { Field } from "../field";
 import * as baseInputHbs from "./base-input.hbs";
 
 /** The base arguments for any input. */
-export interface IBaseInputArgs<T> extends IDisableableElementArgs {
+export interface BaseInputArgs<T> extends DisableableElementArgs {
     /** The input type. */
     type?: string;
 
@@ -45,7 +45,7 @@ export class BaseInput<T> extends DisableableElement {
      * @param args - The initial args for the input and field.
      * @param template - An optional template override.
      */
-    constructor(args: Immutable<IBaseInputArgs<T>>, template?: Handlebars) {
+    constructor(args: Immutable<BaseInputArgs<T>>, template?: Handlebars) {
         super(args, template || baseInputHbs);
 
         if (args.label) {

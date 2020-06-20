@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import * as baseElementHbs from "./base-element.hbs";
 
 /** BaseElement constructor args. */
-export interface IBaseElementArgs {
+export interface BaseElementArgs {
     /** Id to assign to. */
     id?: string;
 
@@ -33,7 +33,7 @@ export abstract class BaseElement {
      * @param template - The handlebars template to use.
      */
     constructor(
-        args: Immutable<IBaseElementArgs>,
+        args: Immutable<BaseElementArgs>,
         protected readonly template: Handlebars,
     ) {
         this.id = args.id;

@@ -1,7 +1,7 @@
 import * as $ from "jquery";
-import { BaseInput, ITabArgs, Tab } from "src/core/ui";
+import { BaseInput, Tab, TabArgs } from "src/core/ui";
 import { Viseur } from "src/viseur";
-import { BaseSetting, IBaseSettings } from "src/viseur/settings";
+import { BaseSetting, BaseSettings } from "src/viseur/settings";
 import * as settingsTabHbs from "./settings-tab.hbs";
 import "./settings-tab.scss";
 
@@ -32,7 +32,7 @@ export class SettingsTab extends Tab {
      * @param args - Initialization args.
      */
     constructor(
-        args: ITabArgs & {
+        args: TabArgs & {
             /** The Viseur instance we are a part of. */
             viseur: Viseur;
         },
@@ -50,7 +50,7 @@ export class SettingsTab extends Tab {
             this.gameSettingsElement.removeClass("collapsed");
 
             this.manageSettings(
-                game.settings as IBaseSettings,
+                game.settings as BaseSettings,
                 this.gameSettingsElement,
             );
 
@@ -69,7 +69,7 @@ export class SettingsTab extends Tab {
      * @param parent - The jQuery parent element.
      */
     private manageSettings(
-        baseSettings: Readonly<IBaseSettings>,
+        baseSettings: Readonly<BaseSettings>,
         parent: JQuery,
     ): void {
         const settings: BaseSetting[] = [];

@@ -1,7 +1,7 @@
 import { BaseElement } from "src/core/ui/base-element";
 import {
     DisableableElement,
-    IDisableableElementArgs,
+    DisableableElementArgs,
 } from "src/core/ui/disableable-element";
 import * as fieldHbs from "./field.hbs";
 import "./field.scss";
@@ -18,7 +18,7 @@ export class Field extends DisableableElement {
      */
     constructor(
         args: Readonly<
-            IDisableableElementArgs & {
+            DisableableElementArgs & {
                 /** The input this is a field for. */
                 input: BaseElement;
 

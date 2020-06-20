@@ -3,7 +3,7 @@ import { Viseur } from "src/viseur";
 import { Event, events } from "ts-typed-events";
 
 /** Data sent from the Tournament server detailing how to connect to play. */
-export interface ITournamentPlayData {
+export interface TournamentPlayData {
     /** The server to connect to. */
     server: string;
     /** The port to connect through. */
@@ -41,7 +41,7 @@ export class TournamentClient {
          * Emitted once we are told that we are playing a game,
          * includes details on how to play that game.
          */
-        playing: new Event<ITournamentPlayData>(),
+        playing: new Event<TournamentPlayData>(),
     });
 
     /** True when connected to the tournament server, false otherwise. */
@@ -173,7 +173,7 @@ export class TournamentClient {
                 break;
             case "play":
                 // TODO: verify this implements said interface.
-                this.onPlay(data.data as ITournamentPlayData);
+                this.onPlay(data.data as TournamentPlayData);
                 break;
             default:
                 throw new Error(`Unexpected tournament event ${data.event}`);
@@ -197,7 +197,7 @@ export class TournamentClient {
      * @param data - The data on what game server to connect to for bridging
      * the human playable connection.
      */
-    private onPlay(data: Immutable<ITournamentPlayData>): void {
+    private onPlay(data: Immutable<TournamentPlayData>): void {
         this.events.playing.emit(data);
 
         const { game, ...args } = data;

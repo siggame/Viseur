@@ -1,7 +1,7 @@
 import { KEY_NAME_TO_CODE } from "src/core/key-codes";
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
-import { BaseInput, IBaseInputArgs } from "./base-input";
+import { BaseInput, BaseInputArgs } from "./base-input";
 
 /** A text input for strings.*/
 export class TextBox extends BaseInput<string> {
@@ -20,7 +20,7 @@ export class TextBox extends BaseInput<string> {
      * @param args - Has an optional placeholder text added to base input args.
      */
     constructor(
-        args: Immutable<IBaseInputArgs<string>> & {
+        args: Immutable<BaseInputArgs<string>> & {
             /** The placeholder text. */
             placeholder?: string;
         },

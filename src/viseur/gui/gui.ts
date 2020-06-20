@@ -2,7 +2,7 @@ import { Immutable } from "@cadre/ts-utils";
 import * as dateFormat from "dateformat";
 import * as screenfull from "screenfull";
 import { partial } from "src/core/partial";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
 import { PrettyPolygons } from "src/core/ui/pretty-polygons";
 import { Viseur } from "src/viseur";
@@ -83,7 +83,7 @@ export class GUI extends BaseElement {
      * @param args - The initialization args.
      */
     constructor(
-        args: IBaseElementArgs & {
+        args: BaseElementArgs & {
             /** The Viseur instance we are a part of. */
             viseur: Viseur;
         },

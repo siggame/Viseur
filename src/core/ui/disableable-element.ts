@@ -1,8 +1,8 @@
 import { Immutable } from "src/utils";
-import { BaseElement, IBaseElementArgs } from "./base-element";
+import { BaseElement, BaseElementArgs } from "./base-element";
 
 /** The extra arguments for an element that can be disabled. */
-export interface IDisableableElementArgs extends IBaseElementArgs {
+export interface DisableableElementArgs extends BaseElementArgs {
     /** True if it should be disabled upon initialization, false otherwise. */
     disabled?: boolean;
 }
@@ -16,7 +16,7 @@ export class DisableableElement extends BaseElement {
      * @param template - The template to pass through the the base element.
      */
     constructor(
-        args: Immutable<IDisableableElementArgs>,
+        args: Immutable<DisableableElementArgs>,
         template: Handlebars,
     ) {
         super(args, template);
