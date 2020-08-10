@@ -26,14 +26,3 @@ declare module "*.hbs" {
     const _: Handlebars;
     export = _;
 }
-
-/*
-declare module "*.json" {
-    const _: {
-        [key: number]: any;
-        [key: string]: any;
-    };
-
-    export = _;
-}
-*/
