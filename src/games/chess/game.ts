@@ -20,6 +20,9 @@ import { ChessOverlay } from "./chess-overlay";
 import { ChessPieces } from "./chess-pieces";
 // <<-- /Creer-Merge: imports -->>
 
+// TODO: submit PR to DefinitelyTyped fixing types yet again
+const newChess = (chessJs as unknown) as typeof chessJs.Chess;
+
 /**
  * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
@@ -83,10 +86,10 @@ export class Game extends BaseGame {
 
     // <<-- Creer-Merge: variables -->>
     /** The current chess state. */
-    public readonly currentChess = chessJs.Chess();
+    public readonly currentChess = newChess();
 
     /** The next chess state. */
-    public readonly nextChess = chessJs.Chess();
+    public readonly nextChess = newChess();
 
     /** The background render manager instance. */
     public chessBackground!: ChessBoardBackground;
