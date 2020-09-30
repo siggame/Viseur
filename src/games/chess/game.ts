@@ -204,7 +204,9 @@ export class Game extends BaseGame {
 
         // if there is a new move, it will be at this index in next history, else null
         const nextModeSAN = next.history[current.history.length];
-        const result = nextModeSAN ? this.nextChess.move(nextModeSAN) : null;
+        const result = nextModeSAN
+            ? this.nextChess.move(nextModeSAN, { sloppy: true })
+            : null;
 
         this.chessPieces.update(this.currentChess, result);
 
