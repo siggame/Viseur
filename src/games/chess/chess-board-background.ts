@@ -1,5 +1,6 @@
 import { Square } from "chess.js";
 import * as Color from "color";
+import * as PIXI from "pixi.js";
 import { getContrastingColor } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Game } from "./game";

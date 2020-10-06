@@ -24,9 +24,9 @@ export interface IGameState extends IBaseGame {
     gameObjects: {[id: string]: IGameObjectState};
 
     /**
-     * The list of [known] moves that have occurred in the game, in Standard
-     * Algebraic Notation (SAN) format. The first element is the first move,
-     * with the last being the most recent.
+     * The list of [known] moves that have occurred in the game, in Universal
+     * Chess Inferface (UCI) format. The first element is the first move, with
+     * the last element being the most recent.
      */
     history: string[];
 
@@ -183,9 +183,9 @@ export type AIMakeMoveFinishedDelta = IFinishedDelta & {
         };
 
         /**
-         * A string in Standard Algebraic Notation (SAN) for the move you want
-         * to make. If the move is invalid or not properly formatted you will
-         * lose the game.
+         * A string in Universal Chess Inferface (UCI) or Standard Algebraic
+         * Notation (SAN) formatting for the move you want to make. If the move
+         * is invalid or not properly formatted you will lose the game.
          */
         returned: string;
     };

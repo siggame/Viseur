@@ -255,10 +255,10 @@ export class Renderer extends BaseElement {
     public newPixiText(
         text: string,
         parent: PIXI.Container,
-        options?: Readonly<PIXI.TextStyleOptions>,
+        options?: Readonly<Partial<PIXI.TextStyle>>,
         height: number = 1,
     ): PIXI.Text {
-        const opts: PIXI.TextStyleOptions = {
+        const opts: Partial<PIXI.TextStyle> = {
             fontFamily: this.defaultFontFamily,
             ...options,
         };

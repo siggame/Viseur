@@ -7,7 +7,7 @@ import { GameObject } from "./game-object";
 import { ITileState, NecrowarDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
+import * as PIXI from "pixi.js";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -73,7 +73,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         this.unitContainer = new PIXI.Container();
         this.unitContainer.setParent(this.game.layers.game);
-        this.unitContainer.position.copy(this.container.position);
+        this.unitContainer.position.x = this.container.position.x;
+        this.unitContainer.position.y = this.container.position.y;
 
         if (state.isCastle) {
             this.castle = this.addSprite.path({container: this.container});

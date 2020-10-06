@@ -63,7 +63,7 @@ export class RendererSheetResource extends BaseRendererResource {
      * @param resources - All the resources loaded, to pull our texture out of.
      * @returns True if it loaded, false otherwise.
      */
-    protected onTextureLoaded(resources: PIXI.loaders.ResourceDictionary): boolean {
+    protected onTextureLoaded(resources: PIXI.IResourceDictionary): boolean {
         const loaded = super.onTextureLoaded(resources);
 
         if (!loaded) {

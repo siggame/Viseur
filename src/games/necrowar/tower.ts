@@ -7,6 +7,7 @@ import { GameObject } from "./game-object";
 import { ITileState, ITowerState, NecrowarDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+import * as PIXI from "pixi.js";
 import { ease } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
