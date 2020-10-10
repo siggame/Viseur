@@ -269,7 +269,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Dumps materials from cargo to an adjacent tile.
+     * Dumps materials from cargo to an adjacent tile. If the tile is a base or
+     * hopper tile, materials are sold instead of placed.
      * @param tile The tile the materials will be dumped on.
      * @param material The material the Unit will drop. 'dirt', 'ore', or
      * 'bomb'.
@@ -320,18 +321,33 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Upgrade an attribute of this Unit. "health", "miningPower", "moves", or
-     * "capacity".
-     * @param attribute The attribute of the Unit to be upgraded.
+     * Transfers a resource from the one Unit to another.
+     * @param unit The Unit to transfer materials to.
+     * @param resource The type of resource to transfer.
+     * @param amount The amount of resource to transfer.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully transfered,
+     * false otherwise.
+     */
+    public transfer(
+        unit: IUnitState,
+        resource: "dirt" | "ore" | "bomb" | "buildingMaterials",
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
+        this.runOnServer("transfer", {unit, resource, amount}, callback);
+    }
+
+    /**
+     * Upgrade this Unit.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully upgraded,
      * False otherwise.
      */
     public upgrade(
-        attribute: "health" | "miningPower" | "moves" | "capacity",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("upgrade", {attribute}, callback);
+        this.runOnServer("upgrade", {}, callback);
     }
 
     // </Joueur functions>

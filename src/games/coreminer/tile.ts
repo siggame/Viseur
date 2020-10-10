@@ -164,25 +164,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
 
-    // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
-
-    /**
-     * Spawns a Miner Unit on this Tile - Must be on the surface on their side
-     * of the map.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if successfully spawned,
-     * false otherwise.
-     */
-    public spawnMiner(
-        callback?: (returned: boolean) => void,
-    ): void {
-        this.runOnServer("spawnMiner", {}, callback);
-    }
-
-    // </Joueur functions>
-
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
     // <<-- /Creer-Merge: protected-private-functions -->>

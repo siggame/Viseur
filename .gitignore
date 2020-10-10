@@ -54,3 +54,12 @@ package-lock.json
 webpack-stats.json
 dist/
 docs/
+
+# OS files
+desktop.ini
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
