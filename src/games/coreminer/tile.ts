@@ -12,7 +12,7 @@ import { CoreminerDelta, ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -32,23 +32,33 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
 
+    /** TODO: Document */
     public readonly base: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
     public readonly hopper: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
     public readonly dirt: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
     public readonly ladder: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
     public readonly support: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
     public readonly ore: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
     public readonly shield: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
+    public ownerID: string;
+
+    /** TODO: Document */
     private readonly unitContainer: PIXI.Container;
 
-    public ownerID: string;
     // <<-- /Creer-Merge: variables -->>
 
     /**
