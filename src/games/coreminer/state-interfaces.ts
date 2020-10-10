@@ -127,9 +127,9 @@ export interface IGameState extends IBaseGame {
     units: IUnitState[];
 
     /**
-     * The cost to upgrade a Unit at each level.
+     * The cost to upgrade a Unit.
      */
-    upgradePrice: number[];
+    upgradePrice: number;
 
     /**
      * The amount of victory points required to win.
@@ -172,11 +172,6 @@ export interface IJobState extends IGameObjectState {
      * The amount of cargo capacity this Unit starts with per level.
      */
     cargoCapacity: number[];
-
-    /**
-     * The cost of spawning a Unit with this Job.
-     */
-    cost: number;
 
     /**
      * The amount of starting health this Job has per level.
