@@ -146,6 +146,22 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
+     * Purchase a resource from the player's base or hopper.
+     * @param resource The type of resource to buy.
+     * @param amount The amount of resource to buy.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully purchased,
+     * false otherwise.
+     */
+    public buy(
+        resource: "dirt" | "ore" | "bomb" | "buildingMaterials",
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
+        this.runOnServer("buy", {resource, amount}, callback);
+    }
+
+    /**
      * Dumps materials from cargo to an adjacent tile. If the tile is a base or
      * hopper tile, materials are sold instead of placed.
      * @param tile The tile the materials will be dumped on.

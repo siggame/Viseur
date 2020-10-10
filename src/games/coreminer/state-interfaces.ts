@@ -251,11 +251,6 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     side: ITileState[];
 
     /**
-     * The Tiles this Player may spawn Units on.
-     */
-    spawnTiles: ITileState[];
-
-    /**
      * The amount of time (in ns) remaining for this AI to send commands.
      */
     timeRemaining: number;
@@ -564,6 +559,46 @@ export type UnitBuildRanDelta = IRanDelta & {
 };
 
 /**
+ * The delta about what happened when a 'Unit' ran their 'buy' function.
+ */
+export type UnitBuyRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "buy";
+
+            /**
+             * The arguments to Unit.buy,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The type of resource to buy.
+                 */
+                resource: "dirt" | "ore" | "bomb" | "buildingMaterials";
+                /**
+                 * The amount of resource to buy.
+                 */
+                amount: number;
+            };
+        };
+
+        /**
+         * True if successfully purchased, false otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
  * The delta about what happened when a 'Unit' ran their 'dump' function.
  */
 export type UnitDumpRanDelta = IRanDelta & {
@@ -797,6 +832,7 @@ export type CoreminerSpecificDelta =
     GameObjectLogRanDelta
     | PlayerSpawnMinerRanDelta
     | UnitBuildRanDelta
+    | UnitBuyRanDelta
     | UnitDumpRanDelta
     | UnitMineRanDelta
     | UnitMoveRanDelta
