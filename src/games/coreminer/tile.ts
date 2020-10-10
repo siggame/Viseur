@@ -8,6 +8,7 @@ import { CoreminerDelta, ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import * as PIXI from "pixi.js";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -54,7 +55,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     public readonly shield: PIXI.Sprite | undefined;
 
     /** TODO: Document */
-    public ownerID: string;
+    public ownerID?: string;
 
     /** TODO: Document */
     private readonly unitContainer: PIXI.Container;
@@ -73,18 +74,17 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Tile here.
-        // <<-- /Creer-Merge: constructor -->>
-        this.ownerID = state.owner.id;
         this.container.setParent(this.game.layers.background);
         this.container.position.set(state.x, state.y);
 
-        // if (state.owner) {
-        //     this.ownerID = state.owner.id;
-        // }
+        if (state.owner) {
+            this.ownerID = state.owner.id;
+        }
 
         this.unitContainer = new PIXI.Container();
         this.unitContainer.setParent(this.game.layers.game);
-        this.unitContainer.position.copy(this.container.position);
+        this.unitContainer.position.copyFrom(this.container.position);
+        // <<-- /Creer-Merge: constructor -->>
     }
 
     /**
