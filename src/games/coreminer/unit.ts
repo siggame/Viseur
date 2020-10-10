@@ -36,8 +36,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
 
+    /** TODO: Document */
     public readonly miner: PIXI.Sprite | undefined;
 
+    /** TODO: Document */
     public readonly bomb: PIXI.Sprite | undefined;
 
     /** The id of the owner of this unit, for recoloring */
@@ -67,60 +69,82 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.ownerID = state.owner.id;
         this.container.scale.set(OVER_SCALE + 1, OVER_SCALE + 1);
         this.container.setParent(this.game.layers.game);
-
-
-        if (state.job.title === "miner"){
-            if ((state.job.health.indexOf(state.maxHealth) === 0) && (state.job.health.indexOf(state.maxCargoCapacity) === 0) && (state.job.health.indexOf(state.maxMiningPower) === 0) && (state.job.health.indexOf(state.maxMoves) === 0)){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.defaultMinerP1(): this.addSprite.defaultMinerP2());
+        if (state.job.title === "miner") {
+            if ((state.job.health.indexOf(state.maxHealth) === 0)
+                && (state.job.health.indexOf(state.maxCargoCapacity) === 0)
+                && (state.job.health.indexOf(state.maxMiningPower) === 0)
+                && (state.job.health.indexOf(state.maxMoves) === 0)) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.defaultMinerP1() : this.addSprite.defaultMinerP2());
             }
-            else if (state.job.health.indexOf(state.maxHealth) === 1){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerHealthUp1P1(): this.addSprite.minerHealthUp1P2());
+            else if (state.job.health.indexOf(state.maxHealth) === 1) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerHealthUp1P1() : this.addSprite.minerHealthUp1P2());
             }
-            else if (state.job.health.indexOf(state.maxHealth) === 2){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerHealthUp2P1(): this.addSprite.minerHealthUp2P2());
+            else if (state.job.health.indexOf(state.maxHealth) === 2) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerHealthUp2P1() : this.addSprite.minerHealthUp2P2());
             }
-            else if (state.job.health.indexOf(state.maxHealth) === 3){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerHealthUp3P1(): this.addSprite.minerHealthUp3P2());
-            }
-
-            else if (state.job.health.indexOf(state.maxCargoCapacity) === 1){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerCargoUp1P1(): this.addSprite.minerCargoUp1P2());
-            }
-            else if (state.job.health.indexOf(state.maxCargoCapacity) === 2){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerCargoUp2P1(): this.addSprite.minerCargoUp2P2());
-            }
-            else if (state.job.health.indexOf(state.maxCargoCapacity) === 3){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerCargoUp3P1(): this.addSprite.minerCargoUp3P2());
+            else if (state.job.health.indexOf(state.maxHealth) === 3) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerHealthUp3P1() : this.addSprite.minerHealthUp3P2());
             }
 
-            else if (state.job.health.indexOf(state.maxMiningPower) === 1){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerPowerUp1P1(): this.addSprite.minerPowerUp1P2());
+            else if (state.job.health.indexOf(state.maxCargoCapacity) === 1) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerCargoUp1P1() : this.addSprite.minerCargoUp1P2());
             }
-            else if (state.job.health.indexOf(state.maxMiningPower) === 2){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerPowerUp2P1(): this.addSprite.minerPowerUp2P2());
+            else if (state.job.health.indexOf(state.maxCargoCapacity) === 2) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerCargoUp2P1() : this.addSprite.minerCargoUp2P2());
             }
-            else if (state.job.health.indexOf(state.maxMiningPower) === 3){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerPowerUp3P1(): this.addSprite.minerPowerUp3P2());
+            else if (state.job.health.indexOf(state.maxCargoCapacity) === 3) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerCargoUp3P1() : this.addSprite.minerCargoUp3P2());
             }
 
-            else if (state.job.health.indexOf(state.maxMoves) === 1){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerMoveUp1P1(): this.addSprite.minerMoveUp1P2());
+            else if (state.job.health.indexOf(state.maxMiningPower) === 1) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerPowerUp1P1() : this.addSprite.minerPowerUp1P2());
             }
-            else if (state.job.health.indexOf(state.maxMoves) === 2){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerMoveUp2P1(): this.addSprite.minerMoveUp2P2());
+            else if (state.job.health.indexOf(state.maxMiningPower) === 2) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerPowerUp2P1() : this.addSprite.minerPowerUp2P2());
             }
-            else if (state.job.health.indexOf(state.maxMoves) === 3){
-                this.miner = ((state.owner.id === this.game.players[0].id)? this.addSprite.minerMoveUp3P1(): this.addSprite.minerMoveUp3P2());
+            else if (state.job.health.indexOf(state.maxMiningPower) === 3) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerPowerUp3P1() : this.addSprite.minerPowerUp3P2());
+            }
+
+            else if (state.job.health.indexOf(state.maxMoves) === 1) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerMoveUp1P1() : this.addSprite.minerMoveUp1P2());
+            }
+            else if (state.job.health.indexOf(state.maxMoves) === 2) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerMoveUp2P1() : this.addSprite.minerMoveUp2P2());
+            }
+            else if (state.job.health.indexOf(state.maxMoves) === 3) {
+                this.miner = ((state.owner.id === this.game.players[0].id)
+                    ? this.addSprite.minerMoveUp3P1() : this.addSprite.minerMoveUp3P2());
             }
         }
 
-        else if (state.job.title === "bomb"){
+        else if (state.job.title === "bomb") {
             this.bomb = this.addSprite.bomb();
         }
-        //Flip
+        // Flip
         if (state.owner.id === this.game.players[1].id) {
             this.container.scale.x *= -1;
         }
+
+        const barContainer = new PIXI.Container();
+        barContainer.setParent(this.container);
+        barContainer.position.y -= 0.25;
+
+        this.healthBar = new GameBar(barContainer, {
+            max: state.health,
+        });
 
         // You can initialize your new Unit here.
         // <<-- /Creer-Merge: constructor -->>

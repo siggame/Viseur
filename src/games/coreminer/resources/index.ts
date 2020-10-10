@@ -4,8 +4,8 @@ import { createResources, load } from "src/viseur/renderer";
 export const GameResources = createResources("Coreminer", {
     // <<-- Creer-Merge: resources -->>
     test: load("test.png"), // load files like this,
-    //Default P1 here
-    //Default P2 here
+    // Default P1 here
+    // Default P2 here
     minerHealthUp1P1: load("Armor Level 1 Team 1.png"),
     minerHealthUp2P1: load("Armor Level 2 Team 1.png"),
     minerHealthUp3P1: load("Armor Level 3 Team 1.png"),
