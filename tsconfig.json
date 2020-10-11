@@ -20,10 +20,5 @@
         "paths": {
             //"~/*" : ["src/*"] // resolve any `~/foo/bar` to `<baseUrl>/src/foo/bar`
         }
-    },
-    "include": [
-        "node_modules/@types/**/*.d.ts",
-        "src/**/*.ts",
-        "src/**/*.d.ts"
-    ]
+    }
 }

@@ -56,6 +56,8 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),
+        /** the layer of items on the dirt */
+        appliances: this.createLayer(),
         /** Middle layer, for moving game objects */
         game: this.createLayer(),
         /** Top layer, for UI elements above the game */
@@ -83,8 +85,8 @@ export class Game extends BaseGame {
     protected getSize(state: IGameState): IRendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
-            width: 10, // Change these. Probably read in the map's width
-            height: 10, // and height from the initial state here.
+            width: state.mapWidth, // Change these. Probably read in the map's width
+            height: state.mapHeight, // and height from the initial state here.
             // <<-- /Creer-Merge: get-size -->>
         };
     }
@@ -116,6 +118,7 @@ export class Game extends BaseGame {
 
         // this is an example of how to render a sprite. You'll probably want
         // to remove this code and the test sprite once actually doing things
+        /*
         this.resources.test.newSprite({
             container: this.layers.background,
             position: {x: 5, y: 5},
@@ -131,6 +134,7 @@ export class Game extends BaseGame {
             },
             1,
         );
+        */
         // <<-- /Creer-Merge: create-background -->>
     }
 

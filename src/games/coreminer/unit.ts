@@ -8,10 +8,8 @@ import { GameObject } from "./game-object";
 import { CoreminerDelta, ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// <<-- Creer-Merge: imports -->>
 import { ease, pixiFade , updown } from "src/utils";
 import { GameBar } from "src/viseur/game";
-const OVER_SCALE = 0.1;
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
@@ -26,6 +24,13 @@ const SHOULD_RENDER = true;
 export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
+
+    /** unit scale */
+    private static readonly SCALE = 1;
+
+    /** Unit's healthBar off set */
+    private static readonly HealthBarOffset = 0.25;
+
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Unit (dt = 0) */
@@ -36,11 +41,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
 
-    /** TODO: Document */
-    public readonly miner: PIXI.Sprite | undefined;
-
-    /** TODO: Document */
-    public readonly bomb: PIXI.Sprite | undefined;
+    /** This Unit's sprite */
+    public unitSprite: PIXI.Sprite;
 
     /** The id of the owner of this unit, for recoloring */
     public ownerID: string;
@@ -49,7 +51,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public attackingTile?: ITileState;
 
     /** Our health bar */
-    public readonly healthBar: GameBar;
+    public healthBar?: GameBar;
+
+    /** Upgrade Level */
+    public readonly UpgradeLevel: number;
 
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
@@ -65,87 +70,54 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-
+        this.UpgradeLevel = state.upgradeLevel;
         this.ownerID = state.owner.id;
-        this.container.scale.set(OVER_SCALE + 1, OVER_SCALE + 1);
+        // I removed OVER_SCALE here because I was not sure why it was a thing.
+        this.container.scale.set(Unit.SCALE, Unit.SCALE);
         this.container.setParent(this.game.layers.game);
         if (state.job.title === "miner") {
-            if ((state.job.health.indexOf(state.maxHealth) === 0)
-                && (state.job.health.indexOf(state.maxCargoCapacity) === 0)
-                && (state.job.health.indexOf(state.maxMiningPower) === 0)
-                && (state.job.health.indexOf(state.maxMoves) === 0)) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.defaultMinerP1() : this.addSprite.defaultMinerP2());
-            }
-            else if (state.job.health.indexOf(state.maxHealth) === 1) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerHealthUp1P1() : this.addSprite.minerHealthUp1P2());
-            }
-            else if (state.job.health.indexOf(state.maxHealth) === 2) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerHealthUp2P1() : this.addSprite.minerHealthUp2P2());
-            }
-            else if (state.job.health.indexOf(state.maxHealth) === 3) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerHealthUp3P1() : this.addSprite.minerHealthUp3P2());
+            switch (this.UpgradeLevel) {
+                case 0:
+                    this.unitSprite = this.addSprite.minerLvl0();
+                    break;
+                case 1:
+                    this.unitSprite = this.addSprite.minerLvl1();
+                    break;
+                case 2:
+                    this.unitSprite = this.addSprite.minerLvl2();
+                    break;
+                case 3:
+                    this.unitSprite = this.addSprite.minerLvl3();
+                    break;
+                default:
+                    throw Error("Invalid Upgrade level");
             }
 
-            else if (state.job.health.indexOf(state.maxCargoCapacity) === 1) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerCargoUp1P1() : this.addSprite.minerCargoUp1P2());
-            }
-            else if (state.job.health.indexOf(state.maxCargoCapacity) === 2) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerCargoUp2P1() : this.addSprite.minerCargoUp2P2());
-            }
-            else if (state.job.health.indexOf(state.maxCargoCapacity) === 3) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerCargoUp3P1() : this.addSprite.minerCargoUp3P2());
-            }
+            const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+            this.unitSprite.tint = color;
 
-            else if (state.job.health.indexOf(state.maxMiningPower) === 1) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerPowerUp1P1() : this.addSprite.minerPowerUp1P2());
-            }
-            else if (state.job.health.indexOf(state.maxMiningPower) === 2) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerPowerUp2P1() : this.addSprite.minerPowerUp2P2());
-            }
-            else if (state.job.health.indexOf(state.maxMiningPower) === 3) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerPowerUp3P1() : this.addSprite.minerPowerUp3P2());
-            }
+            const barContainer = new PIXI.Container();
+            barContainer.setParent(this.container);
+            barContainer.position.y -= Unit.HealthBarOffset;
 
-            else if (state.job.health.indexOf(state.maxMoves) === 1) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerMoveUp1P1() : this.addSprite.minerMoveUp1P2());
-            }
-            else if (state.job.health.indexOf(state.maxMoves) === 2) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerMoveUp2P1() : this.addSprite.minerMoveUp2P2());
-            }
-            else if (state.job.health.indexOf(state.maxMoves) === 3) {
-                this.miner = ((state.owner.id === this.game.players[0].id)
-                    ? this.addSprite.minerMoveUp3P1() : this.addSprite.minerMoveUp3P2());
-            }
+            this.healthBar = new GameBar(barContainer, {
+                max: state.health,
+                backgroundColor: "grey",
+                foregroundColor: color,
+            });
         }
-
         else if (state.job.title === "bomb") {
-            this.bomb = this.addSprite.bomb();
+            this.unitSprite = this.addSprite.bomb();
         }
-        // Flip
-        if (state.owner.id === this.game.players[1].id) {
+        else {
+            this.unitSprite = this.addSprite.error();
+        }
+
+        // Flip needs an offset when setting location see render for that
+        // notice that it is player 1 we are flipping here
+        if (this.ownerID === this.game.players[1].id) {
             this.container.scale.x *= -1;
         }
-
-        const barContainer = new PIXI.Container();
-        barContainer.setParent(this.container);
-        barContainer.position.y -= 0.25;
-
-        this.healthBar = new GameBar(barContainer, {
-            max: state.health,
-        });
-
         // You can initialize your new Unit here.
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -159,7 +131,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param current - The current (most) game state, will be this.next if this.current is undefined.
      * @param next - The next (most) game state, will be this.current if this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta  - The the next (most) delta, which explains what happened.
      */
     public render(
         dt: number,
@@ -169,18 +141,31 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<CoreminerDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
+        // <<-- Creer-Merge: render -->>
+        // render where the Unit is
         if (!next.tile) {
             this.container.visible = false;
 
             return;
         }
-        this.container.visible = true;
-        this.container.position.set(
-            ease(current.tile.x, next.tile.x, dt) + Number(this.ownerID === this.game.players[0].id),
-            ease(current.tile.y, next.tile.y, dt),
-          );
 
-        this.healthBar.update(ease(current.health, next.health, dt));
+        if (next.health <= 0) {
+            this.container.visible = false;
+
+            return;
+        }
+
+        this.container.position.set(
+            // offset so we can flip image
+            // and we offset by one if it is the player we flipped
+            ease(current.tile.x, next.tile.x, dt) + Number(this.ownerID === this.game.players[1].id),
+            ease(current.tile.y, next.tile.y, dt),
+        );
+        if (this.healthBar) {
+            this.healthBar.update(ease(current.health, next.health, dt));
+        }
+
+        // fade unit out for dying
         pixiFade(this.container, dt, current.health, next.health);
 
         if (this.attackingTile) {
@@ -191,8 +176,6 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.container.x += dx * d;
             this.container.y += dy * d;
         }
-        // <<-- Creer-Merge: render -->>
-        // render where the Unit is
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -205,6 +188,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        if (this.healthBar) {
+            const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+            this.healthBar.recolor(color);
+        }
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -229,7 +216,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param current - The current (most) game state, will be this.next if this.current is undefined.
      * @param next - The next (most) game state, will be this.current if this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta  - The the next (most) delta, which explains what happened.
      */
     public stateUpdated(
         current: Immutable<IUnitState>,
@@ -269,7 +256,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Dumps materials from cargo to an adjacent tile.
+     * Dumps materials from cargo to an adjacent tile. If the tile is a base or
+     * hopper tile, materials are sold instead of placed.
      * @param tile The tile the materials will be dumped on.
      * @param material The material the Unit will drop. 'dirt', 'ore', or
      * 'bomb'.
@@ -320,18 +308,33 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Upgrade an attribute of this Unit. "health", "miningPower", "moves", or
-     * "capacity".
-     * @param attribute The attribute of the Unit to be upgraded.
+     * Transfers a resource from the one Unit to another.
+     * @param unit The Unit to transfer materials to.
+     * @param resource The type of resource to transfer.
+     * @param amount The amount of resource to transfer.
+     * @param callback? The callback that eventually returns the return value
+     * from the server. - The returned value is True if successfully transfered,
+     * false otherwise.
+     */
+    public transfer(
+        unit: IUnitState,
+        resource: "dirt" | "ore" | "bomb" | "buildingMaterials",
+        amount: number,
+        callback?: (returned: boolean) => void,
+    ): void {
+        this.runOnServer("transfer", {unit, resource, amount}, callback);
+    }
+
+    /**
+     * Upgrade this Unit.
      * @param callback? The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully upgraded,
      * False otherwise.
      */
     public upgrade(
-        attribute: "health" | "miningPower" | "moves" | "capacity",
         callback?: (returned: boolean) => void,
     ): void {
-        this.runOnServer("upgrade", {attribute}, callback);
+        this.runOnServer("upgrade", {}, callback);
     }
 
     // </Joueur functions>

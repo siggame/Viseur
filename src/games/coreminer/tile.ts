@@ -1,6 +1,6 @@
 // This is a class to represent the Tile object in the game.
 // If you want to render it in the game do so here.
-import { Immutable } from "src/utils";
+import { Immutable, pixiFade } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
@@ -8,6 +8,7 @@ import { CoreminerDelta, ITileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import * as PIXI from "pixi.js";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -32,32 +33,32 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
 
-    /** TODO: Document */
-    public readonly base: PIXI.Sprite | undefined;
+    /** tile sprite */
+    public tileSprite: PIXI.Sprite;
+
+    /** contains all the appliance sprites */
+    public readonly applianceContainer: PIXI.Container;
+
+    /** sprite for the ladder */
+    public ladderSprite?: PIXI.Sprite;
+
+    /** sprite for the support */
+    public supportSprite?: PIXI.Sprite;
+
+    /** sprite for the ore */
+    public oreSprite?: PIXI.Sprite;
+
+    /** sprite for the base */
+    public baseSprite?: PIXI.Sprite;
+
+    /** sprite for the hopper */
+    public hopperSprite?: PIXI.Sprite;
+
+    /** the shield sprite */
+    public shieldSprite?: PIXI.Sprite;
 
     /** TODO: Document */
-    public readonly hopper: PIXI.Sprite | undefined;
-
-    /** TODO: Document */
-    public readonly dirt: PIXI.Sprite | undefined;
-
-    /** TODO: Document */
-    public readonly ladder: PIXI.Sprite | undefined;
-
-    /** TODO: Document */
-    public readonly support: PIXI.Sprite | undefined;
-
-    /** TODO: Document */
-    public readonly ore: PIXI.Sprite | undefined;
-
-    /** TODO: Document */
-    public readonly shield: PIXI.Sprite | undefined;
-
-    /** TODO: Document */
-    public ownerID: string;
-
-    /** TODO: Document */
-    private readonly unitContainer: PIXI.Container;
+    public ownerID?: string;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -73,18 +74,52 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Tile here.
-        // <<-- /Creer-Merge: constructor -->>
-        this.ownerID = state.owner.id;
         this.container.setParent(this.game.layers.background);
         this.container.position.set(state.x, state.y);
 
-        // if (state.owner) {
-        //     this.ownerID = state.owner.id;
-        // }
+        if (state.owner) {
+            this.ownerID = state.owner.id;
+        }
 
-        this.unitContainer = new PIXI.Container();
-        this.unitContainer.setParent(this.game.layers.game);
-        this.unitContainer.position.copy(this.container.position);
+        this.applianceContainer = new PIXI.Container();
+        this.applianceContainer.setParent(this.game.layers.appliances);
+        this.applianceContainer.position.copyFrom(this.container.position);
+
+        if (state.y === 0 && state.dirt <= 0 && state.ore <= 0) {
+            this.tileSprite = this.addSprite.sky();
+        }
+        else if (state.dirt > 0) {
+            this.tileSprite = this.addSprite.dirt();
+        }
+        else {
+            this.tileSprite = this.addSprite.dugDirt();
+        }
+        if (state.isBase) {
+            this.baseSprite = this.addSprite.base({container: this.applianceContainer});
+            if (this.ownerID) {
+                const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+                this.baseSprite.tint = color;
+            }
+        }
+        else if (state.isHopper) {
+            this.hopperSprite = this.addSprite.miningTube({container: this.applianceContainer });
+        }
+        else if (state.isLadder) {
+            this.ladderSprite = this.addSprite.ladder({container: this.applianceContainer});
+        }
+        else if (state.isSupport) {
+            this.supportSprite = this.addSprite.miningTube({container: this.applianceContainer});
+        }
+        else if (state.ore > 0) {
+            // TODO: swap in ORE sprite
+            this.oreSprite = this.addSprite.error();
+        }
+
+        if (state.shielding > 0) {
+            // TODO: swap in Shield sprite
+            this.shieldSprite = this.addSprite.error({container: this.applianceContainer});
+        }
+        // <<-- /Creer-Merge: constructor -->>
     }
 
     /**
@@ -109,6 +144,40 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
         // render where the Tile is
+        if (current.dirt > 0 && next.dirt === 0) {
+            this.tileSprite = this.addSprite.dugDirt();
+        }
+        else if (current.dirt === 0 && next.dirt > 0) {
+            this.tileSprite = this.addSprite.dirt();
+        }
+
+        if (this.oreSprite) {
+            pixiFade(this.oreSprite, dt, current.ore, next.ore);
+        }
+        else if (next.ore > 0) {
+            // TODO: swap with correct sprite
+            this.oreSprite = this.addSprite.error({container: this.applianceContainer});
+        }
+
+        if (this.shieldSprite) {
+            pixiFade(this.shieldSprite, dt, current.shielding, next.shielding);
+        }
+        else if (next.shielding > 0) {
+            // TODO: swap with correct sprite
+            this.shieldSprite = this.addSprite.error({container: this.applianceContainer});
+        }
+
+        if (this.ladderSprite) {
+            pixiFade(this.ladderSprite, dt, Number(current.isLadder), Number(next.isLadder));
+        }
+        else if (next.isLadder) {
+            this.ladderSprite = this.addSprite.ladder({container: this.applianceContainer});
+        }
+
+        if (current.isHopper !== next.isHopper) {
+            this.hopperSprite = this.addSprite.miningTube({container: this.applianceContainer});
+        }
+
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -121,6 +190,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        if (this.ownerID && this.baseSprite) {
+            const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+            this.baseSprite.tint = color;
+        }
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -136,6 +209,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: hide-render -->>
         // hide anything outside of `this.container`.
+        this.applianceContainer.visible = false; // not a child of our container
         // <<-- /Creer-Merge: hide-render -->>
     }
 
@@ -163,25 +237,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
-
-    // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
-
-    /**
-     * Spawns a Miner Unit on this Tile - Must be on the surface on their side
-     * of the map.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if successfully spawned,
-     * false otherwise.
-     */
-    public spawnMiner(
-        callback?: (returned: boolean) => void,
-    ): void {
-        this.runOnServer("spawnMiner", {}, callback);
-    }
-
-    // </Joueur functions>
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here

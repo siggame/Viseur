@@ -10,7 +10,7 @@ export default (// tslint:disable-line:no-default-export
     options: webpack.Configuration,
 ): webpack.Configuration => ({
     entry: [
-        "@babel/polyfill/dist/polyfill.js", // polyfill new ES functions for babel
+        "core-js/stable/index.js", // polyfill new ES functions for babel
         "font-awesome/scss/font-awesome.scss", // font-awesome icons injection
         "src/index.ts", // our actual starting file now that stuff is ready
     ],
@@ -96,7 +96,7 @@ export default (// tslint:disable-line:no-default-export
             minify: {
                 collapseWhitespace: true,
             },
-        }) as unknown as webpack.Plugin,
+        }),
         // ^ TS definition are old and deprecated. HtmlWebpackPlugin will have defs in 4.0, this is a hack till then
         gitRevisionPlugin,
         new webpack.DefinePlugin({
@@ -104,6 +104,9 @@ export default (// tslint:disable-line:no-default-export
             "process.env.GIT_VERSION": JSON.stringify(gitRevisionPlugin.version()),
             "process.env.GIT_COMMIT_HASH": JSON.stringify(gitRevisionPlugin.commithash()),
             "process.env.GIT_BRANCH": JSON.stringify(gitRevisionPlugin.branch()),
+        }),
+        new webpack.ProvidePlugin({
+            PIXI: "pixi.js", // TypeScript definitions inject this into global scope, so let's make that true at runtime
         }),
     ],
     optimization: {

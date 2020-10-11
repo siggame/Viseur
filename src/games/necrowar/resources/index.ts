@@ -11,7 +11,7 @@ export const GameResources = createResources("Necrowar", {
     castle: load("castle.png"),
     cleansingTower: load("cleansingTower.png"),
     goldMine: load("goldmine1.png"),
-    islandGoldmine: load("goldmine.png"),
+    islandGoldmine: load("goldMine.png"),
     grass: load("grass.png"),
     manaFish: load("manaFish.png"),
     path: load("path.png"),

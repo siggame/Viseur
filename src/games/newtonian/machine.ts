@@ -7,6 +7,7 @@ import { GameObject } from "./game-object";
 import { IMachineState, NewtonianDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+import * as PIXI from "pixi.js";
 import { ease } from "src/utils";
 import { GameBar } from "src/viseur/game";
 const CONTAINER_SCALE = 1.25;

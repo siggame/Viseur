@@ -7,8 +7,8 @@ import { GameObject } from "./game-object";
 import { IBodyState, IProjectileState, IUnitState, StardashDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
-import { ease } from "src/utils"; // , isObject, pixiFade, updown } from "src/utils";
+import * as PIXI from "pixi.js";
+import { ease } from "src/utils";
 import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 

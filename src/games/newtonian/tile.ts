@@ -7,6 +7,7 @@ import { GameObject } from "./game-object";
 import { ITileState, NewtonianDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+import * as PIXI from "pixi.js";
 import { pixiFade } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
@@ -74,7 +75,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         this.oreContainer = new PIXI.Container();
         this.oreContainer.setParent(this.game.layers.ore);
-        this.oreContainer.position.copy(this.container.position);
+        this.oreContainer.position.copyFrom(this.container.position);
 
         state.type === "conveyor"
             ? this.addSprite.conveyor()
@@ -130,7 +131,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: render -->>
 
         pixiFade(this.wall, dt, Number(next.isWall), Number(current.isWall));
-
         this.oreContainer.visible = true;
         pixiFade(this.barSprite, dt, current.redium || current.blueium, next.redium || next.blueium);
         pixiFade(this.oreSprite, dt, current.rediumOre || current.blueiumOre, next.rediumOre || next.blueiumOre);

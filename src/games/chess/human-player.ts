@@ -48,9 +48,9 @@ export class HumanPlayer extends BaseHumanPlayer {
      * This is called every time it is this AI.player's turn to make a move.
      * @param callback The callback that eventually returns the return value
      * from the server. - The first argument to the callback is the return
-     * value: A string in Standard Algebraic Notation (SAN) for the move you
-     * want to make. If the move is invalid or not properly formatted you will
-     * lose the game.
+     * value: A string in Universal Chess Inferface (UCI) or Standard Algebraic
+     * Notation (SAN) formatting for the move you want to make. If the move is
+     * invalid or not properly formatted you will lose the game.
      */
     public makeMove(callback: (returned: string) => void): void {
         // <<-- Creer-Merge: makeMove -->>
