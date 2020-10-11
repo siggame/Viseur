@@ -113,7 +113,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.unitSprite = this.addSprite.error();
         }
 
-        // Flip
+        // Flip needs an offset when setting location see render for that
+        // notice that it is player 1 we are flipping here
         if (this.ownerID === this.game.players[1].id) {
             this.container.scale.x *= -1;
         }
@@ -155,7 +156,9 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
 
         this.container.position.set(
-            ease(current.tile.x, next.tile.x, dt),
+            // offset so we can flip image
+            // and we offset by one if it is the player we flipped
+            ease(current.tile.x, next.tile.x, dt) + Number(this.ownerID === this.game.players[1].id),
             ease(current.tile.y, next.tile.y, dt),
         );
         if (this.healthBar) {
