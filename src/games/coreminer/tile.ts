@@ -112,12 +112,12 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         else if (state.ore > 0) {
             // TODO: swap in ORE sprite
-            this.oreSprite = this.addSprite.error();
+            this.oreSprite = this.addSprite.ore();
         }
 
         if (state.shielding > 0) {
             // TODO: swap in Shield sprite
-            this.shieldSprite = this.addSprite.error({container: this.applianceContainer});
+            this.shieldSprite = this.addSprite.shield({container: this.applianceContainer});
         }
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -156,7 +156,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         else if (next.ore > 0) {
             // TODO: swap with correct sprite
-            this.oreSprite = this.addSprite.error({container: this.applianceContainer});
+            this.oreSprite = this.addSprite.ore({container: this.applianceContainer});
         }
 
         if (this.shieldSprite) {
@@ -164,7 +164,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         else if (next.shielding > 0) {
             // TODO: swap with correct sprite
-            this.shieldSprite = this.addSprite.error({container: this.applianceContainer});
+            this.shieldSprite = this.addSprite.shield({container: this.applianceContainer});
         }
 
         if (this.ladderSprite) {
