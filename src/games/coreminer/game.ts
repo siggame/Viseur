@@ -56,6 +56,8 @@ export class Game extends BaseGame {
         // <<-- Creer-Merge: layers -->>
         /** Bottom most layer, for background elements */
         background: this.createLayer(),
+        /** the layer of items on the dirt */
+        appliances: this.createLayer(),
         /** Middle layer, for moving game objects */
         game: this.createLayer(),
         /** Top layer, for UI elements above the game */

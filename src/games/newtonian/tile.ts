@@ -131,7 +131,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: render -->>
 
         pixiFade(this.wall, dt, Number(next.isWall), Number(current.isWall));
-
         this.oreContainer.visible = true;
         pixiFade(this.barSprite, dt, current.redium || current.blueium, next.redium || next.blueium);
         pixiFade(this.oreSprite, dt, current.rediumOre || current.blueiumOre, next.rediumOre || next.blueiumOre);
