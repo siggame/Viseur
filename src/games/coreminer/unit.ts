@@ -54,7 +54,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public healthBar?: GameBar;
 
     /** Upgrade Level */
-    public readonly UpgradeLevel: number;
+    public UpgradeLevel: number;
 
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
@@ -90,7 +90,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
                     this.unitSprite = this.addSprite.minerLvl3();
                     break;
                 default:
-                    throw Error("Invalid Upgrade level");
+                    this.unitSprite = this.addSprite.error();
             }
 
             const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
@@ -101,7 +101,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             barContainer.position.y -= Unit.HealthBarOffset;
 
             this.healthBar = new GameBar(barContainer, {
-                max: state.health,
+                max: state.maxHealth,
                 backgroundColor: "grey",
                 foregroundColor: color,
             });
@@ -165,6 +165,26 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.healthBar.update(ease(current.health, next.health, dt));
         }
 
+        if (current.upgradeLevel !== next.upgradeLevel) {
+            this.UpgradeLevel = next.upgradeLevel;
+            switch (this.UpgradeLevel) {
+                case 0:
+                    this.unitSprite = this.addSprite.minerLvl0();
+                    break;
+                case 1:
+                    this.unitSprite = this.addSprite.minerLvl1();
+                    break;
+                case 2:
+                    this.unitSprite = this.addSprite.minerLvl2();
+                    break;
+                case 3:
+                    this.unitSprite = this.addSprite.minerLvl3();
+                    break;
+                default:
+                    this.unitSprite = this.addSprite.error();
+            }
+        }
+
         // fade unit out for dying
         pixiFade(this.container, dt, current.health, next.health);
 
@@ -175,6 +195,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
             this.container.x += dx * d;
             this.container.y += dy * d;
+
         }
         // <<-- /Creer-Merge: render -->>
     }
