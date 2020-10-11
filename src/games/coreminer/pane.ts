@@ -51,7 +51,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return undefined; // change to return the states scores for each player
+        return state.players.map((p) => p.value); // change to return the states scores for each player
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -93,7 +93,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
             {
                 title: "Number of Miners",
                 get: (player) => {
-                    return player.units.filter((u) => u.job.title === "miner").length;
+                    return player.units.filter((u) => u ? u.job.title === "miner" : false).length;
                 },
                 icon: "child",
             },
