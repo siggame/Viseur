@@ -1,5 +1,6 @@
 // This is a class to represent the Unit object in the game.
 // If you want to render it in the game do so here.
+import * as PIXI from "pixi.js";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
@@ -7,12 +8,14 @@ import { GameObject } from "./game-object";
 import { CoreminerDelta, ITileState, IUnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
+import { ease, pixiFade , updown } from "src/utils";
+import { GameBar } from "src/viseur/game";
 // any additional imports you want can be added here safely between Creer runs
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -21,6 +24,13 @@ const SHOULD_RENDER = undefined;
 export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
+
+    /** unit scale */
+    private static readonly SCALE = 1;
+
+    /** Unit's healthBar off set */
+    private static readonly HealthBarOffset = 0.25;
+
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Unit (dt = 0) */
@@ -30,6 +40,22 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     public next: IUnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
+
+    /** This Unit's sprite */
+    public unitSprite: PIXI.Sprite;
+
+    /** The id of the owner of this unit, for recoloring */
+    public ownerID: string;
+
+    /** The tile state of the tile we are attacking, if we are. */
+    public attackingTile?: ITileState;
+
+    /** Our health bar */
+    public healthBar?: GameBar;
+
+    /** Upgrade Level */
+    public readonly UpgradeLevel: number;
+
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
@@ -44,6 +70,53 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
+        this.UpgradeLevel = state.upgradeLevel;
+        this.ownerID = state.owner.id;
+        // I removed OVER_SCALE here because I was not sure why it was a thing.
+        this.container.scale.set(Unit.SCALE, Unit.SCALE);
+        this.container.setParent(this.game.layers.game);
+        if (state.job.title === "miner") {
+            switch (this.UpgradeLevel) {
+                case 0:
+                    this.unitSprite = this.addSprite.minerLvl0();
+                    break;
+                case 1:
+                    this.unitSprite = this.addSprite.minerLvl1();
+                    break;
+                case 2:
+                    this.unitSprite = this.addSprite.minerLvl2();
+                    break;
+                case 3:
+                    this.unitSprite = this.addSprite.minerLvl3();
+                    break;
+                default:
+                    throw Error("Invalid Upgrade level");
+            }
+
+            const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+            this.unitSprite.tint = color;
+
+            const barContainer = new PIXI.Container();
+            barContainer.setParent(this.container);
+            barContainer.position.y -= Unit.HealthBarOffset;
+
+            this.healthBar = new GameBar(barContainer, {
+                max: state.health,
+                backgroundColor: "grey",
+                foregroundColor: color,
+            });
+        }
+        else if (state.job.title === "bomb") {
+            this.unitSprite = this.addSprite.bomb();
+        }
+        else {
+            this.unitSprite = this.addSprite.error();
+        }
+
+        // Flip
+        if (this.ownerID === this.game.players[1].id) {
+            this.container.scale.x *= -1;
+        }
         // You can initialize your new Unit here.
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -57,7 +130,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param current - The current (most) game state, will be this.next if this.current is undefined.
      * @param next - The next (most) game state, will be this.current if this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta  - The the next (most) delta, which explains what happened.
      */
     public render(
         dt: number,
@@ -67,9 +140,39 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         nextDelta: Immutable<CoreminerDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
-
         // <<-- Creer-Merge: render -->>
         // render where the Unit is
+        if (!next.tile) {
+            this.container.visible = false;
+
+            return;
+        }
+
+        if (next.health <= 0) {
+            this.container.visible = false;
+
+            return;
+        }
+
+        this.container.position.set(
+            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.y, next.tile.y, dt),
+        );
+        if (this.healthBar) {
+            this.healthBar.update(ease(current.health, next.health, dt));
+        }
+
+        // fade unit out for dying
+        pixiFade(this.container, dt, current.health, next.health);
+
+        if (this.attackingTile) {
+            const d = updown(dt);
+            const dx = (this.attackingTile.x - current.tile.x) / 2;
+            const dy = (this.attackingTile.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -82,6 +185,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        if (this.healthBar) {
+            const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+            this.healthBar.recolor(color);
+        }
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -106,7 +213,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param current - The current (most) game state, will be this.next if this.current is undefined.
      * @param next - The next (most) game state, will be this.current if this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta  - The the next (most) delta, which explains what happened.
      */
     public stateUpdated(
         current: Immutable<IUnitState>,

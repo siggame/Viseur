@@ -82,6 +82,22 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
 
         // <<-- Creer-Merge: player-stats -->>
         // add stats for players to show up here
+        stats.push(
+            {
+                title: "Money",
+                get: (player) => {
+                    return player.money;
+                },
+                icon: "money",
+            },
+            {
+                title: "Number of Miners",
+                get: (player) => {
+                    return player.units.filter((u) => u.job.title === "miner").length;
+                },
+                icon: "child",
+            },
+        );
         // <<-- /Creer-Merge: player-stats -->>
 
         return stats;
