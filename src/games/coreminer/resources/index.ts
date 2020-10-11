@@ -16,6 +16,8 @@ export const GameResources = createResources("Coreminer", {
     sky: load("Sky-tile.png"),
     support: load("support.png"),
     miningTube: load("Mining-tube.png"),
+    shield: load("Shield.png"),
+    ore: load("ore.png"),
 
     // <<-- /Creer-Merge: resources -->>
 });
