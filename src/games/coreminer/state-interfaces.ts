@@ -253,6 +253,11 @@ export interface IMinerState extends IGameObjectState {
     buildingMaterials: number;
 
     /**
+     * The Upgrade this Miner is on.
+     */
+    currentUpgrade: IUpgradeState;
+
+    /**
      * The amount of dirt carried by this Miner.
      */
     dirt: number;
@@ -286,11 +291,6 @@ export interface IMinerState extends IGameObjectState {
      * The Tile this Miner is on.
      */
     tile: ITileState;
-
-    /**
-     * The Upgrade this Miner is on.
-     */
-    upgrade: IUpgradeState;
 
     /**
      * The upgrade level of this Miner. Starts at 0.
