@@ -1,17 +1,19 @@
 // Do not modify this file
 // This is a simple lookup object for each GameObject class
 import { IGameObjectClasses } from "src/viseur/game/interfaces";
+import { Bomb } from "./bomb";
 import { GameObject } from "./game-object";
-import { Job } from "./job";
+import { Miner } from "./miner";
 import { Player } from "./player";
 import { Tile } from "./tile";
-import { Unit } from "./unit";
+import { Upgrade } from "./upgrade";
 
 /** All the non Game classes in this game */
 export const GameObjectClasses: Readonly<IGameObjectClasses> = Object.freeze({
     GameObject,
     Player,
     Tile,
-    Unit,
-    Job,
+    Miner,
+    Upgrade,
+    Bomb,
 });

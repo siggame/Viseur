@@ -17,9 +17,14 @@ export interface IGameState extends IBaseGame {
     bombPrice: number;
 
     /**
-     * The amount of cargo space taken up by a bomb.
+     * The amount of cargo space taken up by a Bomb.
      */
     bombSize: number;
+
+    /**
+     * Every Bomb in the game.
+     */
+    bombs: IBombState[];
 
     /**
      * The monetary price of building materials when bought.
@@ -43,20 +48,41 @@ export interface IGameState extends IBaseGame {
     dirtPrice: number;
 
     /**
+     * The amount of damage taken per Tile fallen.
+     */
+    fallDamage: number;
+
+    /**
+     * The amount of extra damage taken for falling while carrying a large
+     * amount of cargo.
+     */
+    fallWeightDamage: number;
+
+    /**
      * A mapping of every game object's ID to the actual game object. Primarily
      * used by the server and client to easily refer to the game objects via ID.
      */
     gameObjects: {[id: string]: IGameObjectState};
 
     /**
-     * A list of all jobs.
-     */
-    jobs: IJobState[];
-
-    /**
      * The amount of building material required to build a ladder.
      */
     ladderCost: number;
+
+    /**
+     * The amount of mining power needed to remove a ladder from a Tile.
+     */
+    ladderHealth: number;
+
+    /**
+     * The amount deemed as a large amount of cargo.
+     */
+    largeCargoSize: number;
+
+    /**
+     * The amount deemed as a large amount of material.
+     */
+    largeMaterialSize: number;
 
     /**
      * The number of Tiles in the map along the y (vertical) axis.
@@ -69,9 +95,24 @@ export interface IGameState extends IBaseGame {
     mapWidth: number;
 
     /**
+     * The maximum amount of shielding possible on a Tile.
+     */
+    maxShielding: number;
+
+    /**
      * The maximum number of turns before the game will automatically end.
      */
     maxTurns: number;
+
+    /**
+     * The highest upgrade level allowed on a Miner.
+     */
+    maxUpgradeLevel: number;
+
+    /**
+     * Every Miner in the game.
+     */
+    miners: IMinerState[];
 
     /**
      * The amount of money awarded when ore is dumped in the base and sold.
@@ -79,8 +120,7 @@ export interface IGameState extends IBaseGame {
     orePrice: number;
 
     /**
-     * The amount of victory points awarded when ore is dumped in the base and
-     * sold.
+     * The amount of value awarded when ore is dumped in the base and sold.
      */
     oreValue: number;
 
@@ -100,14 +140,36 @@ export interface IGameState extends IBaseGame {
     shieldCost: number;
 
     /**
+     * The amount of mining power needed to remove one unit of shielding off a
+     * Tile.
+     */
+    shieldHealth: number;
+
+    /**
      * The monetary price of spawning a Miner.
      */
     spawnPrice: number;
 
     /**
+     * The amount of damage taken when suffocating inside a filled Tile.
+     */
+    suffocationDamage: number;
+
+    /**
+     * The amount of extra damage taken for suffocating under a large amount of
+     * material.
+     */
+    suffocationWeightDamage: number;
+
+    /**
      * The amount of building material required to build a support.
      */
     supportCost: number;
+
+    /**
+     * The amount of mining power needed to remove a support from a Tile.
+     */
+    supportHealth: number;
 
     /**
      * All the tiles in the map, stored in Row-major order. Use `x + y *
@@ -122,19 +184,31 @@ export interface IGameState extends IBaseGame {
     timeAddedPerTurn: number;
 
     /**
-     * Every Unit in the game.
-     */
-    units: IUnitState[];
-
-    /**
-     * The cost to upgrade a Unit.
+     * The cost to upgrade a Miner.
      */
     upgradePrice: number;
 
     /**
-     * The amount of victory points required to win.
+     * Every Upgrade for a Miner in the game.
+     */
+    upgrades: IUpgradeState[];
+
+    /**
+     * The amount of victory points (value) required to win.
      */
     victoryAmount: number;
+
+}
+
+/**
+ * A Bomb in the game.
+ */
+export interface IBombState extends IGameObjectState {
+    /**
+     * The number of turns before this Bomb explodes. Zero means it will explode
+     * after the current turn.
+     */
+    timer: number;
 
 }
 
@@ -165,33 +239,63 @@ export interface IGameObjectState extends IBaseGameObject {
 }
 
 /**
- * Information about a Unit's job.
+ * A Miner in the game.
  */
-export interface IJobState extends IGameObjectState {
+export interface IMinerState extends IGameObjectState {
     /**
-     * The amount of cargo capacity this Unit starts with per level.
+     * The number of bombs being carried by this Miner.
      */
-    cargoCapacity: number[];
+    bombs: number;
 
     /**
-     * The amount of starting health this Job has per level.
+     * The number of building materials carried by this Miner.
      */
-    health: number[];
+    buildingMaterials: number;
 
     /**
-     * The amount of mining power this Unit has per turn per level.
+     * The amount of dirt carried by this Miner.
      */
-    miningPower: number[];
+    dirt: number;
 
     /**
-     * The number of moves this Job can make per turn per level.
+     * The remaining health of this Miner.
      */
-    moves: number[];
+    health: number;
 
     /**
-     * The Job title. 'miner' or 'bomb'.
+     * The remaining mining power this Miner has this turn.
      */
-    title: "miner" | "bomb";
+    miningPower: number;
+
+    /**
+     * The number of moves this Miner has left this turn.
+     */
+    moves: number;
+
+    /**
+     * The amount of ore carried by this Miner.
+     */
+    ore: number;
+
+    /**
+     * The Player that owns and can control this Miner.
+     */
+    owner: IPlayerState;
+
+    /**
+     * The Tile this Miner is on.
+     */
+    tile: ITileState;
+
+    /**
+     * The Upgrade this Miner is on.
+     */
+    upgrade: IUpgradeState;
+
+    /**
+     * The upgrade level of this Miner. Starts at 0.
+     */
+    upgradeLevel: number;
 
 }
 
@@ -203,6 +307,11 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
      * The Tile this Player's base is on.
      */
     baseTile: ITileState;
+
+    /**
+     * Every Bomb owned by this Player.
+     */
+    bombs: IBombState[];
 
     /**
      * What type of client this is, e.g. 'Python', 'JavaScript', or some other
@@ -219,6 +328,11 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
      * If the player lost the game or not.
      */
     lost: boolean;
+
+    /**
+     * Every Miner owned by this Player.
+     */
+    miners: IMinerState[];
 
     /**
      * The amount of money this Player currently has.
@@ -246,19 +360,9 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
     reasonWon: string;
 
     /**
-     * The Tiles on this Player's side of the map.
-     */
-    side: ITileState[];
-
-    /**
      * The amount of time (in ns) remaining for this AI to send commands.
      */
     timeRemaining: number;
-
-    /**
-     * Every Unit owned by this Player.
-     */
-    units: IUnitState[];
 
     /**
      * The amount of value (victory points) this Player has gained.
@@ -277,17 +381,22 @@ export interface IPlayerState extends IGameObjectState, IBasePlayer {
  */
 export interface ITileState extends IGameObjectState {
     /**
+     * An array of Bombs on this Tile.
+     */
+    bombs: IBombState[];
+
+    /**
      * The amount of dirt on this Tile.
      */
     dirt: number;
 
     /**
-     * Whether or not the tile is a base Tile.
+     * Whether or not the Tile is a base Tile.
      */
     isBase: boolean;
 
     /**
-     * Whether or not this tile is about to fall.
+     * Whether or not this Tile is about to fall after this turn.
      */
     isFalling: boolean;
 
@@ -305,6 +414,11 @@ export interface ITileState extends IGameObjectState {
      * Whether or not a support is built on this Tile.
      */
     isSupport: boolean;
+
+    /**
+     * An array of the Miners on this Tile.
+     */
+    miners: IMinerState[];
 
     /**
      * The amount of ore on this Tile.
@@ -346,11 +460,6 @@ export interface ITileState extends IGameObjectState {
     tileWest: ITileState;
 
     /**
-     * An array of the Units on this Tile.
-     */
-    units: IUnitState[];
-
-    /**
      * The x (horizontal) position of this Tile.
      */
     x: number;
@@ -363,87 +472,33 @@ export interface ITileState extends IGameObjectState {
 }
 
 /**
- * A unit in the game.
+ * Information about a Miner's Upgrade module.
  */
-export interface IUnitState extends IGameObjectState {
+export interface IUpgradeState extends IGameObjectState {
     /**
-     * The number of bombs being carried by this Unit. (0 to job cargo capacity
-     * - other carried materials).
+     * The amount of cargo capacity this Upgrade has.
      */
-    bombs: number;
+    cargoCapacity: number;
 
     /**
-     * The number of building materials carried by this Unit. (0 to job cargo
-     * capacity - other carried materials).
-     */
-    buildingMaterials: number;
-
-    /**
-     * The amount of dirt carried by this Unit. (0 to job cargo capacity - other
-     * carried materials).
-     */
-    dirt: number;
-
-    /**
-     * The remaining health of a Unit.
+     * The maximum amount of health this Upgrade has.
      */
     health: number;
 
     /**
-     * The Job this Unit has.
-     */
-    job: IJobState;
-
-    /**
-     * The maximum amount of cargo this Unit can carry.
-     */
-    maxCargoCapacity: number;
-
-    /**
-     * The maximum health of this Unit.
-     */
-    maxHealth: number;
-
-    /**
-     * The maximum mining power of this Unit.
-     */
-    maxMiningPower: number;
-
-    /**
-     * The maximum moves this Unit can have.
-     */
-    maxMoves: number;
-
-    /**
-     * The remaining mining power this Unit has this turn.
+     * The amount of mining power this Upgrade has per turn.
      */
     miningPower: number;
 
     /**
-     * The number of moves this Unit has left this turn.
+     * The number of moves this Upgrade can make per turn.
      */
     moves: number;
 
     /**
-     * The amount of ore carried by this Unit. (0 to job capacity - other
-     * carried materials).
+     * The Upgrade title.
      */
-    ore: number;
-
-    /**
-     * The Player that owns and can control this Unit.
-     */
-    owner: IPlayerState;
-
-    /**
-     * The Tile this Unit is on.
-     */
-    tile: ITileState;
-
-    /**
-     * The upgrade level of this unit. Starts at 0.
-     */
-    upgradeLevel: number;
+    title: string;
 
 }
 
@@ -486,6 +541,286 @@ export type GameObjectLogRanDelta = IRanDelta & {
 };
 
 /**
+ * The delta about what happened when a 'Miner' ran their 'build' function.
+ */
+export type MinerBuildRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IMinerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "build";
+
+            /**
+             * The arguments to Miner.build,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The Tile to build on.
+                 */
+                tile: GameObjectInstance<ITileState>;
+                /**
+                 * The structure to build (support, ladder, or shield).
+                 */
+                type: "support" | "ladder" | "shield";
+            };
+        };
+
+        /**
+         * True if successfully built, False otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Miner' ran their 'buy' function.
+ */
+export type MinerBuyRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IMinerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "buy";
+
+            /**
+             * The arguments to Miner.buy,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The type of resource to buy.
+                 */
+                resource: "dirt" | "ore" | "bomb" | "buildingMaterials";
+                /**
+                 * The amount of resource to buy. Amounts <= 0 will buy all of
+                 * that material Player can.
+                 */
+                amount: number;
+            };
+        };
+
+        /**
+         * True if successfully purchased, false otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Miner' ran their 'dump' function.
+ */
+export type MinerDumpRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IMinerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "dump";
+
+            /**
+             * The arguments to Miner.dump,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The Tile the materials will be dumped on.
+                 */
+                tile: GameObjectInstance<ITileState>;
+                /**
+                 * The material the Miner will drop. 'dirt', 'ore', or 'bomb'.
+                 */
+                material: "dirt" | "ore" | "bomb";
+                /**
+                 * The number of materials to drop. Amounts <= 0 will drop all
+                 * of the material.
+                 */
+                amount: number;
+            };
+        };
+
+        /**
+         * True if successfully dumped materials, false otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Miner' ran their 'mine' function.
+ */
+export type MinerMineRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IMinerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "mine";
+
+            /**
+             * The arguments to Miner.mine,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The Tile the materials will be mined from.
+                 */
+                tile: GameObjectInstance<ITileState>;
+                /**
+                 * The amount of material to mine up. Amounts <= 0 will mine all
+                 * the materials that the Miner can.
+                 */
+                amount: number;
+            };
+        };
+
+        /**
+         * True if successfully mined, false otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Miner' ran their 'move' function.
+ */
+export type MinerMoveRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IMinerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "move";
+
+            /**
+             * The arguments to Miner.move,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The Tile this Miner should move to.
+                 */
+                tile: GameObjectInstance<ITileState>;
+            };
+        };
+
+        /**
+         * True if it moved, false otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Miner' ran their 'transfer' function.
+ */
+export type MinerTransferRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IMinerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "transfer";
+
+            /**
+             * The arguments to Miner.transfer,
+             * as a map of the argument name to its value.
+             */
+            args: {
+                /**
+                 * The Miner to transfer materials to.
+                 */
+                miner: GameObjectInstance<IMinerState>;
+                /**
+                 * The type of resource to transfer.
+                 */
+                resource: "dirt" | "ore" | "bomb" | "buildingMaterials";
+                /**
+                 * The amount of resource to transfer. Amounts <= 0 will
+                 * transfer all the of the material.
+                 */
+                amount: number;
+            };
+        };
+
+        /**
+         * True if successfully transferred, false otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
+ * The delta about what happened when a 'Miner' ran their 'upgrade' function.
+ */
+export type MinerUpgradeRanDelta = IRanDelta & {
+    /** Data about why the run/ran occurred. */
+    data: {
+        /** The player that requested this game logic be ran. */
+        player: GameObjectInstance<IPlayerState>;
+
+        /** The data about what was requested be run. */
+        run: {
+            /** The reference to the game object requesting a function to be run. */
+            caller: GameObjectInstance<IMinerState>; // tslint:disable-line:no-banned-terms
+
+            /** The name of the function of the caller to run. */
+            functionName: "upgrade";
+
+            /**
+             * The arguments to Miner.upgrade,
+             * as a map of the argument name to its value.
+             */
+            args: {
+            };
+        };
+
+        /**
+         * True if successfully upgraded, False otherwise.
+         */
+        returned: boolean;
+    };
+};
+
+/**
  * The delta about what happened when a 'Player' ran their 'spawnMiner'
  * function.
  */
@@ -513,284 +848,6 @@ export type PlayerSpawnMinerRanDelta = IRanDelta & {
 
         /**
          * True if successfully spawned, false otherwise.
-         */
-        returned: boolean;
-    };
-};
-
-/**
- * The delta about what happened when a 'Unit' ran their 'build' function.
- */
-export type UnitBuildRanDelta = IRanDelta & {
-    /** Data about why the run/ran occurred. */
-    data: {
-        /** The player that requested this game logic be ran. */
-        player: GameObjectInstance<IPlayerState>;
-
-        /** The data about what was requested be run. */
-        run: {
-            /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
-
-            /** The name of the function of the caller to run. */
-            functionName: "build";
-
-            /**
-             * The arguments to Unit.build,
-             * as a map of the argument name to its value.
-             */
-            args: {
-                /**
-                 * The Tile to build on.
-                 */
-                tile: GameObjectInstance<ITileState>;
-                /**
-                 * The structure to build (support, ladder, or shield).
-                 */
-                type: "support" | "ladder" | "shield";
-            };
-        };
-
-        /**
-         * True if successfully built, False otherwise.
-         */
-        returned: boolean;
-    };
-};
-
-/**
- * The delta about what happened when a 'Unit' ran their 'buy' function.
- */
-export type UnitBuyRanDelta = IRanDelta & {
-    /** Data about why the run/ran occurred. */
-    data: {
-        /** The player that requested this game logic be ran. */
-        player: GameObjectInstance<IPlayerState>;
-
-        /** The data about what was requested be run. */
-        run: {
-            /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
-
-            /** The name of the function of the caller to run. */
-            functionName: "buy";
-
-            /**
-             * The arguments to Unit.buy,
-             * as a map of the argument name to its value.
-             */
-            args: {
-                /**
-                 * The type of resource to buy.
-                 */
-                resource: "dirt" | "ore" | "bomb" | "buildingMaterials";
-                /**
-                 * The amount of resource to buy.
-                 */
-                amount: number;
-            };
-        };
-
-        /**
-         * True if successfully purchased, false otherwise.
-         */
-        returned: boolean;
-    };
-};
-
-/**
- * The delta about what happened when a 'Unit' ran their 'dump' function.
- */
-export type UnitDumpRanDelta = IRanDelta & {
-    /** Data about why the run/ran occurred. */
-    data: {
-        /** The player that requested this game logic be ran. */
-        player: GameObjectInstance<IPlayerState>;
-
-        /** The data about what was requested be run. */
-        run: {
-            /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
-
-            /** The name of the function of the caller to run. */
-            functionName: "dump";
-
-            /**
-             * The arguments to Unit.dump,
-             * as a map of the argument name to its value.
-             */
-            args: {
-                /**
-                 * The tile the materials will be dumped on.
-                 */
-                tile: GameObjectInstance<ITileState>;
-                /**
-                 * The material the Unit will drop. 'dirt', 'ore', or 'bomb'.
-                 */
-                material: "dirt" | "ore" | "bomb";
-                /**
-                 * The number of materials to drop. Amounts <= 0 will drop all
-                 * the materials.
-                 */
-                amount: number;
-            };
-        };
-
-        /**
-         * True if successfully dumped materials, false otherwise.
-         */
-        returned: boolean;
-    };
-};
-
-/**
- * The delta about what happened when a 'Unit' ran their 'mine' function.
- */
-export type UnitMineRanDelta = IRanDelta & {
-    /** Data about why the run/ran occurred. */
-    data: {
-        /** The player that requested this game logic be ran. */
-        player: GameObjectInstance<IPlayerState>;
-
-        /** The data about what was requested be run. */
-        run: {
-            /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
-
-            /** The name of the function of the caller to run. */
-            functionName: "mine";
-
-            /**
-             * The arguments to Unit.mine,
-             * as a map of the argument name to its value.
-             */
-            args: {
-                /**
-                 * The Tile the materials will be mined from.
-                 */
-                tile: GameObjectInstance<ITileState>;
-                /**
-                 * The amount of material to mine up. Amounts <= 0 will mine all
-                 * the materials that the Unit can.
-                 */
-                amount: number;
-            };
-        };
-
-        /**
-         * True if successfully mined, false otherwise.
-         */
-        returned: boolean;
-    };
-};
-
-/**
- * The delta about what happened when a 'Unit' ran their 'move' function.
- */
-export type UnitMoveRanDelta = IRanDelta & {
-    /** Data about why the run/ran occurred. */
-    data: {
-        /** The player that requested this game logic be ran. */
-        player: GameObjectInstance<IPlayerState>;
-
-        /** The data about what was requested be run. */
-        run: {
-            /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
-
-            /** The name of the function of the caller to run. */
-            functionName: "move";
-
-            /**
-             * The arguments to Unit.move,
-             * as a map of the argument name to its value.
-             */
-            args: {
-                /**
-                 * The Tile this Unit should move to.
-                 */
-                tile: GameObjectInstance<ITileState>;
-            };
-        };
-
-        /**
-         * True if it moved, false otherwise.
-         */
-        returned: boolean;
-    };
-};
-
-/**
- * The delta about what happened when a 'Unit' ran their 'transfer' function.
- */
-export type UnitTransferRanDelta = IRanDelta & {
-    /** Data about why the run/ran occurred. */
-    data: {
-        /** The player that requested this game logic be ran. */
-        player: GameObjectInstance<IPlayerState>;
-
-        /** The data about what was requested be run. */
-        run: {
-            /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
-
-            /** The name of the function of the caller to run. */
-            functionName: "transfer";
-
-            /**
-             * The arguments to Unit.transfer,
-             * as a map of the argument name to its value.
-             */
-            args: {
-                /**
-                 * The Unit to transfer materials to.
-                 */
-                unit: GameObjectInstance<IUnitState>;
-                /**
-                 * The type of resource to transfer.
-                 */
-                resource: "dirt" | "ore" | "bomb" | "buildingMaterials";
-                /**
-                 * The amount of resource to transfer.
-                 */
-                amount: number;
-            };
-        };
-
-        /**
-         * True if successfully transfered, false otherwise.
-         */
-        returned: boolean;
-    };
-};
-
-/**
- * The delta about what happened when a 'Unit' ran their 'upgrade' function.
- */
-export type UnitUpgradeRanDelta = IRanDelta & {
-    /** Data about why the run/ran occurred. */
-    data: {
-        /** The player that requested this game logic be ran. */
-        player: GameObjectInstance<IPlayerState>;
-
-        /** The data about what was requested be run. */
-        run: {
-            /** The reference to the game object requesting a function to be run. */
-            caller: GameObjectInstance<IUnitState>; // tslint:disable-line:no-banned-terms
-
-            /** The name of the function of the caller to run. */
-            functionName: "upgrade";
-
-            /**
-             * The arguments to Unit.upgrade,
-             * as a map of the argument name to its value.
-             */
-            args: {
-            };
-        };
-
-        /**
-         * True if successfully upgraded, False otherwise.
          */
         returned: boolean;
     };
@@ -830,14 +887,14 @@ export type AIRunTurnFinishedDelta = IFinishedDelta & {
 /** All the possible specific deltas in Coreminer. */
 export type CoreminerSpecificDelta =
     GameObjectLogRanDelta
+    | MinerBuildRanDelta
+    | MinerBuyRanDelta
+    | MinerDumpRanDelta
+    | MinerMineRanDelta
+    | MinerMoveRanDelta
+    | MinerTransferRanDelta
+    | MinerUpgradeRanDelta
     | PlayerSpawnMinerRanDelta
-    | UnitBuildRanDelta
-    | UnitBuyRanDelta
-    | UnitDumpRanDelta
-    | UnitMineRanDelta
-    | UnitMoveRanDelta
-    | UnitTransferRanDelta
-    | UnitUpgradeRanDelta
     | AIRunTurnFinishedDelta
 ;
 

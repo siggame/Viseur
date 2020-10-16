@@ -1,10 +1,10 @@
-// This is a class to represent the Player object in the game.
+// This is a class to represent the Upgrade object in the game.
 // If you want to render it in the game do so here.
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CoreminerDelta, IPlayerState } from "./state-interfaces";
+import { CoreminerDelta, IUpgradeState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -18,38 +18,38 @@ const SHOULD_RENDER = undefined;
 /**
  * An object in the game. The most basic class that all game classes should inherit from automatically.
  */
-export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
+export class Upgrade extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Player (dt = 0) */
-    public current: IPlayerState | undefined;
+    /** The current state of the Upgrade (dt = 0) */
+    public current: IUpgradeState | undefined;
 
-    /** The next state of the Player (dt = 1) */
-    public next: IPlayerState | undefined;
+    /** The next state of the Upgrade (dt = 1) */
+    public next: IUpgradeState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Player with basic logic as provided by the Creer
+     * Constructor for the Upgrade with basic logic as provided by the Creer
      * code generator. This is a good place to initialize sprites and constants.
      *
-     * @param state - The initial state of this Player.
+     * @param state - The initial state of this Upgrade.
      * @param viseur - The Viseur instance that controls everything and contains the game.
      */
-    constructor(state: IPlayerState, viseur: Viseur) {
+    constructor(state: IUpgradeState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
-        // You can initialize your new Player here.
+        // You can initialize your new Upgrade here.
         // <<-- /Creer-Merge: constructor -->>
     }
 
     /**
-     * Called approx 60 times a second to update and render Player instances.
+     * Called approx 60 times a second to update and render Upgrade instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
@@ -61,21 +61,21 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
      */
     public render(
         dt: number,
-        current: Immutable<IPlayerState>,
-        next: Immutable<IPlayerState>,
+        current: Immutable<IUpgradeState>,
+        next: Immutable<IUpgradeState>,
         delta: Immutable<CoreminerDelta>,
         nextDelta: Immutable<CoreminerDelta>,
     ): void {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Player is
+        // render where the Upgrade is
         // <<-- /Creer-Merge: render -->>
     }
 
     /**
      * Invoked after a player changes their color,
-     * so we have a chance to recolor this Player's sprites.
+     * so we have a chance to recolor this Upgrade's sprites.
      */
     public recolor(): void {
         super.recolor();
@@ -86,7 +86,7 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Invoked when this Player instance should not be rendered,
+     * Invoked when this Upgrade instance should not be rendered,
      * such as going back in time before it existed.
      *
      * By default the super hides container.
@@ -109,39 +109,21 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param nextDelta  - The the next (most) delta, which explains what happend.
      */
     public stateUpdated(
-        current: Immutable<IPlayerState>,
-        next: Immutable<IPlayerState>,
+        current: Immutable<IUpgradeState>,
+        next: Immutable<IUpgradeState>,
         delta: Immutable<CoreminerDelta>,
         nextDelta: Immutable<CoreminerDelta>,
     ): void {
         super.stateUpdated(current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: state-updated -->>
-        // update the Player based off its states
+        // update the Upgrade based off its states
         // <<-- /Creer-Merge: state-updated -->>
     }
 
     // <<-- Creer-Merge: public-functions -->>
     // You can add additional public functions here
     // <<-- /Creer-Merge: public-functions -->>
-
-    // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
-
-    /**
-     * Spawns a Miner on this Player's base Tile.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is True if successfully spawned,
-     * false otherwise.
-     */
-    public spawnMiner(
-        callback?: (returned: boolean) => void,
-    ): void {
-        this.runOnServer("spawnMiner", {}, callback);
-    }
-
-    // </Joueur functions>
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
