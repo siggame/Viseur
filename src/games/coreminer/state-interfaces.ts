@@ -205,6 +205,11 @@ export interface IGameState extends IBaseGame {
  */
 export interface IBombState extends IGameObjectState {
     /**
+     * The Tile this Miner is on.
+     */
+    tile: ITileState;
+
+    /**
      * The number of turns before this Bomb explodes. Zero means it will explode
      * after the current turn.
      */
