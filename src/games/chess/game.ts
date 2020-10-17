@@ -18,10 +18,11 @@ import {
 } from "./chess-board-background";
 import { ChessOverlay } from "./chess-overlay";
 import { ChessPieces } from "./chess-pieces";
-// <<-- /Creer-Merge: imports -->>
 
 // TODO: submit PR to DefinitelyTyped fixing types yet again
 const newChess = (chessJs as unknown) as typeof chessJs.Chess;
+
+// <<-- /Creer-Merge: imports -->>
 
 /**
  * An object in the game. The most basic class that all game classes should inherit from automatically.

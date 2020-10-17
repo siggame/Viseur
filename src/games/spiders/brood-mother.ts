@@ -186,7 +186,7 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * @param spiderlingType - The string name of the Spiderling class you want
      * to Spawn. Must be 'Spitter', 'Weaver', or 'Cutter'.
      * @param callback - The callback that eventually returns the return value
-     * from the server. - The returned value is The newly spwaned Spiderling if
+     * from the server. - The returned value is The newly spawned Spiderling if
      * successful. Null otherwise.
      */
     public spawn(

@@ -50,7 +50,7 @@ export class HumanPlayer extends BaseHumanPlayer {
      *
      * @param callback - The callback that eventually returns the return value
      * from the server. - The first argument to the callback is the return
-     * value: A string in Universal Chess Inferface (UCI) or Standard Algebraic
+     * value: A string in Universal Chess Interface (UCI) or Standard Algebraic
      * Notation (SAN) formatting for the move you want to make. If the move is
      * invalid or not properly formatted you will lose the game.
      */

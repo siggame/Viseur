@@ -239,7 +239,7 @@ export interface ForecastState extends GameObjectState {
 
     /**
      * How much of a Building's fire that can be blown in the direction of this
-     * Forecast. Fire is duplicated (copied), not moved (transfered).
+     * Forecast. Fire is duplicated (copied), not moved (transferred).
      *
      */
     intensity: number;

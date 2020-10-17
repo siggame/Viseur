@@ -15,8 +15,8 @@ import {
 
 // -- Game State Interfaces -- \\
 /**
- * Collect of the most of the rarest mineral orbiting aroung the sun and
- * outcompete your competetor.
+ * Collect of the most of the rarest mineral orbiting around the sun and out-
+ * compete your competitor.
  *
  */
 export interface GameState extends BaseGame {
@@ -527,7 +527,7 @@ export interface UnitState extends GameObjectState {
     genarium: number;
 
     /**
-     * Tracks wheither or not the ship is dashing or Mining. If true, it cannot
+     * Tracks whether or not the ship is dashing or Mining. If true, it cannot
      * do anything else.
      *
      */
@@ -579,7 +579,7 @@ export interface UnitState extends GameObjectState {
     rarium: number;
 
     /**
-     * The sheild that a martyr ship has.
+     * The shield that a martyr ship has.
      *
      */
     shield: number;

@@ -251,7 +251,7 @@ export interface CowboyState extends GameObjectState {
 
     /**
      * How many times this unit has been drunk before taking their siesta and
-     * reseting this to 0.
+     * resetting this to 0.
      *
      */
     tolerance: number;

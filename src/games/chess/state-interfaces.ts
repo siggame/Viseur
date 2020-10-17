@@ -35,7 +35,7 @@ export interface GameState extends BaseGame {
 
     /**
      * The list of [known] moves that have occurred in the game, in Universal
-     * Chess Inferface (UCI) format. The first element is the first move, with
+     * Chess Interface (UCI) format. The first element is the first move, with
      * the last element being the most recent.
      *
      */
@@ -209,7 +209,7 @@ export type AIMakeMoveFinishedDelta = FinishedDelta & {
         };
 
         /**
-         * A string in Universal Chess Inferface (UCI) or Standard Algebraic
+         * A string in Universal Chess Interface (UCI) or Standard Algebraic
          * Notation (SAN) formatting for the move you want to make. If the move
          * is invalid or not properly formatted you will lose the game.
          *

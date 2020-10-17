@@ -268,7 +268,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /**
      * Buries gold on this Unit's Tile. Gold must be a certain distance away for
-     * it to get interest (`Game.minInterestDistance`).
+     * it to get interest (Game.minInterestDistance).
      *
      * @param amount - How much gold this Unit should bury. Amounts <= 0 will
      * bury as much as possible.

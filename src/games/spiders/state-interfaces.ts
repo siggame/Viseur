@@ -15,8 +15,8 @@ import {
 
 // -- Game State Interfaces -- \\
 /**
- * There's an infestation of enemy spiders challenging your queen broodmother
- * spider! Protect her and attack the other broodmother in this turn based, node
+ * There's an infestation of enemy spiders challenging your queen BroodMother
+ * spider! Protect her and attack the other BroodMother in this turn based, node
  * based, game.
  *
  */
@@ -370,7 +370,7 @@ export interface SpiderlingState extends SpiderState {
 
     /**
      * How much work needs to be done for this Spiderling to finish being busy.
-     * See docs for the Work forumla.
+     * See docs for the Work formula.
      *
      */
     workRemaining: number;
@@ -530,7 +530,7 @@ export type BroodMotherSpawnRanDelta = RanDelta & {
         };
 
         /**
-         * The newly spwaned Spiderling if successful. Null otherwise.
+         * The newly spawned Spiderling if successful. Null otherwise.
          *
          */
         returned: GameObjectInstance<SpiderlingState>;

@@ -154,7 +154,7 @@ export class Warehouse extends makeRenderable(Building, SHOULD_RENDER) {
     /**
      * Bribes the Warehouse to light a Building on fire. This adds this
      * building's fireAdded to their fire, and then this building's exposure is
-     * increased based on the Manhatten distance between the two buildings.
+     * increased based on the Manhattan distance between the two buildings.
      *
      * @param building - The Building you want to light on fire.
      * @param callback - The callback that eventually returns the return value
