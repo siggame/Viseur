@@ -1,18 +1,26 @@
-import { IBaseGameObject, IBasePlayer } from "@cadre/ts-utils/cadre";
+import { BaseGameObject, BasePlayer } from "@cadre/ts-utils/cadre";
 import { capitalize } from "lodash";
-import { ITreeViewNode, Treeable, TreeView } from "src/core/ui";
+import { TreeViewNode, Treeable, TreeView } from "src/core/ui";
 import { isObject } from "src/utils";
-import { IBaseTile } from "src/viseur/game";
+import { BaseTile } from "src/viseur/game";
 
-function isGameObject(val: unknown): val is IBaseGameObject {
-    return isObject(val)
-        && typeof val.id === "string"
-        && typeof val.gameObjectName === "string";
+/**
+ * Checks if something's shape is a game object.
+ *
+ * @param val - The value to check.
+ * @returns True if it appears to be a game object, false otherwise.
+ */
+function isGameObject(val: unknown): val is BaseGameObject {
+    return (
+        isObject(val) &&
+        typeof val.id === "string" &&
+        typeof val.gameObjectName === "string"
+    );
 }
 
-/** A tree view for inspecting game states */
+/** A tree view for inspecting game states. */
 export class InspectTreeView extends TreeView {
-    /** The name of the game we are inspecting */
+    /** The name of the game we are inspecting. */
     private gameName = "???";
 
     /**
@@ -27,44 +35,42 @@ export class InspectTreeView extends TreeView {
     /**
      * Gets the string to display as the value for a given node.
      *
-     * @param node - the node's JQuery elements
+     * @param node - The node's JQuery elements.
      * @param value - The node to get the value for.
-     * @returns Whatever string to display.
      */
-    protected formatNodeValue(node: ITreeViewNode, value: Treeable): void {
+    protected formatNodeValue(node: TreeViewNode, value: Treeable): void {
         let type = "???";
         let displayValue = value;
         if (Array.isArray(value)) {
             type = "array";
-        }
-        else if (value === null) {
+        } else if (value === null) {
             type = "null";
-        }
-        else if (node.parent && !node.parent.parent) {
+        } else if (node.parent && !node.parent.parent) {
             type = "root";
             displayValue = `${this.gameName} ${capitalize(this.name)}`;
-        }
-        else if (isGameObject(value)) {
+        } else if (isGameObject(value)) {
             type = "game-object";
 
-            const gameObject = value as unknown as IBaseGameObject; // sketchy, but above check should it valid...
+            const gameObject = (value as unknown) as BaseGameObject; // sketchy, but above check should it valid...
             switch (gameObject.gameObjectName) {
                 case "Player":
-                    displayValue = `Player "${(gameObject as IBasePlayer).name}"`;
+                    displayValue = `Player "${
+                        (gameObject as BasePlayer).name
+                    }"`;
                     break;
-                case "Tile":
-                    displayValue = `Tile (${(gameObject as IBaseTile).x}, ${(gameObject as IBaseTile).y})`;
+                case "Tile": {
+                    const tile = (gameObject as unknown) as BaseTile;
+                    displayValue = `Tile (${tile.x}, ${tile.y})`;
                     break;
+                }
                 default:
                     displayValue = gameObject.gameObjectName;
             }
             displayValue += ` #${gameObject.id}`;
-        }
-        else if (isObject(value)) {
+        } else if (isObject(value)) {
             type = "map";
             displayValue = `Map[${Object.keys(value).length}]`;
-        }
-        else {
+        } else {
             type = typeof value;
         }
 

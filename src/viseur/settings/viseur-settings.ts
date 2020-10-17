@@ -3,10 +3,12 @@ import * as Setting from "./setting";
 import { createSettings } from "./settings";
 
 /**
- * The settings for the core Viseur instance
+ * The settings for the core Viseur instance.
  */
 export const ViseurSettings = createSettings("viseur", {
-    infoPaneSide: new Setting.DropDownSetting<"top" | "right" | "bottom" | "left">({
+    infoPaneSide: new Setting.DropDownSetting<
+        "top" | "right" | "bottom" | "left"
+    >({
         id: "info-pane-side",
         label: "Docked Side",
         hint: "Which side this info pane will be snapped to.",
@@ -29,16 +31,14 @@ export const ViseurSettings = createSettings("viseur", {
         id: "gui-theme",
         label: "Theme",
         hint: "The color scheme to use for the GUI",
-        options: [
-            "Light",
-            "Dark",
-        ],
+        options: ["Light", "Dark"],
         default: "Light",
     }),
     playbackSpeed: new Setting.NumberSetting({
         id: "playback-speed",
         label: "Playback Speed",
-        hint: "The time (in ms)  for each animation to be played. Smaller numbers mean faster playback.",
+        hint:
+            "The time (in ms)  for each animation to be played. Smaller numbers mean faster playback.",
         min: 10,
         max: 1000,
         default: 200,
@@ -46,12 +46,10 @@ export const ViseurSettings = createSettings("viseur", {
     playbackMode: new Setting.DropDownSetting<"deltas" | "turns">({
         id: "playback-mode",
         label: "Playback Mode",
-        // tslint:disable:max-line-length
         hint: `The preferred playback mode.
 Deltas based means the actual sequence of events is shown, however playback may take longer for turns with a large number of events.
 Turns based means the sequence of events is compressed so each GameObject does everything at the same time, which is not actually what happened.
 Playback speed is generally increased in Turns mode.`,
-        // tslint:enable:max-line-length
         options: [
             { text: "Deltas", value: "deltas" },
             { text: "Turns", value: "turns" },
@@ -97,7 +95,8 @@ Value of 1 is native resolution.`,
     printIO: new Setting.CheckBoxSetting({
         id: "print-io",
         label: "Print I/O to Console",
-        hint: "Print the input/output from the game server to the browser's console.",
+        hint:
+            "Print the input/output from the game server to the browser's console.",
         default: false,
     }),
 });

@@ -1,4 +1,4 @@
-import { IBaseGame, IBasePlayer } from "@cadre/ts-utils/cadre";
+import { BaseGame as CadreBaseGame, BasePlayer } from "@cadre/ts-utils/cadre";
 import * as dateFormat from "dateformat";
 import * as $ from "jquery";
 import { escape, sum } from "lodash";
@@ -6,7 +6,12 @@ import { FontAwesomeIds } from "src/core/font-awesome";
 import { partial } from "src/core/partial";
 import { Timer } from "src/core/timer";
 import { BaseElement } from "src/core/ui/base-element";
-import { getContrastingColor, Immutable, isObject, objectHasProperty } from "src/utils";
+import {
+    getContrastingColor,
+    Immutable,
+    isObject,
+    objectHasProperty,
+} from "src/utils";
 import { Viseur } from "src/viseur";
 import { BaseGame } from "src/viseur/game";
 import * as basePaneStatsHbs from "./base-pane-stats.hbs";
@@ -25,13 +30,11 @@ const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 const NS_IN_MS = 1000000;
 const ONE_SEC_IN_NS = NS_IN_MS * 1000;
 
-const ensureFinite = (num: number) => isFinite(num)
-    ? num
-    : 0;
+const ensureFinite = (num: number) => (isFinite(num) ? num : 0);
 
 /** The information for a stat on the pane. */
-export interface IPaneStat<T = unknown> {
-    /** A label to place before the (formatted) value, e.g. label: value. */
+export interface PaneStat<T = unknown> {
+    /** A label to place before the (formatted) value, e.g. Label: value. */
     label?: string;
 
     /** The font-awesome icon prefix (without fa-). */
@@ -45,14 +48,14 @@ export interface IPaneStat<T = unknown> {
 }
 
 /** The list of stats. */
-export interface IStatsList<T = unknown> {
-    /** the list of stats in order to display */
-    stats: ReadonlyArray<IPaneStat<T>>;
+export interface StatsList<T = unknown> {
+    /** The list of stats in order to display. */
+    stats: ReadonlyArray<PaneStat<T>>;
 
-    /** The container element */
+    /** The container element. */
     element: JQuery;
 
-    /** Mapping of the stat key to its list item element */
+    /** Mapping of the stat key to its list item element. */
     statsToListElement: JQuery[];
 }
 
@@ -61,8 +64,8 @@ export interface IStatsList<T = unknown> {
  * normally used to show player stats.
  */
 export class BasePane<
-    TBaseGameState extends IBaseGame,
-    TBasePlayerState extends IBasePlayer,
+    TBaseGameState extends CadreBaseGame,
+    TBasePlayerState extends BasePlayer
 > extends BaseElement {
     /** The game this pane represents. */
     public readonly game: BaseGame;
@@ -74,13 +77,16 @@ export class BasePane<
     private humansTimeRemaining: number | undefined;
 
     /** The player we are ticking for. */
-    private humansTickingPlayer?: Immutable<IBasePlayer>;
+    private humansTickingPlayer?: Immutable<BasePlayer>;
 
     /** Stats list for the game. */
-    private readonly gameStatsList: IStatsList<TBaseGameState>;
+    private readonly gameStatsList: StatsList<TBaseGameState>;
 
     /** Stats list for each player, indexed by their IDs. */
-    private readonly playerToStatsList = new Map<string, IStatsList<TBasePlayerState>>();
+    private readonly playerToStatsList = new Map<
+        string,
+        StatsList<TBasePlayerState>
+    >();
 
     /** Element that holds the player's stats lists. */
     private readonly playersElement: JQuery;
@@ -101,7 +107,7 @@ export class BasePane<
     constructor(
         viseur: Viseur,
         game: BaseGame,
-        initialState: Immutable<IBaseGame>,
+        initialState: Immutable<CadreBaseGame>,
     ) {
         super({ parent: viseur.gui.gamePaneWrapper }, basePaneHbs);
 
@@ -146,27 +152,36 @@ export class BasePane<
         );
 
         this.playersElement = this.element.find(".players");
-        this.playersElement.addClass(`number-of-players-${initialState.players.length}`);
+        this.playersElement.addClass(
+            `number-of-players-${initialState.players.length}`,
+        );
 
-        this.playerProgressBarsDiv = this.element.find(".player-progress-bars");
+        this.playerProgressBarsDiv = this.element.find(
+            ".player-progress-bars",
+        );
 
-        for (const [ i, player ] of initialState.players.entries()) {
-            this.playerToStatsList.set(player.id, this.createStatList(
-                playerStats,
-                this.playersElement,
-                `player player-${i} player-id-${player.id}`,
-            ));
+        for (const [i, player] of initialState.players.entries()) {
+            this.playerToStatsList.set(
+                player.id,
+                this.createStatList(
+                    playerStats,
+                    this.playersElement,
+                    `player player-${i} player-id-${player.id}`,
+                ),
+            );
 
-            this.playerProgressBars.set(player.id, $("<div>")
-                .addClass(`player-${i}-progress-bar`)
-                .appendTo(this.playerProgressBarsDiv),
+            this.playerProgressBars.set(
+                player.id,
+                $("<div>")
+                    .addClass(`player-${i}-progress-bar`)
+                    .appendTo(this.playerProgressBarsDiv),
             );
         }
 
         this.recolor();
     }
 
-    /** Recolors all the panes to their players' color */
+    /** Recolors all the panes to their players' color. */
     public recolor(): void {
         for (const player of this.game.players) {
             const color = this.game.getPlayersColor(player);
@@ -192,14 +207,15 @@ export class BasePane<
      * @param nextState - The next state, if there is one..
      */
     public update(
-        currentState: Immutable<IBaseGame>,
-        nextState?: Immutable<IBaseGame>,
+        currentState: Immutable<CadreBaseGame>,
+        nextState?: Immutable<CadreBaseGame>,
     ): void {
-        const state = (this.humansTimer && nextState)
-            // If we have a human player, so use the next state which is
-            // actually the most current state.
-            ? nextState
-            : currentState;
+        const state =
+            this.humansTimer && nextState
+                ? // If we have a human player, so use the next state which is
+                  // actually the most current state.
+                  nextState
+                : currentState;
 
         const currentPlayerId = this.getCurrentPlayerID(state);
 
@@ -211,8 +227,9 @@ export class BasePane<
             }
 
             this.updateStatsList(playerStatsList, player);
-            const backgroundImageCSS = playerStatsList.element
-                .css("background-image");
+            const backgroundImageCSS = playerStatsList.element.css(
+                "background-image",
+            );
 
             if (!backgroundImageCSS || backgroundImageCSS === "none") {
                 // Then we need to load the background image of their programming language icon.
@@ -223,18 +240,25 @@ export class BasePane<
                 let languageIcon: string | undefined;
                 try {
                     // try to get the image for the programing language
-                    languageIcon = requireLanguageImage(`./${languageKey}.png`);
-                }
-                catch {
+                    languageIcon = requireLanguageImage(
+                        `./${languageKey}.png`,
+                    );
+                } catch {
                     // But if it fails we don't have an image for that icon, so give them the unknown icon instead.
                     languageIcon = requireLanguageImage("./unknown.png");
                 }
 
-                playerStatsList.element.css("background-image", `url(${languageIcon})`);
+                playerStatsList.element.css(
+                    "background-image",
+                    `url(${languageIcon})`,
+                );
             }
 
             if (currentPlayerId) {
-                playerStatsList.element.toggleClass("current-player", currentPlayerId === player.id);
+                playerStatsList.element.toggleClass(
+                    "current-player",
+                    currentPlayerId === player.id,
+                );
             }
         }
 
@@ -246,23 +270,26 @@ export class BasePane<
     }
 
     /**
-     * Sets the player's list as a human player for special styling
+     * Sets the player's list as a human player for special styling.
      *
-     * @param playerID - the player's id who is the human player
+     * @param playerID - The player's id who is the human player.
      */
     public setHumanPlayer(playerID: string): void {
         this.element.find(`.player-id-${playerID}`).addClass("humans-player");
     }
 
     /**
-     * Starts ticking the time down for a player (human client mode)
-     * @param playerID the player to tick for
+     * Starts ticking the time down for a player (human client mode).
+     *
+     * @param playerID - The player to tick for.
      */
     public startTicking(playerID: string): void {
         const gameState = this.game.getCurrentMostState();
         const player = gameState.players.find((p) => p.id === playerID);
         if (!player) {
-            throw new Error(`ID ${playerID} is not a valid player to start ticking for`);
+            throw new Error(
+                `ID ${playerID} is not a valid player to start ticking for`,
+            );
         }
 
         this.humansTickingPlayer = player;
@@ -287,19 +314,21 @@ export class BasePane<
      * @returns All the PaneStats to display on this BasePane for the player.
      */
     protected getPlayerStats(
-        state: Immutable<IBaseGame>,
-    ): Array<IPaneStat<TBasePlayerState>> {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        state: Immutable<CadreBaseGame>,
+    ): Array<PaneStat<TBasePlayerState>> {
         return [
             {
                 title: "name",
+                // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
                 get: (player) => escape(player.name),
             },
             {
                 title: TIME_REMAINING_TITLE,
                 icon: "clock-o",
-                get: (player) => (
-                    this.formatTimeRemaining(player.timeRemaining)
-                ),
+                // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+                get: (player) =>
+                    this.formatTimeRemaining(player.timeRemaining),
             },
         ];
     }
@@ -311,17 +340,19 @@ export class BasePane<
      * @returns All the PaneStats to display on this BasePane for the game.
      */
     protected getGameStats(
-        state: Immutable<IBaseGame>,
-    ): Array<IPaneStat<TBaseGameState>> {
-        const list: Array<IPaneStat<TBaseGameState>> = [];
+        state: Immutable<CadreBaseGame>,
+    ): Array<PaneStat<TBaseGameState>> {
+        const list: Array<PaneStat<TBaseGameState>> = [];
 
         if (objectHasProperty(state, "currentTurn")) {
             list.push({
                 label: "Turn",
-                get: (game: IBaseGame & {
-                    /** Turn based games should expose this for the turn number */
-                    currentTurn?: number;
-                }) => Number(game.currentTurn),
+                get: (
+                    game: CadreBaseGame & {
+                        /** Turn based games should expose this for the turn number. */
+                        currentTurn?: number;
+                    },
+                ) => Number(game.currentTurn),
             });
         }
 
@@ -331,13 +362,14 @@ export class BasePane<
     /**
      * Gets the stats for the players score bars.
      *
-     * @param state The current(most) state of the game to update this pane  for.
-     * @returns an array of numbers, where each index is the player at that index.
+     * @param state - The current(most) state of the game to update this pane  for.
+     * @returns An array of numbers, where each index is the player at that index.
      * The sum does not matter, it will resize dynamically.
      * If You want to display no score, return undefined or an empty array.
      */
     protected getPlayersScores(
-        state: Immutable<IBaseGame>,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        state: Immutable<CadreBaseGame>,
     ): Array<[number, number]> | number[] | undefined {
         // intended to be overridden and scores calculated there
         return undefined;
@@ -346,7 +378,7 @@ export class BasePane<
     /**
      * Sets the progress bars to a certain percentage for each of them.
      *
-     * @param progresses - undefined/empty if they have no progress (hides bars),
+     * @param progresses - Undefined/empty if they have no progress (hides bars),
      * or an array of numbers, indexed by their location in game.players,
      * with each value being [0, 1] for their progress.
      */
@@ -363,35 +395,45 @@ export class BasePane<
         }
         // if we got there they returned progress bars to render
 
-        const { numberOfPlayers } = (this.game.constructor as typeof BaseGame);
+        const { numberOfPlayers } = this.game.constructor as typeof BaseGame;
         if (progresses.length !== numberOfPlayers) {
-            throw new Error("Progresses length should be the same as the number of players in the game!");
+            throw new Error(
+                "Progresses length should be the same as the number of players in the game!",
+            );
         }
 
-        const summed = typeof progresses[0] === "number"
-            ? sum(progresses)
-            : 0;
+        const summed = typeof progresses[0] === "number" ? sum(progresses) : 0;
 
-        for (const [ i, player ] of this.game.players.entries()) {
+        for (const [i, player] of this.game.players.entries()) {
             const bar = this.playerProgressBars.get(player.id);
             const progress = progresses[i];
 
             if (bar === undefined || progress === undefined) {
-                throw new Error(`Error displaying progress bar for Player #${player.id}`);
+                throw new Error(
+                    `Error displaying progress bar for Player #${player.id}`,
+                );
             }
 
-            bar.css(typeof progress === "number"
-                ? { width: `${ensureFinite(progress / summed * 100)}%` }
-                : { // it is two numbers in a tuple, e.g. [50, 100]
-                    position: "absolute",
-                    left: i % 2
-                        ? ""
-                        : `${i / numberOfPlayers * 100}%`,
-                    right: i % 2
-                        ? `${Math.abs((i + 1 - numberOfPlayers)) / numberOfPlayers * 100}%`
-                        : "",
-                    width: `${(ensureFinite(progress[0] / progress[1]) * 100 / numberOfPlayers)}%`,
-                },
+            bar.css(
+                typeof progress === "number"
+                    ? { width: `${ensureFinite((progress / summed) * 100)}%` }
+                    : {
+                          // it is two numbers in a tuple, e.g. [50, 100]
+                          position: "absolute",
+                          left: i % 2 ? "" : `${(i / numberOfPlayers) * 100}%`,
+                          right:
+                              i % 2
+                                  ? `${
+                                        (Math.abs(i + 1 - numberOfPlayers) /
+                                            numberOfPlayers) *
+                                        100
+                                    }%`
+                                  : "",
+                          width: `${
+                              (ensureFinite(progress[0] / progress[1]) * 100) /
+                              numberOfPlayers
+                          }%`,
+                      },
             );
         }
     }
@@ -402,12 +444,14 @@ export class BasePane<
      * @param state - The current/next game state, whichever is current to animate.
      * @returns A string. Must be an ID of a player in the game, otherwise empty string for no current player.
      */
-    protected getCurrentPlayerID(state: Immutable<IBaseGame>): string {
-        return objectHasProperty(state, "currentPlayer")
-               && isObject(state.currentPlayer)
-               && state.currentPlayer.id !== undefined
-               && String(state.currentPlayer.id)
-               || "";
+    protected getCurrentPlayerID(state: Immutable<CadreBaseGame>): string {
+        return (
+            (objectHasProperty(state, "currentPlayer") &&
+                isObject(state.currentPlayer) &&
+                state.currentPlayer.id !== undefined &&
+                String(state.currentPlayer.id)) ||
+            ""
+        );
     }
 
     /**
@@ -415,13 +459,13 @@ export class BasePane<
      *
      * @param stats - The stats, that can be in shorthand, to cleanup.
      * @param titlePrefix - A prefix to add to the title.
-     * @returns All the PaneStats cleaned up
+     * @returns All the PaneStats cleaned up.
      */
     private cleanStats(
-        stats: ReadonlyArray<IPaneStat>, // Readonly but not immutable,
-                                         // as we do mutate the pane stats.
+        stats: ReadonlyArray<PaneStat>, // Readonly but not immutable,
+        // as we do mutate the pane stats.
         titlePrefix: string,
-    ): ReadonlyArray<IPaneStat<TBaseGameState | TBasePlayerState>> {
+    ): ReadonlyArray<PaneStat<TBaseGameState | TBasePlayerState>> {
         for (const stat of stats) {
             if (stat.label || stat.title) {
                 stat.title = `${titlePrefix}'s ${stat.label || stat.title}`;
@@ -435,35 +479,31 @@ export class BasePane<
      * Creates a stats list container to be updated by this pane.
      *
      * @param stats - All the stats to list.
-     * @param parent - jQuery parent for this list.
+     * @param parent - JQuery parent for this list.
      * @param classes - An optional classes for the html element.
      * @returns A container object containing all the parts of this list.
      */
     private createStatList(
-        stats: ReadonlyArray<IPaneStat<TBaseGameState | TBasePlayerState>>,
+        stats: ReadonlyArray<PaneStat<TBaseGameState | TBasePlayerState>>,
         parent: JQuery,
-        classes: string = "",
-    ): IStatsList<TBaseGameState | TBasePlayerState> {
-        const element = partial(
-            basePaneStatsHbs,
-            { classes },
-            parent,
-        );
+        classes = "",
+    ): StatsList<TBaseGameState | TBasePlayerState> {
+        const element = partial(basePaneStatsHbs, { classes }, parent);
 
-        const list: IStatsList<TBaseGameState | TBasePlayerState> = {
+        const list: StatsList<TBaseGameState | TBasePlayerState> = {
             stats,
             element,
             statsToListElement: [],
         };
 
-        for (const [ i, stat ] of stats.entries()) {
-            list.statsToListElement.push($("<li>")
-                .appendTo(list.element)
-                .addClass("stat")
-                .addClass(`stat-${i}`)
-                .attr("title", stat.title || "")
-                // tslint:disable-next-line:no-inner-html
-                .html(String(i)), // safe, it will always be a number
+        for (const [i, stat] of stats.entries()) {
+            list.statsToListElement.push(
+                $("<li>")
+                    .appendTo(list.element)
+                    .addClass("stat")
+                    .addClass(`stat-${i}`)
+                    .attr("title", stat.title || "")
+                    .html(String(i)), // safe, it will always be a number
             );
         }
 
@@ -476,7 +516,7 @@ export class BasePane<
      * @param statsList - The stats list to update each stat for from the object.
      * @param obj - The state information of the object.
      */
-    private updateStatsList(statsList: IStatsList, obj: unknown): void {
+    private updateStatsList(statsList: StatsList, obj: unknown): void {
         let i = -1;
         for (const stat of statsList.stats) {
             i++;
@@ -496,11 +536,12 @@ export class BasePane<
             }
 
             if (stat.icon) {
-                const icon = stat.icon.charCodeAt(0) > 255
-                    // if it is a unicode character, use that as the icon
-                    ? `<i class=\"icon\">${stat.icon}</i>`
-                    // else, assume it is a font-awesome icon.
-                    : `<i class=\"icon fa fa-${stat.icon}\" aria-hidden=\"true\"></i>`;
+                const icon =
+                    stat.icon.charCodeAt(0) > 255
+                        ? // if it is a unicode character, use that as the icon
+                          `<i class="icon">${stat.icon}</i>`
+                        : // else, assume it is a font-awesome icon.
+                          `<i class="icon fa fa-${stat.icon}" aria-hidden="true"></i>`;
 
                 value = `${icon} ${value}`;
             }
@@ -531,21 +572,26 @@ export class BasePane<
     /**
      * Invoked when the timer ticks once a second.
      *
-     * @param doNotRestart - flag to not restart the timer
+     * @param doNotRestart - Flag to not restart the timer.
      */
     private ticked(doNotRestart?: boolean): void {
         if (this.humansTickingPlayer) {
-            this.humansTimeRemaining = (this.humansTimeRemaining || 0) - ONE_SEC_IN_NS;
+            this.humansTimeRemaining =
+                (this.humansTimeRemaining || 0) - ONE_SEC_IN_NS;
 
             const list = this.playerToStatsList.get(
                 this.humansTickingPlayer.id,
             );
 
             if (list) {
-                const index = list.stats.findIndex((s) => Boolean(s.title && s.title.includes(TIME_REMAINING_TITLE)));
+                const index = list.stats.findIndex((s) =>
+                    Boolean(s.title && s.title.includes(TIME_REMAINING_TITLE)),
+                );
                 const li = list.statsToListElement[index];
                 if (li) {
-                    li.html(this.formatTimeRemaining(this.humansTimeRemaining));
+                    li.html(
+                        this.formatTimeRemaining(this.humansTimeRemaining),
+                    );
                 }
             }
 

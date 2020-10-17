@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IMachineState, NewtonianDelta } from "./state-interfaces";
+import { MachineState, NewtonianDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -26,11 +26,11 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Machine (dt = 0) */
-    public current: IMachineState | undefined;
+    /** The current state of the Machine (dt = 0). */
+    public current: MachineState | undefined;
 
-    /** The next state of the Machine (dt = 1) */
-    public next: IMachineState | undefined;
+    /** The next state of the Machine (dt = 1). */
+    public next: MachineState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** Bar showing how much work is done. */
@@ -45,24 +45,30 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Machine with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Machine with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Machine.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: IMachineState, viseur: Viseur) {
+    constructor(state: MachineState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
         this.container.setParent(this.game.layers.machine);
         this.container.scale.set(CONTAINER_SCALE, CONTAINER_SCALE);
         const offset = (CONTAINER_SCALE - 1) / 2;
-        this.container.position.set(state.tile.x - offset, state.tile.y - offset - .2);
+        this.container.position.set(
+            state.tile.x - offset,
+            state.tile.y - offset - 0.2,
+        );
 
-        this.oreColorIndex = state.oreType.toLowerCase().charAt(0) === "r"
-            ? 0 // redium ore
-            : 1; // blueium ore
+        this.oreColorIndex =
+            state.oreType.toLowerCase().charAt(0) === "r"
+                ? 0 // redium ore
+                : 1; // blueium ore
 
         this.sprite = this.addSprite.machine();
 
@@ -78,20 +84,24 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Machine instances.
+     * Called approx 60 times a second to update and render Machine
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<IMachineState>,
-        next: Immutable<IMachineState>,
+        current: Immutable<MachineState>,
+        next: Immutable<MachineState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -111,7 +121,9 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: recolor -->>
         // use the color of the player from that side so it can be changed for color blindness.
-        this.sprite.tint = this.game.getPlayersColor(this.oreColorIndex).rgbNumber();
+        this.sprite.tint = this.game
+            .getPlayersColor(this.oreColorIndex)
+            .rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -120,7 +132,8 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -133,14 +146,17 @@ export class Machine extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<IMachineState>,
-        next: Immutable<IMachineState>,
+        current: Immutable<MachineState>,
+        next: Immutable<MachineState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {

@@ -1,43 +1,47 @@
 import { onceTransitionEnds } from "src/utils/jquery";
 import { Event, events } from "ts-typed-events";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
 import * as tabularHbs from "./tabular.hbs";
 import "./tabular.scss";
 
-/** a block of content accessed via Tabs */
+/** A block of content accessed via Tabs. */
 export class Tabular extends BaseElement {
     /** The events the tabular emits about its Tabs. */
     public readonly events = events({
-        /** Triggered when the active tab changes from one to another */
-        tabChanged: new Event<Readonly<{
-            /** The Tab that is now active. */
-            activeTab: Tab;
+        /** Triggered when the active tab changes from one to another. */
+        tabChanged: new Event<
+            Readonly<{
+                /** The Tab that is now active. */
+                activeTab: Tab;
 
-            /** The tab that was previously active. */
-            previousActiveTab: Tab;
-        }>>(),
+                /** The tab that was previously active. */
+                previousActiveTab: Tab;
+            }>
+        >(),
     });
 
-    /** all the tabs in this tabular */
+    /** All the tabs in this tabular. */
     private readonly tabs: Tab[] = [];
 
-    /** the currently selected tab */
+    /** The currently selected tab. */
     private activeTab!: Tab; // will always be at least the first tab
 
-    /** parent container to store tab's tab item in */
+    /** Parent container to store tab's tab item in. */
     private readonly tabsElement = this.element.find(".tabular-tabs");
 
-    /** parent container to store tab's contents in */
+    /** Parent container to store tab's contents in. */
     private readonly contentsElement = this.element.find(".tabular-content");
 
-    /** if this is fading in or out a tab */
-    private fading: boolean = false;
+    /** If this is fading in or out a tab. */
+    private fading = false;
 
-    constructor(args: IBaseElementArgs & {
-        /** The tabs in order to be displayed in this Tabular. */
-        tabs?: Tab[];
-    }) {
+    constructor(
+        args: BaseElementArgs & {
+            /** The tabs in order to be displayed in this Tabular. */
+            tabs?: Tab[];
+        },
+    ) {
         super(args, tabularHbs);
 
         if (args.tabs) {
@@ -46,8 +50,9 @@ export class Tabular extends BaseElement {
     }
 
     /**
-     * Attaches tabs to this tabular
-     * @param tabs list of tabs to attach, only call once
+     * Attaches tabs to this tabular.
+     *
+     * @param tabs - List of tabs to attach, only call once.
      */
     public attachTabs(tabs: Tab[]): void {
         for (const tab of tabs) {
@@ -74,9 +79,10 @@ export class Tabular extends BaseElement {
             return; // can't set while doing a fade animation
         }
 
-        const activeTab = typeof newTab === "string"
-            ? this.tabs.find((tab) => tab.title === newTab)
-            : newTab;
+        const activeTab =
+            typeof newTab === "string"
+                ? this.tabs.find((tab) => tab.title === newTab)
+                : newTab;
 
         if (!activeTab) {
             return; // tab not found
@@ -97,10 +103,10 @@ export class Tabular extends BaseElement {
             tab.tab.toggleClass("active", tab === activeTab);
 
             if (tab !== activeTab) {
-                if (tab === previousActiveTab) { // fade it out, then fade in the active tab
+                if (tab === previousActiveTab) {
+                    // fade it out, then fade in the active tab
                     this.fadeTab(tab);
-                }
-                else {
+                } else {
                     tab.element
                         .removeClass("active opaque")
                         .addClass("hidden");
@@ -138,7 +144,8 @@ export class Tabular extends BaseElement {
 
             this.activeTab.element.removeClass("hidden");
 
-            setImmediate(() => { // HACK: to get the fading between tabs to work
+            setImmediate(() => {
+                // HACK: to get the fading between tabs to work
                 this.activeTab.element.addClass("active");
                 this.fading = false;
             });

@@ -4,7 +4,11 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spider } from "./spider";
-import { IBroodMotherState, ISpiderlingState, SpidersDelta } from "./state-interfaces";
+import {
+    BroodMotherState,
+    SpiderlingState,
+    SpidersDelta,
+} from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { setRelativePivot } from "src/utils";
@@ -23,30 +27,32 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the BroodMother (dt = 0) */
-    public current: IBroodMotherState | undefined;
+    /** The current state of the BroodMother (dt = 0). */
+    public current: BroodMotherState | undefined;
 
-    /** The next state of the BroodMother (dt = 1) */
-    public next: IBroodMotherState | undefined;
+    /** The next state of the BroodMother (dt = 1). */
+    public next: BroodMotherState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
-    /** The owner's ID */
+    /** The owner's ID. */
     private readonly ownerID: string;
 
-    /** the top part of the sprite to re-color */
+    /** The top part of the sprite to re-color. */
     private readonly spriteTop: PIXI.Sprite;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the BroodMother with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the BroodMother with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this BroodMother.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: IBroodMotherState, viseur: Viseur) {
+    constructor(state: BroodMotherState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -64,20 +70,24 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render BroodMother instances.
+     * Called approx 60 times a second to update and render BroodMother
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<IBroodMotherState>,
-        next: Immutable<IBroodMotherState>,
+        current: Immutable<BroodMotherState>,
+        next: Immutable<BroodMotherState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -108,7 +118,8 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -121,14 +132,17 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<IBroodMotherState>,
-        next: Immutable<IBroodMotherState>,
+        current: Immutable<BroodMotherState>,
+        next: Immutable<BroodMotherState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -144,39 +158,42 @@ export class BroodMother extends makeRenderable(Spider, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Consumes a Spiderling of the same owner to regain some eggs to spawn more
      * Spiderlings.
-     * @param spiderling The Spiderling to consume. It must be on the same Nest
-     * as this BroodMother.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param spiderling - The Spiderling to consume. It must be on the same
+     * Nest as this BroodMother.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the Spiderling was
      * consumed. False otherwise.
      */
     public consume(
-        spiderling: ISpiderlingState,
-        callback?: (returned: boolean) => void,
+        spiderling: SpiderlingState,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("consume", {spiderling}, callback);
+        this.runOnServer("consume", { spiderling }, callback);
     }
 
     /**
      * Spawns a new Spiderling on the same Nest as this BroodMother, consuming
      * an egg.
-     * @param spiderlingType The string name of the Spiderling class you want to
-     * Spawn. Must be 'Spitter', 'Weaver', or 'Cutter'.
-     * @param callback? The callback that eventually returns the return value
-     * from the server. - The returned value is The newly spwaned Spiderling if
+     *
+     * @param spiderlingType - The string name of the Spiderling class you want
+     * to Spawn. Must be 'Spitter', 'Weaver', or 'Cutter'.
+     * @param callback - The callback that eventually returns the return value
+     * from the server. - The returned value is The newly spawned Spiderling if
      * successful. Null otherwise.
      */
     public spawn(
         spiderlingType: "Spitter" | "Weaver" | "Cutter",
-        callback?: (returned: ISpiderlingState) => void,
+        callback: (returned: SpiderlingState) => void,
     ): void {
-        this.runOnServer("spawn", {spiderlingType}, callback);
+        this.runOnServer("spawn", { spiderlingType }, callback);
     }
 
     // </Joueur functions>

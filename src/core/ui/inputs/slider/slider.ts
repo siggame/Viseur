@@ -1,27 +1,27 @@
-import { INumberInputArgs, NumberInput } from "../number";
+import { NumberInput, NumberInputArgs } from "../number";
 
-/** A range input for numbers */
+/** A range input for numbers. */
 export class Slider extends NumberInput {
     /**
-     * Creates a slider
-     * @param args the args for the slider
+     * Creates a slider.
+     *
+     * @param args - The args for the slider.
      */
-    constructor(args: Readonly<INumberInputArgs>) {
+    constructor(args: Readonly<NumberInputArgs>) {
         super({
             type: "range",
             step: "any",
             ...args,
         });
 
-        // this is goody but it re-sets the value
-        // when done in the base constructor above the slider resets when the
-        // step value is changed, so we need to reset it after those are set
-        this.value = this.value;
+        const oldVal = this.value;
+        this.value = oldVal; // re-sets, which causes the setter to clamp.
     }
 
     /**
-     * Gets the string used to listen to the element for events
-     * @returns the string for jquery to use
+     * Gets the string used to listen to the element for events.
+     *
+     * @returns The string for jquery to use.
      */
     protected getElementOnEventString(): string {
         return "input";

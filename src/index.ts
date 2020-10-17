@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /*
  * This is the main entry point for Viseur.
  *   Once the web page is ready (all files downloaded)
@@ -5,7 +11,6 @@
  *   and from that class all the magic happens!
  */
 
-// tslint:disable:no-import-side-effect no-any no-unsafe-any no-require-imports
 import "font-awesome-sass-loader";
 import * as $ from "jquery";
 import * as PIXI from "pixi.js";

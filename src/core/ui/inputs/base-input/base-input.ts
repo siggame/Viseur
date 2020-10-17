@@ -1,39 +1,42 @@
-import { DisableableElement, IDisableableElementArgs } from "src/core/ui/disableable-element";
+import {
+    DisableableElement,
+    DisableableElementArgs,
+} from "src/core/ui/disableable-element";
 import { Immutable } from "src/utils";
 import { Event, events } from "ts-typed-events";
 import { Field } from "../field";
 import * as baseInputHbs from "./base-input.hbs";
 
 /** The base arguments for any input. */
-export interface IBaseInputArgs<T> extends IDisableableElementArgs {
-    /** the input type */
+export interface BaseInputArgs<T> extends DisableableElementArgs {
+    /** The input type. */
     type?: string;
 
-    /** title of the label to create a Field for */
+    /** Title of the label to create a Field for. */
     label?: string;
 
-    /** true if it should be disabled upon initialization, false otherwise */
+    /** True if it should be disabled upon initialization, false otherwise. */
     disabled?: boolean;
 
-    /** the hint for the field */
+    /** The hint for the field. */
     hint?: string;
 
-    /** starting value */
+    /** The starting value. */
     value?: T;
 }
 
-/** The base class all input elements inherit from */
+/** The base class all input elements inherit from. */
 export class BaseInput<T> extends DisableableElement {
-    /** Events this class emits */
+    /** Events this class emits. */
     public readonly events = events({
-        /** Emitted when this input's value changes */
+        /** Emitted when this input's value changes. */
         changed: new Event<T>(),
     });
 
-    /** the label field, if set */
+    /** The label field, if set. */
     public readonly field?: Field;
 
-    /** the actual value of the input */
+    /** The actual value of the input. */
     protected actualValue: T;
 
     /**
@@ -42,10 +45,7 @@ export class BaseInput<T> extends DisableableElement {
      * @param args - The initial args for the input and field.
      * @param template - An optional template override.
      */
-    constructor(
-        args: Immutable<IBaseInputArgs<T>>,
-        template?: Handlebars,
-    ) {
+    constructor(args: Immutable<BaseInputArgs<T>>, template?: Handlebars) {
         super(args, template || baseInputHbs);
 
         if (args.label) {
@@ -79,9 +79,8 @@ export class BaseInput<T> extends DisableableElement {
 
         const elemValue = this.getElementValue();
         let checkValue = this.actualValue;
-        if (typeof(elemValue) === "string") {
-            // tslint:disable-next-line:no-any no-unsafe-any - safe, is string
-            checkValue = String(checkValue) as any;
+        if (typeof elemValue === "string") {
+            checkValue = (String(checkValue) as unknown) as T;
         }
 
         if (elemValue !== checkValue) {
@@ -128,14 +127,14 @@ export class BaseInput<T> extends DisableableElement {
      *
      * @returns The DOM element's current value.
      */
-    protected getElementValue(): any { // tslint:disable-line:no-any
+    protected getElementValue(): unknown {
         return this.element.val();
     }
 
     /**
-     * updates the value of the DOM element
+     * Updates the value of the DOM element.
      */
     protected updateElementValue(): void {
-        this.element.val(this.actualValue as any); // tslint:disable-line:no-any
+        this.element.val((this.actualValue as unknown) as string);
     }
 }

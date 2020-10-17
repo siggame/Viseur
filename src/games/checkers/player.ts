@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CheckersDelta, IPlayerState } from "./state-interfaces";
+import { CheckersDelta, PlayerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -23,24 +23,26 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Player (dt = 0) */
-    public current: IPlayerState | undefined;
+    /** The current state of the Player (dt = 0). */
+    public current: PlayerState | undefined;
 
-    /** The next state of the Player (dt = 1) */
-    public next: IPlayerState | undefined;
+    /** The next state of the Player (dt = 1). */
+    public next: PlayerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Player with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Player with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Player.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: IPlayerState, viseur: Viseur) {
+    constructor(state: PlayerState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -49,20 +51,24 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Player instances.
+     * Called approx 60 times a second to update and render Player
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<IPlayerState>,
-        next: Immutable<IPlayerState>,
+        current: Immutable<PlayerState>,
+        next: Immutable<PlayerState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {
@@ -90,7 +96,8 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -103,14 +110,17 @@ export class Player extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<IPlayerState>,
-        next: Immutable<IPlayerState>,
+        current: Immutable<PlayerState>,
+        next: Immutable<PlayerState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {

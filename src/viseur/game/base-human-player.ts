@@ -44,7 +44,10 @@ export class BaseHumanPlayer {
     /** Invoked when everything is ready and the human player can start playing. */
     public start(): void {
         while (this.backOrders.length > 0) {
-            this.order.call(this, this.backOrders.shift() as Readonly<JoueurOrder>);
+            this.order.call(
+                this,
+                this.backOrders.shift() as Readonly<JoueurOrder>,
+            );
         }
     }
 
@@ -62,9 +65,9 @@ export class BaseHumanPlayer {
             return; // can't order until we know our player
         }
 
-        const orderFunction = (this as unknown as UnknownObject)[order.name];
+        const orderFunction = ((this as unknown) as UnknownObject)[order.name];
 
-        if (typeof(orderFunction) !== "function") {
+        if (typeof orderFunction !== "function") {
             throw new Error(`No order '${order.name}' found in humanPlayer`);
         }
 
@@ -74,11 +77,14 @@ export class BaseHumanPlayer {
 
         // Add their return callback function, and then call that the function
         // we got from above via reflection
-        orderFunction.apply(this, [ ...order.args, (returned: unknown) => {
-            if (this.game.pane) {
-                this.game.pane.stopTicking();
-            }
-            order.callback(returned);
-        }]);
+        orderFunction.apply(this, [
+            ...order.args,
+            (returned: unknown) => {
+                if (this.game.pane) {
+                    this.game.pane.stopTicking();
+                }
+                order.callback(returned);
+            },
+        ]);
     }
 }

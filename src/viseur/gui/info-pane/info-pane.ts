@@ -1,9 +1,9 @@
 import { Immutable } from "@cadre/ts-utils";
 import * as $ from "jquery";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 import { GUI } from "../gui";
 import * as infoPaneHbs from "./info-pane.hbs";
 import "./info-pane.scss";
@@ -18,53 +18,55 @@ type Orientation = "horizontal" | "vertical";
 type Side = "top" | "left" | "bottom" | "right";
 
 /** The only valid sides to check against at run time. */
-const VALID_SIDES = [ "top", "left", "bottom", "right" ];
+const VALID_SIDES = ["top", "left", "bottom", "right"];
 
-/** The dock-able pane that has tabs and info about the Visualizer */
+/** The dock-able pane that has tabs and info about the Visualizer. */
 export class InfoPane extends BaseElement {
-    /** Events this class emits */
+    /** Events this class emits. */
     public readonly events = events({
-        /** Emitted when this is resized (may still be resizing) */
-        resized: new Event<Immutable<{
-            /** The new width we resized to. */
-            width: number;
+        /** Emitted when this is resized (may still be resizing). */
+        resized: new Event<
+            Immutable<{
+                /** The new width we resized to. */
+                width: number;
 
-            /** The new height we resized to. */
-            height: number;
-        }>>(),
+                /** The new height we resized to. */
+                height: number;
+            }>
+        >(),
 
-        /** Emitted when this starts resizing */
-        resizeStart: new Signal(),
+        /** Emitted when this starts resizing. */
+        resizeStart: new Event(),
 
-        /** Emitted when this stops resizing */
-        resizeEnd: new Signal(),
+        /** Emitted when this stops resizing. */
+        resizeEnd: new Event(),
     });
 
-    /** The GUI this InfoPane is a part of */
+    /** The GUI this InfoPane is a part of. */
     private readonly gui: GUI;
 
-    /** The tabular that switches tabs on this info pane */
+    /** The tabular that switches tabs on this info pane. */
     private readonly tabular: Tabular;
 
-    /** The main content container */
+    /** The main content container. */
     private readonly contentElement: JQuery;
 
-    /** The element for the re-sizer bar */
+    /** The element for the re-sizer bar. */
     private readonly resizerElement: JQuery;
 
-    /** The current length of the info pane */
-    private length: number = 0;
+    /** The current length of the info pane. */
+    private length = 0;
 
-    /** The minimum length of the info pane when it is being resized */
-    private readonly minimumLength: number = 200;
+    /** The minimum length of the info pane when it is being resized. */
+    private readonly minimumLength = 200;
 
-    /** The current orientation of the info pane */
+    /** The current orientation of the info pane. */
     private orientation: Orientation = "vertical";
 
-    /** The current side the info pane is on */
+    /** The current side the info pane is on. */
     private side: Side = "right";
 
-    /** The Viseur instance controlling us */
+    /** The Viseur instance controlling us. */
     private readonly viseur: Viseur;
 
     /**
@@ -72,13 +74,17 @@ export class InfoPane extends BaseElement {
      *
      * @param args - Initialization arguments.
      */
-    constructor(args: Readonly<IBaseElementArgs & {
-        /** The GUI instance we are inside of. */
-        gui: GUI;
+    constructor(
+        args: Readonly<
+            BaseElementArgs & {
+                /** The GUI instance we are inside of. */
+                gui: GUI;
 
-        /** The Viseur instance we are a part of. */
-        viseur: Viseur;
-    }>) {
+                /** The Viseur instance we are a part of. */
+                viseur: Viseur;
+            }
+        >,
+    ) {
         super(args, infoPaneHbs);
 
         this.viseur = args.viseur;
@@ -107,10 +113,15 @@ export class InfoPane extends BaseElement {
             parent: this.contentElement,
         });
 
-        this.tabular.attachTabs(TABS.map((TabClass) => new TabClass({
-            tabular: this.tabular,
-            viseur: this.viseur,
-        })));
+        this.tabular.attachTabs(
+            TABS.map(
+                (TabClass) =>
+                    new TabClass({
+                        tabular: this.tabular,
+                        viseur: this.viseur,
+                    }),
+            ),
+        );
     }
 
     /**
@@ -130,14 +141,9 @@ export class InfoPane extends BaseElement {
         }
 
         if (this.orientation === "horizontal") {
-            this.element
-                .height(this.length)
-                .css("width", "");
-        }
-        else {
-            this.element
-                .width(this.length)
-                .css("height", "");
+            this.element.height(this.length).css("width", "");
+        } else {
+            this.element.width(this.length).css("height", "");
         }
 
         let width = this.element.width() || 0;
@@ -148,21 +154,23 @@ export class InfoPane extends BaseElement {
             height = 0;
         }
 
-        this.events.resized.emit({width, height});
+        this.events.resized.emit({ width, height });
         this.element.removeClass("resizing");
     }
 
     /**
-     * Gets the current orientation
-     * @returns the current orientation
+     * Gets the current orientation.
+     *
+     * @returns The current orientation.
      */
     public getOrientation(): Orientation {
         return this.orientation;
     }
 
     /**
-     * Gets the current side
-     * @returns the current side
+     * Gets the current side.
+     *
+     * @returns The current side.
      */
     public getSide(): Side {
         return this.side;
@@ -186,15 +194,13 @@ export class InfoPane extends BaseElement {
 
         if (side === "top" || side === "left") {
             this.contentElement.after(this.resizerElement);
-        }
-        else {
+        } else {
             this.contentElement.before(this.resizerElement);
         }
 
         this.side = validSide;
-        this.orientation = (side === "left" || side === "right")
-            ? "vertical"
-            : "horizontal";
+        this.orientation =
+            side === "left" || side === "right" ? "vertical" : "horizontal";
 
         this.resize();
     }
@@ -231,8 +237,7 @@ export class InfoPane extends BaseElement {
                         height += dy;
                         this.resize(height);
                     }
-                }
-                else {
+                } else {
                     let dx = oldX - x;
                     if (this.side === "left") {
                         dx = -dx;

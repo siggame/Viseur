@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CatastropheDelta, ITileState } from "./state-interfaces";
+import { CatastropheDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -23,11 +23,11 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    /** The current state of the Tile (dt = 0). */
+    public current: TileState | undefined;
 
-    /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    /** The next state of the Tile (dt = 1). */
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     /** The grass sprite for this Tile. */
@@ -42,13 +42,15 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Tile with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Tile with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Tile.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -56,14 +58,21 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // Set the parent of the tile container as the background layer
         this.container.setParent(this.game.layers.background);
         // Set the container's sprite as the ground tile Sprite
-        const grassSpriteName = `grass${Math.abs(this.game.random.int32() % 3) + 1}` as "grass1" | "grass2" | "grass3";
+        const grassSpriteName = `grass${
+            Math.abs(this.game.random.int32() % 3) + 1
+        }` as "grass1" | "grass2" | "grass3";
         this.grass = this.addSprite[grassSpriteName]();
 
         // Change the resource here
         if (state.harvestRate > 0) {
             this.bush = this.addSprite.bush();
             this.berry = this.addSprite.berry();
-            const colors = [Color("purple"), Color("yellow"), Color("red"), Color("blue")]; // by ptm
+            const colors = [
+                Color("purple"),
+                Color("yellow"),
+                Color("red"),
+                Color("blue"),
+            ]; // by ptm
             const i = Math.abs(this.game.random.int32() % colors.length);
             this.berry.tint = colors[i].rgbNumber();
             // this.berry.tint = Color("blue").rgbNumber();
@@ -75,20 +84,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Tile instances.
+     * Called approx 60 times a second to update and render Tile
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {
@@ -99,7 +112,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         if (this.bush && this.berry) {
             this.bush.visible = current.harvestRate > 0;
-            this.berry.visible = this.bush.visible && current.turnsToHarvest === 0;
+            this.berry.visible =
+                this.bush.visible && current.turnsToHarvest === 0;
         }
         /** */
         // <<-- /Creer-Merge: render -->>
@@ -122,7 +136,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -135,14 +150,17 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {

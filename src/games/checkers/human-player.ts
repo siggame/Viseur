@@ -1,7 +1,7 @@
 // This is where you build your the Human player interactions with Viseur for the Checkers game.
 import { BaseHumanPlayer } from "src/viseur/game";
 import { Game } from "./game";
-import { ICheckerState } from "./state-interfaces";
+import { CheckerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -13,17 +13,17 @@ import { ICheckerState } from "./state-interfaces";
  * for things and then use callback actions to send values to the game server.
  */
 export class HumanPlayer extends BaseHumanPlayer {
-    /** The game this human player is playing */
+    /** The game this human player is playing. */
     public game!: Game;
 
     /**
      * Set this static flag to true to mark this game as able to be played by
-     * human players. Leave as false to ignore that functionality
+     * human players. Leave as false to ignore that functionality.
      */
     public static get implemented(): boolean {
-    //  <<-- Creer-Merge: implemented -->>
+        //  <<-- Creer-Merge: implemented -->>
         return false; // set this to true if humans can play this game
-    //  <<-- /Creer-Merge: implemented -->>
+        //  <<-- /Creer-Merge: implemented -->>
     }
 
     //  <<-- Creer-Merge: variables -->>
@@ -32,8 +32,9 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * Creates the human player for this game. This class will never be
-     * used if the static implemented flag above is not set to true
-     * @param game the game this human player is playing
+     * used if the static implemented flag above is not set to true.
+     *
+     * @param game - The game this human player is playing.
      */
     constructor(game: Game) {
         super(game);
@@ -48,11 +49,15 @@ export class HumanPlayer extends BaseHumanPlayer {
     /**
      * This is called whenever your checker gets captured (during an opponent's
      * turn).
-     * @param checker The checker that was captured.
-     * @param callback The callback that eventually returns the return value
+     *
+     * @param checker - The checker that was captured.
+     * @param callback - The callback that eventually returns the return value
      * from the server.
      */
-    public gotCaptured(checker: ICheckerState, callback: (returned: void) => void): void {
+    public gotCaptured(
+        checker: CheckerState,
+        callback: (returned: void) => void,
+    ): void {
         // <<-- Creer-Merge: gotCaptured -->>
         // Put your game logic here for gotCaptured
         // <<-- /Creer-Merge: gotCaptured -->>
@@ -60,7 +65,8 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * This is called every time it is this AI.player's turn.
-     * @param callback The callback that eventually returns the return value
+     *
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The first argument to the callback is the return
      * value: Represents if you want to end your turn. True means end your turn,
      * False means to keep your turn going and re-call this function.

@@ -1,53 +1,53 @@
 import { FirstArgument, Immutable, isObject } from "src/utils";
 import { Viseur } from "src/viseur";
-import { Event, events, Signal } from "ts-typed-events";
+import { Event, events } from "ts-typed-events";
 
-/** Data sent from the Tournament server detailing how to connect to play */
-export interface ITournamentPlayData {
-    /** The server to connect to */
+/** Data sent from the Tournament server detailing how to connect to play. */
+export interface TournamentPlayData {
+    /** The server to connect to. */
     server: string;
-    /** The port to connect through */
+    /** The port to connect through. */
     port: number;
-    /** The name of the game to play */
+    /** The name of the game to play. */
     game: string;
-    /** The name of the player */
+    /** The name of the player. */
     playerName: string;
-    /** The session to play in */
+    /** The session to play in. */
     session: string;
 }
 
-/** The connection arguments for a tournament to connect */
+/** The connection arguments for a tournament to connect. */
 export type TournamentConnectionArgs = FirstArgument<
     TournamentClient["connect"]
 >;
 
-/** A WS connection to a tournament server */
+/** A WS connection to a tournament server. */
 export class TournamentClient {
-    /** Events emitted but this tournament client.  */
+    /** Events emitted but this tournament client. */
     public readonly events = events({
-        /** Emitted when an error is encountered by the socket */
+        /** Emitted when an error is encountered by the socket. */
         error: new Event<Error>(),
 
-        /** Emitted once this initially connects to the tournament server */
-        connected: new Signal(),
+        /** Emitted once this initially connects to the tournament server. */
+        connected: new Event(),
 
-        /** Emitted once the connection is closed */
-        closed: new Signal(),
+        /** Emitted once the connection is closed. */
+        closed: new Event(),
 
-        /** Emitted any time the tournament server sends a message */
+        /** Emitted any time the tournament server sends a message. */
         messaged: new Event<string>(),
 
         /**
          * Emitted once we are told that we are playing a game,
          * includes details on how to play that game.
          */
-        playing: new Event<ITournamentPlayData>(),
+        playing: new Event<TournamentPlayData>(),
     });
 
-    /** True when connected to the tournament server, false otherwise */
-    public connected: boolean = false;
+    /** True when connected to the tournament server, false otherwise. */
+    public connected = false;
 
-    /** The web socket connection we'll use to talk to the Tournament server */
+    /** The web socket connection we'll use to talk to the Tournament server. */
     private socket: WebSocket | undefined;
 
     /**
@@ -56,30 +56,31 @@ export class TournamentClient {
      * @param viseur - The Viseur instance this is in.
      */
     public constructor(
-        /** The Viseur instance that controls everything */
+        /** The Viseur instance that controls everything. */
         private readonly viseur: Viseur,
     ) {}
 
     /**
-     * connects to a remote tournament server.
+     * Connects to a remote tournament server.
      *
      * @param args - The connection args.
-     * exactly as the one on the tournament server.
+     * These are exactly as the one on the tournament server.
      */
-    public connect(args: Immutable<{
-        /** The server address/ip to connect to. */
-        server: string;
+    public connect(
+        args: Immutable<{
+            /** The server address/ip to connect to. */
+            server: string;
 
-        /** The port to connect to on the server. */
-        port: number;
+            /** The port to connect to on the server. */
+            port: number;
 
-        /** The name of the player connecting. */
-        playerName?: string;
-    }>): void {
+            /** The name of the player connecting. */
+            playerName?: string;
+        }>,
+    ): void {
         try {
             this.socket = new WebSocket(`ws://${args.server}:${args.port}`);
-        }
-        catch (err) {
+        } catch (err) {
             this.events.error.emit(err as Error);
 
             return;
@@ -102,7 +103,7 @@ export class TournamentClient {
 
         this.socket.onmessage = (message) => {
             if (this.viseur.settings.printIO.get()) {
-                // tslint:disable-next-line:no-console
+                // eslint-disable-next-line no-console
                 console.log("FROM TOURNAMENT <-- ", message.data);
             }
 
@@ -134,9 +135,11 @@ export class TournamentClient {
      * @param eventName - The name of the event.
      * @param data - The data about the event.
      */
-    private send(eventName: string, data: object): void {
+    private send(eventName: string, data: unknown): void {
         if (!this.socket) {
-            throw new Error("Tournament Client tried to send before connected");
+            throw new Error(
+                "Tournament Client tried to send before connected",
+            );
         }
         const str = JSON.stringify({
             event: eventName,
@@ -144,7 +147,7 @@ export class TournamentClient {
         });
 
         if (this.viseur.settings.printIO.get()) {
-            // tslint:disable-next-line:no-console
+            // eslint-disable-next-line no-console
             console.log("TO TOURNAMENT --> ", str);
         }
 
@@ -152,13 +155,16 @@ export class TournamentClient {
     }
 
     /**
-     * Invoked when we receive some data from the server
-     * @param data the data received from the server
+     * Invoked when we receive some data from the server.
+     *
+     * @param data - The data received from the server.
+     * @param data.event - The event name.
+     * @param data.data - The data about the event.
      */
     private received(data: {
-        /** the event name */
+        /** The event name. */
         event: string;
-        /** the data about the event */
+        /** The data about the event. */
         data?: unknown;
     }): void {
         switch (data.event) {
@@ -167,7 +173,7 @@ export class TournamentClient {
                 break;
             case "play":
                 // TODO: verify this implements said interface.
-                this.onPlay(data.data as ITournamentPlayData);
+                this.onPlay(data.data as TournamentPlayData);
                 break;
             default:
                 throw new Error(`Unexpected tournament event ${data.event}`);
@@ -191,7 +197,7 @@ export class TournamentClient {
      * @param data - The data on what game server to connect to for bridging
      * the human playable connection.
      */
-    private onPlay(data: Immutable<ITournamentPlayData>): void {
+    private onPlay(data: Immutable<TournamentPlayData>): void {
         this.events.playing.emit(data);
 
         const { game, ...args } = data;

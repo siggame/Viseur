@@ -1,6 +1,6 @@
 /** The possible IDs for a font-awesome v4.7 icon. */
-export type FontAwesomeIds
-    = "glass"
+export type FontAwesomeIds =
+    | "glass"
     | "music"
     | "search"
     | "envelope-o"

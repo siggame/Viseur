@@ -3,12 +3,12 @@
 import * as Color from "color";
 import { Immutable } from "src/utils";
 import { BaseGame } from "src/viseur/game";
-import { IRendererSize } from "src/viseur/renderer";
+import { RendererSize } from "src/viseur/renderer";
 import { GameObjectClasses } from "./game-object-classes";
 import { HumanPlayer } from "./human-player";
 import { GameResources } from "./resources";
 import { GameSettings } from "./settings";
-import { CheckersDelta, IGameState } from "./state-interfaces";
+import { CheckersDelta, GameState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -25,22 +25,28 @@ export class Game extends BaseGame {
     /** The static name of this game. */
     public static readonly gameName = "Checkers";
 
-    /** The number of players in this game. the players array should be this same size */
+    /**
+     * The number of players in this game.
+     * The players array should be this same size.
+     */
     public static readonly numberOfPlayers = 2;
 
-    /** The current state of the Game (dt = 0) */
-    public current: IGameState | undefined;
+    /** The current state of the Game (dt = 0). */
+    public current: GameState | undefined;
 
-    /** The next state of the Game (dt = 1) */
-    public next: IGameState | undefined;
+    /** The next state of the Game (dt = 1). */
+    public next: GameState | undefined;
 
-    /** The resource factories that can create sprites for this game */
+    /** The resource factories that can create sprites for this game. */
     public readonly resources = GameResources;
 
-    /** The human player playing this game */
+    /** The human player playing this game. */
     public readonly humanPlayer: HumanPlayer | undefined;
 
-    /** The default player colors for this game, there must be one for each player */
+    /**
+     * The default player colors for this game,
+     * there must be one for each player.
+     */
     public readonly defaultPlayerColors: [Color, Color] = [
         // <<-- Creer-Merge: default-player-colors -->>
         Color("#c92b10"), // Player 0 = red(ish)
@@ -48,22 +54,25 @@ export class Game extends BaseGame {
         // <<-- /Creer-Merge: default-player-colors -->>
     ];
 
-    /** The custom settings for this game */
+    /** The custom settings for this game. */
     public readonly settings = this.createSettings(GameSettings);
 
-    /** The layers in the game */
+    /** The layers in the game. */
     public readonly layers = this.createLayers({
         // <<-- Creer-Merge: layers -->>
-        /** Bottom most layer, for background elements */
+        /** Bottom most layer, for background elements. */
         background: this.createLayer(),
-        /** Middle layer, for moving game objects */
+        /** Middle layer, for moving game objects. */
         game: this.createLayer(),
-        /** Top layer, for UI elements above the game */
+        /** Top layer, for UI elements above the game. */
         ui: this.createLayer(),
         // <<-- /Creer-Merge: layers -->>
     });
 
-    /** Mapping of the class names to their class for all sub game object classes */
+    /**
+     * Mapping of the class names to their class for all
+     * sub game object classes.
+     */
     public readonly gameObjectClasses = GameObjectClasses;
 
     // <<-- Creer-Merge: variables -->>
@@ -75,12 +84,13 @@ export class Game extends BaseGame {
     // <<-- /Creer-Merge: public-functions -->>
 
     /**
-     * Invoked when the first game state is ready to setup the size of the renderer.
+     * Invoked when the first game state is ready to setup the size of the
+     * renderer.
      *
      * @param state - The initialize state of the game.
      * @returns The {height, width} you for the game's size.
      */
-    protected getSize(state: IGameState): IRendererSize {
+    protected getSize(state: GameState): RendererSize {
         return {
             // <<-- Creer-Merge: get-size -->>
             width: state.boardWidth,
@@ -91,11 +101,12 @@ export class Game extends BaseGame {
 
     /**
      * Called when Viseur is ready and wants to start rendering the game.
-     * This is where you should initialize your state variables that rely on game data.
+     * This is where you should initialize your state variables that rely on
+     * game data.
      *
      * @param state - The initialize state of the game.
      */
-    protected start(state: IGameState): void {
+    protected start(state: GameState): void {
         super.start(state);
 
         // <<-- Creer-Merge: start -->>
@@ -104,21 +115,24 @@ export class Game extends BaseGame {
     }
 
     /**
-     * Initializes the background. It is drawn once automatically after this step.
+     * Initializes the background. It is drawn once automatically after this
+     * step.
      *
      * @param state - The initial state to use the render the background.
      */
-    protected createBackground(state: IGameState): void {
+    protected createBackground(state: GameState): void {
         super.createBackground(state);
 
         // <<-- Creer-Merge: create-background -->>
         // generate a random color based on the game's random seed so each
         // background color for each game has a slight different hue
-        const randomColor = Color().hsl(
-            this.random() * 360, // hue, random number 0 to 360
-            60, // saturation
-            40, // luminosity
-        ).whiten(1.5);
+        const randomColor = Color()
+            .hsl(
+                this.random() * 360, // hue, random number 0 to 360
+                60, // saturation
+                40, // luminosity
+            )
+            .whiten(1.5);
 
         for (let x = 0; x < state.boardWidth; x++) {
             for (let y = 0; y < state.boardHeight; y++) {
@@ -129,8 +143,11 @@ export class Game extends BaseGame {
                     : this.resources.tileRed
                 ).newSprite({
                     container: this.layers.background,
-                    position: {x, y},
-                    tint: Color(black ? "black" : "red").mix(randomColor, 0.85),
+                    position: { x, y },
+                    tint: Color(black ? "black" : "red").mix(
+                        randomColor,
+                        0.85,
+                    ),
                 });
             }
         }
@@ -141,16 +158,20 @@ export class Game extends BaseGame {
      * Called approx 60 times a second to update and render the background.
      * Leave empty if the background is static.
      *
-     * @param dt - A floating point number [0, 1) which represents how far into the next turn to render at.
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param dt - A floating point number [0, 1) which represents how far
+     * into the next turn to render at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     protected renderBackground(
         dt: number,
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {
@@ -164,14 +185,17 @@ export class Game extends BaseGame {
     /**
      * Invoked when the game state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     protected stateUpdated(
-        current: Immutable<IGameState>,
-        next: Immutable<IGameState>,
+        current: Immutable<GameState>,
+        next: Immutable<GameState>,
         delta: Immutable<CheckersDelta>,
         nextDelta: Immutable<CheckersDelta>,
     ): void {

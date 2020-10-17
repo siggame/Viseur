@@ -1,14 +1,14 @@
 import { Immutable } from "src/utils";
-import { BaseInput, IBaseInputArgs } from "./base-input";
+import { BaseInput, BaseInputArgs } from "./base-input";
 
-/** a checkbox for booleans */
+/** A checkbox for booleans. */
 export class CheckBox extends BaseInput<boolean> {
     /**
      * Creates a checkbox for boolean values.
      *
      * @param args - The args to initialize, value must be boolean.
      */
-    constructor(args: Immutable<IBaseInputArgs<boolean>>) {
+    constructor(args: Immutable<BaseInputArgs<boolean>>) {
         super({
             value: Boolean(args.value),
             type: "checkbox",

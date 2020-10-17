@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { IWebState, SpidersDelta } from "./state-interfaces";
+import { SpidersDelta, WebState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease, renderSpriteBetween } from "src/utils";
@@ -23,24 +23,26 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Web (dt = 0) */
-    public current: IWebState | undefined;
+    /** The current state of the Web (dt = 0). */
+    public current: WebState | undefined;
 
-    /** The next state of the Web (dt = 1) */
-    public next: IWebState | undefined;
+    /** The next state of the Web (dt = 1). */
+    public next: WebState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Web with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Web with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Web.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: IWebState, viseur: Viseur) {
+    constructor(state: WebState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -57,20 +59,24 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Web instances.
+     * Called approx 60 times a second to update and render Web
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<IWebState>,
-        next: Immutable<IWebState>,
+        current: Immutable<WebState>,
+        next: Immutable<WebState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -103,7 +109,8 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -116,14 +123,17 @@ export class Web extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<IWebState>,
-        next: Immutable<IWebState>,
+        current: Immutable<WebState>,
+        next: Immutable<WebState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {

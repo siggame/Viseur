@@ -2,14 +2,14 @@ import { Immutable } from "@cadre/ts-utils";
 import * as dateFormat from "dateformat";
 import * as screenfull from "screenfull";
 import { partial } from "src/core/partial";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
 import { PrettyPolygons } from "src/core/ui/pretty-polygons";
 import { Viseur } from "src/viseur";
 import { viseurConstructed } from "src/viseur/constructed";
 import { Event, events } from "ts-typed-events";
 import { BaseGame } from "../game";
-import * as faviconIco from "../images/favicon.ico";
+import faviconIco from "../images/favicon.ico";
 import * as guiHbs from "./gui.hbs";
 import "./gui.scss";
 import { InfoPane } from "./info-pane";
@@ -18,54 +18,63 @@ import * as loadingMessageHbs from "./loading-message/loading-message.hbs";
 import "./loading-message/loading-message.scss";
 import { PlaybackPane } from "./playback-pane";
 
-/** all the GUI (DOM) elements in the Viseur */
+/** All the GUI (DOM) elements in the Viseur. */
 export class GUI extends BaseElement {
-    /** The wrapper for the renderer */
+    /** The wrapper for the renderer. */
     public readonly rendererWrapper = this.element.find(".renderer-wrapper");
 
-    /** The wrapper element for the game's pane */
+    /** The wrapper element for the game's pane. */
     public readonly gamePaneWrapper = this.element.find(".game-pane-wrapper");
 
-    /** The wrapper for the playback pane */
-    private readonly playbackWrapper = this.element.find(".playback-pane-wrapper");
+    /** The wrapper for the playback pane. */
+    private readonly playbackWrapper = this.element.find(
+        ".playback-pane-wrapper",
+    );
 
-    /** The wrapper for the visualizer wrapper */
-    private readonly visualizerWrapper = this.element.find(".visualizer-wrapper");
+    /** The wrapper for the visualizer wrapper. */
+    private readonly visualizerWrapper = this.element.find(
+        ".visualizer-wrapper",
+    );
 
-    /** The wrapper for the visualizer's pane */
-    private readonly visualizerPaneWrapper = this.element.find(".visualizer-pane-wrapper");
+    /** The wrapper for the visualizer's pane. */
+    private readonly visualizerPaneWrapper = this.element.find(
+        ".visualizer-pane-wrapper",
+    );
 
-    /** The pretty polygons we animate as a background */
-    private readonly prettyPolygons = new PrettyPolygons(this.visualizerPaneWrapper);
+    /** The pretty polygons we animate as a background. */
+    private readonly prettyPolygons = new PrettyPolygons(
+        this.visualizerPaneWrapper,
+    );
 
-    /** The info pane part of the gui */
+    /** The info pane part of the gui. */
     private readonly infoPane: InfoPane;
 
-    /** The playback pane with controls to manipulate playback */
+    /** The playback pane with controls to manipulate playback. */
     private readonly playbackPane = new PlaybackPane({
         parent: this.playbackWrapper,
     });
 
-    /** The modal [re]used to display loading and error messages */
+    /** The modal [re]used to display loading and error messages. */
     private readonly modal: Modal;
 
-    /** the game (for resizing purposes) */
+    /** The game (for resizing purposes). */
     private game: BaseGame | undefined;
 
-    /** All the events this GUI emits */
-    // tslint:disable-next-line:member-ordering (because we need the private stuff above initialized first)
+    /** All the events this GUI emits. */
     public readonly events = events.concat(this.playbackPane.events, {
-        /** Emitted when the GUI resizes */
-        resized: new Event<Immutable<{
-            /** The new width of the GUI. */
-            width: number;
+        /** Emitted when the GUI resizes. */
+        resized: new Event<
+            Immutable<{
+                /** The new width of the GUI. */
+                width: number;
 
-            /** The new height of the GUI. */
-            height: number;
+                /** The new height of the GUI. */
+                height: number;
 
-            /** The Remaining vertical height for the info pane. */
-            remainingHeight: number;
-        }>>(),
+                /** The Remaining vertical height for the info pane. */
+                remainingHeight: number;
+            }>
+        >(),
     });
 
     /**
@@ -73,10 +82,12 @@ export class GUI extends BaseElement {
      *
      * @param args - The initialization args.
      */
-    constructor(args: IBaseElementArgs & {
-        /** The Viseur instance we are a part of. */
-        viseur: Viseur;
-    }) {
+    constructor(
+        args: BaseElementArgs & {
+            /** The Viseur instance we are a part of. */
+            viseur: Viseur;
+        },
+    ) {
         super(args, guiHbs);
 
         this.setTheme(args.viseur.settings.theme.get());
@@ -119,7 +130,10 @@ export class GUI extends BaseElement {
                 this.element.addClass("gamelog-loaded");
                 const date = gamelog.streaming
                     ? "Live"
-                    : dateFormat(new Date(gamelog.epoch), "mmmm dS, yyyy, h:MM:ss:l TT Z");
+                    : dateFormat(
+                          new Date(gamelog.epoch),
+                          "mmmm dS, yyyy, h:MM:ss:l TT Z",
+                      );
 
                 document.title = `${gamelog.gameName} - ${gamelog.gameSession} - ${date} | Viseur`;
 
@@ -161,10 +175,7 @@ export class GUI extends BaseElement {
      * @param callback - The callback to invoke upon showing async.
      */
     public modalMessage(message: string, callback?: () => void): void {
-        this.modal.show(
-            partial(loadingMessageHbs, { message }),
-            callback,
-        );
+        this.modal.show(partial(loadingMessageHbs, { message }), callback);
     }
 
     /**
@@ -181,7 +192,7 @@ export class GUI extends BaseElement {
     }
 
     /**
-     * Hides the modal
+     * Hides the modal.
      */
     public hideModal(): void {
         this.modal.hide();
@@ -190,13 +201,14 @@ export class GUI extends BaseElement {
     // Fullscreen \\
 
     /**
-     * Makes the GUI, which is all the DOM stuff for the Viseur, go fullscreen
+     * Makes the GUI, which is all the DOM stuff for the Viseur,
+     * go fullscreen.
      */
     public goFullscreen(): void {
         this.element.addClass("fullscreen");
 
         if (screenfull.isEnabled) {
-            screenfull.request();
+            void screenfull.request();
         }
 
         this.resizeVisualizer(0, 0); // top left now that we (should) be fullscreen
@@ -205,20 +217,21 @@ export class GUI extends BaseElement {
     }
 
     /**
-     * Makes the GUI exit fullscreen
+     * Makes the GUI exit fullscreen.
      */
-    public exitFullscreen = () => {
+    public exitFullscreen = (): void => {
         this.element.removeClass("fullscreen");
 
         KEYS.escape.up.off(this.exitFullscreen);
         if (screenfull.isEnabled) {
-            screenfull.exit();
+            void screenfull.exit();
         }
 
-        setImmediate(() => { // HACK: width and height will be incorrect after going out of fullscreen, so wait a moment
+        setImmediate(() => {
+            // HACK: width and height will be incorrect after going out of fullscreen, so wait a moment
             this.resize();
         });
-    }
+    };
 
     /**
      * Checks if the GUI is fullscreen.
@@ -254,8 +267,7 @@ export class GUI extends BaseElement {
             if (this.infoPane.getSide() === "top") {
                 newTop = height;
             }
-        }
-        else {
+        } else {
             newWidth -= width;
 
             if (this.infoPane.getSide() === "left") {
@@ -273,9 +285,7 @@ export class GUI extends BaseElement {
         const remainingWidth = newWidth;
         let remainingHeight = newHeight - playbackHeight;
 
-        this.visualizerWrapper
-            .width(remainingWidth)
-            .height(remainingHeight);
+        this.visualizerWrapper.width(remainingWidth).height(remainingHeight);
 
         let gamePaneHeight = 0;
         if (this.game && this.game.pane) {
@@ -284,9 +294,7 @@ export class GUI extends BaseElement {
 
         remainingHeight -= gamePaneHeight;
 
-        this.rendererWrapper
-            .width(remainingWidth)
-            .height(remainingHeight);
+        this.rendererWrapper.width(remainingWidth).height(remainingHeight);
 
         this.events.resized.emit({
             width: newWidth,
@@ -305,9 +313,8 @@ export class GUI extends BaseElement {
             return;
         }
 
-        this.parent.removeClass((_, className) => /theme-.+/.exec(className)
-            ? className
-            : "",
+        this.parent.removeClass((_, className) =>
+            /theme-.+/.exec(className) ? className : "",
         );
 
         this.parent.addClass(`theme-${theme.toLowerCase()}`);

@@ -5,7 +5,7 @@ import { HelpTab } from "./help-tab/help-tab";
 import { InspectTab } from "./inspect-tab/inspect-tab";
 import { SettingsTab } from "./settings-tab/settings-tab";
 
-/** these are all the tabs for the InfoPane, in order */
+/** These are all the tabs for the InfoPane, in order. */
 export const TABS: Immutable<Array<typeof Tab>> = [
     FileTab,
     InspectTab,

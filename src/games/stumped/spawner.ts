@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ISpawnerState, StumpedDelta } from "./state-interfaces";
+import { SpawnerState, StumpedDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { ease } from "src/utils";
@@ -23,11 +23,11 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Spawner (dt = 0) */
-    public current: ISpawnerState | undefined;
+    /** The current state of the Spawner (dt = 0). */
+    public current: SpawnerState | undefined;
 
-    /** The next state of the Spawner (dt = 1) */
-    public next: ISpawnerState | undefined;
+    /** The next state of the Spawner (dt = 1). */
+    public next: SpawnerState | undefined;
 
     // <<-- Creer-Merge: variables -->>
 
@@ -37,13 +37,15 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Spawner with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Spawner with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Spawner.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: ISpawnerState, viseur: Viseur) {
+    constructor(state: SpawnerState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -61,20 +63,24 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Spawner instances.
+     * Called approx 60 times a second to update and render Spawner
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<ISpawnerState>,
-        next: Immutable<ISpawnerState>,
+        current: Immutable<SpawnerState>,
+        next: Immutable<SpawnerState>,
         delta: Immutable<StumpedDelta>,
         nextDelta: Immutable<StumpedDelta>,
     ): void {
@@ -85,8 +91,14 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
         // figure out the sprite indexes to render and if they should be faded in/out
         const maxHealth = 5; // (this.game.current || this.game.next!).maxSpawnerHealth;
 
-        const currentIndex = Math.max(0, Math.floor(STAGES * current.health / maxHealth) - 1);
-        let nextIndex = Math.max(0, Math.floor(STAGES * next.health / maxHealth) - 1);
+        const currentIndex = Math.max(
+            0,
+            Math.floor((STAGES * current.health) / maxHealth) - 1,
+        );
+        let nextIndex = Math.max(
+            0,
+            Math.floor((STAGES * next.health) / maxHealth) - 1,
+        );
 
         let fade = true;
         if (currentIndex === nextIndex) {
@@ -99,12 +111,11 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
             if (i === currentIndex) {
                 this.sprites[i].visible = true;
                 this.sprites[i].alpha = fade ? ease(1 - dt, "cubicInOut") : 1;
-            }
-            else if (i === nextIndex) { // can only occur on fade out
+            } else if (i === nextIndex) {
+                // can only occur on fade out
                 this.sprites[i].visible = true;
                 this.sprites[i].alpha = ease(dt, "cubicInOut");
-            }
-            else {
+            } else {
                 this.sprites[i].visible = false;
             }
         }
@@ -129,7 +140,8 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -142,14 +154,17 @@ export class Spawner extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<ISpawnerState>,
-        next: Immutable<ISpawnerState>,
+        current: Immutable<SpawnerState>,
+        next: Immutable<SpawnerState>,
         delta: Immutable<StumpedDelta>,
         nextDelta: Immutable<StumpedDelta>,
     ): void {

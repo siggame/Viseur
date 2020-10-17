@@ -18,9 +18,5 @@
         "unstringify",
         "updown",
         "viseur"
-    ],
-    "typescript.tsdk": "node_modules\\typescript\\lib",
-    "files.associations": {
-        "iostream": "cpp"
-    }
+    ]
 }

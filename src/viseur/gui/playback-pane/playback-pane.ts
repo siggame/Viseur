@@ -1,60 +1,60 @@
 import { Immutable } from "@cadre/ts-utils";
-import { BaseElement, IBaseElementArgs } from "src/core/ui/base-element";
+import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
 import { Viseur } from "src/viseur";
 import { viseurConstructed } from "src/viseur/constructed";
-import { IGamelogWithReverses } from "src/viseur/game/gamelog";
-import { Event, events, Signal } from "ts-typed-events";
+import { GamelogWithReverses } from "src/viseur/game/gamelog";
+import { Event, events } from "ts-typed-events";
 import { KEYS } from "../keys";
 import * as playbackPaneHbs from "./playback-pane.hbs";
 import "./playback-pane.scss";
 
 /** Handles all the playback controls and logic for the playback part of the GUI. */
 export class PlaybackPane extends BaseElement {
-    /** All the events this class emits */
+    /** All the events this class emits. */
     public readonly events = events({
-        /** Emitted when the playback slider is slid */
+        /** Emitted when the playback slider is slid. */
         playbackSlide: new Event<number>(),
 
-        /** Emitted when fullscreen is toggled */
-        toggleFullscreen: new Signal(),
+        /** Emitted when fullscreen is toggled. */
+        toggleFullscreen: new Event(),
 
-        /** Emitted when we want to go to the next state */
-        next: new Signal(),
+        /** Emitted when we want to go to the next state. */
+        next: new Event(),
 
-        /** Emitted when we want to go to the previous state */
-        back: new Signal(),
+        /** Emitted when we want to go to the previous state. */
+        back: new Event(),
 
-        /** Emitted when we want play or pause (toggled) */
-        playPause: new Signal(),
+        /** Emitted when we want play or pause (toggled). */
+        playPause: new Event(),
     });
 
-    /** The Viseur instance that controls this */
+    /** The Viseur instance that controls this. */
     private viseur: Viseur | undefined;
 
-    /** The number of deltas in the gamelog */
-    private numberOfDeltas: number = 0;
+    /** The number of deltas in the gamelog. */
+    private numberOfDeltas = 0;
 
-    /** If all the inputs are disabled */
-    private disabled: boolean = false;
+    /** If all the inputs are disabled. */
+    private disabled = false;
 
-    /** Element displaying the current playback time */
+    /** Element displaying the current playback time. */
     private readonly playbackTimeCurrentElement: JQuery;
 
-    /** Element displaying the max playback time */
+    /** Element displaying the max playback time. */
     private readonly playbackTimeMaxElement: JQuery;
 
-    /** The top container for buttons */
+    /** The top container for buttons. */
     private readonly topContainerElement: JQuery;
 
-    /** The bottom left container for buttons */
+    /** The bottom left container for buttons. */
     private readonly bottomLeftContainerElement: JQuery;
 
-    /** The bottom right container for buttons */
+    /** The bottom right container for buttons. */
     private readonly bottomRightContainerElement: JQuery;
 
-    /** Handy collection of all our inputs */
+    /** Handy collection of all our inputs. */
     private readonly inputs: DisableableElement[];
 
     // Our Inputs \\
@@ -83,17 +83,23 @@ export class PlaybackPane extends BaseElement {
     /** The fullscreen enable button. */
     private readonly fullscreenButton: inputs.Button;
 
-    constructor(args: Readonly<IBaseElementArgs>) {
+    constructor(args: Readonly<BaseElementArgs>) {
         super(args, playbackPaneHbs);
 
         this.element.addClass("collapsed");
 
-        this.playbackTimeCurrentElement = this.element.find(".playback-time-current");
+        this.playbackTimeCurrentElement = this.element.find(
+            ".playback-time-current",
+        );
         this.playbackTimeMaxElement = this.element.find(".playback-time-max");
 
         this.topContainerElement = this.element.find(".playback-pane-top");
-        this.bottomLeftContainerElement = this.element.find(".playback-pane-bottom-left");
-        this.bottomRightContainerElement = this.element.find(".playback-pane-bottom-right");
+        this.bottomLeftContainerElement = this.element.find(
+            ".playback-pane-bottom-left",
+        );
+        this.bottomRightContainerElement = this.element.find(
+            ".playback-pane-bottom-right",
+        );
 
         this.playbackSlider = new inputs.Slider({
             id: "playback-slider",
@@ -112,7 +118,8 @@ export class PlaybackPane extends BaseElement {
             this.events.playPause.emit();
         });
 
-        KEYS.space.up.on(() => { // space bar up, hence the ' => '
+        KEYS.space.up.on(() => {
+            // space bar up, hence the ' => '
             this.playPauseButton.click();
         });
 
@@ -146,7 +153,10 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.deltasButton.events.clicked.on(() => {
-            if (this.viseur && this.viseur.settings.playbackMode.get() !== "deltas") {
+            if (
+                this.viseur &&
+                this.viseur.settings.playbackMode.get() !== "deltas"
+            ) {
                 this.viseur.settings.playbackMode.set("deltas");
             }
         });
@@ -155,7 +165,10 @@ export class PlaybackPane extends BaseElement {
             parent: this.bottomRightContainerElement,
         });
         this.turnsButton.events.clicked.on(() => {
-            if (this.viseur && this.viseur.settings.playbackMode.get() !== "turns") {
+            if (
+                this.viseur &&
+                this.viseur.settings.playbackMode.get() !== "turns"
+            ) {
                 this.viseur.settings.playbackMode.set("turns");
             }
         });
@@ -169,7 +182,7 @@ export class PlaybackPane extends BaseElement {
             value: 0,
         });
 
-        this.speedSlider.events.changed.on((value) => {
+        this.speedSlider.events.changed.on(() => {
             this.updateSpeedSetting();
         });
 
@@ -241,7 +254,7 @@ export class PlaybackPane extends BaseElement {
      *
      * @param gamelog - The gamelog that was loaded.
      */
-    private viseurReady(gamelog: Immutable<IGamelogWithReverses>): void {
+    private viseurReady(gamelog: Immutable<GamelogWithReverses>): void {
         if (!this.viseur) {
             throw new Error("Viseur ready triggered without Viseur!");
         }
@@ -250,8 +263,7 @@ export class PlaybackPane extends BaseElement {
 
         if (!gamelog.streaming) {
             this.enable();
-        }
-        else {
+        } else {
             this.speedSlider.enable(); // While streaming the gamelog only enable the speed slider
             this.viseur.events.gamelogFinalized.on((data) => {
                 this.numberOfDeltas = data.gamelog.deltas.length;
@@ -267,9 +279,11 @@ export class PlaybackPane extends BaseElement {
     /**
      * Invoked when the gamelog's number of deltas is known or changes.
      *
-     * @param gamelog - the gamelog to get info from
+     * @param gamelog - The gamelog to get info from.
      */
-    private updatePlaybackSlider(gamelog: Immutable<IGamelogWithReverses>): void {
+    private updatePlaybackSlider(
+        gamelog: Immutable<GamelogWithReverses>,
+    ): void {
         this.playbackSlider.setMax(gamelog.deltas.length - 1 / 1e10); // basically round down a bit
 
         this.playbackTimeMaxElement.html(String(gamelog.deltas.length - 1));
@@ -301,15 +315,13 @@ export class PlaybackPane extends BaseElement {
         if (this.isEnabled()) {
             if (index === 0 && dt === 0) {
                 this.backButton.disable();
-            }
-            else {
+            } else {
                 this.backButton.enable();
             }
 
-            if (index >= (this.numberOfDeltas - 1)) {
+            if (index >= this.numberOfDeltas - 1) {
                 this.nextButton.disable();
-            }
-            else {
+            } else {
                 this.nextButton.enable();
             }
         }
@@ -331,7 +343,7 @@ export class PlaybackPane extends BaseElement {
      */
     private getSliderFromSpeed(): number {
         return this.viseur
-            ? 1 - (this.viseur.settings.playbackSpeed.get() / 1000)
+            ? 1 - this.viseur.settings.playbackSpeed.get() / 1000
             : 1;
     }
 
@@ -345,9 +357,8 @@ export class PlaybackPane extends BaseElement {
     }
 
     /**
-     * Invoked when the playback-speed setting is changed, so we can update the slider.
-     *
-     * @param value - The new speed value set to the SettingManager, we will update the speedSlider according to it.
+     * Invoked when the playback-speed setting is changed, so we can update
+     * the slider.
      */
     private updateSpeedSlider(): void {
         this.speedSlider.value = this.getSliderFromSpeed();

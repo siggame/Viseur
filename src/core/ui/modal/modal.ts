@@ -1,12 +1,12 @@
 import { Immutable } from "src/utils";
 import { onceTransitionEnds } from "src/utils/jquery";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import * as modalHbs from "./modal.hbs";
 import "./modal.scss";
 
-/** A modal that floats above the screen and blocks out all other input */
+/** A modal that floats above the screen and blocks out all other input. */
 export class Modal extends BaseElement {
-    /** the content of the modal */
+    /** The content of the modal. */
     private readonly content: JQuery;
 
     /**
@@ -14,7 +14,7 @@ export class Modal extends BaseElement {
      *
      * @param args - The arguments for the modal.
      */
-    constructor(args: Immutable<IBaseElementArgs>) {
+    constructor(args: Immutable<BaseElementArgs>) {
         super(args, modalHbs);
 
         this.content = this.element.find(".modal-content");
@@ -39,9 +39,7 @@ export class Modal extends BaseElement {
             }
         });
 
-        this.content
-            .html("")
-            .append(element);
+        this.content.html("").append(element);
     }
 
     /** Hides the modal. */

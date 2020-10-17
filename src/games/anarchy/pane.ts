@@ -1,8 +1,8 @@
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
-import { BasePane, IPaneStat } from "src/viseur/game";
+import { BasePane, PaneStat } from "src/viseur/game";
 import { Game } from "./game";
-import { IGameState, IPlayerState } from "./state-interfaces";
+import { GameState, PlayerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import { clamp } from "lodash";
@@ -10,9 +10,9 @@ import { clamp } from "lodash";
 
 /**
  * The visual pane that is displayed below the game and has text elements for
- * each player
+ * each player.
  */
-export class Pane extends BasePane<IGameState, IPlayerState> {
+export class Pane extends BasePane<GameState, PlayerState> {
     // <<-- Creer-Merge: variables -->>
     // if you need add more member class variables, do so here
     // <<-- /Creer-Merge: variables -->>
@@ -24,7 +24,7 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
      * @param game - The game this pane is displaying stats for.
      * @param state - The initial state of the game.
      */
-    constructor(viseur: Viseur, game: Game, state: Immutable<IGameState>) {
+    constructor(viseur: Viseur, game: Game, state: Immutable<GameState>) {
         super(viseur, game, state);
 
         // <<-- Creer-Merge: constructor -->>
@@ -47,7 +47,9 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
      * An array of number tuples is treated as individual bars alternatively
      * left and right aligned scaling from the first to the max second value.
      */
-    protected getPlayersScores(state: Immutable<IGameState>): Array<[number, number]> | number[] | undefined {
+    protected getPlayersScores(
+        state: Immutable<GameState>,
+    ): Array<[number, number]> | number[] | undefined {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
@@ -59,22 +61,31 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
      * Gets the stats to show on the top bar of the pane,
      * which tracks stats in the game.
      * This is only called once, during initialization.
-     * @param state the initial state of the game
-     * @returns All the PaneStats to display on this BasePane for the game.
+     *
+     * @param state - The initial state of the game.
+     * @returns - All the PaneStats to display on this BasePane for the game.
      */
-    protected getGameStats(state: Immutable<IGameState>): Array<IPaneStat<IGameState>> {
+    protected getGameStats(
+        state: Immutable<GameState>,
+    ): Array<PaneStat<GameState>> {
         const stats = super.getGameStats(state);
 
         // <<-- Creer-Merge: game-stats -->>
         stats.push(
             {
                 title: "current forecast intensity",
-                get: (gameState) => gameState.currentForecast ? gameState.currentForecast.intensity : "None",
+                get: (gameState) =>
+                    gameState.currentForecast
+                        ? gameState.currentForecast.intensity
+                        : "None",
                 icon: "fire",
             },
             {
                 title: "current forecast direction",
-                get: (gameState) => gameState.currentForecast ? gameState.currentForecast.direction : "None",
+                get: (gameState) =>
+                    gameState.currentForecast
+                        ? gameState.currentForecast.direction
+                        : "None",
                 icon: "cloud",
             },
         );
@@ -84,11 +95,15 @@ export class Pane extends BasePane<IGameState, IPlayerState> {
     }
 
     /**
-     * Gets the stats to show on each player pane, which tracks stats for that player
-     * @param state the initial state of the game
+     * Gets the stats to show on each player pane,
+     * which tracks stats for that player.
+     *
+     * @param state - The initial state of the game.
      * @returns All the PaneStats to display on this BasePane for the player.
      */
-    protected getPlayerStats(state: Immutable<IGameState>): Array<IPaneStat<IPlayerState>> {
+    protected getPlayerStats(
+        state: Immutable<GameState>,
+    ): Array<PaneStat<PlayerState>> {
         const stats = super.getPlayerStats(state);
 
         // <<-- Creer-Merge: player-stats -->>

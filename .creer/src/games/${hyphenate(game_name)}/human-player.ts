@@ -10,7 +10,7 @@ if ai['functions']:
     for function_name, function_parms in ai['functions'].items():
         for arg in function_parms['arguments']:
             arg_type = shared['vis']['type'](arg['type'])
-            if arg_type[0] == 'I': #// then it's an interface
+            if arg['type'] and arg['type']['is_game_object']:
                 if arg_type not in imports['./state-interfaces']:
                     imports['./state-interfaces'].append(arg_type)
 
@@ -27,23 +27,24 @@ ${merge("// ", "imports", "// any additional imports you want can be added here 
  * for things and then use callback actions to send values to the game server.
  */
 export class HumanPlayer extends BaseHumanPlayer {
-    /** The game this human player is playing */
+    /** The game this human player is playing. */
     public game!: Game;
 
     /**
      * Set this static flag to true to mark this game as able to be played by
-     * human players. Leave as false to ignore that functionality
+     * human players. Leave as false to ignore that functionality.
      */
     public static get implemented(): boolean {
-${merge("    //  ", "implemented", "        return false; // set this to true if humans can play this game", help=False)}
+${merge("        //  ", "implemented", "        return false; // set this to true if humans can play this game", help=False)}
     }
 
 ${merge("    //  ", "variables", "    // any additional variables you want to add for the HumanPlayer", help=False)}
 
     /**
      * Creates the human player for this game. This class will never be
-     * used if the static implemented flag above is not set to true
-     * @param game the game this human player is playing
+     * used if the static implemented flag above is not set to true.
+     *
+     * @param game - The game this human player is playing.
      */
     constructor(game: Game) {
         super(game);
@@ -77,23 +78,7 @@ arguments.append({
 
 })
 returnless['arguments'] = arguments
-docstring = shared['vis']['block_comment']('    ', returnless)
-
-formatted_name = '    public '+function_name+'('
-formatted_args = ', '.join([(a['name']+': '+shared['vis']['type'](a['type'])) for a in arguments])
-
-wrapper = shared['vis']['TextWrapper'](
-    subsequent_indent=' ' * len(formatted_name),
-    width=80,
-)
-
-formatted_args = '\n'.join(wrapper.wrap(formatted_args))
-
-if '\n' in formatted_args:
-    formatted_args += '\n    '
-
-%>${docstring}
-${formatted_name}${formatted_args}): void {
+%>${shared['vis']['function_top'](function_name, returnless)}
 ${merge("        // ", function_name, "        // Put your game logic here for " + function_name, help=False)}
     }
 

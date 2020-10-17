@@ -4,21 +4,21 @@ import { BOARD_LENGTH } from "./chess-board-background";
 import { squareToXY } from "./chess-pieces";
 import { Game } from "./game";
 
-/** An overlay on chess to handle clicks and show moves */
+/** An overlay on chess to handle clicks and show moves. */
 export class ChessOverlay {
-    /** The events this overlay emits */
+    /** The events this overlay emits. */
     public readonly events = events({
         /** Emitted when a valid move is selected. */
         moveSelected: new Event<Move>(),
     });
 
-    /** re-usable pixi sprites to overlay on squares */
+    /** Re-usable pixi sprites to overlay on squares. */
     private readonly overlays = new Array<PIXI.Sprite>();
 
-    /** The currently selected square */
+    /** The currently selected square. */
     private currentlySelected: Square | undefined;
 
-    /** valid squares that represent a move */
+    /** Valid squares that represent a move. */
     private validSquares: Move[] = [];
 
     /**
@@ -27,7 +27,9 @@ export class ChessOverlay {
      * @param game - The game this is overlaying.
      */
     constructor(private readonly game: Game) {
-        this.game.chessBackground.events.tileClicked.on((square) => this.tileClicked(square));
+        this.game.chessBackground.events.tileClicked.on((square) =>
+            this.tileClicked(square),
+        );
 
         this.game.settings.flipBoard.changed.on(() => this.deSelect());
     }
@@ -60,17 +62,17 @@ export class ChessOverlay {
 
         this.validSquares = movesFromSquare;
 
-        const yOffset = (y: number) => this.game.settings.flipBoard.get()
-        ? BOARD_LENGTH - y - 1
-        : y;
+        const yOffset = (y: number) =>
+            this.game.settings.flipBoard.get() ? BOARD_LENGTH - y - 1 : y;
 
         const from = squareToXY(square);
         const fromOverlay = this.getNextOverlay();
         fromOverlay.position.set(from.x, yOffset(from.y));
         fromOverlay.alpha = 0.25;
-        fromOverlay.tint = movesFromSquare.length > 0
-            ? this.game.chessBackground.randomColorCompliment.rgbNumber()
-            : 0xFFFFFF;
+        fromOverlay.tint =
+            movesFromSquare.length > 0
+                ? this.game.chessBackground.randomColorCompliment.rgbNumber()
+                : 0xffffff;
 
         for (const move of movesFromSquare) {
             const overlay = this.getNextOverlay();
@@ -83,7 +85,7 @@ export class ChessOverlay {
     /**
      * Hides all overlays, and returns what was selected.
      *
-     * @returns the square that was selected, if any
+     * @returns The square that was selected, if any.
      */
     private deSelect(): Square | undefined {
         for (const overlay of this.overlays) {

@@ -1,14 +1,17 @@
 import { Immutable } from "src/utils";
-import { events, Signal } from "ts-typed-events";
-import { DisableableElement, IDisableableElementArgs } from "../../disableable-element";
+import { Event, events } from "ts-typed-events";
+import {
+    DisableableElement,
+    DisableableElementArgs,
+} from "../../disableable-element";
 import * as buttonHbs from "./button.hbs";
 
-/** A range input for numbers */
+/** A range input for numbers. */
 export class Button extends DisableableElement {
-    /** Events this class emits */
+    /** Events this class emits. */
     public readonly events = events({
-        /** Emitted when this button is clicked */
-        clicked: new Signal(),
+        /** Emitted when this button is clicked. */
+        clicked: new Event(),
     });
 
     /**
@@ -16,10 +19,14 @@ export class Button extends DisableableElement {
      *
      * @param args - Button construction args. Can include text for the button.
      */
-    constructor(args: Immutable<IDisableableElementArgs & {
-        /** text string to place on the button */
-        text?: string;
-    }>) {
+    constructor(
+        args: Immutable<
+            DisableableElementArgs & {
+                /** Text string to place on the button. */
+                text?: string;
+            }
+        >,
+    ) {
         super(args, buttonHbs);
 
         if (args.text) {
@@ -31,12 +38,12 @@ export class Button extends DisableableElement {
         });
     }
 
-    /** Disables this input */
+    /** Disables this input. */
     public disable(): void {
         this.element.prop("disabled", true);
     }
 
-    /** Enables this input */
+    /** Enables this input. */
     public enable(): void {
         this.element.prop("disabled", false);
     }

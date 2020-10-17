@@ -4,14 +4,14 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CatastropheDelta, ITileState, IUnitState } from "./state-interfaces";
+import { CatastropheDelta, TileState, UnitState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 import * as Color from "color";
 import { ease, updown } from "src/utils"; // updown
 import { GameBar } from "src/viseur/game";
-import { IJobState } from "./state-interfaces";
+import { JobState } from "./state-interfaces";
 import { Tile } from "./tile";
 
 const WHITE_COLOR = Color("white").rgbNumber();
@@ -30,18 +30,18 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Unit (dt = 0) */
-    public current: IUnitState | undefined;
+    /** The current state of the Unit (dt = 0). */
+    public current: UnitState | undefined;
 
-    /** The next state of the Unit (dt = 1) */
-    public next: IUnitState | undefined;
+    /** The next state of the Unit (dt = 1). */
+    public next: UnitState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** The id of the owner of the unit */
+    /** The id of the owner of the unit. */
     public ownerID?: string;
 
-    /** Our job */
-    public job: IJobState["title"];
+    /** Our job. */
+    public job: JobState["title"];
 
     // Base sprite of the unit
     /** The cat sprite. */
@@ -65,35 +65,37 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // State Change Variables
     /** The tile we are attacking, if we are. */
-    public attackingTile?: ITileState;
+    public attackingTile?: TileState;
     /** The tile we are harvesting from, if we are. */
-    public harvestTile?: ITileState;
-    /** the job we changed to, if we did. */
-    public jobChanged?: IJobState["title"];
+    public harvestTile?: TileState;
+    /** The job we changed to, if we did. */
+    public jobChanged?: JobState["title"];
     /** The id of the player we are changing to, if we are. */
     public playerChange?: string;
     /** The direction we are facing. */
     public facing: "left" | "right";
 
-    /** "Drop shadow" sprite */
+    /** Drop shadow" sprite. */
     public dropShadow: PIXI.Sprite;
 
     /** The maximum amount of energy we can have. */
     public maxEnergy: number;
 
-    /** The bar that display's this unit's health */
+    /** The bar that display's this unit's health. */
     private readonly healthBar: GameBar;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Unit with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Unit with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Unit.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: IUnitState, viseur: Viseur) {
+    constructor(state: UnitState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -121,8 +123,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (state.tile) {
             this.container.position.set(state.tile.x, state.tile.y);
             this.container.visible = true;
-        }
-        else {
+        } else {
             this.container.position.set(-1, -1);
             this.container.visible = false;
         }
@@ -142,20 +143,24 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Unit instances.
+     * Called approx 60 times a second to update and render Unit
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {
@@ -168,18 +173,23 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.container.visible = false;
 
             return;
-        }
-        else {
+        } else {
             this.container.visible = true;
         }
 
-        if (current.tile.tileWest && current.tile.tileWest.id === next.tile.id) {
+        if (
+            current.tile.tileWest &&
+            current.tile.tileWest.id === next.tile.id
+        ) {
             if (this.facing !== "left") {
                 this.facing = "left";
                 this.container.scale.x *= -1;
             }
         }
-        if (current.tile.tileEast && current.tile.tileEast.id === next.tile.id) {
+        if (
+            current.tile.tileEast &&
+            current.tile.tileEast.id === next.tile.id
+        ) {
             if (this.facing !== "right") {
                 this.facing = "right";
                 this.container.scale.x *= -1;
@@ -203,12 +213,13 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.recolor();
         }
 
-        if (this.jobChanged) { // If Job Changed called by player and returned true
+        if (this.jobChanged) {
+            // If Job Changed called by player and returned true
             if (this.jobChanged !== this.job) {
                 this.setJob(this.jobChanged);
             }
-        }
-        else { // This would be a unit losing loyalty/ or the game state jumps
+        } else {
+            // This would be a unit losing loyalty/ or the game state jumps
             if (this.job !== next.job.title) {
                 this.setJob(next.job.title);
             }
@@ -219,21 +230,26 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (this.job === "fresh human" && !this.ownerID) {
             currEnergy = current.turnsToDie / 10; // Magic number 10 is max turns to die
             nextEnergy = next.turnsToDie / 10;
-        }
-        else {
+        } else {
             currEnergy = current.energy / this.maxEnergy;
             nextEnergy = next.energy / this.maxEnergy;
         }
         this.healthBar.update(ease(currEnergy, nextEnergy, dt));
 
         if (this.attackingTile) {
-            if (current.tile.tileEast && current.tile.tileEast.id === this.attackingTile.id) {
+            if (
+                current.tile.tileEast &&
+                current.tile.tileEast.id === this.attackingTile.id
+            ) {
                 if (this.facing !== "right") {
                     this.facing = "right";
                     this.container.scale.x *= -1;
                 }
             }
-            if (current.tile.tileWest && current.tile.tileWest.id === this.attackingTile.id) {
+            if (
+                current.tile.tileWest &&
+                current.tile.tileWest.id === this.attackingTile.id
+            ) {
                 if (this.facing !== "left") {
                     this.facing = "left";
                     this.container.scale.x *= -1;
@@ -246,16 +262,22 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
             this.container.x += dx * d;
             this.container.y += dy * d;
-        }/**/
+        } /**/
 
         if (this.harvestTile) {
-            if (current.tile.tileEast && current.tile.tileEast.id === this.harvestTile.id) {
+            if (
+                current.tile.tileEast &&
+                current.tile.tileEast.id === this.harvestTile.id
+            ) {
                 if (this.facing !== "right") {
                     this.facing = "right";
                     this.container.scale.x *= -1;
                 }
             }
-            if (current.tile.tileWest && current.tile.tileWest.id === this.harvestTile.id) {
+            if (
+                current.tile.tileWest &&
+                current.tile.tileWest.id === this.harvestTile.id
+            ) {
                 if (this.facing !== "left") {
                     this.facing = "left";
                     this.container.scale.x *= -1;
@@ -268,7 +290,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
 
             this.container.x += dx * d;
             this.container.y += dy * d;
-        }/**/
+        } /**/
 
         // <<-- /Creer-Merge: render -->>
     }
@@ -281,9 +303,10 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.recolor();
 
         // <<-- Creer-Merge: recolor -->>
-        this.dropShadow.tint = this.ownerID === undefined
-            ? WHITE_COLOR
-            : this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.dropShadow.tint =
+            this.ownerID === undefined
+                ? WHITE_COLOR
+                : this.game.getPlayersColor(this.ownerID).rgbNumber();
         // <<-- /Creer-Merge: recolor -->>
     }
 
@@ -292,7 +315,8 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -305,14 +329,17 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<IUnitState>,
-        next: Immutable<IUnitState>,
+        current: Immutable<UnitState>,
+        next: Immutable<UnitState>,
         delta: Immutable<CatastropheDelta>,
         nextDelta: Immutable<CatastropheDelta>,
     ): void {
@@ -322,25 +349,29 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.attackingTile = undefined;
         this.harvestTile = undefined;
         this.jobChanged = undefined;
-        if (nextDelta.type === "ran" && nextDelta.data.run.caller.id === this.id) {
+        if (
+            nextDelta.type === "ran" &&
+            nextDelta.data.run.caller.id === this.id
+        ) {
             const { data } = nextDelta;
             const tile = this.game.getGameObject(data.run.args.tile, Tile);
 
             if (data.run.functionName === "attack" && data.returned) {
                 this.attackingTile = tile && tile.getCurrentMostState();
-            }
-            else if (data.run.functionName === "changeJob" && data.returned) {
-                this.jobChanged = String(data.run.args.job) as IJobState["title"];
-            }
-            else if (data.run.functionName === "harvest" && data.returned) {
+            } else if (
+                data.run.functionName === "changeJob" &&
+                data.returned
+            ) {
+                this.jobChanged = String(
+                    data.run.args.job,
+                ) as JobState["title"];
+            } else if (data.run.functionName === "harvest" && data.returned) {
                 this.harvestTile = tile && tile.getCurrentMostState();
                 this.indicatorSprite.visible = true;
-            }
-            else if (data.run.functionName === "drop" && data.returned) {
+            } else if (data.run.functionName === "drop" && data.returned) {
                 this.indicatorSprite.visible = false;
-            }
-            else if (data.run.functionName !== "move" && data.returned) {
-                // console.log(run.functionName);
+            } else if (data.run.functionName !== "move" && data.returned) {
+                // nothing special to render
             }
         }
         // <<-- /Creer-Merge: state-updated -->>
@@ -354,7 +385,7 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
      *
      * @param job - The title of the job we now have.
      */
-    public setJob(job: IJobState["title"]): void {
+    public setJob(job: JobState["title"]): void {
         if (this.spriteInUse) {
             this.spriteInUse.visible = false;
         }
@@ -388,164 +419,170 @@ export class Unit extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Attacks an adjacent Tile. Costs an action for each Unit in this Unit's
      * squad. Units in the squad without an action don't participate in combat.
      * Units in combat cannot move afterwards. Attacking structures will not
      * give materials.
-     * @param tile The Tile to attack.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile to attack.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully attacked,
      * false otherwise.
      */
     public attack(
-        tile: ITileState,
-        callback?: (returned: boolean) => void,
+        tile: TileState,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("attack", {tile}, callback);
+        this.runOnServer("attack", { tile }, callback);
     }
 
     /**
-     * Changes this Unit's Job. Must be at max energy (100.0) to change Jobs.
-     * @param job The name of the Job to change to.
-     * @param callback? The callback that eventually returns the return value
+     * Changes this Unit's Job. Must be at max energy (100) to change Jobs.
+     *
+     * @param job - The name of the Job to change to.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully changed
      * Jobs, false otherwise.
      */
     public changeJob(
         job: "soldier" | "gatherer" | "builder" | "missionary",
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("changeJob", {job}, callback);
+        this.runOnServer("changeJob", { job }, callback);
     }
 
     /**
      * Constructs a Structure on an adjacent Tile.
-     * @param tile The Tile to construct the Structure on. It must have enough
+     *
+     * @param tile - The Tile to construct the Structure on. It must have enough
      * materials on it for a Structure to be constructed.
-     * @param type The type of Structure to construct on that Tile.
-     * @param callback? The callback that eventually returns the return value
+     * @param type - The type of Structure to construct on that Tile.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully constructed
      * a structure, false otherwise.
      */
     public construct(
-        tile: ITileState,
+        tile: TileState,
         type: "neutral" | "shelter" | "monument" | "wall" | "road",
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("construct", {tile, type}, callback);
+        this.runOnServer("construct", { tile, type }, callback);
     }
 
     /**
      * Converts an adjacent Unit to your side.
-     * @param tile The Tile with the Unit to convert.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile with the Unit to convert.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully converted,
      * false otherwise.
      */
     public convert(
-        tile: ITileState,
-        callback?: (returned: boolean) => void,
+        tile: TileState,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("convert", {tile}, callback);
+        this.runOnServer("convert", { tile }, callback);
     }
 
     /**
      * Removes materials from an adjacent Tile's Structure. You cannot
-     * deconstruct friendly structures (see Unit.attack).
-     * @param tile The Tile to deconstruct. It must have a Structure on it.
-     * @param callback? The callback that eventually returns the return value
+     * deconstruct friendly structures (see `Unit.attack`).
+     *
+     * @param tile - The Tile to deconstruct. It must have a Structure on it.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully
      * deconstructed, false otherwise.
      */
     public deconstruct(
-        tile: ITileState,
-        callback?: (returned: boolean) => void,
+        tile: TileState,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("deconstruct", {tile}, callback);
+        this.runOnServer("deconstruct", { tile }, callback);
     }
 
     /**
      * Drops some of the given resource on or adjacent to the Unit's Tile. Does
      * not count as an action.
-     * @param tile The Tile to drop materials/food on.
-     * @param resource The type of resource to drop ('materials' or 'food').
-     * @param amount The amount of the resource to drop. Amounts <= 0 will drop
-     * as much as possible.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile to drop materials/food on.
+     * @param resource - The type of resource to drop ('materials' or 'food').
+     * @param amount - The amount of the resource to drop. Amounts <= 0 will
+     * drop as much as possible.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully dropped the
      * resource, false otherwise.
      */
     public drop(
-        tile: ITileState,
+        tile: TileState,
         resource: "materials" | "food",
         amount: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("drop", {tile, resource, amount}, callback);
+        this.runOnServer("drop", { tile, resource, amount }, callback);
     }
 
     /**
      * Harvests the food on an adjacent Tile.
-     * @param tile The Tile you want to harvest.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile you want to harvest.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully harvested,
      * false otherwise.
      */
     public harvest(
-        tile: ITileState,
-        callback?: (returned: boolean) => void,
+        tile: TileState,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("harvest", {tile}, callback);
+        this.runOnServer("harvest", { tile }, callback);
     }
 
     /**
      * Moves this Unit from its current Tile to an adjacent Tile.
-     * @param tile The Tile this Unit should move to.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param tile - The Tile this Unit should move to.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if it moved, false
      * otherwise.
      */
-    public move(
-        tile: ITileState,
-        callback?: (returned: boolean) => void,
-    ): void {
-        this.runOnServer("move", {tile}, callback);
+    public move(tile: TileState, callback: (returned: boolean) => void): void {
+        this.runOnServer("move", { tile }, callback);
     }
 
     /**
      * Picks up some materials or food on or adjacent to the Unit's Tile. Does
      * not count as an action.
-     * @param tile The Tile to pickup materials/food from.
-     * @param resource The type of resource to pickup ('materials' or 'food').
-     * @param amount The amount of the resource to pickup. Amounts <= 0 will
+     *
+     * @param tile - The Tile to pickup materials/food from.
+     * @param resource - The type of resource to pickup ('materials' or 'food').
+     * @param amount - The amount of the resource to pickup. Amounts <= 0 will
      * pickup as much as possible.
-     * @param callback? The callback that eventually returns the return value
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully picked up a
      * resource, false otherwise.
      */
     public pickup(
-        tile: ITileState,
+        tile: TileState,
         resource: "materials" | "food",
         amount: number,
-        callback?: (returned: boolean) => void,
+        callback: (returned: boolean) => void,
     ): void {
-        this.runOnServer("pickup", {tile, resource, amount}, callback);
+        this.runOnServer("pickup", { tile, resource, amount }, callback);
     }
 
     /**
      * Regenerates energy. Must be in range of a friendly shelter to rest. Costs
      * an action. Units cannot move after resting.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if successfully rested,
      * false otherwise.
      */
-    public rest(
-        callback?: (returned: boolean) => void,
-    ): void {
+    public rest(callback: (returned: boolean) => void): void {
         this.runOnServer("rest", {}, callback);
     }
 

@@ -1,14 +1,14 @@
 import { partial } from "src/core/partial";
 import { Viseur } from "src/viseur";
-import { events, Signal } from "ts-typed-events";
-import { BaseElement, IBaseElementArgs } from "../base-element";
+import { Event, events } from "ts-typed-events";
+import { BaseElement, BaseElementArgs } from "../base-element";
 import * as tabContentHbs from "./tab-content.hbs";
 import * as tabHbs from "./tab.hbs";
 import { Tabular } from "./tabular";
 
 /** The interface arguments for a Tab can extend from. */
-export interface ITabArgs extends IBaseElementArgs {
-    /** The tabular this tab is to be a part of */
+export interface TabArgs extends BaseElementArgs {
+    /** The tabular this tab is to be a part of. */
     tabular: Tabular;
 
     /** The Viseur instance we are in. */
@@ -21,12 +21,12 @@ export interface ITabArgs extends IBaseElementArgs {
     contentTemplate?: Handlebars;
 }
 
-/** A Tab in a Tabular */
+/** A Tab in a Tabular. */
 export class Tab extends BaseElement {
     /** The events this class emits. */
     public readonly events = events({
         /** Emitted when this tab's tab is selected. */
-        selected: new Signal(),
+        selected: new Event(),
     });
 
     /** The clickable tab on the tabular that shows the content in the tabular. */
@@ -46,11 +46,15 @@ export class Tab extends BaseElement {
      *
      * @param args - The arguments to send to the Tab.
      */
-    constructor(args: ITabArgs) {
+    constructor(args: TabArgs) {
         super(args, tabContentHbs);
 
         this.tabular = args.tabular;
-        this.content = partial(args.contentTemplate || tabContentHbs, args, this.element);
+        this.content = partial(
+            args.contentTemplate || tabContentHbs,
+            args,
+            this.element,
+        );
 
         const title = args.title || "TAB_TITLE";
         this.title = title;

@@ -1,17 +1,22 @@
 import * as PIXI from "pixi.js";
-import { Immutable, IPixiSpriteOptions, setPixiOptions, TypedObject } from "src/utils";
+import {
+    Immutable,
+    PixiSpriteOptions,
+    setPixiOptions,
+    TypedObject,
+} from "src/utils";
 import { Viseur } from "src/viseur";
 import { viseurConstructed } from "src/viseur/constructed";
 
 /** Non standard options for resources. */
-export interface IBaseRendererResourceOptions {
-    /** Set this if the path is absolute and does not need to be resolved */
+export interface BaseRendererResourceOptions {
+    /** Set this if the path is absolute and does not need to be resolved. */
     absolute?: boolean;
 
-    /** A new default width aside from 1 */
+    /** A new default width aside from 1. */
     width?: number;
 
-    /** A new default height aside from 1 */
+    /** A new default height aside from 1. */
     height?: number;
 }
 
@@ -44,13 +49,11 @@ export abstract class BaseRendererResource {
      * @param path - The path to the resource in the game's textures directory.
      * @param options - The optional details about the resource, such as defaults and sheet details.
      */
-    constructor(path: string, options: IBaseRendererResourceOptions = {}) {
+    constructor(path: string, options: BaseRendererResourceOptions = {}) {
         this.path = path;
         this.defaultWidth = Math.max(1, options.width || 0);
         this.defaultHeight = Math.max(1, options.height || 0);
-        this.absolutePath = options.absolute
-            ? this.path
-            : "";
+        this.absolutePath = options.absolute ? this.path : "";
 
         viseurConstructed.once((viseur) => {
             this.viseur = viseur;
@@ -79,7 +82,7 @@ export abstract class BaseRendererResource {
      * @returns A sprite with the given texture key, added to the
      * parentContainer.
      */
-    public newSprite(options: Immutable<IPixiSpriteOptions>): PIXI.Sprite {
+    public newSprite(options: Immutable<PixiSpriteOptions>): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.texture);
 
         // Now scale the sprite, as it defaults to the dimensions of its texture's pixel size.
@@ -95,9 +98,15 @@ export abstract class BaseRendererResource {
      * @param resources - All the resources loaded, to pull our texture out of.
      * @returns A boolean indicating if this resource's texture was loaded.
      */
-    protected onTextureLoaded(resources: TypedObject<PIXI.LoaderResource>): boolean {
+    protected onTextureLoaded(
+        resources: TypedObject<PIXI.LoaderResource>,
+    ): boolean {
         // if we have textures loaded, Viseur must have a game ready
-        if (!this.viseur || !this.viseur.game || this.viseur.game.name !== this.gameName) {
+        if (
+            !this.viseur ||
+            !this.viseur.game ||
+            this.viseur.game.name !== this.gameName
+        ) {
             // this resource is for a different game, and will never be used
             // so we don't care if it loaded or not
             return false;

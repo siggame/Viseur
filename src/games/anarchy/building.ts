@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { AnarchyDelta, IBuildingState } from "./state-interfaces";
+import { AnarchyDelta, BuildingState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as Color from "color";
@@ -31,62 +31,66 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Building (dt = 0) */
-    public current: IBuildingState | undefined;
+    /** The current state of the Building (dt = 0). */
+    public current: BuildingState | undefined;
 
-    /** The next state of the Building (dt = 1) */
-    public next: IBuildingState | undefined;
+    /** The next state of the Building (dt = 1). */
+    public next: BuildingState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** the beam color name to use for beams */
+    /** The beam color name to use for beams. */
     protected get beamColorName(): number {
-        return 0xFFFFFF;
+        return 0xffffff;
     }
 
     /**
      * The "alive" building will have a top and bottom sprite, which we can
      * put in this container and threat them as one "object" for the
-     * purposes for hiding and showing
+     * purposes for hiding and showing.
      */
     private readonly aliveContainer = new PIXI.Container();
 
-    /** The owner of this building */
+    /** The owner of this building. */
     private readonly ownerID: string;
 
-    /** The front of the building (colored according to owner) */
+    /** The front of the building (colored according to owner). */
     private readonly buildingSpriteFront: PIXI.Sprite;
 
-    /** The sprite we display when we are dead */
+    /** The sprite we display when we are dead. */
     private readonly deadSprite: PIXI.Sprite;
 
-    /** The bar that displays our health */
+    /** The bar that displays our health. */
     private readonly healthBar: GameBar;
 
-    /** The graphic used when we are targeted by an enemy */
+    /** The graphic used when we are targeted by an enemy. */
     private readonly targetedSprite: PIXI.Sprite;
 
-    /** Sprite we use when we are beaming some other building */
+    /** Sprite we use when we are beaming some other building. */
     private readonly beamSprite: PIXI.Sprite | undefined;
 
-    /** All the sprites from the fire spreadsheet to animate fire */
+    /** All the sprites from the fire spreadsheet to animate fire. */
     private readonly fireSprites: PIXI.Sprite[] = [];
 
-    /** Random X number used to animate fire */
-    private readonly randomX = this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    /** Random X number used to animate fire. */
+    private readonly randomX =
+        this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
-    /** Random Y number used to animate fire */
-    private readonly randomY = this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
+    /** Random Y number used to animate fire. */
+    private readonly randomY =
+        this.game.random() * (RANDOM_MAX - RANDOM_MIN) + RANDOM_MIN;
 
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Building with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Building with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Building.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: IBuildingState, viseur: Viseur) {
+    constructor(state: BuildingState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -106,8 +110,12 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
         const base = lowerFirst(state.gameObjectName);
 
         // the back sprite are neutral colors
-        this.addSprite[`${base}Back` as "fireDepartmentBack"]({ container: this.aliveContainer });
-        this.buildingSpriteFront = this.addSprite[`${base}Front` as "fireDepartmentFront"]({
+        this.addSprite[`${base}Back` as "fireDepartmentBack"]({
+            container: this.aliveContainer,
+        });
+        this.buildingSpriteFront = this.addSprite[
+            `${base}Front` as "fireDepartmentFront"
+        ]({
             container: this.aliveContainer,
         });
 
@@ -161,20 +169,24 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Building instances.
+     * Called approx 60 times a second to update and render Building
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<IBuildingState>,
-        next: Immutable<IBuildingState>,
+        current: Immutable<BuildingState>,
+        next: Immutable<BuildingState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -187,9 +199,12 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.aliveContainer.visible = true;
 
         // if we are being targeted, then display out targetedSprite
-        const run = nextDelta.type === "ran" && nextDelta && nextDelta.data.run;
-        const beingTargeted = run && (hasGameObjectWithID(run.args, "building", this.id)
-                                      || hasGameObjectWithID(run.args, "warehouse", this.id));
+        const run =
+            nextDelta.type === "ran" && nextDelta && nextDelta.data.run;
+        const beingTargeted =
+            run &&
+            (hasGameObjectWithID(run.args, "building", this.id) ||
+                hasGameObjectWithID(run.args, "warehouse", this.id));
         this.targetedSprite.visible = beingTargeted;
         // and fade it out
         const targetedAlpha = ease(1 - dt, "cubicInOut");
@@ -205,8 +220,8 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
             if (current.health === 0 && next.health === 0) {
                 // it is dead, and remains dead, so just hide our normal sprite
                 this.aliveContainer.visible = false;
-            }
-            else { // current.health !== 0 && next.health === 0, which means it burned down :(
+            } else {
+                // current.health !== 0 && next.health === 0, which means it burned down :(
                 alpha = ease(dt, "cubicInOut"); // dt goes from 0 to 1, so at 0 we are not burned down, but as 1 we are
                 // we want to ease out the buildingSprite in the opposite direction
                 this.aliveContainer.alpha = 1 - alpha;
@@ -214,14 +229,15 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
             // else keep alpha at 1
 
             this.deadSprite.alpha = alpha;
-        }
-        else {
+        } else {
             // it had health through both states, so don't show the dead building sprite
             this.deadSprite.visible = false;
         }
 
         // update their health bar, if they want it to be displayed
-        this.healthBar.update(ease(current.health, next.health, dt, "cubicInOut"));
+        this.healthBar.update(
+            ease(current.health, next.health, dt, "cubicInOut"),
+        );
 
         // now the correct building sprite is displayed
         // so let's look at the fire!
@@ -274,7 +290,8 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -287,14 +304,17 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<IBuildingState>,
-        next: Immutable<IBuildingState>,
+        current: Immutable<BuildingState>,
+        next: Immutable<BuildingState>,
         delta: Immutable<AnarchyDelta>,
         nextDelta: Immutable<AnarchyDelta>,
     ): void {
@@ -306,17 +326,20 @@ export class Building extends makeRenderable(GameObject, SHOULD_RENDER) {
             // assume it's not shooting a beam for this state
             this.beamSprite.visible = false;
             // but check if it is
-            if (nextDelta.type === "ran"
-             && nextDelta.data.run
-             && nextDelta.data.run.caller.id === this.id
-             && Number(nextDelta.data.returned) > -1
+            if (
+                nextDelta.type === "ran" &&
+                nextDelta.data.run &&
+                nextDelta.data.run.caller.id === this.id &&
+                Number(nextDelta.data.returned) > -1
             ) {
                 // and if it is the Building running a verb, show the beam shooting towards a target building
                 this.beamSprite.visible = true;
                 const args = nextDelta.data.run.args;
                 const building = args.building || args.warehouse;
                 if (isObject(building) && objectHasProperty(building, "id")) {
-                    const buildingObject = this.game.gameObjects[String(building.id)];
+                    const buildingObject = this.game.gameObjects[
+                        String(building.id)
+                    ];
                     if (buildingObject) {
                         const state = (buildingObject as Building).getCurrentMostState();
                         renderSpriteBetween(this.beamSprite, current, state);

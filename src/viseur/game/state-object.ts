@@ -1,22 +1,19 @@
 import { Immutable } from "@cadre/ts-utils";
 import { Delta } from "@cadre/ts-utils/cadre";
 
-/* tslint:disable:no-empty-interface */
-
-/** The base structure of a state */
-export interface IState {}
-
-/* tslint:enable:no-empty-interface */
+/** The base structure of a state. */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface State {}
 
 /**
  * An object in the game that has states that tween [0, 1)].
  */
-export class StateObject<TState extends IState = IState> {
-    /** The current state (e.g. at delta time = 0) */
+export class StateObject<TState extends State = State> {
+    /** The current state (e.g. At delta time = 0). */
     public current: Immutable<TState> | undefined;
 
-    /** The next state (e.g. TState delta time = 1) */
-    public next: Immutable<IState> | undefined;
+    /** The next state (e.g. TState delta time = 1). */
+    public next: Immutable<State> | undefined;
 
     /**
      * Update this state object's current and next state, should call prior to rendering.
@@ -33,7 +30,7 @@ export class StateObject<TState extends IState = IState> {
     }
 
     /**
-     * Gets the current most state, e.g. this.current || this.next;
+     * Gets the current most state, e.g. This.current || this.next;.
      *
      * @returns The state most current, next if there is no current.
      */
@@ -47,7 +44,7 @@ export class StateObject<TState extends IState = IState> {
     }
 
     /**
-     * Gets the current most state, e.g. this.next || this.current;
+     * Gets the current most state, e.g. This.next || this.current;.
      *
      * @returns The state most next, current if there is no next.
      */
@@ -70,10 +67,12 @@ export class StateObject<TState extends IState = IState> {
      * @param nextDelta - The reason for the next delta.
      */
     protected stateUpdated(
+        /* eslint-disable @typescript-eslint/no-unused-vars */
         current: Immutable<TState>,
         next: Immutable<TState>,
         delta: Immutable<Delta>,
         nextDelta: Immutable<Delta>,
+        /* eslint-enable @typescript-eslint/no-unused-vars */
     ): void {
         // Intended to be overridden by inheriting classes,
         // no need to call this super.

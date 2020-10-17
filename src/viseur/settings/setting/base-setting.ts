@@ -1,11 +1,11 @@
 import { Constructor } from "@cadre/ts-utils";
-import { BaseInput, IBaseInputArgs } from "src/core/ui/inputs/base-input";
+import { BaseInput, BaseInputArgs } from "src/core/ui/inputs/base-input";
 import * as store from "store";
 import { Event } from "ts-typed-events";
 
-/** Additional arguments required for the base setting */
-export interface IBaseSettingArgs<T> {
-    /** The default value (synonymous with the value key) */
+/** Additional arguments required for the base setting. */
+export interface BaseSettingArgs<T> {
+    /** The default value (synonymous with the value key). */
     default: T;
 }
 
@@ -14,20 +14,21 @@ export interface IBaseSettingArgs<T> {
  * This is basically a wrapper around the input's interface args so that
  * we can re-use them to make settings files with compile time type checking.
  */
-export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export abstract class BaseSetting<T = any> {
     /** The index of the next new setting. */
-    public static newIndex: number = 0;
+    public static newIndex = 0;
 
     /** Event emitted when this setting's value changes. */
     public readonly changed = new Event<T>();
 
-    /** The index this setting is when displaying in order, starting at 0 */
+    /** The index this setting is when displaying in order, starting at 0. */
     public readonly index: number;
 
-    /** The default value of this setting */
+    /** The default value of this setting. */
     public readonly default: T;
 
-    /** The namespace this setting is a part of */
+    /** The namespace this setting is a part of. */
     private namespace: string; // Note: this is private in the settings
 
     /**
@@ -37,7 +38,7 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
      * @param inputClass - The class constructor for this setting's input.
      */
     protected constructor(
-        private readonly args: IBaseSettingArgs<T> & IBaseInputArgs<T>,
+        private readonly args: BaseSettingArgs<T> & BaseInputArgs<T>,
         private readonly inputClass: Constructor<BaseInput<T>>,
     ) {
         this.namespace = "";
@@ -63,7 +64,8 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
     }
 
     /**
-     * Creates an input that listens for changes for this event
+     * Creates an input that listens for changes for this event.
+     *
      * @param parent - The parent element for this new input.
      * @returns The input for this setting.
      */
@@ -107,14 +109,13 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
      */
     public get(): T {
         const id = this.getID();
-
-        // tslint:disable-next-line:no-unsafe-any - they type it as any
         return this.transformValue(store.get(id));
     }
 
     /**
      * Set the setting at namespace.key, both are basically the id so that
      * multiple games (namespaces) can have the same settings key.
+     *
      * @param value - The new value to store for namespace.key.
      */
     public set(value: T): void {
@@ -148,6 +149,6 @@ export abstract class BaseSetting<T = any> { // tslint:disable-line:no-any
      * @returns A unique id as a combination of all passed in args.
      */
     private getID(): string {
-        return `${this.namespace}.${this.args.id}`;
+        return `${this.namespace}.${String(this.args.id)}`;
     }
 }

@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { Spiderling } from "./spiderling";
-import { INestState, ISpitterState, SpidersDelta } from "./state-interfaces";
+import { NestState, SpidersDelta, SpitterState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
@@ -23,24 +23,26 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Spitter (dt = 0) */
-    public current: ISpitterState | undefined;
+    /** The current state of the Spitter (dt = 0). */
+    public current: SpitterState | undefined;
 
-    /** The next state of the Spitter (dt = 1) */
-    public next: ISpitterState | undefined;
+    /** The next state of the Spitter (dt = 1). */
+    public next: SpitterState | undefined;
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Spitter with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Spitter with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Spitter.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: ISpitterState, viseur: Viseur) {
+    constructor(state: SpitterState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -49,20 +51,24 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Spitter instances.
+     * Called approx 60 times a second to update and render Spitter
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<ISpitterState>,
-        next: Immutable<ISpitterState>,
+        current: Immutable<SpitterState>,
+        next: Immutable<SpitterState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -90,7 +96,8 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -103,14 +110,17 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<ISpitterState>,
-        next: Immutable<ISpitterState>,
+        current: Immutable<SpitterState>,
+        next: Immutable<SpitterState>,
         delta: Immutable<SpidersDelta>,
         nextDelta: Immutable<SpidersDelta>,
     ): void {
@@ -126,23 +136,22 @@ export class Spitter extends makeRenderable(Spiderling, SHOULD_RENDER) {
     // <<-- /Creer-Merge: public-functions -->>
 
     // <Joueur functions> --- functions invoked for human playable client
-    // NOTE: These functions are only used 99% of the time if the game supports human playable clients (like Chess).
-    //       If it does not, feel free to ignore these Joueur functions.
+    // NOTE: These functions are only used 99% of the time if the game
+    // supports human playable clients (like Chess).
+    // If it does not, feel free to ignore these Joueur functions.
 
     /**
      * Creates and spits a new Web from the Nest the Spitter is on to another
      * Nest, connecting them.
-     * @param nest The Nest you want to spit a Web to, thus connecting that Nest
-     * and the one the Spitter is on.
-     * @param callback? The callback that eventually returns the return value
+     *
+     * @param nest - The Nest you want to spit a Web to, thus connecting that
+     * Nest and the one the Spitter is on.
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The returned value is True if the spit was successful,
      * false otherwise.
      */
-    public spit(
-        nest: INestState,
-        callback?: (returned: boolean) => void,
-    ): void {
-        this.runOnServer("spit", {nest}, callback);
+    public spit(nest: NestState, callback: (returned: boolean) => void): void {
+        this.runOnServer("spit", { nest }, callback);
     }
 
     // </Joueur functions>

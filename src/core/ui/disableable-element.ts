@@ -1,9 +1,9 @@
 import { Immutable } from "src/utils";
-import { BaseElement, IBaseElementArgs } from "./base-element";
+import { BaseElement, BaseElementArgs } from "./base-element";
 
 /** The extra arguments for an element that can be disabled. */
-export interface IDisableableElementArgs extends IBaseElementArgs {
-    /** true if it should be disabled upon initialization, false otherwise */
+export interface DisableableElementArgs extends BaseElementArgs {
+    /** True if it should be disabled upon initialization, false otherwise. */
     disabled?: boolean;
 }
 
@@ -16,7 +16,7 @@ export class DisableableElement extends BaseElement {
      * @param template - The template to pass through the the base element.
      */
     constructor(
-        args: Immutable<IDisableableElementArgs>,
+        args: Immutable<DisableableElementArgs>,
         template: Handlebars,
     ) {
         super(args, template);
@@ -27,28 +27,28 @@ export class DisableableElement extends BaseElement {
     }
 
     /**
-     * Disables this input
+     * Disables this input.
      */
     public disable(): void {
         this.element.prop("disabled", true);
     }
 
     /**
-     * Enables this input
+     * Enables this input.
      */
     public enable(): void {
         this.element.prop("disabled", false);
     }
 
     /**
-     * Sets if this element should be enabled or disabled via a boolean value
-     * @param enabled true if enabled, false otherwise
+     * Sets if this element should be enabled or disabled via a boolean value.
+     *
+     * @param enabled - True if enabled, false otherwise.
      */
     public setEnabled(enabled: boolean): void {
         if (enabled) {
             this.enable();
-        }
-        else {
+        } else {
             this.disable();
         }
     }

@@ -12,17 +12,17 @@ import { Game } from "./game";
  * for things and then use callback actions to send values to the game server.
  */
 export class HumanPlayer extends BaseHumanPlayer {
-    /** The game this human player is playing */
+    /** The game this human player is playing. */
     public game!: Game;
 
     /**
      * Set this static flag to true to mark this game as able to be played by
-     * human players. Leave as false to ignore that functionality
+     * human players. Leave as false to ignore that functionality.
      */
     public static get implemented(): boolean {
-    //  <<-- Creer-Merge: implemented -->>
+        //  <<-- Creer-Merge: implemented -->>
         return true; // set this to true if humans can play this game
-    //  <<-- /Creer-Merge: implemented -->>
+        //  <<-- /Creer-Merge: implemented -->>
     }
 
     //  <<-- Creer-Merge: variables -->>
@@ -31,8 +31,9 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * Creates the human player for this game. This class will never be
-     * used if the static implemented flag above is not set to true
-     * @param game the game this human player is playing
+     * used if the static implemented flag above is not set to true.
+     *
+     * @param game - The game this human player is playing.
      */
     constructor(game: Game) {
         super(game);
@@ -46,16 +47,19 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * This is called every time it is this AI.player's turn to make a move.
-     * @param callback The callback that eventually returns the return value
+     *
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The first argument to the callback is the return
-     * value: A string in Universal Chess Inferface (UCI) or Standard Algebraic
+     * value: A string in Universal Chess Interface (UCI) or Standard Algebraic
      * Notation (SAN) formatting for the move you want to make. If the move is
      * invalid or not properly formatted you will lose the game.
      */
     public makeMove(callback: (returned: string) => void): void {
         // <<-- Creer-Merge: makeMove -->>
         this.game.chessOverlay.events.moveSelected.once((move) => {
-            const promotion = move.promotion && this.game.settings.pawnPromotion.get() || "";
+            const promotion =
+                (move.promotion && this.game.settings.pawnPromotion.get()) ||
+                "";
             const longSAN = move.from + move.to + promotion;
             callback(longSAN);
         });

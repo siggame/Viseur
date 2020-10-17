@@ -1,14 +1,14 @@
-import { Event, events, Signal } from "ts-typed-events";
-import { BaseInput, IBaseInputArgs } from "./base-input";
+import { Event, events } from "ts-typed-events";
+import { BaseInput, BaseInputArgs } from "./base-input";
 
-/** An input for files */
+/** An input for files. */
 export class FileInput extends BaseInput<undefined> {
-    /** Events this class emits */
+    /** Events this class emits. */
     public readonly events = events.concat(super.events, {
-        /** Triggered when the button is clicked */
-        loading: new Signal(),
+        /** Triggered when the button is clicked. */
+        loading: new Event(),
 
-        /** Triggered once a file has been loaded */
+        /** Triggered once a file has been loaded. */
         loaded: new Event<string>(),
     });
 
@@ -17,7 +17,7 @@ export class FileInput extends BaseInput<undefined> {
      *
      * @param args - The initialization args.
      */
-    constructor(args: IBaseInputArgs<undefined>) {
+    constructor(args: BaseInputArgs<undefined>) {
         super({
             type: "file",
             ...args,
@@ -29,7 +29,7 @@ export class FileInput extends BaseInput<undefined> {
     }
 
     /**
-     * loads the contents of the chosen file
+     * Loads the contents of the chosen file.
      */
     private loadFile(): void {
         this.events.loading.emit();
@@ -40,7 +40,7 @@ export class FileInput extends BaseInput<undefined> {
             this.events.loaded.emit(reader.result as string);
         };
 
-        const { files } = (this.element.get(0) as HTMLInputElement);
+        const { files } = this.element.get(0) as HTMLInputElement;
         if (!files) {
             throw new Error("File Input has no files on html element");
         }

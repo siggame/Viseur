@@ -12,27 +12,28 @@ import { Game } from "./game";
  * for things and then use callback actions to send values to the game server.
  */
 export class HumanPlayer extends BaseHumanPlayer {
-    /** The game this human player is playing */
+    /** The game this human player is playing. */
     public game!: Game;
 
     /**
      * Set this static flag to true to mark this game as able to be played by
-     * human players. Leave as false to ignore that functionality
+     * human players. Leave as false to ignore that functionality.
      */
     public static get implemented(): boolean {
-    //  <<-- Creer-Merge: implemented -->>
+        //  <<-- Creer-Merge: implemented -->>
         return false;
-    //  <<-- /Creer-Merge: implemented -->>
+        //  <<-- /Creer-Merge: implemented -->>
     }
 
     //  <<-- Creer-Merge: variables -->>
-        // construct this human player
+    // construct this human player
     //  <<-- /Creer-Merge: variables -->>
 
     /**
      * Creates the human player for this game. This class will never be
-     * used if the static implemented flag above is not set to true
-     * @param game the game this human player is playing
+     * used if the static implemented flag above is not set to true.
+     *
+     * @param game - The game this human player is playing.
      */
     constructor(game: Game) {
         super(game);
@@ -46,7 +47,8 @@ export class HumanPlayer extends BaseHumanPlayer {
 
     /**
      * This is called every time it is this AI.player's turn.
-     * @param callback The callback that eventually returns the return value
+     *
+     * @param callback - The callback that eventually returns the return value
      * from the server. - The first argument to the callback is the return
      * value: Represents if you want to end your turn. True means end your turn,
      * False means to keep your turn going and re-call this function.

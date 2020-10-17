@@ -4,7 +4,7 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { ITileState, NewtonianDelta } from "./state-interfaces";
+import { NewtonianDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 import * as PIXI from "pixi.js";
@@ -23,32 +23,32 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // you can add static functions here
     // <<-- /Creer-Merge: static-functions -->>
 
-    /** The current state of the Tile (dt = 0) */
-    public current: ITileState | undefined;
+    /** The current state of the Tile (dt = 0). */
+    public current: TileState | undefined;
 
-    /** The next state of the Tile (dt = 1) */
-    public next: ITileState | undefined;
+    /** The next state of the Tile (dt = 1). */
+    public next: TileState | undefined;
 
     // <<-- Creer-Merge: variables -->>
-    /** Sprite for the wall on this tile */
+    /** Sprite for the wall on this tile. */
     public readonly wall: PIXI.Sprite;
 
     /** The bar on this tile. */
     private readonly barSprite: PIXI.Sprite;
 
-    /** Ore sprite on this tile */
+    /** Ore sprite on this tile. */
     private readonly oreSprite: PIXI.Sprite;
 
-    /** The ID of the owner of this tile */
+    /** The ID of the owner of this tile. */
     private readonly ownerID?: string;
 
     /** The generator or spawn for the room. */
     private readonly ownerOverlay: PIXI.Sprite | undefined;
 
-    /** The container for all ore sprites */
+    /** The container for all ore sprites. */
     private readonly oreContainer: PIXI.Container;
 
-    /** The sprite for a door */
+    /** The sprite for a door. */
     private readonly door: PIXI.Sprite | undefined;
 
     /** The sprite for an open door. */
@@ -56,13 +56,15 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- /Creer-Merge: variables -->>
 
     /**
-     * Constructor for the Tile with basic logic as provided by the Creer
-     * code generator. This is a good place to initialize sprites and constants.
+     * Constructor for the Tile with basic logic
+     * as provided by the Creer code generator.
+     * This is a good place to initialize sprites and constants.
      *
      * @param state - The initial state of this Tile.
-     * @param viseur - The Viseur instance that controls everything and contains the game.
+     * @param viseur - The Viseur instance that controls everything and
+     * contains the game.
      */
-    constructor(state: ITileState, viseur: Viseur) {
+    constructor(state: TileState, viseur: Viseur) {
         super(state, viseur);
 
         // <<-- Creer-Merge: constructor -->>
@@ -82,17 +84,25 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             : this.addSprite.floor();
 
         if (this.ownerID !== undefined) {
-            this.ownerOverlay = state.type === "generator"
-                ? this.addSprite.genRoom()
-                : this.addSprite.spawn();
+            this.ownerOverlay =
+                state.type === "generator"
+                    ? this.addSprite.genRoom()
+                    : this.addSprite.spawn();
         }
 
         this.wall = this.addSprite.wall();
-        this.barSprite = this.addSprite.resourceBar({ container: this.oreContainer });
-        this.oreSprite = this.addSprite.resourceOre({ container: this.oreContainer });
+        this.barSprite = this.addSprite.resourceBar({
+            container: this.oreContainer,
+        });
+        this.oreSprite = this.addSprite.resourceOre({
+            container: this.oreContainer,
+        });
 
-        const isDoor = !state.isWall && this.ownerID === undefined &&
-                        state.type !== "conveyor" && state.decoration;
+        const isDoor =
+            !state.isWall &&
+            this.ownerID === undefined &&
+            state.type !== "conveyor" &&
+            state.decoration;
 
         if (isDoor) {
             const isEast = state.decoration === 2;
@@ -109,20 +119,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     }
 
     /**
-     * Called approx 60 times a second to update and render Tile instances.
+     * Called approx 60 times a second to update and render Tile
+     * instances.
      * Leave empty if it is not being rendered.
      *
      * @param dt - A floating point number [0, 1) which represents how far into
-     * the next turn that current turn we are rendering is at
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * the next turn that current turn we are rendering is at.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public render(
         dt: number,
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -132,15 +146,24 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         pixiFade(this.wall, dt, Number(next.isWall), Number(current.isWall));
         this.oreContainer.visible = true;
-        pixiFade(this.barSprite, dt, current.redium || current.blueium, next.redium || next.blueium);
-        pixiFade(this.oreSprite, dt, current.rediumOre || current.blueiumOre, next.rediumOre || next.blueiumOre);
+        pixiFade(
+            this.barSprite,
+            dt,
+            current.redium || current.blueium,
+            next.redium || next.blueium,
+        );
+        pixiFade(
+            this.oreSprite,
+            dt,
+            current.rediumOre || current.blueiumOre,
+            next.rediumOre || next.blueiumOre,
+        );
 
         if (this.door && this.openDoor) {
             if (!next.unit) {
                 this.door.visible = true;
                 this.openDoor.visible = false;
-            }
-            else {
+            } else {
                 this.door.visible = false;
                 this.openDoor.visible = true;
             }
@@ -162,7 +185,10 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.ownerOverlay.tint = ownerColor.rgbNumber();
         }
 
-        this.recolorResources(this.getCurrentMostState(), this.getNextMostState());
+        this.recolorResources(
+            this.getCurrentMostState(),
+            this.getNextMostState(),
+        );
 
         // replace with code to recolor sprites based on player color
         // <<-- /Creer-Merge: recolor -->>
@@ -173,7 +199,8 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * such as going back in time before it existed.
      *
      * By default the super hides container.
-     * If this sub class adds extra PIXI objects outside this.container, you should hide those too in here.
+     * If this sub class adds extra PIXI objects outside this.container, you
+     * should hide those too in here.
      */
     public hideRender(): void {
         super.hideRender();
@@ -186,14 +213,17 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     /**
      * Invoked when the state updates.
      *
-     * @param current - The current (most) game state, will be this.next if this.current is undefined.
-     * @param next - The next (most) game state, will be this.current if this.next is undefined.
+     * @param current - The current (most) game state, will be this.next if
+     * this.current is undefined.
+     * @param next - The next (most) game state, will be this.current if
+     * this.next is undefined.
      * @param delta - The current (most) delta, which explains what happened.
-     * @param nextDelta  - The the next (most) delta, which explains what happend.
+     * @param nextDelta - The the next (most) delta, which explains what
+     * happend.
      */
     public stateUpdated(
-        current: Immutable<ITileState>,
-        next: Immutable<ITileState>,
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
         delta: Immutable<NewtonianDelta>,
         nextDelta: Immutable<NewtonianDelta>,
     ): void {
@@ -216,14 +246,27 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
      * @param current - The current tile state.
      * @param next - The next tile state.
      */
-    private recolorResources(current: Immutable<ITileState>, next: Immutable<ITileState>): void {
+    private recolorResources(
+        current: Immutable<TileState>,
+        next: Immutable<TileState>,
+    ): void {
         let colorIndex: number | undefined;
 
         switch (true) {
-            case Boolean(current.redium || next.redium || current.rediumOre || next.rediumOre):
+            case Boolean(
+                current.redium ||
+                    next.redium ||
+                    current.rediumOre ||
+                    next.rediumOre,
+            ):
                 colorIndex = 0;
                 break;
-            case Boolean(current.blueium || next.blueium || current.blueiumOre || next.blueiumOre):
+            case Boolean(
+                current.blueium ||
+                    next.blueium ||
+                    current.blueiumOre ||
+                    next.blueiumOre,
+            ):
                 colorIndex = 1;
         }
 
@@ -232,7 +275,9 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
 
         // Use the Player color on the ore so color blinded people can change the color to disinguish between them.
-        const color = this.game.getPlayersColor(this.game.players[colorIndex]).rgbNumber();
+        const color = this.game
+            .getPlayersColor(this.game.players[colorIndex])
+            .rgbNumber();
         this.barSprite.tint = color;
         this.oreSprite.tint = color;
     }

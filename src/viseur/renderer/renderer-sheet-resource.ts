@@ -1,25 +1,31 @@
 import * as PIXI from "pixi.js";
 import { FirstArgument, setPixiOptions } from "src/utils";
-import { BaseRendererResource, IBaseRendererResourceOptions } from "./base-renderer-resource";
+import {
+    BaseRendererResource,
+    BaseRendererResourceOptions,
+} from "./base-renderer-resource";
 
 /** Optional details about the sprite sheet. */
-export interface ISheetData {
-    /** Major axis to start numbering from */
+export interface SheetData {
+    /** Major axis to start numbering from. */
     axis: "x" | "y";
 
-    /** The width of the sheet */
+    /** The width of the sheet. */
     width: number;
 
-    /** The height of the sheet */
+    /** The height of the sheet. */
     height: number;
 }
 
 /** A resource that is a sprite sheet. */
 export class RendererSheetResource extends BaseRendererResource {
-    /** If present this resource is a sprite sheet */
-    private readonly sheet: ISheetData;
+    /** If present this resource is a sprite sheet. */
+    private readonly sheet: SheetData;
 
-    /** The mapped textures for each image in the sheet, if this resource is a sheet */
+    /**
+     * The mapped textures for each image in the sheet,
+     * if this resource is a sheet.
+     */
     private readonly sheetTextures: PIXI.Texture[] = [];
 
     /**
@@ -31,8 +37,8 @@ export class RendererSheetResource extends BaseRendererResource {
      */
     constructor(
         path: string,
-        sheet: ISheetData,
-        options?: IBaseRendererResourceOptions,
+        sheet: SheetData,
+        options?: BaseRendererResourceOptions,
     ) {
         super(path, options);
         this.sheet = sheet;
@@ -42,15 +48,20 @@ export class RendererSheetResource extends BaseRendererResource {
      * Creates and initializes a sprite for this resource.
      *
      * @param options - The optional options to set at init.
-     * @returns A sprite with the given texture key, added to the parentContainer.
+     * @returns A sprite with the given texture key, added to the
+     * parentContainer.
      */
-    public newSprite(options: FirstArgument<BaseRendererResource["newSprite"]> & Readonly<{
-        /** The index in the sheet to create the the sprite from. */
-        index: number;
-    }>): PIXI.Sprite {
+    public newSprite(
+        options: FirstArgument<BaseRendererResource["newSprite"]> &
+            Readonly<{
+                /** The index in the sheet to create the the sprite from. */
+                index: number;
+            }>,
+    ): PIXI.Sprite {
         const sprite = new PIXI.Sprite(this.sheetTextures[options.index]);
 
-        // Now scale the sprite, as it defaults to the dimensions of its texture's pixel size.
+        // Now scale the sprite, as it defaults to the dimensions of its
+        // texture's pixel size.
         this.resetScale(sprite);
         setPixiOptions(sprite, options);
 
@@ -83,8 +94,9 @@ export class RendererSheetResource extends BaseRendererResource {
         const width = this.texture.width / sheet.width;
         const height = this.texture.height / sheet.height;
 
-        // assume x first for the major axis, but they can manually override with the axis: "y" sheet setting
-        const yFirst = (sheet.axis === "y");
+        // assume x first for the major axis, but they can manually override
+        // with the axis: "y" sheet setting
+        const yFirst = sheet.axis === "y";
         const size = sheet.width * sheet.height;
 
         // build a separate texture for each part of the sprite sheet
@@ -95,16 +107,17 @@ export class RendererSheetResource extends BaseRendererResource {
             if (yFirst) {
                 x = Math.floor(i / sheet.height);
                 y = i % sheet.height;
-            }
-            else {
+            } else {
                 x = i % sheet.width;
                 y = Math.floor(i / sheet.width);
             }
 
-            this.sheetTextures.push(new PIXI.Texture(
-                this.texture.baseTexture,
-                new PIXI.Rectangle(x * width, y * height, width, height),
-            ));
+            this.sheetTextures.push(
+                new PIXI.Texture(
+                    this.texture.baseTexture,
+                    new PIXI.Rectangle(x * width, y * height, width, height),
+                ),
+            );
         }
 
         return true;

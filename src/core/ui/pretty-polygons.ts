@@ -1,38 +1,40 @@
-// tslint:disable:no-math-random insecure-random
-
 const REFRESH_DURATION = 20000;
 
 // source:
 // https://www.bypeople.com/svg-low-poly-background-css-js-snippet/
 
 /** A point used for Polygon node movement calculations. */
-interface IPolyPoint {
-    /** the x position */
+interface PolyPoint {
+    /** The x position. */
     x: number;
 
-    /** the y position */
+    /** The y position. */
     y: number;
 
-    /** the origin x position */
+    /** The origin x position. */
     originX: number;
 
-    /** the y position */
+    /** The y position. */
     originY: number;
 }
 
 /** A node used for polygons. */
-type PolyNode = Node & Element & {
-    /** function some node's have in some browsers to start animations on SVG. */
-    beginElement?(): void;
-};
+type PolyNode = Node &
+    Element & {
+        /**
+         * Function some node's have in some browsers to start animations on
+         * SVG.
+         */
+        beginElement?(): void;
+    };
 
 /** A Polygon element. */
 type Polygon = Element & {
-    /** First point */
+    /** First point. */
     point1: number;
-    /** Second point */
+    /** Second point. */
     point2: number;
-    /** Third point */
+    /** Third point. */
     point3: number;
 };
 
@@ -40,32 +42,32 @@ type Polygon = Element & {
  * Injects an animated pretty low poly SVG into a DOM element and animates it.
  */
 export class PrettyPolygons {
-    /** timer that refreshed on each tick */
+    /** Timer that refreshed on each tick. */
     private interval: number; // as we are in browser, not node
 
-    /** The SVG we are manipulating */
+    /** The SVG we are manipulating. */
     private readonly svg = document.createElementNS(
-        "http://www.w3.org/2000/svg", // tslint:disable-line:no-http-string
+        "http://www.w3.org/2000/svg",
         "svg",
     );
 
-    /** size for a poly */
+    /** Size for a poly. */
     private readonly unitSize: number;
 
-    /** number of points along x */
+    /** Number of points along x. */
     private readonly numPointsX: number;
 
-    /** number of points along y */
+    /** Number of points along y. */
     private readonly numPointsY: number;
 
-    /** width of a poly */
+    /** Width of a poly. */
     private readonly unitWidth: number;
 
-    /** height of a poly */
+    /** Height of a poly. */
     private readonly unitHeight: number;
 
-    /** The points we will manipulate */
-    private readonly points: IPolyPoint[] = [];
+    /** The points we will manipulate. */
+    private readonly points: PolyPoint[] = [];
 
     /**
      * Creates the pretty polygons inside some parent element.
@@ -134,8 +136,7 @@ export class PrettyPolygons {
                                 "points",
                                 `${topLeftX},${topLeftY} ${bottomLeftX},${bottomLeftY} ${bottomRightX},${bottomRightY}`,
                             );
-                        }
-                        else if (n === 1) {
+                        } else if (n === 1) {
                             polygon.point1 = i;
                             polygon.point2 = i + 1;
                             polygon.point3 = i + this.numPointsX + 1;
@@ -144,8 +145,7 @@ export class PrettyPolygons {
                                 `${topLeftX},${topLeftY} ${topRightX},${topRightY} ${bottomRightX},${bottomRightY}`,
                             );
                         }
-                    }
-                    else if (rand === 1) {
+                    } else if (rand === 1) {
                         if (n === 0) {
                             polygon.point1 = i;
                             polygon.point2 = i + this.numPointsX;
@@ -154,23 +154,25 @@ export class PrettyPolygons {
                                 "points",
                                 `${topLeftX},${topLeftY} ${bottomLeftX},${bottomLeftY} ${topRightX},${topRightY}`,
                             );
-                        }
-                        else if (n === 1) {
+                        } else if (n === 1) {
                             polygon.point1 = i + this.numPointsX;
                             polygon.point2 = i + 1;
                             polygon.point3 = i + this.numPointsX + 1;
                             polygon.setAttribute(
                                 "points",
-                                `${bottomLeftX},${bottomLeftY} ${topRightX},`
-                                + `${topRightY} ${bottomRightX},${bottomRightY}`,
+                                `${bottomLeftX},${bottomLeftY} ${topRightX},` +
+                                    `${topRightY} ${bottomRightX},${bottomRightY}`,
                             );
                         }
                     }
 
-                    polygon.setAttribute("fill", `rgba(0,0,0,${Math.random() / 3})`);
+                    polygon.setAttribute(
+                        "fill",
+                        `rgba(0,0,0,${Math.random() / 3})`,
+                    );
 
                     const animate = document.createElementNS(
-                        "http://www.w3.org/2000/svg", // tslint:disable-line:no-http-string
+                        "http://www.w3.org/2000/svg",
                         "animate",
                     );
 
@@ -197,7 +199,7 @@ export class PrettyPolygons {
         this.interval = 0;
 
         const childNodes = this.svg.childNodes;
-        // tslint:disable-next-line:prefer-for-of - because it does not have an iterator symbol set
+        // type does not have an iterator symbol set
         for (let i = 0; i < childNodes.length; i++) {
             const polygon = childNodes[i];
             const animate = polygon.childNodes[0] as PolyNode;
@@ -211,12 +213,24 @@ export class PrettyPolygons {
      */
     private randomize(): void {
         for (const point of this.points) {
-            if (point.originX !== 0 && point.originX !== this.unitWidth * (this.numPointsX - 1)) {
-                point.x = point.originX + Math.random() * this.unitWidth - this.unitWidth / 20;
+            if (
+                point.originX !== 0 &&
+                point.originX !== this.unitWidth * (this.numPointsX - 1)
+            ) {
+                point.x =
+                    point.originX +
+                    Math.random() * this.unitWidth -
+                    this.unitWidth / 20;
             }
 
-            if (point.originY !== 0 && point.originY !== this.unitHeight * (this.numPointsY - 1)) {
-                point.y = point.originY + Math.random() * this.unitHeight - this.unitHeight / 20;
+            if (
+                point.originY !== 0 &&
+                point.originY !== this.unitHeight * (this.numPointsY - 1)
+            ) {
+                point.y =
+                    point.originY +
+                    Math.random() * this.unitHeight -
+                    this.unitHeight / 20;
             }
         }
     }
@@ -235,7 +249,6 @@ export class PrettyPolygons {
         this.randomize();
 
         const childNodes = this.svg.childNodes;
-        // tslint:disable-next-line:prefer-for-of - because it does not have an iterator symbol set
         for (let i = 0; i < childNodes.length; i++) {
             const polygon = childNodes[i] as Polygon;
             const animate = polygon.childNodes[0] as PolyNode;
@@ -253,8 +266,12 @@ export class PrettyPolygons {
 
             animate.setAttribute(
                 "to",
-                `${this.points[polygon.point1].x},${this.points[polygon.point1].y} ${this.points[polygon.point2].x}`
-                + `,${this.points[polygon.point2].y} ${this.points[polygon.point3].x},${this.points[polygon.point3].y}`,
+                `${this.points[polygon.point1].x},${
+                    this.points[polygon.point1].y
+                } ${this.points[polygon.point2].x}` +
+                    `,${this.points[polygon.point2].y} ${
+                        this.points[polygon.point3].x
+                    },${this.points[polygon.point3].y}`,
             );
             animate.beginElement();
         }

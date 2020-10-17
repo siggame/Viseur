@@ -4,45 +4,45 @@ import { ColorTint, getTintFromColor, Immutable } from "src/utils";
 import { ViseurInstance } from "src/viseur/constructed";
 import { BaseSetting } from "src/viseur/settings";
 
-/** The optional args for a game bar */
-export interface IGameBarOptions {
-    /** The width of the bar */
+/** The optional args for a game bar. */
+export interface GameBarOptions {
+    /** The width of the bar. */
     width?: number;
 
-    /** The height of the bar */
+    /** The height of the bar. */
     height?: number;
 
-    /** The maximum value to be considered 100% */
+    /** The maximum value to be considered 100%. */
     max?: number;
 
-    /** The foreground color of the bar */
+    /** The foreground color of the bar. */
     foregroundColor?: ColorTint;
 
-    /** The background color of the bar */
+    /** The background color of the bar. */
     backgroundColor?: ColorTint;
 
-    /** The setting to subscribe to to show/hide */
+    /** The setting to subscribe to to show/hide. */
     visibilitySetting?: BaseSetting<boolean>;
 
-    /** Invert the setting value subscribed to */
+    /** Invert the setting value subscribed to. */
     invertSetting?: boolean;
 }
 
-/** A bar for a number such as health on top of a BaseGameObject */
+/** A bar for a number such as health on top of a BaseGameObject. */
 export class GameBar {
-    /** The root container for all elements of this bar */
+    /** The root container for all elements of this bar. */
     private readonly container = new PIXI.Container();
 
-    /** The background sprite */
+    /** The background sprite. */
     private readonly foreground: PIXI.Sprite;
 
-    /** The background sprite */
+    /** The background sprite. */
     private readonly background: PIXI.Sprite;
 
-    /** The display width of the bar */
+    /** The display width of the bar. */
     private readonly width: number;
 
-    /** The maximum value of the bar */
+    /** The maximum value of the bar. */
     private readonly max: number;
 
     /**
@@ -53,7 +53,7 @@ export class GameBar {
      */
     constructor(
         parent: PIXI.Container,
-        options: Immutable<IGameBarOptions> = {},
+        options: Immutable<GameBarOptions> = {},
     ) {
         const viseur = ViseurInstance;
         if (!viseur || !viseur.game) {
@@ -76,7 +76,7 @@ export class GameBar {
         this.foreground = blank.newSprite(opts);
 
         this.recolor(
-            opts.foregroundColor || 0x044F444, // green-ish
+            opts.foregroundColor || 0x044f444, // green-ish
             opts.backgroundColor || 0x00000,
         );
 
@@ -108,8 +108,8 @@ export class GameBar {
     /**
      * Updates the value of the bar, which will expand/contract the foreground.
      *
-     * @param value The new value to update the foreground bar to, relative to
-     * this bar's max.
+     * @param value - The new value to update the foreground bar to, relative
+     * to this bar's max.
      */
     public update(value: number): void {
         const clamped = clamp(value, 0, this.max);

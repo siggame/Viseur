@@ -5,7 +5,7 @@ import * as webpack from "webpack";
 
 const gitRevisionPlugin = new GitRevisionPlugin();
 
-export default (// tslint:disable-line:no-default-export
+export default (
     env: undefined,
     options: webpack.Configuration,
 ): webpack.Configuration => ({
@@ -50,7 +50,7 @@ export default (// tslint:disable-line:no-default-export
                 ],
             },
             {
-                test: /\.(jpe?g|png|gif|ico|svg|ttf|otf|eot|woff|woff2)$/i,
+                test: /\.(jpe?g|png|gif|ico|svg|ttf|otf|eot|woff|woff2|gamelog)$/i,
                 use: [
                     {
                         loader: "file-loader",
@@ -65,8 +65,8 @@ export default (// tslint:disable-line:no-default-export
                 use: {
                     loader: "handlebars-loader",
                     options: {
-                        helperDirs: [ join(__dirname, "/src/handlebars-") ],
-                        inlineRequires: "\/images\/",
+                        helperDirs: [join(__dirname, "/src/handlebars-")],
+                        inlineRequires: "/images/",
                     },
                 },
             },
@@ -101,9 +101,15 @@ export default (// tslint:disable-line:no-default-export
         gitRevisionPlugin,
         new webpack.DefinePlugin({
             "process.env.DEVELOPMENT": options.mode === "development",
-            "process.env.GIT_VERSION": JSON.stringify(gitRevisionPlugin.version()),
-            "process.env.GIT_COMMIT_HASH": JSON.stringify(gitRevisionPlugin.commithash()),
-            "process.env.GIT_BRANCH": JSON.stringify(gitRevisionPlugin.branch()),
+            "process.env.GIT_VERSION": JSON.stringify(
+                gitRevisionPlugin.version(),
+            ),
+            "process.env.GIT_COMMIT_HASH": JSON.stringify(
+                gitRevisionPlugin.commithash(),
+            ),
+            "process.env.GIT_BRANCH": JSON.stringify(
+                gitRevisionPlugin.branch(),
+            ),
         }),
         new webpack.ProvidePlugin({
             PIXI: "pixi.js", // TypeScript definitions inject this into global scope, so let's make that true at runtime
@@ -113,9 +119,7 @@ export default (// tslint:disable-line:no-default-export
         sideEffects: true,
         usedExports: true,
     },
-    devtool: options.mode === "development"
-        ? "inline-source-map"
-        : false,
+    devtool: options.mode === "development" ? "inline-source-map" : false,
     performance: {
         hints: false, // TODO: handle these warnings
     },

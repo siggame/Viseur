@@ -16,7 +16,7 @@ if not 'vis' in shared:
             return ' | '.join(literals)
 
         if base_type == "dictionary":
-            return "{[id: " + vis_type(type_obj['keyType']) + "]: " + vis_type(type_obj['valueType']) + "}"
+            return "{ [id: " + vis_type(type_obj['keyType']) + "]: " + vis_type(type_obj['valueType']) + " }"
         elif base_type == "list":
             ret = vis_type(type_obj['valueType'], False)
             if ' ' in ret:
@@ -26,7 +26,7 @@ if not 'vis' in shared:
             return "number"
         elif type_obj['is_game_object']:
             if use_game_object_states:
-                ret = 'I' + base_type + 'State'
+                ret = base_type + 'State'
             else:
                 ret = base_type
             if nullable is not None:
@@ -74,10 +74,11 @@ if not 'vis' in shared:
             doc = {'description': doc}
         description = doc['description']
         lines = wrapper.wrap(doc['description'])
+        lines += [prefix + ' *']
 
         if 'arguments' in doc and doc['arguments']:
             for arg in doc['arguments']:
-                lines += wrapper.wrap('@param ' + arg['name'] + ' ' + arg['description'])
+                lines += wrapper.wrap('@param ' + arg['name'] + ' - ' + arg['description'])
         if 'returns' in doc and doc['returns']:
             lines += wrapper.wrap('@returns ' + doc['returns']['description'])
 
@@ -99,14 +100,32 @@ if not 'vis' in shared:
 
         doc = ''
         for pair in pairs:
-            importFrom = pair[0]
-            imports = ', '.join(sorted(pair[1]))
+            import_from = pair[0]
+            import_names = sorted(pair[1])
+            imports = ', '.join(import_names)
             if imports[0] != '*':
                 imports = '{ ' + imports + ' }'
-
-            doc += 'import {} from "{}";\n'.format(imports, importFrom)
+            one_line = 'import {} from "{}";'.format(imports, import_from)
+            if len(one_line) <= 80:
+                doc += one_line + '\n'
+            else:
+                doc += 'import {'
+                for name in import_names:
+                    doc += '\n    {},'.format(name)
+                doc += '\n}} from "{}";\n'.format(import_from)
         return doc
     shared['vis']['imports'] = vis_imports
+
+    def vis_function_top(func_name, func):
+        docstring = shared['vis']['block_comment']('    ', func)
+        dec_start = '    public {}('.format(func_name)
+        dec_end = '): void {'
+        strs = ['{}: {}'.format(parm['name'], shared['vis']['type'](parm['type'])) for parm in func['arguments']]
+        dec_line = dec_start + ', '.join(strs) + dec_end
+        if len(dec_line) >= 80:
+            dec_line = dec_start + ''.join(['\n        {},'.format(s) for s in strs]) + '\n    ' + dec_end
+        return docstring + '\n' + dec_line
+    shared['vis']['function_top'] = vis_function_top
 
     shared['vis']['TextWrapper'] = TextWrapper
 %>
