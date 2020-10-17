@@ -7,8 +7,8 @@ import { GameObject } from "./game-object";
 import { CoreminerDelta, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
-// any additional imports you want can be added here safely between Creer runs
 import * as PIXI from "pixi.js";
+import { pixiFade } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -33,31 +33,31 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
 
-    /** tile sprite */
+    /** The tile sprite. */
     public tileSprite: PIXI.Sprite;
 
-    /** contains all the appliance sprites */
+    /** Contains all the appliance sprites. */
     public readonly applianceContainer: PIXI.Container;
 
-    /** sprite for the ladder */
+    /** The sprite for the ladder. */
     public ladderSprite?: PIXI.Sprite;
 
-    /** sprite for the support */
+    /** The sprite for the support. */
     public supportSprite?: PIXI.Sprite;
 
-    /** sprite for the ore */
+    /** The sprite for the ore. */
     public oreSprite?: PIXI.Sprite;
 
-    /** sprite for the base */
+    /** The sprite for the base. */
     public baseSprite?: PIXI.Sprite;
 
-    /** sprite for the hopper */
+    /** The sprite for the hopper. */
     public hopperSprite?: PIXI.Sprite;
 
-    /** the shield sprite */
+    /** The shield sprite. */
     public shieldSprite?: PIXI.Sprite;
 
-    /** TODO: Document */
+    /** The owner's ID. */
     public ownerID?: string;
 
     // <<-- /Creer-Merge: variables -->>
@@ -89,37 +89,43 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         if (state.y === 0 && state.dirt <= 0 && state.ore <= 0) {
             this.tileSprite = this.addSprite.sky();
-        }
-        else if (state.dirt > 0) {
+        } else if (state.dirt > 0) {
             this.tileSprite = this.addSprite.dirt();
-        }
-        else {
+        } else {
             this.tileSprite = this.addSprite.dugDirt();
         }
         if (state.isBase) {
-            this.baseSprite = this.addSprite.base({container: this.applianceContainer});
+            this.baseSprite = this.addSprite.base({
+                container: this.applianceContainer,
+            });
             if (this.ownerID) {
-                const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+                const color = this.game
+                    .getPlayersColor(this.ownerID)
+                    .rgbNumber();
                 this.baseSprite.tint = color;
             }
-        }
-        else if (state.isHopper) {
-            this.hopperSprite = this.addSprite.miningTube({container: this.applianceContainer });
-        }
-        else if (state.isLadder) {
-            this.ladderSprite = this.addSprite.ladder({container: this.applianceContainer});
-        }
-        else if (state.isSupport) {
-            this.supportSprite = this.addSprite.miningTube({container: this.applianceContainer});
-        }
-        else if (state.ore > 0) {
+        } else if (state.isHopper) {
+            this.hopperSprite = this.addSprite.miningTube({
+                container: this.applianceContainer,
+            });
+        } else if (state.isLadder) {
+            this.ladderSprite = this.addSprite.ladder({
+                container: this.applianceContainer,
+            });
+        } else if (state.isSupport) {
+            this.supportSprite = this.addSprite.miningTube({
+                container: this.applianceContainer,
+            });
+        } else if (state.ore > 0) {
             // TODO: swap in ORE sprite
             this.oreSprite = this.addSprite.ore();
         }
 
         if (state.shielding > 0) {
             // TODO: swap in Shield sprite
-            this.shieldSprite = this.addSprite.shield({container: this.applianceContainer});
+            this.shieldSprite = this.addSprite.shield({
+                container: this.applianceContainer,
+            });
         }
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -152,36 +158,45 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
         // render where the Tile is
         if (current.dirt > 0 && next.dirt === 0) {
             this.tileSprite = this.addSprite.dugDirt();
-        }
-        else if (current.dirt === 0 && next.dirt > 0) {
+        } else if (current.dirt === 0 && next.dirt > 0) {
             this.tileSprite = this.addSprite.dirt();
         }
 
         if (this.oreSprite) {
             pixiFade(this.oreSprite, dt, current.ore, next.ore);
-        }
-        else if (next.ore > 0) {
+        } else if (next.ore > 0) {
             // TODO: swap with correct sprite
-            this.oreSprite = this.addSprite.ore({container: this.applianceContainer});
+            this.oreSprite = this.addSprite.ore({
+                container: this.applianceContainer,
+            });
         }
 
         if (this.shieldSprite) {
             pixiFade(this.shieldSprite, dt, current.shielding, next.shielding);
-        }
-        else if (next.shielding > 0) {
+        } else if (next.shielding > 0) {
             // TODO: swap with correct sprite
-            this.shieldSprite = this.addSprite.shield({container: this.applianceContainer});
+            this.shieldSprite = this.addSprite.shield({
+                container: this.applianceContainer,
+            });
         }
 
         if (this.ladderSprite) {
-            pixiFade(this.ladderSprite, dt, Number(current.isLadder), Number(next.isLadder));
-        }
-        else if (next.isLadder) {
-            this.ladderSprite = this.addSprite.ladder({container: this.applianceContainer});
+            pixiFade(
+                this.ladderSprite,
+                dt,
+                Number(current.isLadder),
+                Number(next.isLadder),
+            );
+        } else if (next.isLadder) {
+            this.ladderSprite = this.addSprite.ladder({
+                container: this.applianceContainer,
+            });
         }
 
         if (current.isHopper !== next.isHopper) {
-            this.hopperSprite = this.addSprite.miningTube({container: this.applianceContainer});
+            this.hopperSprite = this.addSprite.miningTube({
+                container: this.applianceContainer,
+            });
         }
 
         // <<-- /Creer-Merge: render -->>

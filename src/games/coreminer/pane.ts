@@ -101,9 +101,7 @@ export class Pane extends BasePane<GameState, PlayerState> {
             },
             {
                 title: "Number of Miners",
-                get: (player) => {
-                    return player.units.filter((u) => u ? u.job.title === "miner" : false).length;
-                },
+                get: (player) => player.miners.length,
                 icon: "child",
             },
         );
