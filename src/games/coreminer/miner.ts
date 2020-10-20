@@ -1,5 +1,6 @@
 // This is a class to represent the Miner object in the game.
 // If you want to render it in the game do so here.
+import * as PIXI from "pixi.js";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
@@ -8,11 +9,13 @@ import { CoreminerDelta, MinerState, TileState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import { ease, pixiFade, updown } from "src/utils";
+import { GameBar } from "src/viseur/game";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -21,6 +24,12 @@ const SHOULD_RENDER = undefined;
 export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
+
+    /** Miner scale. */
+    private static readonly SCALE = 1;
+
+    /** Miner's healthBar offset. */
+    private static readonly HealthBarOffset = 0.25;
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Miner (dt = 0). */
@@ -31,6 +40,21 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+
+    /** This Miner's sprite. */
+    public minerSprite: PIXI.Sprite;
+
+    /** The id of the owner of this miner, for recoloring. */
+    public ownerID: string;
+
+    /** The tile state of the tile we are attacking, if we are. */
+    public attackingTile?: TileState;
+
+    /** Our health bar. */
+    public healthBar?: GameBar;
+
+    /** Upgrade Level. */
+    public UpgradeLevel: number;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -47,6 +71,47 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Miner here.
+
+        this.UpgradeLevel = state.upgradeLevel;
+        this.ownerID = state.owner.id;
+        // I removed OVER_SCALE here because I was not sure why it was a thing.
+        this.container.scale.set(Miner.SCALE, Miner.SCALE);
+        this.container.setParent(this.game.layers.game);
+        switch (this.UpgradeLevel) {
+            case 0:
+                this.minerSprite = this.addSprite.minerLvl0();
+                break;
+            case 1:
+                this.minerSprite = this.addSprite.minerLvl1();
+                break;
+            case 2:
+                this.minerSprite = this.addSprite.minerLvl2();
+                break;
+            case 3:
+                this.minerSprite = this.addSprite.minerLvl3();
+                break;
+            default:
+                this.minerSprite = this.addSprite.error();
+        }
+
+        const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+        this.minerSprite.tint = color;
+
+        const barContainer = new PIXI.Container();
+        barContainer.setParent(this.container);
+        barContainer.position.y -= Miner.HealthBarOffset;
+
+        this.healthBar = new GameBar(barContainer, {
+            max: state.currentUpgrade.health,
+            backgroundColor: "grey",
+            foregroundColor: color,
+        });
+
+        // Flip needs an offset when setting location see render for that
+        // notice that it is player 1 we are flipping here
+        if (this.ownerID === this.game.players[1].id) {
+            this.container.scale.x *= -1;
+        }
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -76,6 +141,60 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
         // render where the Miner is
+        if (!next.tile) {
+            this.container.visible = false;
+
+            return;
+        }
+
+        if (next.health <= 0) {
+            this.container.visible = false;
+
+            return;
+        }
+
+        this.container.position.set(
+            // offset so we can flip image
+            // and we offset by one if it is the player we flipped
+            ease(current.tile.x, next.tile.x, dt) +
+                Number(this.ownerID === this.game.players[1].id),
+            ease(current.tile.y, next.tile.y, dt),
+        );
+        if (this.healthBar) {
+            this.healthBar.update(ease(current.health, next.health, dt));
+        }
+
+        if (current.upgradeLevel !== next.upgradeLevel) {
+            this.UpgradeLevel = next.upgradeLevel;
+            switch (this.UpgradeLevel) {
+                case 0:
+                    this.minerSprite = this.addSprite.minerLvl0();
+                    break;
+                case 1:
+                    this.minerSprite = this.addSprite.minerLvl1();
+                    break;
+                case 2:
+                    this.minerSprite = this.addSprite.minerLvl2();
+                    break;
+                case 3:
+                    this.minerSprite = this.addSprite.minerLvl3();
+                    break;
+                default:
+                    this.minerSprite = this.addSprite.error();
+            }
+        }
+
+        // fade miner out for dying
+        pixiFade(this.container, dt, current.health, next.health);
+
+        if (this.attackingTile) {
+            const d = updown(dt);
+            const dx = (this.attackingTile.x - current.tile.x) / 2;
+            const dy = (this.attackingTile.y - current.tile.y) / 2;
+
+            this.container.x += dx * d;
+            this.container.y += dy * d;
+        }
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -88,6 +207,10 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: recolor -->>
         // replace with code to recolor sprites based on player color
+        if (this.healthBar) {
+            const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
+            this.healthBar.recolor(color);
+        }
         // <<-- /Creer-Merge: recolor -->>
     }
 

@@ -12,7 +12,7 @@ import { BombState, CoreminerDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: should-render -->>
 // Set this variable to `true`, if this class should render.
-const SHOULD_RENDER = undefined;
+const SHOULD_RENDER = true;
 // <<-- /Creer-Merge: should-render -->>
 
 /**
@@ -21,6 +21,9 @@ const SHOULD_RENDER = undefined;
 export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: static-functions -->>
     // you can add static functions here
+
+    /** Bomb scale. */
+    private static readonly SCALE = 1;
     // <<-- /Creer-Merge: static-functions -->>
 
     /** The current state of the Bomb (dt = 0). */
@@ -31,6 +34,12 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
+
+    /** This Bomb's sprite. */
+    public bombSprite: PIXI.Sprite;
+
+    /** This Bomb's timer. */
+    public timer: number;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -47,6 +56,10 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Bomb here.
+        this.timer = state.timer;
+        this.container.scale.set(Bomb.SCALE, Bomb.SCALE);
+        this.container.setParent(this.game.layers.game);
+        this.bombSprite = this.addSprite.bomb();
         // <<-- /Creer-Merge: constructor -->>
     }
 
