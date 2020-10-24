@@ -94,14 +94,14 @@ export class Pane extends BasePane<GameState, PlayerState> {
         stats.push(
             {
                 title: "Money",
-                get: (player) => {
-                    return player.money;
-                },
+                get: (player) => player.money,
                 icon: "money",
             },
             {
                 title: "Number of Miners",
-                get: (player) => player.miners.length,
+                get: (player) =>
+                    player.miners.filter((m) => m && m.tile && m.health > 0)
+                        .length,
                 icon: "child",
             },
         );
