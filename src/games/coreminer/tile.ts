@@ -199,11 +199,6 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
             Number(next.isHopper),
         );
 
-        if (current.isHopper !== next.isHopper) {
-            this.hopperSprite = this.addSprite.miningTube({
-                container: this.itemContainer,
-            });
-        }
         // <<-- /Creer-Merge: render -->>
     }
 
