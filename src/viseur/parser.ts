@@ -100,10 +100,18 @@ export class Parser {
      * @returns The state, now delta merged.
      */
     public mergeDelta(state: BaseGame, delta: Delta["game"]): BaseGame {
-        if (!state.gameObjects) {
-            // merge the initial state, then it we can hook up game object
-            // references after
-            this.recursiveMergeDelta(state, delta);
+        state.gameObjects = state.gameObjects || {};
+
+        if (delta.gameObjects) {
+            for (const id of Object.keys(delta.gameObjects)) {
+                if (!state.gameObjects[id]) {
+                    state.gameObjects[id] = {
+                        id,
+                        logs: [],
+                        gameObjectName: "",
+                    };
+                }
+            }
         }
 
         return this.recursiveMergeDelta(state, delta, state.gameObjects);
