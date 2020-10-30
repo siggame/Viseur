@@ -107,7 +107,10 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
         // Flip needs an offset when setting location see render for that
         // notice that it is player 1 we are flipping here
         if (this.ownerID === this.game.players[1].id) {
-            this.container.scale.x *= -1;
+            this.minerSprites.forEach((sprite) => {
+                sprite.position.x += 1;
+                sprite.scale.x *= -1;
+            });
         }
         // <<-- /Creer-Merge: constructor -->>
     }
