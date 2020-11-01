@@ -1,6 +1,6 @@
 // This is a class to represent the Bomb object in the game.
 // If you want to render it in the game do so here.
-import { Immutable } from "src/utils";
+import { Immutable, pixiFade } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
@@ -39,7 +39,6 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
     public bombSprite: PIXI.Sprite;
 
     /** This Bomb's timer. */
-    public timer: number;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -56,8 +55,8 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Bomb here.
-        this.timer = state.timer;
         this.container.scale.set(Bomb.SCALE, Bomb.SCALE);
+        this.container.position.set(state.tile.x, state.tile.y);
         this.container.setParent(this.game.layers.game);
         this.bombSprite = this.addSprite.bomb();
         // <<-- /Creer-Merge: constructor -->>
@@ -89,6 +88,7 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
         // render where the Bomb is
+        pixiFade(this.bombSprite, dt, current.timer, next.timer);
         // <<-- /Creer-Merge: render -->>
     }
 
