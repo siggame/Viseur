@@ -104,8 +104,7 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
             foregroundColor: color,
         });
 
-        // Flip needs an offset when setting location see render for that
-        // notice that it is player 1 we are flipping here
+        // flipping the second players sprites so the face the other way
         if (this.ownerID === this.game.players[1].id) {
             this.minerSprites.forEach((sprite) => {
                 sprite.position.x += 1;
@@ -153,10 +152,7 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
         );
 
         this.container.position.set(
-            // offset so we can flip image
-            // and we offset by one if it is the player we flipped
-            ease(current.tile.x, next.tile.x, dt) +
-                Number(this.ownerID === this.game.players[1].id),
+            ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),
         );
 
