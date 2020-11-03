@@ -5,12 +5,13 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CoreminerDelta, MinerState, TileState } from "./state-interfaces";
+import { CoreminerDelta, MinerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 import { ease, pixiFade } from "src/utils";
 import { GameBar } from "src/viseur/game";
+import { TileState } from "./state-interfaces";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -150,11 +151,37 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
             Number(current.tile || current.health > 0),
             Number(next.tile || next.health > 0),
         );
+        if (current.tile !== next.tile) {
+            let fellTile: TileState | undefined;
+            if (
+                delta.type === "ran" &&
+                delta.data.run.caller.id === this.id &&
+                delta.data.run.functionName === "move"
+            ) {
+                const { tile } = delta.data.run.args;
+                if (tile.id !== next.tile.id) {
+                    fellTile = tile.getCurrentMostState();
+                }
+            }
 
-        this.container.position.set(
-            ease(current.tile.x, next.tile.x, dt),
-            ease(current.tile.y, next.tile.y, dt),
-        );
+            let renderDt = dt;
+            let startTile = current.tile;
+            let endTile = next.tile;
+
+            if (fellTile) {
+                if (dt <= 0.5) {
+                    renderDt = ease(dt * 2);
+                    endTile = fellTile;
+                } else {
+                    renderDt = ease(dt / 2);
+                    startTile = fellTile;
+                }
+            }
+            this.container.position.set(
+                ease(startTile.x, endTile.x, renderDt),
+                ease(startTile.y, endTile.y, renderDt),
+            );
+        }
 
         this.healthBar.update(ease(current.health, next.health, dt));
 
