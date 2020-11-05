@@ -53,7 +53,9 @@ export class Pane extends BasePane<GameState, PlayerState> {
         super.getPlayersScores(state);
 
         // <<-- Creer-Merge: get-player-scores -->>
-        return state.players.map((p) => p.value); // change to return the states scores for each player
+        return state.players.map(
+            (p) => [p.value, state.victoryAmount] as [number, number],
+        ); // change to return the states scores for each player
         // <<-- /Creer-Merge: get-player-scores -->>
     }
 
@@ -92,6 +94,11 @@ export class Pane extends BasePane<GameState, PlayerState> {
         // <<-- Creer-Merge: player-stats -->>
         // add stats for players to show up here
         stats.push(
+            {
+                title: "Value",
+                get: (player) => player.value,
+                icon: "arrow-circle-up",
+            },
             {
                 title: "Money",
                 get: (player) => player.money,
