@@ -9,6 +9,8 @@ import { InspectTreeView } from "./inspect-tree";
  * The "Inspect" tab on the InfoPane.
  */
 export class InspectTab extends Tab {
+    /** The treeview of the raw delta. */
+    private readonly deltaTreeView: InspectTreeView;
     /** Main treeview for the game. */
     private readonly gameTreeView: InspectTreeView;
 
@@ -31,6 +33,7 @@ export class InspectTab extends Tab {
         });
 
         const parent = this.element.find(".inspect-tree-root");
+        this.deltaTreeView = new InspectTreeView({ parent, name: "delta" });
         this.gameTreeView = new InspectTreeView({ parent, name: "game" });
         this.settingsTreeView = new InspectTreeView({
             parent,
@@ -39,13 +42,15 @@ export class InspectTab extends Tab {
 
         this.viseur = args.viseur;
         this.viseur.events.ready.once(({ gamelog }) => {
+            this.deltaTreeView.setGameName(gamelog.gameName);
+            this.gameTreeView.setGameName(gamelog.gameName);
             this.settingsTreeView.setGameName(gamelog.gameName);
+
+            // this is only ever needed once, settings never change
             // eslint-disable-next-line @typescript-eslint/ban-types
             this.settingsTreeView.display(gamelog.settings as {});
 
-            this.gameTreeView.setGameName(gamelog.gameName);
             this.refreshTree(this.viseur.getCurrentState());
-
             this.viseur.events.stateChanged.on((state) =>
                 this.refreshTree(state),
             );
@@ -66,6 +71,9 @@ export class InspectTab extends Tab {
             return;
         }
 
+        // TODO: better types to convince TS these structures are valid
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        this.deltaTreeView.display(state.delta as {});
         // eslint-disable-next-line @typescript-eslint/ban-types
         this.gameTreeView.display(state.game as {});
     }
