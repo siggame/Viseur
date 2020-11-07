@@ -154,11 +154,11 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (current.tile !== next.tile) {
             let fellTile: TileState | undefined;
             if (
-                delta.type === "ran" &&
-                delta.data.run.caller.id === this.id &&
-                delta.data.run.functionName === "move"
+                nextDelta.type === "ran" &&
+                nextDelta.data.run.caller.id === this.id &&
+                nextDelta.data.run.functionName === "move"
             ) {
-                const { tile } = delta.data.run.args;
+                const { tile } = nextDelta.data.run.args;
                 if (tile.id !== next.tile.id) {
                     fellTile = tile.getCurrentMostState();
                 }

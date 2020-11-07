@@ -8,6 +8,8 @@ import { BombState, CoreminerDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
+import { TileState } from "./state-interfaces";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -56,9 +58,10 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Bomb here.
         this.container.scale.set(Bomb.SCALE, Bomb.SCALE);
-        this.container.position.set(state.tile.x, state.tile.y);
+        // this.container.position.set(state.tile.x, state.tile.y);
         this.container.setParent(this.game.layers.game);
         this.bombSprite = this.addSprite.bomb();
+        this.container.visible = false;
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -89,6 +92,32 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: render -->>
         // render where the Bomb is
         pixiFade(this.bombSprite, dt, current.timer, next.timer);
+        if (!next.tile) {
+            this.container.visible = false;
+            return;
+        }
+
+        this.container.visible = true;
+        let fellTile: TileState | undefined;
+        if (
+            nextDelta.type === "ran" &&
+            nextDelta.data.run.functionName === "dump"
+        ) {
+            const { tile } = nextDelta.data.run.args;
+            if (tile.id !== next.tile.id) {
+                fellTile = tile.getCurrentMostState();
+            }
+        }
+
+        let startTile = current.tile;
+
+        if (fellTile) {
+            startTile = fellTile;
+        }
+        this.container.position.set(
+            ease(startTile.x, next.tile.x, dt),
+            ease(startTile.y, next.tile.y, dt),
+        );
         // <<-- /Creer-Merge: render -->>
     }
 
