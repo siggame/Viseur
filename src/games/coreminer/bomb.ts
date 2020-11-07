@@ -1,6 +1,6 @@
 // This is a class to represent the Bomb object in the game.
 // If you want to render it in the game do so here.
-import { Immutable, pixiFade } from "src/utils";
+import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
@@ -10,6 +10,7 @@ import { BombState, CoreminerDelta } from "./state-interfaces";
 // any additional imports you want can be added here safely between Creer runs
 import { ease } from "src/utils";
 import { TileState } from "./state-interfaces";
+import { pixiFade } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
