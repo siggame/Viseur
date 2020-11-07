@@ -43,6 +43,7 @@ export class Game extends BaseGame {
     /** The human player playing this game. */
     public readonly humanPlayer: HumanPlayer | undefined;
 
+    /** Max number of upgrades a unit can have. */
     public readonly maxUpgrades: number = 4;
 
     /**

@@ -9,7 +9,6 @@ import { BombState, CoreminerDelta } from "./state-interfaces";
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
 import { ease } from "src/utils";
-import { TileState } from "./state-interfaces";
 import { pixiFade } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
@@ -40,8 +39,6 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** This Bomb's sprite. */
     public bombSprite: PIXI.Sprite;
-
-    public startTile: TileState;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -59,11 +56,10 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Bomb here.
         this.container.scale.set(Bomb.SCALE, Bomb.SCALE);
-        // this.container.position.set(state.tile.x, state.tile.y);
+        this.container.position.set(state.tile.x, state.tile.y);
         this.container.setParent(this.game.layers.game);
         this.bombSprite = this.addSprite.bomb();
         this.container.visible = false;
-        this.startTile = state.tile;
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -100,8 +96,8 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // render where the Bomb is
         this.container.position.set(
-            ease(this.startTile.x, next.tile.x, dt),
-            ease(this.startTile.y, next.tile.y, dt),
+            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.y, next.tile.y, dt),
         );
         // <<-- /Creer-Merge: render -->>
     }
