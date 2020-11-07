@@ -40,7 +40,7 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
     /** This Bomb's sprite. */
     public bombSprite: PIXI.Sprite;
 
-    /** This Bomb's timer. */
+    public startTile: TileState;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -62,6 +62,7 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.container.setParent(this.game.layers.game);
         this.bombSprite = this.addSprite.bomb();
         this.container.visible = false;
+        this.startTile = state.tile;
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -90,33 +91,16 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
-        // render where the Bomb is
         pixiFade(this.bombSprite, dt, current.timer, next.timer);
+        // if no next tile, stop
         if (!next.tile) {
-            this.container.visible = false;
             return;
         }
 
-        this.container.visible = true;
-        let fellTile: TileState | undefined;
-        if (
-            nextDelta.type === "ran" &&
-            nextDelta.data.run.functionName === "dump"
-        ) {
-            const { tile } = nextDelta.data.run.args;
-            if (tile.id !== next.tile.id) {
-                fellTile = tile.getCurrentMostState();
-            }
-        }
-
-        let startTile = current.tile;
-
-        if (fellTile) {
-            startTile = fellTile;
-        }
+        // render where the Bomb is
         this.container.position.set(
-            ease(startTile.x, next.tile.x, dt),
-            ease(startTile.y, next.tile.y, dt),
+            ease(this.startTile.x, next.tile.x, dt),
+            ease(this.startTile.y, next.tile.y, dt),
         );
         // <<-- /Creer-Merge: render -->>
     }
@@ -170,6 +154,34 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Bomb based off its states
+        // if no next tile turn invisible and quit
+        if (!next.tile) {
+            this.container.visible = false;
+            return;
+        }
+        // else turn it visible
+        this.container.visible = true;
+        let fellTile: TileState | undefined;
+        // if we just dumped a bomb aka spawned one set up initial place to be
+        // where player tried to spawn it so we can have a falling animation
+        if (delta.type === "ran" && delta.data.run.functionName === "dump") {
+            const { tile } = delta.data.run.args;
+            if (tile.id !== next.tile.id) {
+                // hacky work around since commented out line doesn't work
+                fellTile = this.game.getCurrentMostState().gameObjects[
+                    tile.id
+                ] as TileState;
+                // fellTile = tile.getCurrentMostState();
+            }
+        }
+
+        // set previous tile to start from to previous state.
+        this.startTile = current.tile;
+        // if we do have a tile that the player tried to spawn bomb on,
+        if (fellTile) {
+            this.startTile = fellTile;
+        }
+
         // <<-- /Creer-Merge: state-updated -->>
     }
 
