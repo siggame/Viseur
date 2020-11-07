@@ -21,11 +21,24 @@ import "./base-pane.scss";
 // This tells webpack to include all files it finds that match the png regex
 // to be included in the build, that way they can be required() dynamically
 // at run time, but all assets were included at build time.
-const requireLanguageImage = require.context(
+const requireLanguageImageContext = require.context(
     "../language-images/", // directory to include
     true, // deep flag
     /\.png$/, // match on .png extensions
-) as (path: string) => string;
+) as (key: string) => unknown;
+
+const requireLanguageImage = (key: string): string | undefined => {
+    const required = requireLanguageImageContext(key);
+    if (typeof required === "string") {
+        return required;
+    }
+
+    if (isObject(required) && objectHasProperty(required, "default")) {
+        const defaultExport = required.default;
+        return typeof defaultExport === "string" ? defaultExport : undefined;
+    }
+};
+
 const TIME_REMAINING_TITLE = "time remaining (in min:sec:ms format)";
 const NS_IN_MS = 1000000;
 const ONE_SEC_IN_NS = NS_IN_MS * 1000;
