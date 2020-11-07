@@ -8,6 +8,8 @@ import { BombState, CoreminerDelta } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
+import { ease } from "src/utils";
+import { pixiFade } from "src/utils";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -37,9 +39,6 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** This Bomb's sprite. */
     public bombSprite: PIXI.Sprite;
-
-    /** This Bomb's timer. */
-    public timer: number;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -56,10 +55,11 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Bomb here.
-        this.timer = state.timer;
         this.container.scale.set(Bomb.SCALE, Bomb.SCALE);
+        this.container.position.set(state.tile.x, state.tile.y);
         this.container.setParent(this.game.layers.game);
         this.bombSprite = this.addSprite.bomb();
+        this.container.visible = false;
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -88,7 +88,17 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         super.render(dt, current, next, delta, nextDelta);
 
         // <<-- Creer-Merge: render -->>
+        pixiFade(this.bombSprite, dt, current.timer, next.timer);
+        // if no next tile, stop
+        if (!next.tile) {
+            return;
+        }
+
         // render where the Bomb is
+        this.container.position.set(
+            ease(current.tile.x, next.tile.x, dt),
+            ease(current.tile.y, next.tile.y, dt),
+        );
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -141,6 +151,13 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Bomb based off its states
+        // if no next tile turn invisible and quit
+        if (!next.tile) {
+            this.container.visible = false;
+            return;
+        }
+        // else turn it visible
+        this.container.visible = true;
         // <<-- /Creer-Merge: state-updated -->>
     }
 

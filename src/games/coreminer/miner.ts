@@ -5,12 +5,13 @@ import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur";
 import { makeRenderable } from "src/viseur/game";
 import { GameObject } from "./game-object";
-import { CoreminerDelta, MinerState, TileState } from "./state-interfaces";
+import { CoreminerDelta, MinerState } from "./state-interfaces";
 
 // <<-- Creer-Merge: imports -->>
 // any additional imports you want can be added here safely between Creer runs
-import { ease, pixiFade, updown } from "src/utils";
+import { ease, pixiFade } from "src/utils";
 import { GameBar } from "src/viseur/game";
+import { TileState } from "./state-interfaces";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -41,20 +42,16 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
     // <<-- Creer-Merge: variables -->>
     // You can add additional member variables here
 
-    /** This Miner's sprite. */
-    public minerSprite: PIXI.Sprite;
-
     /** The id of the owner of this miner, for recoloring. */
     public ownerID: string;
 
-    /** The tile state of the tile we are attacking, if we are. */
-    public attackingTile?: TileState;
-
     /** Our health bar. */
-    public healthBar?: GameBar;
+    public healthBar: GameBar;
 
     /** Upgrade Level. */
-    public UpgradeLevel: number;
+    public upgradeLevel: number;
+    /** The Miner Sprites for each Upgrade. */
+    public minerSprites: Array<PIXI.Sprite>;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -72,30 +69,31 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Miner here.
 
-        this.UpgradeLevel = state.upgradeLevel;
+        this.upgradeLevel = state.upgradeLevel;
         this.ownerID = state.owner.id;
         // I removed OVER_SCALE here because I was not sure why it was a thing.
         this.container.scale.set(Miner.SCALE, Miner.SCALE);
         this.container.setParent(this.game.layers.game);
-        switch (this.UpgradeLevel) {
-            case 0:
-                this.minerSprite = this.addSprite.minerLvl0();
-                break;
-            case 1:
-                this.minerSprite = this.addSprite.minerLvl1();
-                break;
-            case 2:
-                this.minerSprite = this.addSprite.minerLvl2();
-                break;
-            case 3:
-                this.minerSprite = this.addSprite.minerLvl3();
-                break;
-            default:
-                this.minerSprite = this.addSprite.error();
-        }
+        this.minerSprites = Array<PIXI.Sprite>();
+
+        this.minerSprites.push(this.addSprite.minerLvl0());
+        this.minerSprites.push(this.addSprite.minerLvl1());
+        this.minerSprites.push(this.addSprite.minerLvl2());
+        this.minerSprites.push(this.addSprite.minerLvl3());
+        this.minerSprites.push(this.addSprite.error());
 
         const color = this.game.getPlayersColor(this.ownerID).rgbNumber();
-        this.minerSprite.tint = color;
+
+        this.minerSprites.forEach((m) => {
+            m.tint = color;
+            m.visible = false;
+        });
+
+        if (this.upgradeLevel >= this.game.maxUpgrades) {
+            this.minerSprites[this.game.maxUpgrades - 1].visible = true;
+        } else {
+            this.minerSprites[this.upgradeLevel].visible = true;
+        }
 
         const barContainer = new PIXI.Container();
         barContainer.setParent(this.container);
@@ -107,10 +105,12 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
             foregroundColor: color,
         });
 
-        // Flip needs an offset when setting location see render for that
-        // notice that it is player 1 we are flipping here
+        // flipping the second players sprites so the face the other way
         if (this.ownerID === this.game.players[1].id) {
-            this.container.scale.x *= -1;
+            this.minerSprites.forEach((sprite) => {
+                sprite.position.x += 1;
+                sprite.scale.x *= -1;
+            });
         }
         // <<-- /Creer-Merge: constructor -->>
     }
@@ -143,58 +143,54 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
         // render where the Miner is
         if (!next.tile) {
             this.container.visible = false;
-
             return;
         }
-
-        if (next.health <= 0) {
-            this.container.visible = false;
-
-            return;
-        }
-
-        this.container.position.set(
-            // offset so we can flip image
-            // and we offset by one if it is the player we flipped
-            ease(current.tile.x, next.tile.x, dt) +
-                Number(this.ownerID === this.game.players[1].id),
-            ease(current.tile.y, next.tile.y, dt),
+        pixiFade(
+            this.container,
+            dt,
+            Number(current.tile || current.health > 0),
+            Number(next.tile || next.health > 0),
         );
-        if (this.healthBar) {
-            this.healthBar.update(ease(current.health, next.health, dt));
+        if (current.tile !== next.tile) {
+            let fellTile: TileState | undefined;
+            if (
+                nextDelta.type === "ran" &&
+                nextDelta.data.run.caller.id === this.id &&
+                nextDelta.data.run.functionName === "move"
+            ) {
+                const { tile } = nextDelta.data.run.args;
+                if (tile.id !== next.tile.id) {
+                    fellTile = tile.getCurrentMostState();
+                }
+            }
+
+            let renderDt = dt;
+            let startTile = current.tile;
+            let endTile = next.tile;
+
+            if (fellTile) {
+                if (dt <= 0.5) {
+                    renderDt = ease(dt * 2);
+                    endTile = fellTile;
+                } else {
+                    renderDt = ease(dt / 2);
+                    startTile = fellTile;
+                }
+            }
+            this.container.position.set(
+                ease(startTile.x, endTile.x, renderDt),
+                ease(startTile.y, endTile.y, renderDt),
+            );
         }
+
+        this.healthBar.update(ease(current.health, next.health, dt));
 
         if (current.upgradeLevel !== next.upgradeLevel) {
-            this.UpgradeLevel = next.upgradeLevel;
-            switch (this.UpgradeLevel) {
-                case 0:
-                    this.minerSprite = this.addSprite.minerLvl0();
-                    break;
-                case 1:
-                    this.minerSprite = this.addSprite.minerLvl1();
-                    break;
-                case 2:
-                    this.minerSprite = this.addSprite.minerLvl2();
-                    break;
-                case 3:
-                    this.minerSprite = this.addSprite.minerLvl3();
-                    break;
-                default:
-                    this.minerSprite = this.addSprite.error();
-            }
+            this.minerSprites[this.upgradeLevel].visible = false;
+            this.upgradeLevel = next.upgradeLevel;
+            this.minerSprites[this.upgradeLevel].visible = true;
         }
 
-        // fade miner out for dying
-        pixiFade(this.container, dt, current.health, next.health);
-
-        if (this.attackingTile) {
-            const d = updown(dt);
-            const dx = (this.attackingTile.x - current.tile.x) / 2;
-            const dy = (this.attackingTile.y - current.tile.y) / 2;
-
-            this.container.x += dx * d;
-            this.container.y += dy * d;
-        }
         // <<-- /Creer-Merge: render -->>
     }
 

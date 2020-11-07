@@ -34,31 +34,33 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
     // You can add additional member variables here
 
     /** The tile sprite. */
-    public tileSprite: PIXI.Sprite;
+    public dirtDugSprite: PIXI.Sprite;
 
     /** Contains all the appliance sprites. */
-    public readonly applianceContainer: PIXI.Container;
+    public readonly itemContainer: PIXI.Container;
 
     /** The sprite for the ladder. */
-    public ladderSprite?: PIXI.Sprite;
+    public ladderSprite: PIXI.Sprite;
 
     /** The sprite for the support. */
-    public supportSprite?: PIXI.Sprite;
+    public supportSprite: PIXI.Sprite;
 
     /** The sprite for the ore. */
-    public oreSprite?: PIXI.Sprite;
+    public oreSprite: PIXI.Sprite;
 
     /** The sprite for the base. */
-    public baseSprite?: PIXI.Sprite;
+    public baseSprite: PIXI.Sprite;
 
     /** The sprite for the hopper. */
-    public hopperSprite?: PIXI.Sprite;
+    public hopperSprite: PIXI.Sprite;
 
     /** The shield sprite. */
-    public shieldSprite?: PIXI.Sprite;
+    public shieldSprite: PIXI.Sprite;
 
     /** The owner's ID. */
     public ownerID?: string;
+
+    public dirtSprite: PIXI.Sprite;
 
     // <<-- /Creer-Merge: variables -->>
 
@@ -76,57 +78,59 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: constructor -->>
         // You can initialize your new Tile here.
+
+        // set up this container
         this.container.setParent(this.game.layers.background);
         this.container.position.set(state.x, state.y);
 
+        // set the owner ID
         if (state.owner) {
             this.ownerID = state.owner.id;
         }
 
-        this.applianceContainer = new PIXI.Container();
-        this.applianceContainer.setParent(this.game.layers.appliances);
-        this.applianceContainer.position.copyFrom(this.container.position);
+        // set up the items container
+        this.itemContainer = new PIXI.Container();
+        this.itemContainer.setParent(this.game.layers.items);
+        this.itemContainer.position.copyFrom(this.container.position);
 
-        if (state.y === 0 && state.dirt <= 0 && state.ore <= 0) {
-            this.tileSprite = this.addSprite.sky();
-        } else if (state.dirt > 0) {
-            this.tileSprite = this.addSprite.dirt();
+        // Initialize all the sprites
+
+        // if first row, is a sky block instead of ground
+        if (state.y == 0) {
+            this.dirtDugSprite = this.addSprite.sky();
         } else {
-            this.tileSprite = this.addSprite.dugDirt();
-        }
-        if (state.isBase) {
-            this.baseSprite = this.addSprite.base({
-                container: this.applianceContainer,
-            });
-            if (this.ownerID) {
-                const color = this.game
-                    .getPlayersColor(this.ownerID)
-                    .rgbNumber();
-                this.baseSprite.tint = color;
-            }
-        } else if (state.isHopper) {
-            this.hopperSprite = this.addSprite.miningTube({
-                container: this.applianceContainer,
-            });
-        } else if (state.isLadder) {
-            this.ladderSprite = this.addSprite.ladder({
-                container: this.applianceContainer,
-            });
-        } else if (state.isSupport) {
-            this.supportSprite = this.addSprite.miningTube({
-                container: this.applianceContainer,
-            });
-        } else if (state.ore > 0) {
-            // TODO: swap in ORE sprite
-            this.oreSprite = this.addSprite.ore();
+            this.dirtDugSprite = this.addSprite.dugDirt();
         }
 
-        if (state.shielding > 0) {
-            // TODO: swap in Shield sprite
-            this.shieldSprite = this.addSprite.shield({
-                container: this.applianceContainer,
-            });
-        }
+        this.dirtSprite = this.addSprite.dirt();
+        this.baseSprite = this.addSprite.base({
+            container: this.itemContainer,
+            tint: this.ownerID
+                ? this.game.getPlayersColor(this.ownerID).rgbNumber()
+                : undefined,
+            alpha: Number(state.isBase),
+        });
+        this.ladderSprite = this.addSprite.ladder({
+            container: this.itemContainer,
+            alpha: Number(state.isLadder),
+        });
+        this.supportSprite = this.addSprite.support({
+            container: this.itemContainer,
+            alpha: Number(state.isSupport),
+        });
+        this.hopperSprite = this.addSprite.miningTube({
+            container: this.itemContainer,
+            alpha: Number(state.isHopper),
+        });
+        this.oreSprite = this.addSprite.ore({
+            container: this.itemContainer,
+            alpha: Number(state.ore > 0),
+        });
+        this.shieldSprite = this.addSprite.shield({
+            container: this.itemContainer,
+            alpha: Number(state.shielding > 0),
+        });
+
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -156,48 +160,44 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
         // render where the Tile is
-        if (current.dirt > 0 && next.dirt === 0) {
-            this.tileSprite = this.addSprite.dugDirt();
-        } else if (current.dirt === 0 && next.dirt > 0) {
-            this.tileSprite = this.addSprite.dirt();
-        }
-
-        if (this.oreSprite) {
-            pixiFade(this.oreSprite, dt, current.ore, next.ore);
-        } else if (next.ore > 0) {
-            // TODO: swap with correct sprite
-            this.oreSprite = this.addSprite.ore({
-                container: this.applianceContainer,
-            });
-        }
-
-        if (this.shieldSprite) {
-            pixiFade(this.shieldSprite, dt, current.shielding, next.shielding);
-        } else if (next.shielding > 0) {
-            // TODO: swap with correct sprite
-            this.shieldSprite = this.addSprite.shield({
-                container: this.applianceContainer,
-            });
-        }
-
-        if (this.ladderSprite) {
-            pixiFade(
-                this.ladderSprite,
-                dt,
-                Number(current.isLadder),
-                Number(next.isLadder),
-            );
-        } else if (next.isLadder) {
-            this.ladderSprite = this.addSprite.ladder({
-                container: this.applianceContainer,
-            });
-        }
-
-        if (current.isHopper !== next.isHopper) {
-            this.hopperSprite = this.addSprite.miningTube({
-                container: this.applianceContainer,
-            });
-        }
+        pixiFade(
+            this.dirtSprite,
+            dt,
+            Number(current.dirt > 0),
+            Number(next.dirt > 0),
+        );
+        pixiFade(
+            this.dirtDugSprite,
+            dt,
+            Number(current.dirt <= 0),
+            Number(next.dirt <= 0),
+        );
+        pixiFade(this.oreSprite, dt, current.ore, next.ore);
+        pixiFade(this.shieldSprite, dt, current.shielding, next.shielding);
+        pixiFade(
+            this.ladderSprite,
+            dt,
+            Number(current.isLadder),
+            Number(next.isLadder),
+        );
+        pixiFade(
+            this.supportSprite,
+            dt,
+            Number(current.isSupport),
+            Number(next.isSupport),
+        );
+        pixiFade(
+            this.baseSprite,
+            dt,
+            Number(current.isBase),
+            Number(next.isBase),
+        );
+        pixiFade(
+            this.hopperSprite,
+            dt,
+            Number(current.isHopper),
+            Number(next.isHopper),
+        );
 
         // <<-- /Creer-Merge: render -->>
     }
@@ -231,7 +231,7 @@ export class Tile extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: hide-render -->>
         // hide anything outside of `this.container`.
-        this.applianceContainer.visible = false; // not a child of our container
+        this.itemContainer.visible = false; // not a child of our container
         // <<-- /Creer-Merge: hide-render -->>
     }
 

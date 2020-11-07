@@ -43,6 +43,9 @@ export class Game extends BaseGame {
     /** The human player playing this game. */
     public readonly humanPlayer: HumanPlayer | undefined;
 
+    /** Max number of upgrades a unit can have. */
+    public readonly maxUpgrades: number = 4;
+
     /**
      * The default player colors for this game,
      * there must be one for each player.
@@ -63,7 +66,7 @@ export class Game extends BaseGame {
         /** Bottom most layer, for background elements. */
         background: this.createLayer(),
         /** The layer of items on the dirt. */
-        appliances: this.createLayer(),
+        items: this.createLayer(),
         /** Middle layer, for moving game objects. */
         game: this.createLayer(),
         /** Top layer, for UI elements above the game. */
