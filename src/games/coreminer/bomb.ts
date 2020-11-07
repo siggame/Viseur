@@ -161,27 +161,6 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         }
         // else turn it visible
         this.container.visible = true;
-        let fellTile: TileState | undefined;
-        // if we just dumped a bomb aka spawned one set up initial place to be
-        // where player tried to spawn it so we can have a falling animation
-        if (delta.type === "ran" && delta.data.run.functionName === "dump") {
-            const { tile } = delta.data.run.args;
-            if (tile.id !== next.tile.id) {
-                // hacky work around since commented out line doesn't work
-                fellTile = this.game.getCurrentMostState().gameObjects[
-                    tile.id
-                ] as TileState;
-                // fellTile = tile.getCurrentMostState();
-            }
-        }
-
-        // set previous tile to start from to previous state.
-        this.startTile = current.tile;
-        // if we do have a tile that the player tried to spawn bomb on,
-        if (fellTile) {
-            this.startTile = fellTile;
-        }
-
         // <<-- /Creer-Merge: state-updated -->>
     }
 
