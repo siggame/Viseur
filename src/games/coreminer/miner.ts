@@ -159,7 +159,8 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
                 nextDelta.data.run.functionName === "move"
             ) {
                 const { tile } = nextDelta.data.run.args;
-                if (tile.id !== next.tile.id) {
+                // TODO: type is wrong, could be null
+                if (tile && tile.id !== next.tile.id) {
                     fellTile = tile.getCurrentMostState();
                 }
             }
