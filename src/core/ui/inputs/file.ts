@@ -36,7 +36,6 @@ export class FileInput extends BaseInput<undefined> {
 
         const reader = new FileReader();
         reader.onload = () => {
-            // must be string from readAsText below
             this.events.loaded.emit(reader.result as string);
         };
 
@@ -45,7 +44,7 @@ export class FileInput extends BaseInput<undefined> {
             throw new Error("File Input has no files on html element");
         }
         const file = files[0];
-        reader.readAsText(file);
+        reader.readAsBinaryString(file);
     }
 
     /**

@@ -1,5 +1,6 @@
 import * as fileSaver from "file-saver";
 import { capitalize, escape, range } from "lodash";
+import * as pako from "pako";
 import { toWordsOrdinal } from "number-to-words";
 import { Config } from "src/core/config";
 import {
@@ -104,7 +105,7 @@ export class FileTab extends Tab {
     // - connection inputs - \\
 
     /** The names of all the games sorted. */
-    private readonly gameNames: string[];
+    private readonly gameNames: string[] = [];
 
     /** The names of all the games that are playable by humans, sorted. */
     private readonly humanGameNames: string[];
@@ -504,9 +505,14 @@ export class FileTab extends Tab {
         this.viseur.gui.modalMessage("Loading local gamelog.");
 
         this.gamelogInput.events.loaded.on((str) => {
+            let gamelogString = str;
+            if (str[0] !== "{") {
+                // assume it's a binary zgip file
+                gamelogString = pako.inflate(str, { to: "string" });
+            }
             this.viseur.gui.modalMessage("Local gamelog loaded");
 
-            this.viseur.parseGamelog(str);
+            this.viseur.parseGamelog(gamelogString);
         });
     }
 
