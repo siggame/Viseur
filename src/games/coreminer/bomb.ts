@@ -47,6 +47,8 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
     public explosionSprites: PIXI.Sprite[];
     /** Running list of explosion sprites for all bombs to reuse. */
     public static explosionPool: PIXI.Sprite[] = [];
+    /** Tile state of the tile we need to fall from if falling at spawn. */
+    public startTile: TileState | undefined;
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -109,11 +111,12 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         if (!next.tile) {
             return;
         }
-
+        // if we should be falling from spawn tile, use that otherwise use current
+        const curTile = this.startTile ?? current.tile;
         // render where the Bomb is
         this.container.position.set(
-            ease(current.tile.x, next.tile.x, dt),
-            ease(current.tile.y, next.tile.y, dt),
+            ease(curTile.x, next.tile.x, dt),
+            ease(curTile.y, next.tile.y, dt),
         );
 
         // <<-- /Creer-Merge: render -->>
@@ -191,8 +194,54 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.container.visible = false;
             return;
         }
+
         // else turn it visible
         this.container.visible = true;
+
+        // set startTile to undefined so we don't keep rendering with it
+        this.startTile = undefined;
+
+        // if current and next exist, sanity checks (:
+        if (current && next) {
+            // if the delta is from a client running a valid dump function
+            if (
+                delta.type == "ran" &&
+                delta.data.run.functionName == "dump" &&
+                !delta.data.invalid
+            ) {
+                // get the tile argument from client's function call
+                const { tile } = delta.data.run.args;
+                // if the tile exists and this tile was created in this delta
+                // set start tile to tile so we fall from where they placed the bomb.
+                if (
+                    tile &&
+                    delta.game.gameObjects &&
+                    delta.game.gameObjects[this.id]
+                ) {
+                    // for some reason tile.getCurrentMostState isn't a function here.
+                    // so here is a work around.
+                    this.startTile = this.game.getCurrentMostState()
+                        .gameObjects[tile.id] as TileState;
+                    // this.startTile = tile.getCurrentMostState();
+                }
+
+                // this is for playback, since the first half will be called when bomb is created,
+                // this covers when someone rewinds.
+            } else if (
+                nextDelta.type == "ran" &&
+                nextDelta.data.run.functionName == "dump" &&
+                !nextDelta.data.invalid
+            ) {
+                const { tile } = nextDelta.data.run.args;
+                if (
+                    tile &&
+                    nextDelta.game.gameObjects &&
+                    nextDelta.game.gameObjects[this.id]
+                ) {
+                    this.startTile = tile.getCurrentMostState();
+                }
+            }
+        }
         // <<-- /Creer-Merge: state-updated -->>
     }
 
