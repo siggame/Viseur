@@ -10,6 +10,7 @@ import { BombState, CoreminerDelta } from "./state-interfaces";
 // any additional imports you want can be added here safely between Creer runs
 import { ease } from "src/utils";
 import { pixiFade } from "src/utils";
+import { TileState } from "./state-interfaces";
 // <<-- /Creer-Merge: imports -->>
 
 // <<-- Creer-Merge: should-render -->>
@@ -39,6 +40,13 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     /** This Bomb's sprite. */
     public bombSprite: PIXI.Sprite;
+
+    /** Flag for if bomb has exploded. */
+    public hasExploded: boolean;
+    /** List of explosion sprites for this bomb. */
+    public explosionSprites: PIXI.Sprite[];
+    /** Running list of explosion sprites for all bombs to reuse. */
+    public static explosionPool: PIXI.Sprite[] = [];
     // <<-- /Creer-Merge: variables -->>
 
     /**
@@ -60,6 +68,8 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         this.container.setParent(this.game.layers.game);
         this.bombSprite = this.addSprite.bomb();
         this.container.visible = false;
+        this.hasExploded = false;
+        this.explosionSprites = [];
         // <<-- /Creer-Merge: constructor -->>
     }
 
@@ -89,6 +99,12 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: render -->>
         pixiFade(this.bombSprite, dt, current.timer, next.timer);
+        // if we exploded, render explosion
+        if (this.hasExploded) {
+            this.explosionSprites.forEach((s) => {
+                s.alpha = ease(1 - dt);
+            });
+        }
         // if no next tile, stop
         if (!next.tile) {
             return;
@@ -99,6 +115,7 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
             ease(current.tile.x, next.tile.x, dt),
             ease(current.tile.y, next.tile.y, dt),
         );
+
         // <<-- /Creer-Merge: render -->>
     }
 
@@ -127,6 +144,9 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: hide-render -->>
         // hide anything outside of `this.container`.
+        this.explosionSprites.forEach((s) => {
+            s.visible = false;
+        });
         // <<-- /Creer-Merge: hide-render -->>
     }
 
@@ -151,6 +171,21 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
         // <<-- Creer-Merge: state-updated -->>
         // update the Bomb based off its states
+        // if we are counting from 1 to 0, explode
+        if (current && next && current.timer > 0 && next.timer == 0) {
+            this.hasExploded = true;
+            // get the sprites for this explosion
+            this.getExplosionSprites(current.tile ?? next.tile);
+        } else {
+            this.hasExploded = false;
+            if (this.explosionSprites.length > 0) {
+                this.explosionSprites.forEach((s) => {
+                    s.visible = false;
+                });
+                this.explosionSprites = [];
+            }
+        }
+
         // if no next tile turn invisible and quit
         if (!next.tile) {
             this.container.visible = false;
@@ -167,5 +202,96 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
 
     // <<-- Creer-Merge: protected-private-functions -->>
     // You can add additional protected/private functions here
+    /**
+     * Get the list of sprites to use in this bombs explosion.
+     *
+     * @param tile - This bombs tile location.
+     */
+    private getExplosionSprites(tile: Immutable<TileState>): void {
+        const tiles: TileState[] = [];
+        // clean up rid of old tiles
+        this.explosionSprites.forEach((s) => {
+            s.visible = false;
+        });
+        // reset list
+        this.explosionSprites = [];
+
+        // if for some reason we don't have a tile, no explosion to render
+        if (!tile) return;
+
+        // add current tile
+        tiles.push(tile);
+        // add north tile and any tile north for shockwave
+        if (tile.tileNorth) {
+            tiles.push(tile.tileNorth);
+            let north = tile.tileNorth.tileNorth;
+            while (north && north.dirt + north.ore <= 0) {
+                tiles.push(north);
+                north = north.tileNorth;
+            }
+        }
+        // add south tile and any tile south for shockwave
+        if (tile.tileSouth) {
+            tiles.push(tile.tileSouth);
+            let south = tile.tileSouth.tileSouth;
+            while (south && south.dirt + south.ore <= 0) {
+                tiles.push(south);
+                south = south.tileSouth;
+            }
+        }
+        // add east tile and any tile east for shockwave
+        if (tile.tileEast) {
+            tiles.push(tile.tileEast);
+            let east = tile.tileEast.tileEast;
+            while (east && east.dirt + east.ore <= 0) {
+                tiles.push(east);
+                east = east.tileEast;
+            }
+        }
+        // add west tile and any tile west for shockwave
+        if (tile.tileWest) {
+            tiles.push(tile.tileWest);
+            let west = tile.tileWest.tileWest;
+            while (west && west.dirt + west.ore <= 0) {
+                tiles.push(west);
+                west = west.tileWest;
+            }
+        }
+        // iterate through all of them and get an explosion sprite for each
+        // to set in list to render
+        tiles.forEach((t) => {
+            const explosion = this.getExplosionSprite(t.x, t.y);
+            explosion.visible = true;
+            explosion.alpha = 1;
+            this.explosionSprites.push(explosion);
+        });
+    }
+    /**
+     * Gets the next available explosion sprite or creates a new one.
+     *
+     * @param x - X position of explosion.
+     * @param y - Y postition of explosion.
+     * @returns Explosion sprite to be used.
+     */
+    private getExplosionSprite(x: number, y: number): PIXI.Sprite {
+        // find a sprite not in use
+        const sprite = Bomb.explosionPool.find((s) => !s.visible);
+        // if found prep it and return it
+        if (sprite) {
+            sprite.position.set(x, y);
+            sprite.alpha = 0;
+            return sprite;
+        }
+        // otherwise create a new one
+        const newSprite = this.addSprite.explosion({
+            alpha: 0,
+            container: this.game.layers.explosion,
+            visible: false,
+        });
+        // prep it and return it
+        newSprite.position.set(x, y);
+        Bomb.explosionPool.push(newSprite);
+        return newSprite;
+    }
     // <<-- /Creer-Merge: protected-private-functions -->>
 }
