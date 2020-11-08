@@ -273,37 +273,45 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
         // add north tile and any tile north for shockwave
         if (tile.tileNorth) {
             tiles.push(tile.tileNorth);
-            let north = tile.tileNorth.tileNorth;
-            while (north && north.dirt + north.ore <= 0) {
-                tiles.push(north);
-                north = north.tileNorth;
+            let north: TileState | undefined = tile.tileNorth.tileNorth;
+            if (tile.tileNorth.shielding <= 0) {
+                while (north && north.dirt + north.ore <= 0) {
+                    tiles.push(north);
+                    north = north.shielding <= 0 ? north.tileNorth : undefined;
+                }
             }
         }
         // add south tile and any tile south for shockwave
         if (tile.tileSouth) {
             tiles.push(tile.tileSouth);
-            let south = tile.tileSouth.tileSouth;
-            while (south && south.dirt + south.ore <= 0) {
-                tiles.push(south);
-                south = south.tileSouth;
+            let south: TileState | undefined = tile.tileSouth.tileSouth;
+            if (tile.tileSouth.shielding <= 0) {
+                while (south && south.dirt + south.ore <= 0) {
+                    tiles.push(south);
+                    south = south.shielding <= 0 ? south.tileSouth : undefined;
+                }
             }
         }
         // add east tile and any tile east for shockwave
         if (tile.tileEast) {
             tiles.push(tile.tileEast);
-            let east = tile.tileEast.tileEast;
-            while (east && east.dirt + east.ore <= 0) {
-                tiles.push(east);
-                east = east.tileEast;
+            let east: TileState | undefined = tile.tileEast.tileEast;
+            if (tile.tileEast.shielding <= 0) {
+                while (east && east.dirt + east.ore <= 0) {
+                    tiles.push(east);
+                    east = east.shielding <= 0 ? east.tileEast : undefined;
+                }
             }
         }
         // add west tile and any tile west for shockwave
         if (tile.tileWest) {
             tiles.push(tile.tileWest);
-            let west = tile.tileWest.tileWest;
-            while (west && west.dirt + west.ore <= 0) {
-                tiles.push(west);
-                west = west.tileWest;
+            let west: TileState | undefined = tile.tileWest.tileWest;
+            if (tile.tileWest.shielding <= 0) {
+                while (west && west.dirt + west.ore <= 0) {
+                    tiles.push(west);
+                    west = west.shielding <= 0 ? west.tileWest : undefined;
+                }
             }
         }
         // iterate through all of them and get an explosion sprite for each
