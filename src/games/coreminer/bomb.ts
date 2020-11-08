@@ -178,6 +178,12 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
             this.getExplosionSprites(current.tile ?? next.tile);
         } else {
             this.hasExploded = false;
+            if (this.explosionSprites.length > 0) {
+                this.explosionSprites.forEach((s) => {
+                    s.visible = false;
+                });
+                this.explosionSprites = [];
+            }
         }
 
         // if no next tile turn invisible and quit
