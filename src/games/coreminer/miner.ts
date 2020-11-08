@@ -156,7 +156,8 @@ export class Miner extends makeRenderable(GameObject, SHOULD_RENDER) {
             if (
                 nextDelta.type === "ran" &&
                 nextDelta.data.run.caller.id === this.id &&
-                nextDelta.data.run.functionName === "move"
+                nextDelta.data.run.functionName === "move" &&
+                !nextDelta.data.invalid
             ) {
                 const { tile } = nextDelta.data.run.args;
                 // TODO: type is wrong, could be null
