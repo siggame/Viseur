@@ -211,7 +211,7 @@ export class Bomb extends makeRenderable(GameObject, SHOULD_RENDER) {
             ) {
                 // get the tile argument from client's function call
                 const { tile } = delta.data.run.args;
-                // if the tile exists and this tile was created in this delta
+                // if the tile exists and this bomb was created in this delta
                 // set start tile to tile so we fall from where they placed the bomb.
                 if (
                     tile &&
