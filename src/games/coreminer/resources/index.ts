@@ -18,6 +18,6 @@ export const GameResources = createResources("Coreminer", {
     miningTube: load("Mining-tube.png"),
     shield: load("Shield.png"),
     ore: load("ore.png"),
-
+    explosion: load("explosion.png"),
     // <<-- /Creer-Merge: resources -->>
 });
