@@ -314,3 +314,5 @@ export function pixiFade(
         sprite.alpha = ease(1 - dt);
     }
 }
+
+export const printPoint = ({ x, y }: Point): string => `{ x: ${x}, y: ${y} }`;

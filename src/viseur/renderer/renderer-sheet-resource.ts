@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { FirstArgument, setPixiOptions } from "src/utils";
+import { FirstArgument, Point, printPoint, setPixiOptions } from "src/utils";
 import {
     BaseRendererResource,
     BaseRendererResourceOptions,
@@ -58,7 +58,7 @@ export class RendererSheetResource extends BaseRendererResource {
                 index: number;
             }>,
     ): PIXI.Sprite {
-        const sprite = new PIXI.Sprite(this.sheetTextures[options.index]);
+        const sprite = new PIXI.Sprite(this.getTexture(options.index));
 
         // Now scale the sprite, as it defaults to the dimensions of its
         // texture's pixel size.
@@ -66,6 +66,69 @@ export class RendererSheetResource extends BaseRendererResource {
         setPixiOptions(sprite, options);
 
         return sprite;
+    }
+
+    /**
+     * Gets the texture for a given point {x, y} in the sheet.
+     *
+     * @param point - The {x, y} point to get within textures.
+     * @returns A PIXI.Texture for that given point.
+     */
+    public getTexture(point: Point): PIXI.Texture;
+
+    /**
+     * Gets the texture for two numbers (x, y) in the sheet.
+     *
+     * @param x - The x position of the point to get within textures.
+     * @param y - The y position of the point to get within textures.
+     * @returns A PIXI.Texture for that given (x, y).
+     */
+    public getTexture(x: number, y: number): PIXI.Texture;
+
+    /**
+     * Gets the texture for a given index in the sheet.
+     *
+     * @param index - The index number within textures.
+     * @returns A PIXI.Texture for that given index.
+     */
+    public getTexture(index: number): PIXI.Texture;
+
+    /**
+     * Gets the texture at an index, point, or (x, y) permutations.
+     *
+     * @param first - A point or number for the index/co-ordinate.
+     * @param second - If an x, y tuple, this is the y value. Should be
+     * undefined otherwise.
+     * @returns A PIXI.Texture for that given index.
+     */
+    public getTexture(first: number | Point, second?: number): PIXI.Texture {
+        let index = -Infinity;
+        let point: Point | undefined;
+        if (typeof first === "number") {
+            if (typeof second === "number") {
+                point = { x: first, y: second };
+            } else {
+                index = first;
+            }
+        } else {
+            point = first;
+        }
+
+        if (point) {
+            index = point.y * this.sheet.width + point.x;
+        }
+
+        if (index < 0 || index >= this.sheetTextures.length) {
+            throw new RangeError(
+                `'${
+                    point
+                        ? `Point ${printPoint(point)} -> ${index}`
+                        : `Index '${index}'`
+                }' is out or range for the RenderSheetResource '${this.path}'`,
+            );
+        }
+
+        return this.sheetTextures[index];
     }
 
     /**
