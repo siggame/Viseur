@@ -107,6 +107,13 @@ export class TreeView extends BaseElement {
         this.expandNode(this.rootNode, path);
     }
 
+    /**
+     * Expands a specific node recursively.
+     *
+     * @param current - The current node to expand.
+     * @param keys - The keys to recurse down.
+     * @param delay - If we should add a delay for DOM manipulation.
+     */
     private expandNode(
         current: TreeViewNode,
         keys: string[],
