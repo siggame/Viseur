@@ -5,7 +5,12 @@ import {
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { MenuItems } from "src/core/ui/context-menu";
-import { Constructor, ease, Immutable } from "src/utils/";
+import {
+    Constructor,
+    ease,
+    getGameObjectDisplayText,
+    Immutable,
+} from "src/utils/";
 import {
     createResourcesFor,
     ResourcesForGameObject,
@@ -199,13 +204,14 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
                 "---",
                 {
                     icon: "code",
-                    text: "Inspect",
+                    text: `Inspect ${getGameObjectDisplayText(
+                        this.getCurrentMostState(),
+                    )}`,
                     description:
                         "Reveals this GameObject in the Inspector so you can examine variable values.",
                     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
                     callback: () => {
-                        // TODO: implement
-                        // this.emit("inspect");
+                        this.game.events.inspect.emit(this);
                     },
                 },
             ];

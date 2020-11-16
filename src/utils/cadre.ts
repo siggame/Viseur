@@ -1,4 +1,6 @@
 import { isObject, UnknownObject } from "@cadre/ts-utils";
+import { BaseGameObject, BasePlayer } from "@cadre/ts-utils/cadre";
+import { BaseTile } from "src/viseur/game";
 
 /**
  * Checks if an object has a given key in it that appears to be a game object or game object reference.
@@ -29,4 +31,28 @@ export function hasGameObjectWithID<
     }
 
     return gameObject.id === id;
+}
+
+/**
+ * Gets the text to display a game object in human readable form.
+ *
+ * @param gameObject - The game object to get the text for.
+ * @returns A human readable string representing this unique game object.
+ */
+export function getGameObjectDisplayText(gameObject: BaseGameObject): string {
+    let displayValue = "";
+    switch (gameObject.gameObjectName) {
+        case "Player":
+            displayValue = `Player "${(gameObject as BasePlayer).name}"`;
+            break;
+        case "Tile": {
+            const tile = (gameObject as unknown) as BaseTile;
+            displayValue = `Tile (${tile.x}, ${tile.y})`;
+            break;
+        }
+        default:
+            displayValue = gameObject.gameObjectName;
+    }
+    displayValue += ` #${gameObject.id}`;
+    return displayValue;
 }

@@ -1,8 +1,7 @@
-import { BaseGameObject, BasePlayer } from "@cadre/ts-utils/cadre";
+import { BaseGameObject } from "@cadre/ts-utils/cadre";
 import { capitalize } from "lodash";
 import { TreeViewNode, Treeable, TreeView } from "src/core/ui";
-import { isObject } from "src/utils";
-import { BaseTile } from "src/viseur/game";
+import { getGameObjectDisplayText, isObject } from "src/utils";
 
 /**
  * Checks if something's shape is a game object.
@@ -52,21 +51,7 @@ export class InspectTreeView extends TreeView {
             type = "game-object";
 
             const gameObject = (value as unknown) as BaseGameObject; // sketchy, but above check should it valid...
-            switch (gameObject.gameObjectName) {
-                case "Player":
-                    displayValue = `Player "${
-                        (gameObject as BasePlayer).name
-                    }"`;
-                    break;
-                case "Tile": {
-                    const tile = (gameObject as unknown) as BaseTile;
-                    displayValue = `Tile (${tile.x}, ${tile.y})`;
-                    break;
-                }
-                default:
-                    displayValue = gameObject.gameObjectName;
-            }
-            displayValue += ` #${gameObject.id}`;
+            displayValue = getGameObjectDisplayText(gameObject);
         } else if (isObject(value)) {
             type = "map";
             displayValue = `Map[${Object.keys(value).length}]`;

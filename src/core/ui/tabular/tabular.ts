@@ -61,7 +61,7 @@ export class Tabular extends BaseElement {
 
             this.tabs.push(tab);
 
-            tab.tab.on("click", () => {
+            tab.events.selected.on(() => {
                 this.setTab(tab);
             });
         }

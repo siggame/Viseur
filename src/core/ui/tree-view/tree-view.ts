@@ -51,6 +51,9 @@ export interface TreeViewNode extends BaseNode {
 
     /** Child nodes of this node. */
     children: { [key: string]: undefined | TreeViewNode };
+
+    /** The onclick handler for this nodes. */
+    onClick: () => void;
 }
 
 /** A multi-level tree of expandable lists. */
@@ -96,6 +99,46 @@ export class TreeView extends BaseElement {
     }
 
     /**
+     * Expands the tree view from the root given a path of keys to follow.
+     *
+     * @param path - The path (path) to follow.
+     */
+    public expand(...path: string[]): void {
+        this.expandNode(this.rootNode, path);
+    }
+
+    private expandNode(
+        current: TreeViewNode,
+        keys: string[],
+        delay = true,
+    ): void {
+        if (delay) {
+            setTimeout(() => this.expandNode(current, keys, false), 50);
+            return;
+        }
+
+        if (keys.length > 0) {
+            const key = keys[0];
+            const next = current.children[key];
+            if (!next) {
+                current.onClick();
+                this.expandNode(current, keys);
+            } else if (!next.expanded) {
+                next.onClick();
+                this.expandNode(current, keys);
+            } else {
+                keys.shift();
+                this.expandNode(next, keys);
+            }
+        } else {
+            const element = current.$element[0];
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    }
+
+    /**
      * Gets the string to display as the value for a given node.
      *
      * @param node - The node's JQuery elements.
@@ -137,6 +180,7 @@ export class TreeView extends BaseElement {
             expanded: false,
             key,
             flag: this.currentUnusedFlag,
+            onClick: () => undefined,
             parent,
         };
 
@@ -173,7 +217,7 @@ export class TreeView extends BaseElement {
     /**
      * Deeply displays a given node.
      *
-     * @param key - The key of the treeable from it's parent Treeable.
+     * @param key - The key of the treeable from its parent Treeable.
      * @param treeable - The Treeable to display, not an object with they
      * given key set.
      * @param parentNode - The parent node of the Treeable, if a child node
@@ -193,10 +237,13 @@ export class TreeView extends BaseElement {
             this.formatNodeValue(node, treeable);
 
             if (isObject(treeable)) {
+                node.onClick = () => {
+                    this.onNodeClicked(node, treeable);
+                };
                 node.$header
                     .addClass("inspect-expandable")
                     .off("click")
-                    .on("click", () => this.onNodeClicked(node, treeable));
+                    .on("click", node.onClick);
 
                 if (node.expanded) {
                     const keys = this.getKeysFor(treeable);
