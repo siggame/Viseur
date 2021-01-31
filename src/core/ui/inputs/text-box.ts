@@ -1,18 +1,15 @@
 import { KEY_NAME_TO_CODE } from "src/core/key-codes";
 import { Immutable } from "src/utils";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { BaseInput, BaseInputArgs } from "./base-input";
 
 /** A text input for strings.*/
 export class TextBox extends BaseInput<string> {
-    /** Events this class emits. */
-    public readonly events = events.concat(
-        super.events || ((this as unknown) as BaseInput<string>).events,
-        {
-            /** Emitted when this text-box is submitted (enter pressed). */
-            submitted: new Event<string>(),
-        },
-    );
+    /** Emitter for submitted event. */
+    private readonly emitSubmitted = createEventEmitter<string>();
+
+    /** Emitted when this text-box is submitted (enter pressed). */
+    public readonly eventSubmitted = this.emitSubmitted.event;
 
     /**
      * Creates a text box for text input.
@@ -33,7 +30,7 @@ export class TextBox extends BaseInput<string> {
 
         this.element.on("keypress", (e) => {
             if (e.which === KEY_NAME_TO_CODE.enter) {
-                this.events.submitted.emit(this.value);
+                this.emitSubmitted(this.value);
             }
         });
 

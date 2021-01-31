@@ -1,6 +1,6 @@
 import { FirstArgument, Immutable, isObject } from "src/utils";
 import { Viseur } from "src/viseur";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 
 /** Data sent from the Tournament server detailing how to connect to play. */
 export interface TournamentPlayData {
@@ -23,26 +23,33 @@ export type TournamentConnectionArgs = FirstArgument<
 
 /** A WS connection to a tournament server. */
 export class TournamentClient {
-    /** Events emitted but this tournament client. */
-    public readonly events = events({
-        /** Emitted when an error is encountered by the socket. */
-        error: new Event<Error>(),
+    /** Emitter for the Error event. */
+    private emitError = createEventEmitter<Error>();
+    /** Emitted when an error is encountered by the socket. */
+    public eventError = this.emitError.event;
 
-        /** Emitted once this initially connects to the tournament server. */
-        connected: new Event(),
+    /** Emitter for the Connected event. */
+    private emitConnected = createEventEmitter();
+    /** Emitted once this initially connects to the tournament server. */
+    public eventConnected = this.emitConnected.event;
 
-        /** Emitted once the connection is closed. */
-        closed: new Event(),
+    /** Emitter for the Closed event. */
+    private emitClosed = createEventEmitter();
+    /** Emitted once the connection is closed. */
+    public eventClosed = this.emitClosed.event;
 
-        /** Emitted any time the tournament server sends a message. */
-        messaged: new Event<string>(),
+    /** Emitter for the Messaged event. */
+    private emitMessaged = createEventEmitter<string>();
+    /** Emitted any time the tournament server sends a message. */
+    public eventMessaged = this.emitMessaged.event;
 
-        /**
-         * Emitted once we are told that we are playing a game,
-         * includes details on how to play that game.
-         */
-        playing: new Event<TournamentPlayData>(),
-    });
+    /** Emitter for the Playing event. */
+    private emitPlaying = createEventEmitter<TournamentPlayData>();
+    /**
+     * Emitted once we are told that we are playing a game,
+     * includes details on how to play that game.
+     */
+    public eventPlaying = this.emitPlaying.event;
 
     /** True when connected to the tournament server, false otherwise. */
     public connected = false;
@@ -81,14 +88,15 @@ export class TournamentClient {
         try {
             this.socket = new WebSocket(`ws://${args.server}:${args.port}`);
         } catch (err) {
-            this.events.error.emit(err as Error);
+            const error = err instanceof Error ? err : new Error(err);
+            this.emitError(error);
 
             return;
         }
 
         this.socket.onopen = () => {
             this.connected = true;
-            this.events.connected.emit();
+            this.emitConnected();
 
             this.send("register", {
                 type: "Viseur",
@@ -98,7 +106,7 @@ export class TournamentClient {
         };
 
         this.socket.onerror = (err) => {
-            this.events.error.emit(new Error(err.type));
+            this.emitError(new Error(err.type));
         };
 
         this.socket.onmessage = (message) => {
@@ -116,7 +124,7 @@ export class TournamentClient {
         };
 
         this.socket.onclose = () => {
-            this.events.closed.emit();
+            this.emitClosed();
         };
     }
 
@@ -188,7 +196,7 @@ export class TournamentClient {
      * @param data - The message sent from the server.
      */
     private onMessage(data: string): void {
-        this.events.messaged.emit(data);
+        this.emitMessaged(data);
     }
 
     /**
@@ -198,7 +206,7 @@ export class TournamentClient {
      * the human playable connection.
      */
     private onPlay(data: Immutable<TournamentPlayData>): void {
-        this.events.playing.emit(data);
+        this.emitPlaying(data);
 
         const { game, ...args } = data;
         this.viseur.playAsHuman({

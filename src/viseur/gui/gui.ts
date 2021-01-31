@@ -6,8 +6,8 @@ import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { Modal } from "src/core/ui/modal";
 import { PrettyPolygons } from "src/core/ui/pretty-polygons";
 import { Viseur } from "src/viseur";
-import { viseurConstructed } from "src/viseur/constructed";
-import { Event, events } from "ts-typed-events";
+import { eventViseurConstructed } from "src/viseur/constructed";
+import { createEventEmitter } from "ts-typed-events";
 import { BaseGame } from "../game";
 import faviconIco from "../images/favicon.ico";
 import * as guiHbs from "./gui.hbs";
@@ -54,28 +54,35 @@ export class GUI extends BaseElement {
         parent: this.playbackWrapper,
     });
 
+    public readonly eventPlayPause = this.playbackPane.eventPlayPause;
+    public readonly eventBack = this.playbackPane.eventBack;
+    public readonly eventNext = this.playbackPane.eventNext;
+    public readonly eventPlaybackSlide = this.playbackPane.eventPlaybackSlide;
+    public readonly eventToggleFullscreen = this.playbackPane
+        .eventToggleFullscreen;
+
     /** The modal [re]used to display loading and error messages. */
     private readonly modal: Modal;
 
     /** The game (for resizing purposes). */
     private game: BaseGame | undefined;
 
-    /** All the events this GUI emits. */
-    public readonly events = events.concat(this.playbackPane.events, {
-        /** Emitted when the GUI resizes. */
-        resized: new Event<
-            Immutable<{
-                /** The new width of the GUI. */
-                width: number;
+    /** The emitter for the resized event. */
+    private readonly emitResized = createEventEmitter<
+        Immutable<{
+            /** The new width of the GUI. */
+            width: number;
 
-                /** The new height of the GUI. */
-                height: number;
+            /** The new height of the GUI. */
+            height: number;
 
-                /** The Remaining vertical height for the info pane. */
-                remainingHeight: number;
-            }>
-        >(),
-    });
+            /** The Remaining vertical height for the info pane. */
+            remainingHeight: number;
+        }>
+    >();
+
+    /** Emitted when the GUI resizes. */
+    public readonly eventResized = this.emitResized.event;
 
     /**
      * Creates a GUI to handle the user interaction(s) with html part of viseur.
@@ -107,7 +114,7 @@ export class GUI extends BaseElement {
             document.head.appendChild(faviconLink);
         }
 
-        this.playbackPane.events.toggleFullscreen.on(() => {
+        this.playbackPane.eventToggleFullscreen.on(() => {
             this.goFullscreen();
         });
 
@@ -124,8 +131,8 @@ export class GUI extends BaseElement {
             parent: this.element.parent(),
         });
 
-        viseurConstructed.once((viseur) => {
-            viseur.events.ready.on(({ game, gamelog }) => {
+        eventViseurConstructed.once((viseur) => {
+            viseur.eventReady.on(({ game, gamelog }) => {
                 this.game = game;
                 this.element.addClass("gamelog-loaded");
                 const date = gamelog.streaming
@@ -149,15 +156,15 @@ export class GUI extends BaseElement {
             viseur.settings.theme.changed.on((val) => this.setTheme(val));
         });
 
-        this.infoPane.events.resized.on((resized) => {
+        this.infoPane.eventResized.on((resized) => {
             this.resizeVisualizer(resized.width, resized.height);
         });
 
-        this.infoPane.events.resizeStart.on(() => {
+        this.infoPane.eventResizeStart.on(() => {
             this.element.addClass("resizing");
         });
 
-        this.infoPane.events.resizeEnd.on(() => {
+        this.infoPane.eventResizeEnd.on(() => {
             this.element.removeClass("resizing");
         });
 
@@ -296,7 +303,7 @@ export class GUI extends BaseElement {
 
         this.rendererWrapper.width(remainingWidth).height(remainingHeight);
 
-        this.events.resized.emit({
+        this.emitResized({
             width: newWidth,
             height: newHeight,
             remainingHeight,

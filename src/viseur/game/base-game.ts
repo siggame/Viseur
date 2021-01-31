@@ -8,7 +8,7 @@ import {
 import * as Color from "color";
 import { flatMap, range } from "lodash";
 import * as PIXI from "pixi.js";
-import * as seedrandom from "seedrandom";
+import * as seedRandom from "seedrandom";
 import {
     Immutable,
     isObject,
@@ -28,7 +28,7 @@ import {
     ColorSetting,
     createSettings,
 } from "src/viseur/settings";
-import { Event } from "ts-typed-events";
+import { PublicEvent } from "ts-typed-events";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
@@ -47,11 +47,8 @@ const NO_DELTA = (Object.freeze({ type: "" }) as unknown) as Delta;
 
 /** The base class all games in the games/ folder inherit from. */
 export class BaseGame extends StateObject {
-    /** The events this emits when UI interactions trigger it. */
-    public readonly events = {
-        /** When a game object want to be inspected. */
-        inspect: new Event<BaseGameObject>(),
-    };
+    /** Emitted when a game object wants to be inspected. */
+    public readonly eventInspect = new PublicEvent<BaseGameObject>();
 
     /** The name of the game, should be overridden by sub classes. */
     public static readonly gameName: string = "Base Game";
@@ -107,7 +104,7 @@ export class BaseGame extends StateObject {
     public namespace!: BaseGameNamespace; // set in Creer template
 
     /** The random number generator we use. */
-    public readonly random: seedrandom.prng;
+    public readonly random: seedRandom.prng;
 
     /** The layers in the game. */
     public readonly layers!: GameLayers; // set in Creer template
@@ -164,19 +161,19 @@ export class BaseGame extends StateObject {
         this.viseur = viseur;
         this.renderer = viseur.renderer;
 
-        this.random = seedrandom(
+        this.random = seedRandom(
             (gamelog && gamelog.settings.randomSeed) || undefined,
         );
 
-        viseur.events.ready.on(() => {
+        viseur.eventReady.on(() => {
             this.ready();
         });
 
-        viseur.events.stateChangedStep.on((state) => {
+        viseur.eventStateChangedStep.on((state) => {
             this.initializeGameObjects(state);
         });
 
-        viseur.events.stateChanged.on((state) => {
+        viseur.eventStateChanged.on((state) => {
             this.update(state);
         });
 

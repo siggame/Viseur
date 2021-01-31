@@ -45,7 +45,7 @@ export class SettingsTab extends Tab {
 
         this.manageSettings(args.viseur.settings, this.coreSettingsElement);
 
-        args.viseur.events.ready.on(({ game }) => {
+        args.viseur.eventReady.on(({ game }) => {
             this.gameNameElement.html(game.name);
             this.gameSettingsElement.removeClass("collapsed");
 

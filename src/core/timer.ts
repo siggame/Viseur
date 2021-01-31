@@ -1,13 +1,13 @@
 import { clamp } from "lodash";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 
 /** Ticks at a custom rate to a number of steps. */
 export class Timer {
-    /** Events this class emits. */
-    public readonly events = events({
-        /** Emitted when this timer finishes ticking. */
-        finished: new Event(),
-    });
+    /** Emits the finished event. */
+    private emitFinished = createEventEmitter();
+
+    /** Emitted when the timer finishes what it was timed to. */
+    public eventFinished = this.emitFinished.event;
 
     /** Last timer progress before being paused. */
     private lastProgress = 0;
@@ -96,7 +96,7 @@ export class Timer {
         const nextTickMs = (1 - this.getProgress()) * this.speed;
         this.timeout = window.setTimeout(() => {
             this.pause();
-            this.events.finished.emit();
+            this.emitFinished();
         }, nextTickMs);
 
         return true;

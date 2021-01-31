@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { Tabular } from "src/core/ui/tabular";
 import { Viseur } from "src/viseur";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { GUI } from "../gui";
 import * as infoPaneHbs from "./info-pane.hbs";
 import "./info-pane.scss";
@@ -22,25 +22,31 @@ const VALID_SIDES = ["top", "left", "bottom", "right"];
 
 /** The dock-able pane that has tabs and info about the Visualizer. */
 export class InfoPane extends BaseElement {
-    /** Events this class emits. */
-    public readonly events = events({
-        /** Emitted when this is resized (may still be resizing). */
-        resized: new Event<
-            Immutable<{
-                /** The new width we resized to. */
-                width: number;
+    /** Emitter for when this is resized event. */
+    private readonly emitResized = createEventEmitter<
+        Immutable<{
+            /** The new width we resized to. */
+            width: number;
 
-                /** The new height we resized to. */
-                height: number;
-            }>
-        >(),
+            /** The new height we resized to. */
+            height: number;
+        }>
+    >();
 
-        /** Emitted when this starts resizing. */
-        resizeStart: new Event(),
+    /** Emitted when this is resized (may still be resizing). */
+    public readonly eventResized = this.emitResized.event;
 
-        /** Emitted when this stops resizing. */
-        resizeEnd: new Event(),
-    });
+    /** Emitter for when this a resize starts. */
+    private readonly emitResizeStart = createEventEmitter();
+
+    /** Emitted when this starts resizing. */
+    public readonly eventResizeStart = this.emitResizeStart.event;
+
+    /** Emitter for when this a resize stops. */
+    private readonly emitResizeEnd = createEventEmitter();
+
+    /** Emitted when this ends resizing. */
+    public readonly eventResizeEnd = this.emitResizeEnd.event;
 
     /** The GUI this InfoPane is a part of. */
     private readonly gui: GUI;
@@ -154,7 +160,7 @@ export class InfoPane extends BaseElement {
             height = 0;
         }
 
-        this.events.resized.emit({ width, height });
+        this.emitResized({ width, height });
         this.element.removeClass("resizing");
     }
 
@@ -218,7 +224,7 @@ export class InfoPane extends BaseElement {
 
         $document // cached at the top of this file
             .on("mousemove", (moveEvent) => {
-                this.events.resizeStart.emit();
+                this.emitResizeStart();
 
                 const oldX = x;
                 const oldY = y;
@@ -251,7 +257,7 @@ export class InfoPane extends BaseElement {
             })
             .on("mouseup", () => {
                 this.element.removeClass("resizing");
-                this.events.resizeEnd.emit();
+                this.emitResizeEnd();
                 $document.off("mousemove mouseup");
             });
     }

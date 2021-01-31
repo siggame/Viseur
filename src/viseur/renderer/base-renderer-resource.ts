@@ -6,7 +6,7 @@ import {
     TypedObject,
 } from "src/utils";
 import { Viseur } from "src/viseur";
-import { viseurConstructed } from "src/viseur/constructed";
+import { eventViseurConstructed } from "src/viseur/constructed";
 
 /** Non standard options for resources. */
 export interface BaseRendererResourceOptions {
@@ -55,9 +55,9 @@ export abstract class BaseRendererResource {
         this.defaultHeight = Math.max(1, options.height || 0);
         this.absolutePath = options.absolute ? this.path : "";
 
-        viseurConstructed.once((viseur) => {
+        eventViseurConstructed.once((viseur) => {
             this.viseur = viseur;
-            viseur.renderer.events.texturesLoaded.on((resources) => {
+            viseur.renderer.eventTexturesLoaded.on((resources) => {
                 this.onTextureLoaded(resources);
             });
         });

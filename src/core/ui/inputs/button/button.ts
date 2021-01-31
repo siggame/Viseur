@@ -1,5 +1,5 @@
 import { Immutable } from "src/utils";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import {
     DisableableElement,
     DisableableElementArgs,
@@ -8,11 +8,11 @@ import * as buttonHbs from "./button.hbs";
 
 /** A range input for numbers. */
 export class Button extends DisableableElement {
-    /** Events this class emits. */
-    public readonly events = events({
-        /** Emitted when this button is clicked. */
-        clicked: new Event(),
-    });
+    /** Emitter for submitted event. */
+    private readonly emitClicked = createEventEmitter();
+
+    /** Emitted when this button is clicked. */
+    public readonly eventClicked = this.emitClicked.event;
 
     /**
      * Creates a new Button.
@@ -60,7 +60,7 @@ export class Button extends DisableableElement {
     /** Force emit a 'clicked' event. */
     public click(): void {
         if (!this.element.prop("disabled")) {
-            this.events.clicked.emit();
+            this.emitClicked();
         }
     }
 }

@@ -1,6 +1,6 @@
 import { partial } from "src/core/partial";
 import { Viseur } from "src/viseur";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { BaseElement, BaseElementArgs } from "../base-element";
 import * as tabContentHbs from "./tab-content.hbs";
 import * as tabHbs from "./tab.hbs";
@@ -23,11 +23,11 @@ export interface TabArgs extends BaseElementArgs {
 
 /** A Tab in a Tabular. */
 export class Tab extends BaseElement {
-    /** The events this class emits. */
-    public readonly events = events({
-        /** Emitted when this tab's tab is selected. */
-        selected: new Event(),
-    });
+    /** Emitter for selected event. */
+    protected readonly emitSelected = createEventEmitter();
+
+    /** Emitted when this tab's tab is selected. */
+    public readonly eventSelected = this.emitSelected.event;
 
     /** The clickable tab on the tabular that shows the content in the tabular. */
     public readonly tab: JQuery;
@@ -61,7 +61,7 @@ export class Tab extends BaseElement {
 
         this.tab = partial(tabHbs, { title });
         this.tab.on("click", () => {
-            this.events.selected.emit();
+            this.emitSelected();
         });
     }
 }

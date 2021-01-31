@@ -1,16 +1,16 @@
 import { Move, Square } from "chess.js";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { BOARD_LENGTH } from "./chess-board-background";
 import { squareToXY } from "./chess-pieces";
 import { Game } from "./game";
 
 /** An overlay on chess to handle clicks and show moves. */
 export class ChessOverlay {
-    /** The events this overlay emits. */
-    public readonly events = events({
-        /** Emitted when a valid move is selected. */
-        moveSelected: new Event<Move>(),
-    });
+    /** Emitter for move selected event. */
+    private readonly emitMoveSelected = createEventEmitter<Move>();
+
+    /** Emitted when a valid move is selected. */
+    public readonly eventMoveSelected = this.emitMoveSelected.event;
 
     /** Re-usable pixi sprites to overlay on squares. */
     private readonly overlays = new Array<PIXI.Sprite>();
@@ -27,7 +27,7 @@ export class ChessOverlay {
      * @param game - The game this is overlaying.
      */
     constructor(private readonly game: Game) {
-        this.game.chessBackground.events.tileClicked.on((square) =>
+        this.game.chessBackground.eventTileClicked.on((square) =>
             this.tileClicked(square),
         );
 
@@ -51,7 +51,7 @@ export class ChessOverlay {
         if (selectedMove) {
             this.validSquares.length = 0;
             this.currentlySelected = undefined;
-            this.events.moveSelected.emit(selectedMove);
+            this.emitMoveSelected(selectedMove);
 
             return;
         }

@@ -2,7 +2,7 @@ import { Gamelog } from "@cadre/ts-utils/cadre";
 import { Timer } from "src/core/timer";
 import { Immutable } from "src/utils";
 import { Viseur } from "src/viseur/";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { ViseurGamelog } from "./game";
 
 /** Simple container for the current time of the time manager. */
@@ -16,23 +16,32 @@ export interface CurrentTime {
 
 /** Manages playback time and what the game state to show should look like. */
 export class TimeManager {
-    /** Events this class emits. */
-    public readonly events = events({
-        /** Triggered when the current index changes. */
-        newIndex: new Event<number>(),
+    /** The emitter for the NewIndex event. */
+    private emitNewIndex = createEventEmitter<number>();
 
-        /** Triggered when we starting ticking (playing). */
-        playing: new Event(),
+    /** Triggered when the current index changes. */
+    public eventNewIndex = this.emitNewIndex.event;
 
-        /** Triggered when we stop ticking (pause). */
-        paused: new Event(),
+    /** The emitter for the Playing event. */
+    private emitPlaying = createEventEmitter();
 
-        /**
-         * Triggered when we reach the end of the indexes we can iterate
-         * through.
-         */
-        ended: new Event(),
-    });
+    /** Triggered when we starting ticking (playing). */
+    public eventPlaying = this.emitPlaying.event;
+
+    /** The emitter for the Paused event. */
+    private emitPaused = createEventEmitter();
+
+    /** Triggered when we stop ticking (pause). */
+    public eventPaused = this.emitPaused.event;
+
+    /** The emitter for tentEnded event. */
+    private emitEnded = createEventEmitter();
+
+    /**
+     * Triggered when we reach the end of the indexes we can iterate
+     * through.
+     */
+    public eventEnded = this.emitEnded.event;
 
     /** The current index  to render. */
     private currentIndex = -1;
@@ -51,7 +60,7 @@ export class TimeManager {
     constructor(private readonly viseur: Viseur) {
         this.timer = new Timer(viseur.settings.playbackSpeed.get());
 
-        this.timer.events.finished.on(() => {
+        this.timer.eventFinished.on(() => {
             this.ticked();
         });
 
@@ -59,7 +68,7 @@ export class TimeManager {
             this.timer.setSpeed(newSpeed);
         });
 
-        viseur.events.ready.on(({ gamelog }) => {
+        viseur.eventReady.on(({ gamelog }) => {
             this.ready(gamelog);
         });
     }
@@ -89,7 +98,7 @@ export class TimeManager {
         this.timer.setProgress(dt);
 
         if (oldIndex !== index) {
-            this.events.newIndex.emit(index);
+            this.emitNewIndex(index);
         }
     }
 
@@ -119,19 +128,19 @@ export class TimeManager {
 
         this.ticked(true);
 
-        this.viseur.gui.events.playPause.on(() => {
+        this.viseur.gui.eventPlayPause.on(() => {
             this.playPause();
         });
 
-        this.viseur.gui.events.next.on(() => {
+        this.viseur.gui.eventNext.on(() => {
             this.next();
         });
 
-        this.viseur.gui.events.back.on(() => {
+        this.viseur.gui.eventBack.on(() => {
             this.back();
         });
 
-        this.viseur.gui.events.playbackSlide.on((value) => {
+        this.viseur.gui.eventPlaybackSlide.on((value) => {
             const index = Math.floor(value);
             const dt = value - index;
             const current = this.getCurrentTime();
@@ -141,7 +150,7 @@ export class TimeManager {
             }
         });
 
-        this.viseur.events.gamelogUpdated.on((updated) => {
+        this.viseur.eventGamelogUpdated.on((updated) => {
             if (this.currentIndex < updated.deltas.length) {
                 this.play();
             }
@@ -163,7 +172,11 @@ export class TimeManager {
         }
 
         const paused = this.timer.invertTicking();
-        (paused ? this.events.paused : this.events.playing).emit();
+        if (paused) {
+            this.emitPaused();
+        } else {
+            this.emitPlaying();
+        }
     }
 
     /**
@@ -184,7 +197,7 @@ export class TimeManager {
             this.currentIndex === this.gamelog.deltas.length;
 
         if (!backPause) {
-            this.events.newIndex.emit(this.currentIndex);
+            this.emitNewIndex(this.currentIndex);
         } else {
             // stop, we hit the end
             this.pause(this.currentIndex - 1, 0.9999);
@@ -197,7 +210,7 @@ export class TimeManager {
                 this.timer.restart();
             } else {
                 this.pause(this.currentIndex, 0);
-                this.events.ended.emit();
+                this.emitEnded();
             }
         }
     }
@@ -239,6 +252,6 @@ export class TimeManager {
             this.setTime(index, dt);
         }
 
-        this.events.paused.emit();
+        this.emitPaused();
     }
 }

@@ -230,38 +230,38 @@ export class FileTab extends Tab {
         });
 
         // -- gamelog section -- \\
-        this.gamelogInput.events.loading.on(() => {
+        this.gamelogInput.eventLoading.on(() => {
             this.localGamelogLoading();
         });
 
-        this.remoteGamelogInput.events.submitted.on((url) => {
+        this.remoteGamelogInput.eventSubmitted.on((url) => {
             this.remoteGamelogSubmitted(url);
         });
 
-        this.remoteVisualizeButton.events.clicked.on(() => {
+        this.remoteVisualizeButton.eventClicked.on(() => {
             this.remoteGamelogSubmitted(this.remoteGamelogInput.value);
         });
 
-        this.connectTypeInput.events.changed.on((newVal) => {
+        this.connectTypeInput.eventChanged.on((newVal) => {
             this.onConnectTypeChange(newVal);
         });
 
-        this.gameInput.events.changed.on((gameName) => {
+        this.gameInput.eventChanged.on((gameName) => {
             this.onGameChange(gameName);
         });
 
         // -- connection section -- \\
-        this.viseur.events.gamelogIsRemote.on(() => {
+        this.viseur.eventGamelogIsRemote.on(() => {
             this.log("Downloading remote gamelog.");
         });
 
-        this.viseur.events.connectionMessage.on((message) => {
+        this.viseur.eventConnectionMessage.on((message) => {
             this.log(message);
         });
 
         // -- connection input section -- \\
 
-        this.connectButton.events.clicked.on(() => {
+        this.connectButton.eventClicked.on(() => {
             this.connect();
         });
 
@@ -276,7 +276,7 @@ export class FileTab extends Tab {
 
         // -- do stuff when viseur is ready -- \\
 
-        this.viseur.events.ready.on((data) => {
+        this.viseur.eventReady.on((data) => {
             this.localGamelogWrapper.addClass("collapsed");
             this.remoteGamelogWrapper.addClass("collapsed");
             this.connectWrapper.addClass("collapsed");
@@ -302,7 +302,7 @@ export class FileTab extends Tab {
                 this.gamelogDownloadSection.removeClass("collapsed");
             } else {
                 // don't show them the download section until the gamelog is finished streaming in
-                this.viseur.events.gamelogFinalized.on((finalized) => {
+                this.viseur.eventGamelogFinalized.on((finalized) => {
                     this.gamelogDownloadLink.attr("href", finalized.url);
                     this.gamelogDownloadSection.removeClass("collapsed");
                 });
@@ -427,18 +427,18 @@ export class FileTab extends Tab {
 
         this.log(`Connecting to ${server}:${port}.`);
 
-        this.viseur.events.connectionConnected.once(() => {
+        this.viseur.eventConnectionConnected.once(() => {
             this.log(`Successfully connected to ${server}:${port}.`);
         });
 
-        this.viseur.events.connectionError.on((err) => {
+        this.viseur.eventConnectionError.on((err) => {
             this.log(
                 `Unexpected error occurred in connection. '${err.name}' - '${err.message}'`,
                 true,
             );
         });
 
-        this.viseur.events.connectionClosed.once((data) => {
+        this.viseur.eventConnectionClosed.once((data) => {
             if (data.timedOut) {
                 this.log(
                     "You timed out and were forcibly disconnected.",
@@ -504,7 +504,7 @@ export class FileTab extends Tab {
     private localGamelogLoading(): void {
         this.viseur.gui.modalMessage("Loading local gamelog.");
 
-        this.gamelogInput.events.loaded.on((str) => {
+        this.gamelogInput.eventLoaded.on((str) => {
             let gamelogString = str;
             if (str[0] !== "{") {
                 // assume it's a binary zgip file

@@ -1,7 +1,7 @@
 import { Constructor } from "@cadre/ts-utils";
 import { BaseInput, BaseInputArgs } from "src/core/ui/inputs/base-input";
 import * as store from "store";
-import { Event } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 
 /** Additional arguments required for the base setting. */
 export interface BaseSettingArgs<T> {
@@ -19,8 +19,11 @@ export abstract class BaseSetting<T = any> {
     /** The index of the next new setting. */
     public static newIndex = 0;
 
+    /** Emitter for changed event. */
+    private readonly emitChanged = createEventEmitter<T>();
+
     /** Event emitted when this setting's value changes. */
-    public readonly changed = new Event<T>();
+    public readonly changed = this.emitChanged.event;
 
     /** The index this setting is when displaying in order, starting at 0. */
     public readonly index: number;
@@ -86,7 +89,7 @@ export abstract class BaseSetting<T = any> {
             input.value = value;
             changing = false;
         });
-        input.events.changed.on((value) => {
+        input.eventChanged.on((value) => {
             if (changing) {
                 // don't start an endless cycle between these two listeners
                 return;
@@ -129,7 +132,7 @@ export abstract class BaseSetting<T = any> {
 
         store.set(id, transformed);
 
-        this.changed.emit(transformed);
+        this.emitChanged(transformed);
     }
 
     /**

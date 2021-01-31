@@ -5,7 +5,7 @@ import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { ContextMenu, MenuItems } from "src/core/ui/context-menu";
 import { isImportedResource, TypedObject } from "src/utils";
 import { Viseur } from "src/viseur";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import * as rendererHbs from "./renderer.hbs";
 import "./renderer.scss";
 
@@ -53,14 +53,19 @@ export class Renderer extends BaseElement {
     /** The root of all PIXI game objects in the game. */
     public readonly gameContainer = new PIXI.Container();
 
-    /** All the events this emits. */
-    public readonly events = events({
-        /** Emitted once the textures are loaded for the game. */
-        texturesLoaded: new Event<TypedObject<PIXI.LoaderResource>>(),
+    /** Emitter for textures loaded event. */
+    private readonly emitTexturesLoaded = createEventEmitter<
+        TypedObject<PIXI.LoaderResource>
+    >();
 
-        /** Triggered when a specific id key is changed. */
-        rendering: new Event(),
-    });
+    /** Emitted once the textures are loaded for the game. */
+    public readonly eventTexturesLoaded = this.emitTexturesLoaded.event;
+
+    /** Emitter for inspect event. */
+    private readonly emitRendering = createEventEmitter();
+
+    /** Emitted when a specific id key is changed. */
+    public readonly eventRendering = this.emitRendering.event;
 
     /** The scene (root) of all PIXI objects we will render. */
     private readonly scene = new PIXI.Container();
@@ -227,7 +232,7 @@ export class Renderer extends BaseElement {
         }
 
         loader.load((_sameLoader, resources) => {
-            this.events.texturesLoaded.emit(resources);
+            this.emitTexturesLoaded(resources);
 
             if (callback) {
                 callback();
@@ -451,7 +456,7 @@ export class Renderer extends BaseElement {
      */
     private render(): void {
         // tell everything that is observing us that they need to update their PIXI objects
-        this.events.rendering.emit();
+        this.emitRendering();
         // and now have PIXI render it
         // this.pixiApp.renderer.render(this.scene);
         // this.pixiApp.renderer.render(this.pixiApp.stage);

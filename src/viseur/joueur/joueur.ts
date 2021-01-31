@@ -8,7 +8,7 @@ import * as ServerEvents from "@cadre/ts-utils/cadre/events/server";
 import { FirstArgument, Immutable, UnknownObject } from "src/utils";
 import { Viseur } from "src/viseur";
 import { ViseurGamelog } from "src/viseur/game";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import * as serializer from "./serializer";
 
 // handy types to access the "data" property of our events
@@ -44,43 +44,56 @@ export type JoueurOrder = OrderData & {
  * Handles i/o with the game server, and mostly merges delta states from it.
  */
 export class Joueur {
-    /** The events this client emits when game server stuff happens. */
-    public readonly events = events({
-        error: new Event<Error>(),
+    /** Emitter for the Error event. */
+    private emitError = createEventEmitter<Error>();
+    /** Emitted when an error is encountered. */
+    public eventError = this.emitError.event;
 
-        /** Emitted once this initially connects to the tournament server. */
-        connected: new Event(),
+    /** Emitter for the Connected event. */
+    private emitConnected = createEventEmitter();
+    /** Emitted once this initially connects to the tournament server. */
+    public eventConnected = this.emitConnected.event;
 
-        /** Emitted once the connection is closed. */
-        closed: new Event<{
-            /**
-             * True when the connection closed because we timed out,
-             * false otherwise.
-             */
-            timedOut: boolean;
-        }>(),
-
-        /** Emitted when we are lobbied by the game server. */
-        lobbied: new Event<LobbiedData>(),
-
-        /** Emitted when the game on the game server starts. */
-        start: new Event<StartData>(),
-
+    /** Emitter for the Closed event. */
+    private emitClosed = createEventEmitter<{
         /**
-         * Emitted when a change in game state (delta) is sent from the game
-         * server.
+         * True when the connection closed because we timed out,
+         * false otherwise.
          */
-        delta: new Event<MetaDeltaData>(),
+        timedOut: boolean;
+    }>();
+    /** Emitted once the connection is closed. */
+    public eventClosed = this.emitClosed.event;
 
-        /** Emitted by the game server after it runs something for us. */
-        ran: new Event<RanData>(),
+    /** Emitter for the Lobbied event. */
+    private emitLobbied = createEventEmitter<LobbiedData>();
+    /** Emitted when we are lobbied by the game server. */
+    public eventLobbied = this.emitLobbied.event;
 
-        /** Emitted when the game is over. */
-        over: new Event<OverData>(),
+    /** Emitter for the Start event. */
+    private emitStart = createEventEmitter<StartData>();
+    /** Emitted when the game on the game server starts. */
+    public eventStart = this.emitStart.event;
 
-        /** Emitted when a fatal event is sent from the server. */
-        fatal: new Event<FatalData>(),
-    });
+    /** Emitter for the Delta event. */
+    private emitDelta = createEventEmitter<MetaDeltaData>();
+    /** Emitted when a change in game state (delta) is sent from the game server. */
+    public eventDelta = this.emitDelta.event;
+
+    /** Emitter for the Ran event. */
+    private emitRan = createEventEmitter<RanData>();
+    /** Emitted by the game server after it runs something for us. */
+    public eventRan = this.emitRan.event;
+
+    /** Emitter for the Over event. */
+    private emitOver = createEventEmitter<OverData>();
+    /** Emitted when the game is over. */
+    public eventOver = this.emitOver.event;
+
+    /** Emitter for the Fatal event. */
+    private emitFatal = createEventEmitter<FatalData>();
+    /** Emitted when a fatal event is sent from the server. */
+    public eventFatal = this.emitFatal.event;
 
     /**
      * Our "gamelog" we are creating on the fly (streaming)
@@ -160,13 +173,14 @@ export class Joueur {
         try {
             this.socket = new WebSocket(`ws://${args.server}:${args.port}`);
         } catch (err) {
-            this.events.error.emit(err as Error);
+            const error = err instanceof Error ? err : new Error(err);
+            this.emitError(error);
 
             return;
         }
 
         this.socket.onopen = () => {
-            this.events.connected.emit();
+            this.emitConnected();
 
             const testNumber = Number(args.playerIndex);
             const playerIndex = isNaN(testNumber) ? undefined : testNumber;
@@ -187,7 +201,7 @@ export class Joueur {
         };
 
         this.socket.onerror = (err) => {
-            this.events.error.emit(new Error(err.type));
+            this.emitError(new Error(err.type));
         };
 
         this.socket.onmessage = (message) => {
@@ -200,7 +214,7 @@ export class Joueur {
         };
 
         this.socket.onclose = () => {
-            this.events.closed.emit({ timedOut: this.timedOut });
+            this.emitClosed({ timedOut: this.timedOut });
         };
     }
 
@@ -267,7 +281,7 @@ export class Joueur {
                 this.autoHandleOrder(event.data);
                 break;
             case "ran":
-                this.events.ran.emit(Object.freeze(event.data));
+                this.emitRan(Object.freeze(event.data));
                 break;
             case "fatal":
                 this.autoHandleFatal(event.data);
@@ -287,7 +301,7 @@ export class Joueur {
     private autoHandleOver(over: OverData): void {
         this.gamelog.streaming = false;
         this.playerID = undefined;
-        this.events.over.emit(over);
+        this.emitOver(over);
         if (this.socket) {
             this.socket.close();
         }
@@ -301,7 +315,7 @@ export class Joueur {
     private autoHandleStart(start: StartData): void {
         this.playerID = start.playerID;
         this.started = true;
-        this.events.start.emit(start);
+        this.emitStart(start);
     }
 
     /**
@@ -314,7 +328,7 @@ export class Joueur {
         this.gamelog.gameName = lobbied.gameName;
         this.gamelog.gameSession = lobbied.gameSession;
         this.gamelog.constants = lobbied.constants;
-        this.events.lobbied.emit(lobbied);
+        this.emitLobbied(lobbied);
     }
 
     /**
@@ -325,7 +339,7 @@ export class Joueur {
      */
     private autoHandleMetaDelta(delta: MetaDeltaData): void {
         this.gamelog.deltas.push(delta as Delta);
-        this.events.delta.emit(delta);
+        this.emitDelta(delta);
     }
 
     /**
@@ -376,7 +390,7 @@ export class Joueur {
                 fatal.message,
             )}'`,
         );
-        this.events.error.emit(err);
+        this.emitError(err);
         throw err;
     }
 

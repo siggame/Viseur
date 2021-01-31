@@ -8,7 +8,7 @@ process.env.ESLINT_PATH_TSCONFIG = resolve("./tsconfig.eslint.json");
 
 /** @type {import("eslint").Linter.Config} */
 const baseEslintConfig = {
-    extends: ["jacobfischer/node"],
+    extends: ["jacobfischer/browser"],
     ignorePatterns: ["dist/*", "docs/*"],
     rules: {
         "@typescript-eslint/restrict-template-expressions": [
@@ -19,6 +19,7 @@ const baseEslintConfig = {
                 allowNullish: true,
             },
         ],
+        "jsdoc/require-jsdoc": 1,
     },
 };
 

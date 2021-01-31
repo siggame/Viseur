@@ -45,7 +45,7 @@ export class GameOverScreen extends BaseElement {
 
         this.hide();
 
-        args.viseur.timeManager.events.ended.on(() => {
+        args.viseur.timeManager.eventEnded.on(() => {
             this.show();
         });
     }

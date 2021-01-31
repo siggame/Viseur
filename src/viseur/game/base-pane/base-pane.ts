@@ -130,11 +130,11 @@ export class BasePane<
             this.humansTimer = new Timer();
             this.humansTimeRemaining = 0;
 
-            this.humansTimer.events.finished.on(() => {
+            this.humansTimer.eventFinished.on(() => {
                 this.ticked();
             });
 
-            viseur.events.connectionClosed.once(() => {
+            viseur.eventConnectionClosed.once(() => {
                 if (this.humansTimer) {
                     this.humansTimeRemaining = ONE_SEC_IN_NS;
                     this.humansTimer.pause();

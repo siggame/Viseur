@@ -14,7 +14,7 @@ import {
     unStringify,
     validateURL,
 } from "src/utils";
-import { viseurConstructed } from "./constructed";
+import { emitViseurConstructed } from "./constructed";
 import { ViseurEvents } from "./events";
 import { BaseGame } from "./game/base-game";
 import { GamelogWithReverses, ViseurGamelog } from "./game/gamelog";
@@ -58,7 +58,7 @@ export interface MergedDelta {
 }
 
 /** The class that handles all the interconnected-ness of the application. */
-export class Viseur {
+export class Viseur extends ViseurEvents {
     //// ---- public ---- \\\\
 
     /** The game we are rendering and handling input for. */
@@ -93,9 +93,6 @@ export class Viseur {
         [gameName: string]: BaseGameNamespace | undefined;
     };
 
-    /** All the events Viseur emits. */
-    public readonly events = ViseurEvents;
-
     //// ---- private ---- \\\\
 
     /** Parameters parsed from the URL parameters. */
@@ -123,6 +120,8 @@ export class Viseur {
 
     /** Creates the singleton viseur instance. */
     public constructor() {
+        super();
+
         this.games = GAMES;
 
         window.onerror = (message, source, lineno, colno, error) => {
@@ -135,7 +134,7 @@ export class Viseur {
         };
 
         this.timeManager = new TimeManager(this);
-        this.timeManager.events.newIndex.on((index: number) => {
+        this.timeManager.eventNewIndex.on((index: number) => {
             this.updateCurrentStateAsync(index);
         });
 
@@ -149,20 +148,20 @@ export class Viseur {
             viseur: this,
         });
 
-        this.gui.events.resized.on((resized) => {
+        this.gui.eventResized.on((resized) => {
             this.renderer.resize(resized.width, resized.remainingHeight);
         });
         this.gui.resize();
 
-        this.renderer.events.rendering.on(() => {
+        this.renderer.eventRendering.on(() => {
             if (this.game) {
                 const time = this.timeManager.getCurrentTime();
-                this.events.timeUpdated.emit(time);
+                this.emitTimeUpdated(time);
                 this.game.render(time.dt);
             }
         });
 
-        viseurConstructed.emit(this);
+        emitViseurConstructed(this);
 
         this.parseURL();
     }
@@ -279,7 +278,7 @@ export class Viseur {
         this.joueur.run(callerID, functionName, args);
 
         if (callback) {
-            this.joueur.events.ran.once(callback);
+            this.joueur.eventRan.once(callback);
         }
     }
 
@@ -301,28 +300,28 @@ export class Viseur {
 
         this.tournamentClient = new TournamentClient(this);
 
-        this.tournamentClient.events.error.on((err) => {
+        this.tournamentClient.eventError.on((err) => {
             this.gui.modalError(err.message);
         });
 
-        this.tournamentClient.events.connected.on(() => {
+        this.tournamentClient.eventConnected.on(() => {
             this.doubleLog("Connected to tournament server, awaiting game.");
         });
 
-        this.tournamentClient.events.closed.on(() => {
-            this.events.connectionMessage.emit(
+        this.tournamentClient.eventClosed.on(() => {
+            this.emitConnectionMessage(
                 "Connected to tournament server closed.",
             );
         });
 
-        this.tournamentClient.events.playing.on(() => {
-            this.events.connectionMessage.emit(
+        this.tournamentClient.eventPlaying.on(() => {
+            this.emitConnectionMessage(
                 `Now playing ${String(this.game && this.game.name)}`,
             );
         });
 
-        this.tournamentClient.events.messaged.on((message) => {
-            this.events.connectionMessage.emit(
+        this.tournamentClient.eventMessaged.on((message) => {
+            this.emitConnectionMessage(
                 `Message from tournament server: '${message}'`,
             );
         });
@@ -350,7 +349,7 @@ export class Viseur {
      */
     public loadRemoteGamelog(url: string): void {
         this.gui.modalMessage("Loading remote gamelog");
-        this.events.gamelogIsRemote.emit({ url });
+        this.emitGamelogIsRemote({ url });
 
         void $.ajax({
             url,
@@ -483,7 +482,7 @@ export class Viseur {
                 "presentation",
             );
             if (presentationMode) {
-                this.events.delayedReady.on(() => {
+                this.eventDelayedReady.on(() => {
                     this.gui.goFullscreen();
                     this.timeManager.play();
                 });
@@ -491,7 +490,7 @@ export class Viseur {
 
             // When we finish playback (the timer reaches its end), wait 5 seconds
             //  then reload the window (which will grab a new gamelog and do all this again)
-            this.timeManager.events.ended.on(() => {
+            this.timeManager.eventEnded.on(() => {
                 window.setTimeout(() => {
                     location.reload();
                 }, 5000);
@@ -509,7 +508,7 @@ export class Viseur {
         this.parser.updateConstants(gamelog.constants);
 
         if (!gamelog.streaming) {
-            this.events.gamelogLoaded.emit(gamelog);
+            this.emitGamelogLoaded(gamelog);
         }
         // else we didn't "load" the gamelog, and thus it's streaming to us
 
@@ -683,7 +682,7 @@ export class Viseur {
 
         if (indexChanged) {
             this.updateStepped(d);
-            this.events.stateChanged.emit(this.currentState);
+            this.emitStateChanged(this.currentState);
         }
     }
 
@@ -707,7 +706,7 @@ export class Viseur {
         this.currentState.delta = delta;
         this.currentState.nextDelta = nextDelta;
 
-        this.events.stateChangedStep.emit(
+        this.emitStateChangedStep(
             this.currentState as Immutable<ViseurGameState>,
         );
     }
@@ -724,7 +723,7 @@ export class Viseur {
         ) {
             // then we are ready to start
             this.gui.hideModal();
-            this.events.ready.emit({
+            this.emitReady({
                 game: this.game as BaseGame,
                 gamelog: this.rawGamelog as Immutable<Gamelog>,
             });
@@ -742,7 +741,7 @@ export class Viseur {
                         0.9999,
                     );
                 }
-                this.events.delayedReady.emit(); // ready, but delayed so we are super ready (arena mode play)
+                this.emitDelayedReady(); // ready, but delayed so we are super ready (arena mode play)
             }, 1000);
         }
     }
@@ -754,7 +753,7 @@ export class Viseur {
      */
     private doubleLog(message: string): void {
         this.gui.modalMessage(message);
-        this.events.connectionMessage.emit(message);
+        this.emitConnectionMessage(message);
     }
 
     /**
@@ -767,21 +766,21 @@ export class Viseur {
 
         this.rawGamelog = this.joueur.getGamelog() as Immutable<Gamelog>;
 
-        this.joueur.events.connected.on(() => {
+        this.joueur.eventConnected.on(() => {
             this.gui.modalMessage("Awaiting game to start...");
 
-            this.events.connectionConnected.emit();
+            this.emitConnectionConnected();
         });
 
         let lobbiedData: LobbiedEvent["data"] | undefined;
-        this.joueur.events.lobbied.on((data) => {
+        this.joueur.eventLobbied.on((data) => {
             lobbiedData = data;
             this.gui.modalMessage(
                 `In lobby '${data.gameSession}' for '${data.gameName}'. Waiting for game to start.`,
             );
         });
 
-        this.joueur.events.start.on(() => {
+        this.joueur.eventStart.on(() => {
             if (!this.joueur) {
                 throw new Error("Joueur client destroyed before game started");
             }
@@ -794,33 +793,31 @@ export class Viseur {
             this.checkIfReady();
         });
 
-        this.joueur.events.error.on((err) => {
+        this.joueur.eventError.on((err) => {
             this.gui.modalError("Connection error");
-            this.events.connectionError.emit(err);
+            this.emitConnectionError(err);
         });
 
-        this.joueur.events.closed.on((data) => {
-            this.events.connectionClosed.emit(data);
+        this.joueur.eventClosed.on((data) => {
+            this.emitConnectionClosed(data);
         });
 
-        this.joueur.events.delta.on(() => {
+        this.joueur.eventDelta.on(() => {
             if (this.rawGamelog && this.rawGamelog.deltas.length === 1) {
                 this.gamelogLoaded(this.rawGamelog as Immutable<Gamelog>);
             }
 
-            this.events.gamelogUpdated.emit(
-                this.rawGamelog as Immutable<Gamelog>,
-            );
+            this.emitGamelogUpdated(this.rawGamelog as Immutable<Gamelog>);
         });
 
-        this.joueur.events.over.on((data) => {
-            this.events.gamelogFinalized.emit({
+        this.joueur.eventOver.on((data) => {
+            this.emitGamelogFinalized({
                 gamelog: this.rawGamelog as Immutable<Gamelog>,
                 url: data.gamelogURL,
             });
         });
 
-        this.joueur.events.fatal.on((data) => {
+        this.joueur.eventFatal.on((data) => {
             this.gui.modalError(
                 `Fatal game server event: ${String(data.message)}`,
             );

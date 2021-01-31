@@ -3,32 +3,39 @@ import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { DisableableElement } from "src/core/ui/disableable-element";
 import * as inputs from "src/core/ui/inputs";
 import { Viseur } from "src/viseur";
-import { viseurConstructed } from "src/viseur/constructed";
+import { eventViseurConstructed } from "src/viseur/constructed";
 import { GamelogWithReverses } from "src/viseur/game/gamelog";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { KEYS } from "../keys";
 import * as playbackPaneHbs from "./playback-pane.hbs";
 import "./playback-pane.scss";
 
 /** Handles all the playback controls and logic for the playback part of the GUI. */
 export class PlaybackPane extends BaseElement {
-    /** All the events this class emits. */
-    public readonly events = events({
-        /** Emitted when the playback slider is slid. */
-        playbackSlide: new Event<number>(),
+    /** Emitter for the PlaybackSlide event. */
+    private emitPlaybackSlide = createEventEmitter<number>();
+    /** Emitted when the playback slider is slid. */
+    public eventPlaybackSlide = this.emitPlaybackSlide.event;
 
-        /** Emitted when fullscreen is toggled. */
-        toggleFullscreen: new Event(),
+    /** Emitter for the ToggleFullscreen event. */
+    private emitToggleFullscreen = createEventEmitter();
+    /** Emitted when fullscreen is toggled. */
+    public eventToggleFullscreen = this.emitToggleFullscreen.event;
 
-        /** Emitted when we want to go to the next state. */
-        next: new Event(),
+    /** Emitter for the Next event. */
+    private emitNext = createEventEmitter();
+    /** Emitted when we want to go to the next state. */
+    public eventNext = this.emitNext.event;
 
-        /** Emitted when we want to go to the previous state. */
-        back: new Event(),
+    /** Emitter for the Back event. */
+    private emitBack = createEventEmitter();
+    /** Emitted when we want to go to the previous state. */
+    public eventBack = this.emitBack.event;
 
-        /** Emitted when we want play or pause (toggled). */
-        playPause: new Event(),
-    });
+    /** Emitter for the PlayPause event. */
+    private emitPlayPause = createEventEmitter();
+    /** Emitted when we want play or pause (toggled). */
+    public eventPlayPause = this.emitPlayPause.event;
 
     /** The Viseur instance that controls this. */
     private viseur: Viseur | undefined;
@@ -105,8 +112,8 @@ export class PlaybackPane extends BaseElement {
             id: "playback-slider",
             parent: this.topContainerElement,
         });
-        this.playbackSlider.events.changed.on((value) => {
-            this.events.playbackSlide.emit(value);
+        this.playbackSlider.eventChanged.on((value) => {
+            this.emitPlaybackSlide(value);
         });
 
         // play or pause \\
@@ -114,8 +121,8 @@ export class PlaybackPane extends BaseElement {
             id: "play-pause-button",
             parent: this.bottomLeftContainerElement,
         });
-        this.playPauseButton.events.clicked.on(() => {
-            this.events.playPause.emit();
+        this.playPauseButton.eventClicked.on(() => {
+            this.emitPlayPause();
         });
 
         KEYS.space.up.on(() => {
@@ -128,8 +135,8 @@ export class PlaybackPane extends BaseElement {
             id: "back-button",
             parent: this.bottomLeftContainerElement,
         });
-        this.backButton.events.clicked.on(() => {
-            this.events.back.emit();
+        this.backButton.eventClicked.on(() => {
+            this.emitBack();
         });
         KEYS["left arrow"].up.on(() => {
             this.backButton.click();
@@ -140,8 +147,8 @@ export class PlaybackPane extends BaseElement {
             id: "next-button",
             parent: this.bottomLeftContainerElement,
         });
-        this.nextButton.events.clicked.on(() => {
-            this.events.next.emit();
+        this.nextButton.eventClicked.on(() => {
+            this.emitNext();
         });
         KEYS["right arrow"].up.on(() => {
             this.nextButton.click();
@@ -152,7 +159,7 @@ export class PlaybackPane extends BaseElement {
             id: "deltas-button",
             parent: this.bottomRightContainerElement,
         });
-        this.deltasButton.events.clicked.on(() => {
+        this.deltasButton.eventClicked.on(() => {
             if (
                 this.viseur &&
                 this.viseur.settings.playbackMode.get() !== "deltas"
@@ -164,7 +171,7 @@ export class PlaybackPane extends BaseElement {
             id: "turns-button",
             parent: this.bottomRightContainerElement,
         });
-        this.turnsButton.events.clicked.on(() => {
+        this.turnsButton.eventClicked.on(() => {
             if (
                 this.viseur &&
                 this.viseur.settings.playbackMode.get() !== "turns"
@@ -182,7 +189,7 @@ export class PlaybackPane extends BaseElement {
             value: 0,
         });
 
-        this.speedSlider.events.changed.on(() => {
+        this.speedSlider.eventChanged.on(() => {
             this.updateSpeedSetting();
         });
 
@@ -190,8 +197,8 @@ export class PlaybackPane extends BaseElement {
             id: "fullscreen-button",
             parent: this.bottomRightContainerElement,
         });
-        this.fullscreenButton.events.clicked.on(() => {
-            this.events.toggleFullscreen.emit();
+        this.fullscreenButton.eventClicked.on(() => {
+            this.emitToggleFullscreen();
         });
 
         this.inputs = [
@@ -207,7 +214,7 @@ export class PlaybackPane extends BaseElement {
 
         this.disable();
 
-        viseurConstructed.once((viseur) => {
+        eventViseurConstructed.once((viseur) => {
             this.viseur = viseur;
 
             this.updateSpeedSlider();
@@ -217,27 +224,27 @@ export class PlaybackPane extends BaseElement {
                 this.updateSpeedSlider();
             });
 
-            this.viseur.events.ready.once(({ gamelog }) => {
+            this.viseur.eventReady.once(({ gamelog }) => {
                 this.viseurReady(gamelog);
             });
 
-            this.viseur.events.gamelogUpdated.on((gamelog) => {
+            this.viseur.eventGamelogUpdated.on((gamelog) => {
                 this.updatePlaybackSlider(gamelog);
             });
 
-            this.viseur.events.gamelogFinalized.on(() => {
+            this.viseur.eventGamelogFinalized.on(() => {
                 this.enable();
             });
 
-            this.viseur.timeManager.events.playing.on(() => {
+            this.viseur.timeManager.eventPlaying.on(() => {
                 this.element.addClass("playing");
             });
 
-            this.viseur.timeManager.events.paused.on(() => {
+            this.viseur.timeManager.eventPaused.on(() => {
                 this.element.removeClass("playing");
             });
 
-            this.viseur.events.timeUpdated.on((data) => {
+            this.viseur.eventTimeUpdated.on((data) => {
                 this.timeUpdated(data.index, data.dt);
             });
 
@@ -265,7 +272,7 @@ export class PlaybackPane extends BaseElement {
             this.enable();
         } else {
             this.speedSlider.enable(); // While streaming the gamelog only enable the speed slider
-            this.viseur.events.gamelogFinalized.on((data) => {
+            this.viseur.eventGamelogFinalized.on((data) => {
                 this.numberOfDeltas = data.gamelog.deltas.length;
             });
         }

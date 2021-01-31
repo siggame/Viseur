@@ -1,16 +1,19 @@
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { BaseInput, BaseInputArgs } from "./base-input";
 
 /** An input for files. */
 export class FileInput extends BaseInput<undefined> {
-    /** Events this class emits. */
-    public readonly events = events.concat(super.events, {
-        /** Triggered when the button is clicked. */
-        loading: new Event(),
+    /** Loading event and emitter. */
+    private readonly emitLoading = createEventEmitter();
 
-        /** Triggered once a file has been loaded. */
-        loaded: new Event<string>(),
-    });
+    /** Triggered when the button is clicked. */
+    public readonly eventLoading = this.emitLoading.event;
+
+    /** Loaded event and emitter. */
+    private readonly emitLoaded = createEventEmitter<string>();
+
+    /** Triggered once a file has been loaded. */
+    public readonly eventLoaded = this.emitLoaded.event;
 
     /**
      * Initializes the File Input.
@@ -32,11 +35,18 @@ export class FileInput extends BaseInput<undefined> {
      * Loads the contents of the chosen file.
      */
     private loadFile(): void {
-        this.events.loading.emit();
+        this.emitLoading();
 
         const reader = new FileReader();
         reader.onload = () => {
-            this.events.loaded.emit(reader.result as string);
+            const { result } = reader;
+            this.emitLoaded.emit(
+                typeof result === "string"
+                    ? result
+                    : result
+                    ? String(result)
+                    : "",
+            );
         };
 
         const { files } = this.element.get(0) as HTMLInputElement;

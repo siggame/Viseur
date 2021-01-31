@@ -211,7 +211,7 @@ export function mixRenderableGameObject<T extends GameObjectConstructor>(
                         "Reveals this GameObject in the Inspector so you can examine variable values.",
                     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
                     callback: () => {
-                        this.game.events.inspect.emit(this);
+                        this.game.eventInspect.emit(this);
                     },
                 },
             ];

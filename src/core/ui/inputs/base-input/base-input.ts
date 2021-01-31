@@ -3,7 +3,7 @@ import {
     DisableableElementArgs,
 } from "src/core/ui/disableable-element";
 import { Immutable } from "src/utils";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { Field } from "../field";
 import * as baseInputHbs from "./base-input.hbs";
 
@@ -27,11 +27,11 @@ export interface BaseInputArgs<T> extends DisableableElementArgs {
 
 /** The base class all input elements inherit from. */
 export class BaseInput<T> extends DisableableElement {
-    /** Events this class emits. */
-    public readonly events = events({
-        /** Emitted when this input's value changes. */
-        changed: new Event<T>(),
-    });
+    /** Event and emitter for changed. */
+    private readonly emitChanged = createEventEmitter<T>();
+
+    /** Emitted when this input's value changes. */
+    public readonly eventChanged = this.emitChanged.event;
 
     /** The label field, if set. */
     public readonly field?: Field;
@@ -74,7 +74,7 @@ export class BaseInput<T> extends DisableableElement {
     public set value(newValue: T) {
         if (this.actualValue !== newValue) {
             this.actualValue = newValue;
-            this.events.changed.emit(newValue);
+            this.emitChanged(newValue);
         }
 
         const elemValue = this.getElementValue();

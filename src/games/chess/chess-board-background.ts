@@ -2,7 +2,7 @@ import { Square } from "chess.js";
 import * as Color from "color";
 import * as PIXI from "pixi.js";
 import { getContrastingColor } from "src/utils";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { Game } from "./game";
 
 /** The ASCII code for the character 'a'. */
@@ -29,11 +29,11 @@ function xToChar(x: number): string {
 
 /** Manager class that maintains state about the chess board background. */
 export class ChessBoardBackground {
-    /** The events this board emits. */
-    public readonly events = events({
-        /** Emitted when a tile is clicked. The square clicked is emitted. */
-        tileClicked: new Event<Square>(),
-    });
+    /** Emitter for tile clicked event. */
+    private readonly emitTileClicked = createEventEmitter<Square>();
+
+    /** Emitted when a tile is clicked. The square clicked is emitted. */
+    public readonly eventTileClicked = this.emitTileClicked.event;
 
     /** The container for the board itself. */
     public readonly boardContainer = new PIXI.Container();
@@ -138,7 +138,7 @@ export class ChessBoardBackground {
                             throw new Error(`Invalid square at (${x}, ${y})!`);
                         }
 
-                        this.events.tileClicked.emit(square);
+                        this.emitTileClicked(square);
                     },
                 });
 

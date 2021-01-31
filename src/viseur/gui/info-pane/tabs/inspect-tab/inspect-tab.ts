@@ -41,7 +41,7 @@ export class InspectTab extends Tab {
         });
 
         this.viseur = args.viseur;
-        this.viseur.events.ready.once(({ game, gamelog }) => {
+        this.viseur.eventReady.once(({ game, gamelog }) => {
             this.deltaTreeView.setGameName(gamelog.gameName);
             this.gameTreeView.setGameName(gamelog.gameName);
             this.settingsTreeView.setGameName(gamelog.gameName);
@@ -51,17 +51,17 @@ export class InspectTab extends Tab {
             this.settingsTreeView.display(gamelog.settings as {});
 
             this.refreshTree(this.viseur.getCurrentState());
-            this.viseur.events.stateChanged.on((state) =>
+            this.viseur.eventStateChanged.on((state) =>
                 this.refreshTree(state),
             );
 
-            game.events.inspect.on((gameObject) => {
-                this.events.selected.emit();
+            game.eventInspect.on((gameObject) => {
+                this.emitSelected();
                 this.gameTreeView.expand("game", "gameObjects", gameObject.id);
             });
         });
 
-        this.tabular.events.tabChanged.on(() =>
+        this.tabular.eventTabChanged.on(() =>
             this.refreshTree(this.viseur.getCurrentState()),
         );
     }

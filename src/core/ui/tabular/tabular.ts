@@ -1,5 +1,5 @@
 import { onceTransitionEnds } from "src/utils/jquery";
-import { Event, events } from "ts-typed-events";
+import { createEventEmitter } from "ts-typed-events";
 import { BaseElement, BaseElementArgs } from "../base-element";
 import { Tab } from "./tab";
 import * as tabularHbs from "./tabular.hbs";
@@ -7,19 +7,19 @@ import "./tabular.scss";
 
 /** A block of content accessed via Tabs. */
 export class Tabular extends BaseElement {
-    /** The events the tabular emits about its Tabs. */
-    public readonly events = events({
-        /** Triggered when the active tab changes from one to another. */
-        tabChanged: new Event<
-            Readonly<{
-                /** The Tab that is now active. */
-                activeTab: Tab;
+    /** Emitter for tab changed event. */
+    private readonly emitTabChanged = createEventEmitter<
+        Readonly<{
+            /** The Tab that is now active. */
+            activeTab: Tab;
 
-                /** The tab that was previously active. */
-                previousActiveTab: Tab;
-            }>
-        >(),
-    });
+            /** The tab that was previously active. */
+            previousActiveTab: Tab;
+        }>
+    >();
+
+    /** Triggered when the active tab changes from one to another. */
+    public readonly eventTabChanged = this.emitTabChanged.event;
 
     /** All the tabs in this tabular. */
     private readonly tabs: Tab[] = [];
@@ -61,7 +61,7 @@ export class Tabular extends BaseElement {
 
             this.tabs.push(tab);
 
-            tab.events.selected.on(() => {
+            tab.eventSelected.on(() => {
                 this.setTab(tab);
             });
         }
@@ -115,7 +115,7 @@ export class Tabular extends BaseElement {
         }
 
         if (activeTab !== previousActiveTab) {
-            this.events.tabChanged.emit({
+            this.emitTabChanged({
                 activeTab,
                 previousActiveTab,
             });

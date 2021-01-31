@@ -1,5 +1,4 @@
 import { Immutable } from "src/utils";
-import { Event, events } from "ts-typed-events";
 import { BaseInput, BaseInputArgs } from "./base-input";
 
 /** Arguments to initialize a number input. */
@@ -19,12 +18,6 @@ export interface NumberInputArgs extends BaseInputArgs<number> {
 
 /** A text input for numbers. */
 export class NumberInput extends BaseInput<number> {
-    /** Events this class emits. */
-    public readonly events = events({
-        /** Emitted when this input's value changes. */
-        changed: new Event<number>(),
-    });
-
     /**
      * Initializes the Number Input.
      *
