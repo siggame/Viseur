@@ -28,7 +28,7 @@ import {
     ColorSetting,
     createSettings,
 } from "src/viseur/settings";
-import { PublicEvent } from "ts-typed-events";
+import { Event } from "ts-typed-events";
 import { BaseGameObject } from "./base-game-object";
 import { BaseHumanPlayer } from "./base-human-player";
 import { BasePane } from "./base-pane";
@@ -48,7 +48,7 @@ const NO_DELTA = (Object.freeze({ type: "" }) as unknown) as Delta;
 /** The base class all games in the games/ folder inherit from. */
 export class BaseGame extends StateObject {
     /** Emitted when a game object wants to be inspected. */
-    public readonly eventInspect = new PublicEvent<BaseGameObject>();
+    public readonly eventInspect = new Event<BaseGameObject>();
 
     /** The name of the game, should be overridden by sub classes. */
     public static readonly gameName: string = "Base Game";

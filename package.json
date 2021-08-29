@@ -65,7 +65,7 @@
     "transform-loader": "0.2.4",
     "ts-loader": "8.0.14",
     "ts-node": "9.1.1",
-    "ts-typed-events": "^3.0.0-rc.3",
+    "ts-typed-events": "3.0.0",
     "typescript": "4.1.3",
     "url-loader": "4.1.1",
     "webpack": "4.44.1"
