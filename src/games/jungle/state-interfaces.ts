@@ -20,13 +20,6 @@ import {
  */
 export interface GameState extends BaseGame {
     /**
-     * Forsyth-Edwards Notation (fen), a notation that describes the game board
-     * state.
-     *
-     */
-    fen: string;
-
-    /**
      * A mapping of every game object's ID to the actual game object. Primarily
      * used by the server and client to easily refer to the game objects via ID.
      *
@@ -34,12 +27,11 @@ export interface GameState extends BaseGame {
     gameObjects: { [id: string]: GameObjectState };
 
     /**
-     * The list of [known] moves that have occurred in the game, in a format.
-     * The first element is the first move, with the last element being the most
-     * recent.
+     * JungleFen is similar to chess FEN it starts with the board, the turn,
+     * half move, the full move.
      *
      */
-    history: string[];
+    jungleFen: string;
 
     /**
      * List of all the players in the game.
@@ -96,10 +88,10 @@ export interface PlayerState extends GameObjectState, BasePlayer {
     clientType: string;
 
     /**
-     * A coin flip will decide if 'player1' or 'player2' will go first.
+     * Blue will always start first.
      *
      */
-    color: "Player1" | "Player2";
+    color: "b" | "r";
 
     /**
      * If the player lost the game or not.
