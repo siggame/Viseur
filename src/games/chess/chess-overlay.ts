@@ -44,6 +44,7 @@ export class ChessOverlay {
         this.currentlySelected = square;
 
         if (wasSelected === square) {
+            this.currentlySelected = undefined;
             return; // don't show anything, they are de-selecting
         }
 
