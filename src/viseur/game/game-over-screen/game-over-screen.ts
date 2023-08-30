@@ -1,4 +1,3 @@
-import { escape } from "lodash";
 import { partial } from "src/core/partial";
 import { BaseElement, BaseElementArgs } from "src/core/ui/base-element";
 import { getContrastingColor, Immutable } from "src/utils";
@@ -92,7 +91,7 @@ export class GameOverScreen extends BaseElement {
             const color = this.game.getPlayersColor(player);
 
             const item = {
-                name: escape(player.name),
+                name: player.name,
                 wonOrLost: player.won ? "Won" : "Lost",
                 reason: player.won ? player.reasonWon : player.reasonLost,
                 bgColor: color.opaquer(0.375).rgb(),
